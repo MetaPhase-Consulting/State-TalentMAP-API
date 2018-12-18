@@ -30,5 +30,5 @@ If all goes well, you'll get a 201 CREATED response and the contents of "payload
 ##### Endpoints
 
 The endpoints are:
-`/api/v1/errors/<PUBLIC_SECRET>/` - for errors
-`/api/v1/events/<PUBLIC_SECRET>/` - for events
+`/api/v1/fe-reporting/errors/<PUBLIC_SECRET>/` - for errors
+`/api/v1/fe-reporting/events/<PUBLIC_SECRET>/` - for events
