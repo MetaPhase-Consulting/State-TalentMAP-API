@@ -26,9 +26,6 @@ from talentmap_api.position.serializers import PositionSerializer, PositionWrita
 from talentmap_api.user_profile.models import UserProfile
 
 
-HistoricalPositionView = generate_historical_view(Position, PositionSerializer, PositionFilter)
-
-
 class PositionListView(FieldLimitableSerializerMixin,
                        ActionDependentSerializerMixin,
                        mixins.UpdateModelMixin,

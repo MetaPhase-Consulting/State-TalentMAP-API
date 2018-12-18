@@ -49,8 +49,6 @@ class Position(StaticRepresentationModel):
 
     latest_bidcycle = models.ForeignKey('bidding.BidCycle', on_delete=models.DO_NOTHING, related_name='latest_cycle_for_positions', null=True, help_text="The latest bid cycle this position is in")
 
-    history = HistoricalRecords()
-
     create_date = models.DateTimeField(null=True, help_text="The creation date of the position")
     update_date = models.DateTimeField(null=True, help_text="The update date of this position")
     effective_date = models.DateTimeField(null=True, help_text="The effective date of this position")
