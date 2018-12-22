@@ -130,18 +130,25 @@ class ShareView(FieldLimitableSerializerMixin,
         If the request fails validation, it will return (False, String) where the second item of the tuple is
         a string explanation of the validation error.
         '''
+        success = True
+        message = None
+
         if "type" not in request.data:
-            return (False, "POSTs to this endpoint require the 'type' parameter")
+            success = False
+            message = "POSTs to this endpoint require the 'type' parameter"
         elif request.data.get("type") not in self.AVAILABLE_TYPES.keys():
-            return (False, f"Type must be one of the following: {','.join(self.AVAILABLE_TYPES.keys())}")
+            success = False
+            message = f"Type must be one of the following: {','.join(self.AVAILABLE_TYPES.keys())}"
 
         if "id" not in request.data:
-            return (False, "id of sharable object must be specified")
+            success = False
+            message = "id of sharable object must be specified"
 
         if "email" not in request.data:
-            return (False, "E-mail shares require an 'email' parameter to be specified")
+            success = False
+            message = "E-mail shares require an 'email' parameter to be specified"
 
-        return (True, None)
+        return (success, message)
 
     def email_share(self, user, email, type, id):
         # Get our e-mail formatter
