@@ -60,7 +60,7 @@ class Command(BaseCommand):
 def mode_positions():
     model = Position
     # Response parsing data
-    instance_tag = "positions"
+    instance_tag = "position"
     collision_field = "_seq_num"
     tag_map = {
         "pos_id": "_seq_num",
