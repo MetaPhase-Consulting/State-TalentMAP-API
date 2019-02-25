@@ -478,3 +478,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'talentmap_api/static/')
+
+# Celery
+CELERY_BROKER_URL = 'amqp://rabbitmq:rabbitmq@queue:5672'
+CELERY_BACKEND = 'rpc://'

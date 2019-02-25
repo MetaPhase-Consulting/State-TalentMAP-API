@@ -3,6 +3,7 @@ asn1crypto==0.24.0
 attrs==17.4.0
 bandit==1.4.0
 cached-property==1.4.2
+Celery==4.2.0
 certifi==2018.1.18
 cffi==1.11.5
 chardet==3.0.4

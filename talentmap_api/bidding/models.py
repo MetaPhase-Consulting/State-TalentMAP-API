@@ -15,6 +15,7 @@ from talentmap_api.common.models import StaticRepresentationModel
 from talentmap_api.messaging.models import Notification
 from talentmap_api.user_profile.models import UserProfile
 
+from talentmap_api.bidding.tasks import push_bid
 
 class BidCycle(StaticRepresentationModel):
     '''
@@ -295,6 +296,9 @@ def bidcycle_positions_update(sender, instance, action, reverse, model, pk_set, 
                 pos.latest_bidcycle = None
             pos.save()
 
+@receiver(post_save, sender=Bid, dispatch_uid="test_bid_queue")
+def test_bid_queue(sender, instance, **kwargs):
+    push_bid.delay(instance.id)
 
 @receiver(pre_save, sender=Bid, dispatch_uid="bid_status_changed")
 def bid_status_changed(sender, instance, **kwargs):

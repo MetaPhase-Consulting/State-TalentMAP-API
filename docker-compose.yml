@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   app:
     build:
@@ -7,8 +7,10 @@ services:
       - 8000:8000
     links:
       - db
+      - queue
     depends_on:
       - db
+      - queue
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
@@ -23,5 +25,25 @@ services:
     environment:
       - POSTGRES_DB=talentmap
       - POSTGRES_USER=talentmap-user
+  queue:
+    image: rabbitmq:3-management
+    hostname: "rabbittm"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "XXXXTALENTMAPXXXX"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmqtm"
+  flower:
+    depends_on:
+      - queue
+    image: mher/flower
+    command: flower --broker=amqp://rabbitmq:rabbitmq@queue:5672// --port=8888  
+    ports:  
+      - 8888:8888  
 volumes:
   pgdata:
