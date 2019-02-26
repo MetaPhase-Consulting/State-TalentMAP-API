@@ -189,6 +189,7 @@ class SynchronizationJob(models.Model):
         managed = True
         ordering = ["talentmap_model"]
 
+
 class SynchronizationTask(models.Model):
     '''
     Single task in a job
@@ -214,4 +215,4 @@ class SynchronizationTask(models.Model):
 
     class Meta:
         managed = True
-        ordering = ["start_date_time"] 
+        ordering = ["start_date_time"]
