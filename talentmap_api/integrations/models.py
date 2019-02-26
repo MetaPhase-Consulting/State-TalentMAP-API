@@ -188,3 +188,30 @@ class SynchronizationJob(models.Model):
     class Meta:
         managed = True
         ordering = ["talentmap_model"]
+
+class SynchronizationTask(models.Model):
+    '''
+    Single task in a job
+    '''
+    start_date_time = models.DateTimeField(null=True, help_text="Time the task started")
+    end_date_time = models.DateTimeField(null=True, help_text="Time the task ended")
+
+    running = models.BooleanField(default=False, help_text="Whether the synchronization task is currently running")
+
+    talentmap_model = models.TextField(unique=True, help_text="The talentmap model as a string; e.g. position.Position")
+
+    priority = models.IntegerField(default=0, help_text='The job priority, higher numbers run later. Default 0')
+    use_last_date_updated = models.BooleanField(default=False, help_text='Denotes if the job should only pull newest records')
+
+    new_count = models.IntegerField(null=True, help_text="Number of new records")
+    updated_count = models.IntegerField(null=True, help_text="Number of updated records")
+
+    def save(self, *args, **kwargs):
+        super(SynchronizationTask, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"SynchronizationTask"
+
+    class Meta:
+        managed = True
+        ordering = ["start_date_time"] 
