@@ -95,6 +95,7 @@ def test_soap_job_functions():
     job.refresh_from_db()
     assert job.last_synchronization == ensure_date("1975-01-01T00:00:00Z")
 
+
 @pytest.mark.django_db(transaction=True)
 def test_soap_job_tasks():
     task = SynchronizationTask()
@@ -102,3 +103,11 @@ def test_soap_job_tasks():
     task.save()
 
     assert task.priority == 0
+
+    job.running = False
+    job.save()
+
+    call_command('schedule_synchronization_job', '--stop-running')
+
+    job.refresh_from_db()
+    assert job.running == False
