@@ -223,12 +223,17 @@ class PositionBidStatistics(StaticRepresentationModel):
     at_skill = models.IntegerField(default=0)
     in_grade_at_skill = models.IntegerField(default=0)
 
+    has_handshake_offered = models.BooleanField(default=False)
+    has_handshake_accepted = models.BooleanField(default=False)
+
     def update_statistics(self):
         bidcycle_bids = self.position.bids.filter(bidcycle=self.bidcycle)
         self.total_bids = bidcycle_bids.count()
         self.in_grade = bidcycle_bids.filter(user__grade=self.position.grade).count()
         self.at_skill = bidcycle_bids.filter(user__skills=self.position.skill).count()
         self.in_grade_at_skill = bidcycle_bids.filter(user__grade=self.position.grade, user__skills=self.position.skill).count()
+        self.has_handshake_offered = any(x.status == talentmap_api.bidding.models.Bid.Status.handshake_offered for x in bidcycle_bids)
+        self.has_handshake_accepted = any(x.status == talentmap_api.bidding.models.Bid.Status.handshake_accepted for x in bidcycle_bids)
         self.save()
 
     class Meta:
