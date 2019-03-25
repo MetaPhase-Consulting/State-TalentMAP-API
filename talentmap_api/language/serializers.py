@@ -3,6 +3,8 @@ from talentmap_api.language.models import Language, Proficiency, Qualification
 
 
 class LanguageSerializer(PrefetchedSerializer):
+    
+    formal_description = StaticRepresentationField(read_only=True)
 
     class Meta:
         model = Language
