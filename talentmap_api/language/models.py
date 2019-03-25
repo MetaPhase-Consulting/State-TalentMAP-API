@@ -141,4 +141,4 @@ class Qualification(StaticRepresentationModel):
     class Meta:
         managed = True
         ordering = ["language__code"]
-        unique_together = (('language', 'reading_proficiency', 'spoken_proficiency'))
+        unique_together = ('language', 'reading_proficiency', 'spoken_proficiency')
