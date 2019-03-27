@@ -29,7 +29,7 @@ cp EXAMPLE_setup_environment.sh setup_environment.sh
 # setup env
 source setup_environment.sh
 
-export DATABASE_URL='postgres://talentmapdbadmin:ivb6aZx4xdthwipBbs@talentmap-dev-db.cfq3tdmsh2ty.us-east-1.rds.amazonaws.com:5432/talentmap'
+export DATABASE_URL='<DATABASE_URL>'
 export DJANGO_LOG_DIRECTORY='/home/ec2-user/log/'
 export DEPLOYMENT_LOCATION='/home/ec2-user/State-TalentMAP-API-dev/'
 
