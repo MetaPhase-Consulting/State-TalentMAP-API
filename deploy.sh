@@ -43,4 +43,6 @@ pkill -f runserver
 
 python manage.py runserver 0.0.0.0:8000 &
 
-exit 0
+echo "Deployment complete"
+
+exit
