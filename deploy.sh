@@ -1,10 +1,12 @@
 #! /bin/bash
 
-# "Automation" of the front end app deployment.
+# "Automation" of the API app deployment.
 # * Sets up virtual env
 # * Gets code from the `dev` branch
 # * sets up environment vars
 # * install dependencies
+# * run migrations
+# * restart server
 
 # Create and activate virtual env
 virtualenv --python=/usr/bin/python3 venv
@@ -40,3 +42,5 @@ python manage.py migrate
 pkill -f runserver
 
 python manage.py runserver 0.0.0.0:8000 &
+
+exit 0
