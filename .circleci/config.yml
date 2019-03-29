@@ -168,7 +168,7 @@ workflows:
     jobs:
       - build
       - deploy
-        requires:
+          requires:
             - pytest
       - docker-build:
           requires:
