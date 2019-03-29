@@ -155,6 +155,8 @@ jobs:
             docker tag talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_TAG talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_BRANCH_NAME
             docker push talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_BRANCH_NAME
   deploy:
+    docker:
+      - *default-python-node
     filters:
       branches:
         only: chore/autodeploy_config
