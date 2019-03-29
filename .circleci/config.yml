@@ -160,7 +160,7 @@ jobs:
         only: chore/autodeploy_config
     steps:
       - run
-          commands:
+          command:
             - ssh ec2-user@dev.talentmap.api.metaphasedev.com ./deploy.sh          
 workflows:
   version: 2
