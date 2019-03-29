@@ -154,11 +154,22 @@ jobs:
             docker pull talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_TAG
             docker tag talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_TAG talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_BRANCH_NAME
             docker push talentmap/$LOWERCASE_REPO_NAME:$LOWERCASE_BRANCH_NAME
+  deploy:
+    filters:
+      branches:
+        only: chore/autodeploy_config
+    steps:
+      - run
+          commands:
+            - ssh ec2-user@dev.talentmap.api.metaphasedev.com ./deploy.sh          
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
+      - deploy
+        requires:
+            - pytest
       - docker-build:
           requires:
             - build
@@ -182,9 +193,3 @@ workflows:
             - pytest
             - bandit
             - zap
-deploy:
-  filters:
-    branches:
-      only: chore/autodeploy_config
-  commands:
-    - ssh ec2-user@dev.talentmap.api.metaphasedev.com ./deploy.sh
