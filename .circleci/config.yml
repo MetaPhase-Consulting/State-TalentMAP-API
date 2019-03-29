@@ -157,13 +157,10 @@ jobs:
   deploy:
     docker:
       - *default-python-node
-    filters:
-      branches:
-        only: chore/autodeploy_config
     steps:
       - add_ssh_keys
       - run:
-          command: ssh ec2-user@ec2-54-175-193-118.compute-1.amazonaws.com ./deploy.sh          
+          command: ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-175-193-118.compute-1.amazonaws.com ./deploy.sh          
 workflows:
   version: 2
   build_and_test:
@@ -172,6 +169,9 @@ workflows:
       - deploy:
           requires:
             - pytest
+          filters:
+            branches:
+              only: chore/autodeploy_config
       - docker-build:
           requires:
             - build
