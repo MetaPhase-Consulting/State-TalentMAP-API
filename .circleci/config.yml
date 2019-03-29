@@ -11,6 +11,12 @@ default-postgres-node: &default-postgres-node
     POSTGRES_USER: root
     POSTGRES_DB: circle_test
 jobs:
+  deploy:
+    steps:
+      - run:
+          name: Deploy Over SSH
+          commands:
+            - ssh -i ec2-user@dev.talentmap.api.metaphasedev.com ./deploy.sh
   build:
     docker:
       - *default-python-node
@@ -182,3 +188,7 @@ workflows:
             - pytest
             - bandit
             - zap
+      - deploy:
+          filters:
+            branches:
+              only: chore/autodeploy_config
