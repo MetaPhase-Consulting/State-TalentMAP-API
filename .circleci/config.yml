@@ -161,6 +161,7 @@ jobs:
       branches:
         only: chore/autodeploy_config
     steps:
+      - add_ssh_keys
       - run:
           command: ssh ec2-user@ec2-54-175-193-118.compute-1.amazonaws.com ./deploy.sh          
 workflows:
