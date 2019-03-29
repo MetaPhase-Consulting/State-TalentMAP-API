@@ -182,9 +182,9 @@ workflows:
             - pytest
             - bandit
             - zap
-      - deploy:
-          filters:
-            branches:
-              only: chore/autodeploy_config
-          commands:
-            - ssh ec2-user@dev.talentmap.api.metaphasedev.com ./deploy.sh
+deploy:
+  filters:
+    branches:
+      only: chore/autodeploy_config
+  commands:
+    - ssh ec2-user@dev.talentmap.api.metaphasedev.com ./deploy.sh
