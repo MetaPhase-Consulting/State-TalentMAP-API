@@ -233,6 +233,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         call_command("create_seeded_users")
+        StatusSurvey.objects.all().delete()
         BidCycle.objects.all().delete()
         today = timezone.now()
         # Create bidcycle with all positions
