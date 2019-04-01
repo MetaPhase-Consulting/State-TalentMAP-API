@@ -110,11 +110,11 @@ missing_coverage.sh
 # MacOS
 .DS_Store
 
-#Environment setup script
+# Environment setup script
 setup_environment.sh
 
+# External/environment dependency for SAML integration
 talentmap_api/saml2/remote_metadata/remote_metadata.xml
 
-# IDE/Editors
+# JetBrains
 .idea/
-.vscode/
