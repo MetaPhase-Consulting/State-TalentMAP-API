@@ -294,6 +294,7 @@ class PositionSerializer(PrefetchedSerializer):
             }
         }
 
+
 class AssignmentPositionSerializer(PrefetchedSerializer):
     grade = StaticRepresentationField(read_only=True)
     skill = StaticRepresentationField(read_only=True)
@@ -371,6 +372,7 @@ class AssignmentPositionSerializer(PrefetchedSerializer):
                 }
             }
         }
+
 
 class GradeSerializer(PrefetchedSerializer):
 
