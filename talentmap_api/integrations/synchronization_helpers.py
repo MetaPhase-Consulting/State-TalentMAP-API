@@ -459,7 +459,8 @@ def mode_cycles(last_updated_date=None):
     tag_map = {
         "id": "_id",
         "name": "name",
-        "category_code": "_category_code"
+        "category_code": "_category_code",
+        "active": "active"
     }
 
     def override_loading_method(loader, tag, new_instances, updated_instances):
