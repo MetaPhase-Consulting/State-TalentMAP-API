@@ -129,6 +129,8 @@ class PositionListSerializer(PrefetchedSerializer):
     def get_bureau(self, obj):
         if obj.bureau:
             return obj.bureau._string_representation
+        elif obj.organization:
+            return obj.organization._string_representation
         else:
             return obj._bureau_code
 
@@ -217,6 +219,8 @@ class PositionSerializer(PrefetchedSerializer):
     def get_bureau(self, obj):
         if obj.bureau:
             return obj.bureau._string_representation
+        elif obj.organization:
+            return obj.organization._string_representation
         else:
             return obj._bureau_code
 
