@@ -459,7 +459,8 @@ def mode_cycles(last_updated_date=None):
     tag_map = {
         "id": "_id",
         "name": "name",
-        "category_code": "_category_code"
+        "category_code": "_category_code",
+        "cycle_status": "_cycle_status"
     }
 
     def override_loading_method(loader, tag, new_instances, updated_instances):
@@ -470,6 +471,8 @@ def mode_cycles(last_updated_date=None):
             extant_cycle._positions_seq_nums.clear()
 
         instance, updated = loader.default_xml_action(tag, new_instances, updated_instances)
+
+        instance.active = instance._cycle_status == 'A'
 
         # Find the dates for this cycle
         for date in xml_dict["children"]:
