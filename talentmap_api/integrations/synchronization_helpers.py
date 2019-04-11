@@ -472,6 +472,7 @@ def mode_cycles(last_updated_date=None):
 
         instance, updated = loader.default_xml_action(tag, new_instances, updated_instances)
 
+        # Set active state based on cycle_status
         instance.active = instance._cycle_status == 'A'
 
         # Find the dates for this cycle
