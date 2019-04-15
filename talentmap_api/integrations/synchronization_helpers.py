@@ -460,13 +460,14 @@ def mode_cycles(last_updated_date=None):
         "id": "_id",
         "name": "name",
         "category_code": "_category_code",
-        "cycle_status": "_cycle_status"
+        "status": "_cycle_status"
     }
 
     def override_loading_method(loader, tag, new_instances, updated_instances):
         # If our cycle exists, clear its position numbers
         xml_dict = xml_etree_to_dict(tag)
         extant_cycle = loader.model.objects.filter(_id=xml_dict['id']).first()
+        new_status = xml_dict['status']
         if extant_cycle:
             extant_cycle._positions_seq_nums.clear()
 
