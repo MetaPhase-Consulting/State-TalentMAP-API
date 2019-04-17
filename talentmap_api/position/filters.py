@@ -19,6 +19,7 @@ from talentmap_api.common.filters import full_text_search, ALL_TEXT_LOOKUPS, DAT
 import logging
 logger = logging.getLogger(__name__)
 
+
 class GradeFilter(filters.FilterSet):
     is_available = filters.BooleanFilter(name="positions", lookup_expr="isnull", exclude=True)
 
