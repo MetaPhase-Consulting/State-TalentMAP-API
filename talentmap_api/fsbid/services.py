@@ -7,6 +7,8 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 
+from talentmap_api.bidding.models import Bid
+
 logger = logging.getLogger(__name__)
 
 API_ROOT = settings.FSBID_API_URL
@@ -33,8 +35,38 @@ def remove_bid(employeeId, cyclePositionId):
     '''
     return requests.delete(f"{API_ROOT}/bids?cp_id={cyclePositionId}&perdet_seq_num={employeeId}")
 
+def get_bid_status(statusCode, handshakeCode):
+  '''
+  Map the FSBid status code and handshake code to a TalentMap status
+    statusCode - W → Draft
+
+    statusCode - A → Submitted
+
+    handShakeCode A → Handshake Accepted
+
+    statusCode - P → Paneled
+
+    statusCode - D → Deleted
+  '''
+  if handshakeCode == 'A':
+    return Bid.Status.handshake_accepted
+  if statusCode == 'C':
+    return Bid.Status.closed
+  if statusCode == 'P':
+    return Bid.Status.in_panel
+  if statusCode == 'W':
+    return Bid.Status.draft
+  if statusCode == 'A':
+    return Bid.Status.submitted
+
+def can_delete_bid(bidStatus, cycle):
+  '''
+  Draft bids and submitted bids in an active cycle can be deleted
+  '''
+  return bidStatus == Bid.Status.draft or (bidStatus == Bid.Status.submitted and cycle['status'] == 'A')
 
 def fsbid_bid_to_talentmap_bid(data):
+    bidStatus = get_bid_status(data['statusCode'], data['handshakeCode'])
     return {
       "id": "",
       "bidcycle": data['cycle']['description'],
@@ -71,7 +103,25 @@ def fsbid_bid_to_talentmap_bid(data):
             "state": ""
           }
         }
-      }
+      },
+      "waivers": [],
+      "can_delete": can_delete_bid(bidStatus, data['cycle']),
+      "status": bidStatus,
+      "draft_date": "",
+      "submitted_date": datetime.strptime(data['submittedDate'], "%Y/%m/%d"),
+      "handshake_offered_date": "",
+      "handshake_accepted_date": "",
+      "handshake_declined_date": "",
+      "in_panel_date": "",
+      "scheduled_panel_date": "",
+      "approved_date": "",
+      "declined_date": "",
+      "closed_date": "",
+      "is_priority": False,
+      "panel_reschedule_count": 0,
+      "create_date": datetime.strptime(data['submittedDate'], "%Y/%m/%d"),
+      "update_date": "",
+      "reviewer": ""
     }
 
 def get_projected_vacancies(query, host):
