@@ -33,6 +33,7 @@ def test_soap_integrations():
     assert Position.objects.count() == 10
     assert BidCycle.objects.count() == 8
     assert BidCycle.objects.first().active == False
+    assert BidCycle.objects.first()._cycle_status == 'C'
     assert BidCycle.objects.get(_id="151").active == True
     assert BidCycle.objects.get(_id="147").positions.count() == 4
     assert BidCycle.objects.get(_id="151").positions.count() == 6
@@ -104,3 +105,23 @@ def test_soap_job_functions():
 
     job.refresh_from_db()
     assert job.running == False
+
+@pytest.mark.django_db(transaction=True)
+def test_soap_bidcycle():
+    call_command('schedule_synchronization_job', '--set-defaults')
+    assert BidCycle.objects.count() == 0
+
+    closing_bidcycle = BidCycle.objects.create(id=138, _id="138", name="Test Cycle", _cycle_status='A', active=True)
+    closing_bidcycle.save()
+    closing_bidcycle.refresh_from_db()
+
+    assert BidCycle.objects.count() == 1
+
+    assert BidCycle.objects.get(_id="138").active == True
+    assert BidCycle.objects.get(_id="138")._cycle_status == 'A'
+
+    call_command('schedule_synchronization_job', 'bidding.BidCycle', '--reset')
+    call_command('synchronize_data', '--model', 'bidding.BidCycle', '--test')
+
+    assert BidCycle.objects.get(id=138).active == False
+    assert BidCycle.objects.get(_id="138")._cycle_status == 'C'
