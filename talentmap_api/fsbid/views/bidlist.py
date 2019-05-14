@@ -35,6 +35,17 @@ class FSBidListView(APIView):
         user = UserProfile.objects.get(user=self.request.user)
         return Response(services.user_bids(user.emp_id))
 
+class FSBidListBidActionView(APIView):
+    
+    permission_classes = (IsAuthenticated, isDjangoGroupMember('bidder'),)
+
+    def put(self, request, pk, format=None):
+        '''
+        Submits a bid (sets status to A)
+        '''
+        user = UserProfile.objects.get(user=self.request.user)
+        services.bid_on_position(self.request.user.id, user.emp_id, pk, 'A')
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FSBidListPositionActionView(APIView):
     '''
@@ -62,7 +73,7 @@ class FSBidListPositionActionView(APIView):
         user = UserProfile.objects.get(user=self.request.user)
         services.bid_on_position(self.request.user.id, user.emp_id, pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
     def delete(self, request, pk, format=None):
         '''
         Closes or deletes specified bid on a cycle position
