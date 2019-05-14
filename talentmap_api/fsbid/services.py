@@ -87,6 +87,7 @@ def fsbid_bid_to_talentmap_bid(data):
       "position": {
         "id": data['cyclePosition']['pos_seq_num'],
         "position_number": data['cyclePosition']['pos_seq_num'],
+        "status": data['cyclePosition']['status'],
         "grade": "",
         "skill": "",
         "bureau": "",
