@@ -35,29 +35,30 @@ def remove_bid(employeeId, cyclePositionId):
     '''
     return requests.delete(f"{API_ROOT}/bids?cp_id={cyclePositionId}&perdet_seq_num={employeeId}")
 
+
 def get_bid_status(statusCode, handshakeCode):
-  '''
-  Map the FSBid status code and handshake code to a TalentMap status
-    statusCode - W → Draft
+    '''
+    Map the FSBid status code and handshake code to a TalentMap status
+        statusCode - W → Draft
 
-    statusCode - A → Submitted
+        statusCode - A → Submitted
 
-    handShakeCode A → Handshake Accepted
+        handShakeCode A → Handshake Accepted
 
-    statusCode - P → Paneled
+        statusCode - P → Paneled
 
-    statusCode - D → Deleted
-  '''
-  if handshakeCode == 'A':
-    return Bid.Status.handshake_accepted
-  if statusCode == 'C':
-    return Bid.Status.closed
-  if statusCode == 'P':
-    return Bid.Status.in_panel
-  if statusCode == 'W':
-    return Bid.Status.draft
-  if statusCode == 'A':
-    return Bid.Status.submitted
+        statusCode - D → Deleted
+    '''
+    if handshakeCode == 'A':
+        return Bid.Status.handshake_accepted
+    if statusCode == 'C':
+        return Bid.Status.closed
+    if statusCode == 'P':
+        return Bid.Status.in_panel
+    if statusCode == 'W':
+        return Bid.Status.draft
+    if statusCode == 'A':
+        return Bid.Status.submitted
 
 def can_delete_bid(bidStatus, cycle):
   '''
