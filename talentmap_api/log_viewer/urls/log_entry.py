@@ -9,7 +9,6 @@ router = routers.SimpleRouter()
 urlpatterns = [
     url(r'^(?P<string>[\w\-]+)/$', views.LogEntryView.as_view(), name="log_viewer.LogEntry"),
     url(r'', views.LogEntryListView.as_view(), name="log_viewer.LogEntryList"),
-    
 ]
 
 urlpatterns += router.urls
