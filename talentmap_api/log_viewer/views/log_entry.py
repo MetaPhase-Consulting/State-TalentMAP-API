@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class LogEntryListView(APIView):    
+class LogEntryListView(APIView):
     permission_classes = (IsAuthenticated, isDjangoGroupMember('superuser'))
 
     @classmethod
