@@ -107,6 +107,7 @@ INSTALLED_APPS = [
     'simple_history',
 
     # TalentMap Apps
+    'talentmap_api.administration',
     'talentmap_api.common',
     'talentmap_api.position',
     'talentmap_api.language',
@@ -118,6 +119,8 @@ INSTALLED_APPS = [
     'talentmap_api.glossary',
     'talentmap_api.integrations',
     'talentmap_api.feedback',
+    'talentmap_api.projected_vacancies',
+    'talentmap_api.log_viewer',
 ]
 
 MIDDLEWARE = [

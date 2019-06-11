@@ -22,6 +22,9 @@ from djangosaml2.views import echo_attributes
 from talentmap_api.saml2.acs_patch import assertion_consumer_service
 
 urlpatterns = [
+    # Administration related resources
+    url(r'^api/v1/homepage/', include('talentmap_api.administration.urls.homepage')),
+
     # Position and position detail related resources
     url(r'^api/v1/position/', include('talentmap_api.position.urls.position')),
     url(r'^api/v1/skill/', include('talentmap_api.position.urls.skill')),
@@ -39,6 +42,9 @@ urlpatterns = [
     url(r'^api/v1/fsbid/bidlist/', include('talentmap_api.fsbid.urls.bidlist')),
     url(r'^api/v1/fsbid/projected_vacancies', include('talentmap_api.fsbid.urls.projected_vacancies')),
     url(r'^api/v1/fsbid/bid_seasons', include('talentmap_api.fsbid.urls.bid_seasons')),
+
+    # Projected Vacancies
+    url(r'^api/v1/projected_vacancy/', include('talentmap_api.projected_vacancies.urls.projected_vacancies')),
 
     # Language and language related resources
     url(r'^api/v1/language/', include('talentmap_api.language.urls.languages')),
@@ -71,6 +77,12 @@ urlpatterns = [
 
     # Feedback
     url(r'^api/v1/feedback/', include('talentmap_api.feedback.urls.feedback')),
+
+    # Data sync services
+    url(r'^api/v1/data_sync/', include('talentmap_api.integrations.urls.data_sync_actions')),
+
+    # Log viewing
+    url(r'^api/v1/logs/', include('talentmap_api.log_viewer.urls.log_entry'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Auth patterns

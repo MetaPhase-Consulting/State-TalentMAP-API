@@ -157,6 +157,13 @@ class PositionListSerializer(PrefetchedSerializer):
                     "read_only": True
                 }
             },
+            "description": {
+                "class": CapsuleDescriptionSerializer,
+                "field": "description",
+                "kwargs": {
+                    "read_only": True
+                }
+            },
             "bid_statistics": {
                 "class": PositionBidStatisticsSerializer,
                 "kwargs": {
@@ -180,6 +187,7 @@ class PositionListSerializer(PrefetchedSerializer):
                         "danger_pay",
                         "location",
                         "tour_of_duty",
+                        "obc_id",
                     ],
                     "many": False,
                     "read_only": True
