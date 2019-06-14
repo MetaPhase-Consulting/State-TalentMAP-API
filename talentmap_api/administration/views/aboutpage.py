@@ -21,14 +21,14 @@ class AboutPageView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericV
 
     def retrieve(self, request, pk=None, format=None):
         '''
-        Gets the HomepageBanner
+        Gets the AboutPage
         '''
         queryset = get_object_or_404(AboutPage)
         return Response({ "content" : queryset.content })
 
     def partial_update(self, request, pk=None, format=None):
         '''
-        Updates the HomepageBanner
+        Updates the AboutPage
         '''
         hpb = AboutPage.objects.first()
         serializer = self.serializer_class(hpb, data=request.data, partial=True)
