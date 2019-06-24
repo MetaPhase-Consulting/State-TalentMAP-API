@@ -516,7 +516,7 @@ def mode_cycle_positions(last_updated_date=None):
 
     # Response parsing data
     instance_tag = "availablePosition"
-    collision_field = ""
+    collision_field = "_cp_id"
     tag_map = {
 
     }
