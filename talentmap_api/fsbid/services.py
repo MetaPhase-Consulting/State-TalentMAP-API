@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 
+from talentmap_api.common.common_helpers import ensure_date
 from talentmap_api.bidding.models import Bid
 
 logger = logging.getLogger(__name__)
@@ -209,7 +210,13 @@ def fsbid_pv_to_talentmap_pv(pv):
                 "reading_proficiency": "",
                 "spoken_proficiency": "",
                 "representation": ""
-            }
+            },
+            {
+                "language": pv["lang2"],
+                "reading_proficiency": "",
+                "spoken_proficiency": "",
+                "representation": ""
+            },
         ],
         "post": {
             "tour_of_duty": pv["tod"],
@@ -217,15 +224,15 @@ def fsbid_pv_to_talentmap_pv(pv):
             "danger_pay": pv["bt_danger_pay_num"],
             "location": {
                 "id": 7,
-                "country": "United States",
-                "code": "171670031",
-                "city": "Chicago",
-                "state": "IL"
+                "country": "",
+                "code": "",
+                "city": "",
+                "state": ""
             }
         },
         "current_assignment": {
             "user": pv["incumbent"],
-            "estimated_end_date": pv["ted"]
+            "estimated_end_date": ensure_date(pv["ted"], utc_offset=-5)
         },
         "position_number": pv["position"],
         "title": pv["post_title_desc"],
@@ -240,18 +247,6 @@ def fsbid_pv_to_talentmap_pv(pv):
                 "position": pv["post_title_desc"],
                 "status_code": "",
                 "status": ""
-            }
-        ],
-        "bid_statistics": [
-            {
-                "id": pv["fv_seq_number"],
-                "bidcycle": pv["bsn_descr_text"],
-                "total_bids": 0,
-                "in_grade": 0,
-                "at_skill": 0,
-                "in_grade_at_skill": 0,
-                "has_handshake_offered": False,
-                "has_handshake_accepted": False
             }
         ],
         "latest_bidcycle": {
