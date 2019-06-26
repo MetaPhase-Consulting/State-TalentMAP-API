@@ -90,7 +90,7 @@ class UpdateStringRepresentationsActionView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-        
+
 class UpdateRelationshipsActionView(APIView):
 
     permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
