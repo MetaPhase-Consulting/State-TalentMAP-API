@@ -89,3 +89,24 @@ class UpdateStringRepresentationsActionView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+        
+class UpdateRelationshipsActionView(APIView):
+
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
+    def put(self, request, format=None, **url_arguments):
+        '''
+        Executes the update_relationships command
+        '''
+        logger.info(f"User {self.request.user.id}:{self.request.user} updating relationships")
+        try:
+            call_command('update_relationships')
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=str(e))
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
