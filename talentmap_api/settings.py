@@ -118,6 +118,9 @@ INSTALLED_APPS = [
     'talentmap_api.glossary',
     'talentmap_api.integrations',
     'talentmap_api.feedback',
+    'talentmap_api.projected_vacancies',
+    'talentmap_api.log_viewer',
+    'talentmap_api.administration',
 ]
 
 MIDDLEWARE = [
@@ -466,3 +469,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'talentmap_api/static/')
+
+FSBID_API_URL = get_delineated_environment_variable('FSBID_API_URL', 'http://mock_fsbid:3333')
