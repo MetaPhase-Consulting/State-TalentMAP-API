@@ -97,7 +97,7 @@ class Position(StaticRepresentationModel):
         }
 
         q_obj = models.Q(**base_criteria)
-        position_ids = talentmap_api.bidding.models.CyclePosition.objects.filter(bidcycle__active=True, status_code__in=["HS", "OP"], posted_date__isnull=False).values_list("position_id", flat=True)
+        position_ids = talentmap_api.bidding.models.CyclePosition.objects.filter(bidcycle__active=True, status_code__in=["HS", "OP"]).values_list("position_id", flat=True)
         all_pos_queryset = Position.objects.filter(id__in=position_ids)
         queryset = all_pos_queryset.filter(q_obj).exclude(id=self.id)
 
