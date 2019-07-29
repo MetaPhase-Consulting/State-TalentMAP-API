@@ -22,13 +22,12 @@ class ProjectedVacancyFilter():
 
     use_api = True
 
-
     # Used when saving a search to determine the number of records returned
     def get_queryset(query):
       def count(self):
           return services.get_projected_vacancies_count(query)
       
-      return type('',(object,), { 'count': count })()
+      return type('',(object,), {'count': count})()
 
     class Meta:
       fields = "__all__"
