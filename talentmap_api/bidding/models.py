@@ -45,8 +45,7 @@ class CyclePosition(StaticRepresentationModel):
         }
 
         q_obj = models.Q(**base_criteria)
-        position_ids = CyclePosition.objects.filter(bidcycle__active=True, status_code__in=["HS", "OP"], posted_date__isnull=False).values_list("position_id", flat=True)
-        all_pos_queryset = CyclePosition.objects.filter(position_id__in=position_ids)
+        all_pos_queryset = CyclePosition.objects.filter(bidcycle__active=True, status_code__in=["HS", "OP"], posted_date__isnull=False).values_list("position_id", flat=True)
         queryset = all_pos_queryset.filter(q_obj).exclude(id=self.id)
 
         while queryset.count() < 3:
