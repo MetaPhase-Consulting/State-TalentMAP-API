@@ -5,6 +5,7 @@ import talentmap_api.fsbid.services as services
 import logging
 logger = logging.getLogger(__name__)
 
+
 # Filter handles not having database tables backing the model
 class ProjectedVacancyFilter():
     declared_filters = [
@@ -18,15 +19,16 @@ class ProjectedVacancyFilter():
       "post__differential_rate__in",
       "post__danger_pay__in",
     ]
-    
+
     use_api = True
+
 
     # Used when saving a search to determine the number of records returned
     def get_queryset(query):
       def count(self):
           return services.get_projected_vacancies_count(query)
       
-      return type('',(object,),{'count':count})()
+      return type('',(object,), { 'count': count })()
 
     class Meta:
       fields = "__all__"
