@@ -26,7 +26,7 @@ def user_bids(employee_id, jwt, position_id=None):
     return [fsbid_bid_to_talentmap_bid(bid) for bid in bids if bid['cyclePosition']['cp_id'] == int(position_id)] if position_id else map(fsbid_bid_to_talentmap_bid, bids)
 
 
-def bid_on_position(userId, employeeId, cyclePositionId, jwt):
+def bid_on_position(userId, jwt, employeeId, cyclePositionId):
     '''
     Submits a bid on a position
     '''

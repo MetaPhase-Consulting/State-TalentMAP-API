@@ -66,7 +66,7 @@ class FSBidListPositionActionView(APIView):
         Returns 204 if the position is in the list, otherwise, 404
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        if len(services.user_bids(user.emp_id, pk, request.META['HTTP_JWT'])) > 0:
+        if len(services.user_bids(user.emp_id, request.META['HTTP_JWT'], pk)) > 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -76,7 +76,7 @@ class FSBidListPositionActionView(APIView):
         Adds a cycle position to the user's bid list
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        services.bid_on_position(self.request.user.id, user.emp_id, pk, request.META['HTTP_JWT'])
+        services.bid_on_position(self.request.user.id, request.META['HTTP_JWT'], user.emp_id, pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, pk, format=None):
