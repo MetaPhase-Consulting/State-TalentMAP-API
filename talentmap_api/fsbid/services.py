@@ -23,7 +23,7 @@ def user_bids(employee_id, position_id=None):
     '''
     Get bids for a user on a position or all if no position
     '''
-    url = f"{API_ROOT}/bids/?employeeId={employee_id}&ad_id={AD_ID}" if AD_ID else f"{API_ROOT} / bids /?employeeId = {employee_id}
+    url = f"{API_ROOT}/bids/?employeeId={employee_id}&ad_id={AD_ID}" if AD_ID else f"{API_ROOT}/bids/?employeeId={employee_id}"
     bids = requests.get(url).json()
     return [fsbid_bid_to_talentmap_bid(bid) for bid in bids if bid['cyclePosition']['cp_id'] == int(position_id)] if position_id else map(fsbid_bid_to_talentmap_bid, bids)
 
