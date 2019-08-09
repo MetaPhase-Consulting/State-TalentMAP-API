@@ -374,8 +374,10 @@ def fsbid_pv_to_talentmap_pv(pv):
     }
 
 
-def get_bid_seasons(bsn_future_vacancy_ind):
-    url = f"{API_ROOT}/bidSeasons?ad_id={AD_ID}" if AD_ID else f"{API_ROOT}/bidSeasons"
+def get_bid_seasons(bsn_future_vacancy_ind, jwt):
+    # set future vacancy indicator - default to 'Y'
+    future_vacancy_ind = bsn_future_vacancy_ind if bsn_future_vacancy_ind else 'Y'
+    url = f"{API_ROOT}/bidSeasons?bsn_future_vacancy_ind={future_vacancy_ind}&ad_id={AD_ID}" if AD_ID else f"{API_ROOT}/bidSeasons?bsn_future_vacancy_ind={future_vacancy_ind}"
     bid_seasons = requests.get(url, headers={'Authorization': jwt}).json()
     return map(fsbid_bid_season_to_talentmap_bid_season, bid_seasons)
 
