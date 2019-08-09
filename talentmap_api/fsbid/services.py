@@ -147,7 +147,7 @@ def get_projected_vacancies(query, jwt, host=None):
     response = requests.get(url, headers={'Authorization': jwt}).json()
     projected_vacancies = map(fsbid_pv_to_talentmap_pv, response["Data"])
     return {
-        **get_pagination(query, get_projected_vacancies_count(query)['count'], "/api/v1/fsbid/projected_vacancies/", host),
+        **get_pagination(query, get_projected_vacancies_count(query, jwt)['count'], "/api/v1/fsbid/projected_vacancies/", host),
         "results": projected_vacancies
     }
 
