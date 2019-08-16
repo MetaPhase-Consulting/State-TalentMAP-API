@@ -46,7 +46,7 @@ class CountrySerializer(PrefetchedSerializer):
 
     def get_country_url(self, obj):
         if obj.obc_id:
-            return f"{OBC_URL}/PITG/country/detail/{obj.obc_id}"
+            return f"{OBC_URL}/country/detail/{obj.obc_id}"
         else:
             return None
 
