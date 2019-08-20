@@ -24,7 +24,8 @@ class UserLoginActionView(GenericViewSet):
     Tracks login for user
     '''
 
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('superuser'))
+    permission_classes = (IsAuthenticated,)
+    serializer_class = LoginInstanceSerializer
 
     def submit(self, request, format=None):
         '''
@@ -39,8 +40,6 @@ class UserLoginActionView(GenericViewSet):
         login_instance.user = user
         login_instance.date_of_login = datetime.datetime.now()
         login_instance.save()
-        # status=status.HTTP_204_NO_CONTENT,
-        # data = 'It worked'
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
