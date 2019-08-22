@@ -1,6 +1,7 @@
 import requests
 import logging
 import re
+import jwt
 
 from datetime import datetime
 
@@ -16,34 +17,32 @@ from talentmap_api.organization.models import Post, Organization, OrganizationGr
 logger = logging.getLogger(__name__)
 
 API_ROOT = settings.FSBID_API_URL
-AD_ID = settings.AD_ID
 
-
-def user_bids(employee_id, jwt, position_id=None):
+def user_bids(employee_id, jwt_token, position_id=None):
     '''
     Get bids for a user on a position or all if no position
     '''
-    url = f"{API_ROOT}/bids/?employeeId={employee_id}&fv_request_params.ad_id={AD_ID}"
-    bids = requests.get(url, headers={'JWTAuthorization': jwt, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    url = f"{API_ROOT}/bids/?employeeId={employee_id}&fv_request_params.ad_id={get_adid_from_jwt(jwt_token)}"
+    bids = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
     return [fsbid_bid_to_talentmap_bid(bid) for bid in bids if bid['cyclePosition']['cp_id'] == int(position_id)] if position_id else map(fsbid_bid_to_talentmap_bid, bids)
 
 
-def bid_on_position(userId, jwt, employeeId, cyclePositionId):
+def bid_on_position(userId, jwt_token, employeeId, cyclePositionId):
     '''
     Submits a bid on a position
     '''
-    url = f"{API_ROOT}/bids/?fv_request_params.ad_id={AD_ID}"
-    response = requests.post(url, data={"perdet_seq_num": employeeId, "cp_id": cyclePositionId, "userId": userId}, headers={'JWTAuthorization': jwt, 'Content-Type': 'application/json'}, verify=False)  # nosec
+    url = f"{API_ROOT}/bids/?fv_request_params.ad_id={get_adid_from_jwt(jwt_token)}"
+    response = requests.post(url, data={"perdet_seq_num": employeeId, "cp_id": cyclePositionId, "userId": userId}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False)  # nosec
     response.raise_for_status()
     return response
 
 
-def remove_bid(employeeId, cyclePositionId, jwt):
+def remove_bid(employeeId, cyclePositionId, jwt_token):
     '''
     Removes a bid from the users bid list
     '''
-    url = f"{API_ROOT}/bids?cp_id={cyclePositionId}&perdet_seq_num={employeeId}&fv_request_params.ad_id={AD_ID}"
-    return requests.delete(url, headers={'JWTAuthorization': jwt, 'Content-Type': 'application/json'}, verify=False)  # nosec
+    url = f"{API_ROOT}/bids?cp_id={cyclePositionId}&perdet_seq_num={employeeId}&fv_request_params.ad_id={get_adid_from_jwt(jwt_token)}"
+    return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False)  # nosec
 
 
 def get_bid_status(statusCode, handshakeCode):
@@ -139,26 +138,26 @@ def fsbid_bid_to_talentmap_bid(data):
     }
 
 
-def get_projected_vacancies(query, jwt, host=None):
+def get_projected_vacancies(query, jwt_token, host=None):
     '''
     Gets projected vacancies from FSBid
     '''
-    url = f"{API_ROOT}/futureVacancies?{convert_pv_query(query)}&fv_request_params.ad_id={AD_ID}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    url = f"{API_ROOT}/futureVacancies?{convert_pv_query(query)}&fv_request_params.ad_id={get_adid_from_jwt(jwt_token)}"
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
 
     projected_vacancies = map(fsbid_pv_to_talentmap_pv, response["Data"])
     return {
-        **get_pagination(query, get_projected_vacancies_count(query, jwt)['count'], "/api/v1/fsbid/projected_vacancies/", host),
+        **get_pagination(query, get_projected_vacancies_count(query, jwt_token)['count'], "/api/v1/fsbid/projected_vacancies/", host),
         "results": projected_vacancies
     }
 
 
-def get_projected_vacancies_count(query, jwt, host=None):
+def get_projected_vacancies_count(query, jwt_token, host=None):
     '''
     Gets the total number of PVs for a filterset
     '''
-    url = f"{API_ROOT}/futureVacanciesCount?{convert_pv_query(query)}&fv_request_params.ad_id={AD_ID}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    url = f"{API_ROOT}/futureVacanciesCount?{convert_pv_query(query)}&fv_request_params.ad_id={get_adid_from_jwt(jwt_token)}"
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
     return {"count": response["Data"][0]["count(1)"]}
 
 
@@ -375,11 +374,11 @@ def fsbid_pv_to_talentmap_pv(pv):
     }
 
 
-def get_bid_seasons(bsn_future_vacancy_ind, jwt):
+def get_bid_seasons(bsn_future_vacancy_ind, jwt_token):
     # set future vacancy indicator - default to 'Y'
     future_vacancy_ind = bsn_future_vacancy_ind if bsn_future_vacancy_ind else 'Y'
-    url = f"{API_ROOT}/bidSeasons?bsn_future_vacancy_ind={future_vacancy_ind}&fv_request_params.ad_id={AD_ID}"
-    bid_seasons = requests.get(url, headers={'JWTAuthorization': jwt, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    url = f"{API_ROOT}/bidSeasons?bsn_future_vacancy_ind={future_vacancy_ind}&fv_request_params.ad_id={get_adid_from_jwt(jwt_token)}"
+    bid_seasons = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
     return map(fsbid_bid_season_to_talentmap_bid_season, bid_seasons)
 
 
@@ -391,3 +390,7 @@ def fsbid_bid_season_to_talentmap_bid_season(bs):
         "end_date": datetime.strptime(bs["bsn_end_date"], "%Y/%m/%d"),
         "panel_cut_off_date": datetime.strptime(bs["bsn_panel_cutoff_date"], "%Y/%m/%d")
     }
+
+def get_adid_from_jwt(jwt_token):
+    jwt_decoded = jwt.decode(jwt_token, verify=False, algorithms=['HS256'])
+    return jwt_decoded['unique_name']
