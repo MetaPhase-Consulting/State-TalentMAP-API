@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 from rest_framework import status
 from django.utils import timezone
 
-import talentmap_api.fsbid.services as services
 
 pv = {
     "fv_seq_number": 89367,
@@ -44,7 +43,7 @@ def test_bidder_fixture(authorized_user):
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.usefixtures("test_bidder_fixture")
 def test_projected_vacancies_actions(authorized_client, authorized_user):
-    with patch('talentmap_api.fsbid.services.requests.get') as mock_get:
+    with patch('talentmap_api.fsbid.services.projected_vacancies.requests.get') as mock_get:
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = {"Data": [pv]}
         response = authorized_client.get(f'/api/v1/fsbid/projected_vacancies', HTTP_JWT='fake JWT')
