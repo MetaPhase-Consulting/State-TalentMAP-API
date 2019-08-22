@@ -211,7 +211,10 @@ class PositionHighlightActionView(APIView):
 
         # Check for the bureau permission on the accessing user
         in_group_or_403(self.request.user, "superuser")
-        position.bureau.highlighted_positions.add(position)
+        if position.bureau is not None:
+            position.bureau.highlighted_positions.add(position)
+        else:
+            position.organization.highlighted_positions.add(position)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, pk, format=None):
@@ -220,7 +223,10 @@ class PositionHighlightActionView(APIView):
         '''
         position = get_object_or_404(Position, id=pk)
         in_group_or_403(self.request.user, "superuser")
-        position.bureau.highlighted_positions.remove(position)
+        if position.bureau is not None:
+            position.bureau.highlighted_positions.remove(position)
+        else:
+            position.organization.highlighted_positions.remove(position)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
