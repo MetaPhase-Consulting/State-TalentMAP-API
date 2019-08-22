@@ -12,7 +12,7 @@ from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 
 from talentmap_api.user_profile.models import UserProfile
 
-import talentmap_api.fsbid.services as services
+import talentmap_api.fsbid.services.projected_vacancies as services
 
 
 class ProjectedVacancyFavoriteListView(APIView):

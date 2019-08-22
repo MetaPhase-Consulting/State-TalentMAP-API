@@ -1,12 +1,12 @@
 import requests
-import logger
+import logging
 
 from datetime import datetime
 
 from django.conf import settings
 
 from talentmap_api.bidding.models import Bid
-from talentmap_api.fsbid.services.common as services
+import talentmap_api.fsbid.services.common as services
 
 API_ROOT = settings.FSBID_API_URL
 

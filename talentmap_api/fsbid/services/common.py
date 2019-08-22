@@ -1,7 +1,10 @@
 import requests
 import jwt
+import logging
 
 from urllib.parse import urlencode
+
+logger = logging.getLogger(__name__)
 
 def get_pagination(query, count, base_url, host=None):
     '''

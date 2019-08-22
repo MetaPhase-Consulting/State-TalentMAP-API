@@ -1,5 +1,6 @@
 import requests
 import re
+import logging
 
 from urllib.parse import urlencode
 
@@ -7,9 +8,11 @@ from django.conf import settings
 
 from talentmap_api.common.common_helpers import ensure_date
 from talentmap_api.organization.models import Post, Organization, OrganizationGroup
-from talentmap_api.fsbid.services.common as services
+import talentmap_api.fsbid.services.common as services
 
 API_ROOT = settings.FSBID_API_URL
+
+logger = logging.getLogger(__name__)
 
 def get_projected_vacancies(query, jwt_token, host=None):
     '''
