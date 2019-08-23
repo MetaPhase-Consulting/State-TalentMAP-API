@@ -1,5 +1,4 @@
 import requests
-import jwt
 import logging
 
 from urllib.parse import urlencode
@@ -23,8 +22,3 @@ def get_pagination(query, count, base_url, host=None):
         "next": next_url,
         "previous": previous_url
     }
-
-
-def get_adid_from_jwt(jwt_token):
-    jwt_decoded = jwt.decode(jwt_token, verify=False, algorithms=['HS256'])
-    return jwt_decoded['unique_name']

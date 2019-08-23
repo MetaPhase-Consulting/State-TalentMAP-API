@@ -16,7 +16,7 @@ def user_bids(employee_id, jwt_token, position_id=None):
     '''
     Get bids for a user on a position or all if no position
     '''
-    url = f"{API_ROOT}/bids/?employeeId={employee_id}&fv_request_params.ad_id={services.get_adid_from_jwt(jwt_token)}"
+    url = f"{API_ROOT}/bids/?employeeId={employee_id}"
     bids = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
     return [fsbid_bid_to_talentmap_bid(bid) for bid in bids if bid['cyclePosition']['cp_id'] == int(position_id)] if position_id else map(fsbid_bid_to_talentmap_bid, bids)
 
@@ -25,7 +25,7 @@ def bid_on_position(userId, jwt_token, employeeId, cyclePositionId):
     '''
     Submits a bid on a position
     '''
-    url = f"{API_ROOT}/bids/?fv_request_params.ad_id={services.get_adid_from_jwt(jwt_token)}"
+    url = f"{API_ROOT}/bids/"
     response = requests.post(url, data={"perdet_seq_num": employeeId, "cp_id": cyclePositionId, "userId": userId}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False)  # nosec
     response.raise_for_status()
     return response
@@ -35,7 +35,7 @@ def remove_bid(employeeId, cyclePositionId, jwt_token):
     '''
     Removes a bid from the users bid list
     '''
-    url = f"{API_ROOT}/bids?cp_id={cyclePositionId}&perdet_seq_num={employeeId}&fv_request_params.ad_id={services.get_adid_from_jwt(jwt_token)}"
+    url = f"{API_ROOT}/bids?cp_id={cyclePositionId}&perdet_seq_num={employeeId}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False)  # nosec
 
 

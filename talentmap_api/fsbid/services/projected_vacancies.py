@@ -19,7 +19,7 @@ def get_projected_vacancies(query, jwt_token, host=None):
     '''
     Gets projected vacancies from FSBid
     '''
-    url = f"{API_ROOT}/futureVacancies?{convert_pv_query(query)}&fv_request_params.ad_id={services.get_adid_from_jwt(jwt_token)}"
+    url = f"{API_ROOT}/futureVacancies?{convert_pv_query(query)}"
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
 
     projected_vacancies = map(fsbid_pv_to_talentmap_pv, response["Data"])
@@ -33,7 +33,7 @@ def get_projected_vacancies_count(query, jwt_token, host=None):
     '''
     Gets the total number of PVs for a filterset
     '''
-    url = f"{API_ROOT}/futureVacanciesCount?{convert_pv_query(query)}&fv_request_params.ad_id={services.get_adid_from_jwt(jwt_token)}"
+    url = f"{API_ROOT}/futureVacanciesCount?{convert_pv_query(query)}"
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
     return {"count": response["Data"][0]["count(1)"]}
 
