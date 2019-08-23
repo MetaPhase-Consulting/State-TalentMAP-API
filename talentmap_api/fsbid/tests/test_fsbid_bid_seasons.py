@@ -11,6 +11,7 @@ bs = {
     "bsn_panel_cutoff_date": "2020/04/15"
 }
 
+fake_jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IldBU0hEQ1xcVEVTVFVTRVIifQ.o5o4XZ3Z_vsqqC4a2tGcGEoYu3sSYxej4Y2GcCQVtyE"
 
 @pytest.fixture
 def test_bidder_fixture(authorized_user):
@@ -24,5 +25,5 @@ def test_bid_seasons_actions(authorized_client, authorized_user):
     with patch('talentmap_api.fsbid.services.bid_season.requests.get') as mock_get:
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = [bs]
-        response = authorized_client.get(f'/api/v1/fsbid/bid_season', HTTP_JWT='fake JWT')
+        response = authorized_client.get(f'/api/v1/fsbid/bid_seasons', HTTP_JWT=fake_jwt)
         assert response.json()[0]['id'] == [bs][0]['bsn_id']
