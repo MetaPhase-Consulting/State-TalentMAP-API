@@ -6,7 +6,7 @@ from model_mommy import mommy
 from rest_framework import status
 
 pv = {
-  "fv_seq_number": "1",
+  "fv_seq_num": "1",
   "grade": "1",
   "skill": "1",
   "bureau": "Test Bureau",
@@ -28,26 +28,26 @@ pv = {
 
 @pytest.mark.django_db()
 def test_favorite_action_endpoints(authorized_client, authorized_user):
-   with patch('talentmap_api.fsbid.services.requests.get') as mock_get:
+   with patch('talentmap_api.fsbid.services.projected_vacancies.requests.get') as mock_get:
       mock_get.return_value = Mock(ok=True)
       mock_get.return_value.json.return_value = [pv]
       
-      response = authorized_client.get(f'/api/v1/projected_vacancy/{pv["fv_seq_number"]}/favorite/')
+      response = authorized_client.get(f'/api/v1/projected_vacancy/{pv["fv_seq_num"]}/favorite/')
 
       assert response.status_code == status.HTTP_404_NOT_FOUND
 
-      response = authorized_client.put(f'/api/v1/projected_vacancy/{pv["fv_seq_number"]}/favorite/')
+      response = authorized_client.put(f'/api/v1/projected_vacancy/{pv["fv_seq_num"]}/favorite/')
 
       assert response.status_code == status.HTTP_204_NO_CONTENT
 
-      response = authorized_client.get(f'/api/v1/projected_vacancy/{pv["fv_seq_number"]}/favorite/')
+      response = authorized_client.get(f'/api/v1/projected_vacancy/{pv["fv_seq_num"]}/favorite/')
 
       assert response.status_code == status.HTTP_204_NO_CONTENT
 
-      response = authorized_client.delete(f'/api/v1/projected_vacancy/{pv["fv_seq_number"]}/favorite/')
+      response = authorized_client.delete(f'/api/v1/projected_vacancy/{pv["fv_seq_num"]}/favorite/')
 
       assert response.status_code == status.HTTP_204_NO_CONTENT
 
-      response = authorized_client.get(f'/api/v1/projected_vacancy/{pv["fv_seq_number"]}/favorite/')
+      response = authorized_client.get(f'/api/v1/projected_vacancy/{pv["fv_seq_num"]}/favorite/')
 
       assert response.status_code == status.HTTP_404_NOT_FOUND

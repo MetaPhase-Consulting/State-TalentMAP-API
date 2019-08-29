@@ -6,11 +6,10 @@ from unittest.mock import Mock, patch
 from rest_framework import status
 from django.utils import timezone
 
-import talentmap_api.fsbid.services as services
 
 pv = {
-    "fv_seq_number": 89367,
-    "post_title_desc": "CHIEF OF STAFF:",
+    "fv_seq_num": 89367,
+    "pos_title_desc": "CHIEF OF STAFF:",
     "pos_location_code": "110010001",
     "post_org_country_state": "WASHINGTON, DISTRICT OF COLUMBIA",
     "ted": "2020-08-02T00:00:00",
@@ -34,6 +33,7 @@ pv = {
     "count(1)": 1
 }
 
+fake_jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IldBU0hEQ1xcVEVTVFVTRVIifQ.o5o4XZ3Z_vsqqC4a2tGcGEoYu3sSYxej4Y2GcCQVtyE"
 
 @pytest.fixture
 def test_bidder_fixture(authorized_user):
@@ -44,8 +44,8 @@ def test_bidder_fixture(authorized_user):
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.usefixtures("test_bidder_fixture")
 def test_projected_vacancies_actions(authorized_client, authorized_user):
-    with patch('talentmap_api.fsbid.services.requests.get') as mock_get:
+    with patch('talentmap_api.fsbid.services.projected_vacancies.requests.get') as mock_get:
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = {"Data": [pv]}
-        response = authorized_client.get(f'/api/v1/fsbid/projected_vacancies', HTTP_JWT='fake JWT')
-        assert response.json()["results"][0]['id'] == [pv][0]['fv_seq_number']
+        response = authorized_client.get(f'/api/v1/fsbid/projected_vacancies', HTTP_JWT=fake_jwt)
+        assert response.json()["results"][0]['id'] == [pv][0]['fv_seq_num']

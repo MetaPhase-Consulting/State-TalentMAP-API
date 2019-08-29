@@ -12,7 +12,7 @@ from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 
 from talentmap_api.user_profile.models import UserProfile
 
-import talentmap_api.fsbid.services as services
+import talentmap_api.fsbid.services.projected_vacancies as services
 
 
 class ProjectedVacancyFavoriteListView(APIView):
@@ -25,10 +25,10 @@ class ProjectedVacancyFavoriteListView(APIView):
         Return a list of all of the user's favorite projected vacancies.
         """
         user = UserProfile.objects.get(user=self.request.user)
-        pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_number", flat=True)
+        pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_num", flat=True)
         if len(pvs) > 0:
             pos_nums = ','.join(pvs)
-            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}")))
+            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}"), request.META['HTTP_JWT']))
         else:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
 
@@ -49,7 +49,7 @@ class ProjectedVacancyFavoriteActionView(APIView):
         Returns 204 if the projected vacancy is a favorite, otherwise, 404
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        if ProjectedVacancyFavorite.objects.filter(user=user, fv_seq_number=pk).exists():
+        if ProjectedVacancyFavorite.objects.filter(user=user, fv_seq_num=pk).exists():
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -59,7 +59,7 @@ class ProjectedVacancyFavoriteActionView(APIView):
         Marks the projected vacancy as a favorite
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        pvf = ProjectedVacancyFavorite(user=user, fv_seq_number=pk)
+        pvf = ProjectedVacancyFavorite(user=user, fv_seq_num=pk)
         pvf.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -68,5 +68,5 @@ class ProjectedVacancyFavoriteActionView(APIView):
         Removes the projected vacancy from favorites
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        ProjectedVacancyFavorite.objects.get(user=user, fv_seq_number=pk).delete()
+        ProjectedVacancyFavorite.objects.get(user=user, fv_seq_num=pk).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
