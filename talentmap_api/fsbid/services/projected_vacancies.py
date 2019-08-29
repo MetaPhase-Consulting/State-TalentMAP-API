@@ -15,12 +15,13 @@ API_ROOT = settings.FSBID_API_URL
 
 logger = logging.getLogger(__name__)
 
+
 def get_projected_vacancies(query, jwt_token, host=None):
     '''
     Gets projected vacancies from FSBid
     '''
     url = f"{API_ROOT}/futureVacancies?{convert_pv_query(query)}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     projected_vacancies = map(fsbid_pv_to_talentmap_pv, response["Data"])
     return {
@@ -34,11 +35,13 @@ def get_projected_vacancies_count(query, jwt_token, host=None):
     Gets the total number of PVs for a filterset
     '''
     url = f"{API_ROOT}/futureVacanciesCount?{convert_pv_query(query)}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     return {"count": response["Data"][0]["count(1)"]}
+
 
 # Pattern for extracting language parts from a string. Ex. "Spanish (3/3)"
 LANG_PATTERN = re.compile("(.*?)\(.*\)\s(\d)/(\d)")
+
 
 def parseLanguage(lang):
     '''
@@ -55,12 +58,13 @@ def parseLanguage(lang):
             language["representation"] = match.group(0).rstrip()
             return language
 
+
 def fsbid_pv_to_talentmap_pv(pv):
     '''
     Converts the response projected vacancy from FSBid to a format more in line with the Talentmap position
     '''
     return {
-        "id": pv["fv_seq_number"],
+        "id": pv["fv_seq_num"],
         "ted": ensure_date(pv["ted"], utc_offset=-5),
         "bidcycle": {
             "id": pv["bsn_id"],
@@ -98,16 +102,16 @@ def fsbid_pv_to_talentmap_pv(pv):
                 "estimated_end_date": ensure_date(pv["ted"], utc_offset=-5)
             },
             "position_number": pv["position"],
-            "title": pv["post_title_desc"],
+            "title": pv["pos_title_desc"],
             "availability": {
                 "availability": True,
                 "reason": ""
             },
             "bid_cycle_statuses": [
                 {
-                    "id": pv["fv_seq_number"],
+                    "id": pv["fv_seq_num"],
                     "bidcycle": pv["bsn_descr_text"],
-                    "position": pv["post_title_desc"],
+                    "position": pv["pos_title_desc"],
                     "status_code": "",
                     "status": ""
                 }
@@ -119,9 +123,13 @@ def fsbid_pv_to_talentmap_pv(pv):
                 "cycle_deadline_date": "",
                 "cycle_end_date": "",
                 "active": True
+            },
+            "description": {
+                "content": pv["ppos_capsule_descr_txt"]
             }
         }
     }
+
 
 def post_values(query):
     '''
@@ -140,6 +148,7 @@ def post_values(query):
         results = results + list(location_codes)
     if len(results) > 0:
         return ",".join(results)
+
 
 def bureau_values(query):
     '''
@@ -161,6 +170,7 @@ def bureau_values(query):
     if len(results) > 0:
         return ",".join(results)
 
+
 def convert_pv_query(query):
     '''
     Converts TalentMap filters into FSBid filters
@@ -181,6 +191,6 @@ def convert_pv_query(query):
         "fv_request_params.tod_codes": query.get("position__post__tour_of_duty__code__in"),
         "fv_request_params.location_codes": post_values(query),
         "fv_request_params.pos_numbers": query.get("position__position_number__in", None),
-        "fv_request_params.fv_seq_number": query.get("id", None),
+        "fv_request_params.seq_nums": query.get("id", None),
     }
     return urlencode({i: j for i, j in values.items() if j is not None})
