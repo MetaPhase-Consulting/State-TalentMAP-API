@@ -147,7 +147,7 @@ def post_values(query):
         location_codes = Post.objects.filter(id__in=post_ids).values_list("_location_code", flat=True)
         results = results + list(location_codes)
     if len(results) > 0:
-        return ",".join(results)
+        return results
 
 
 def bureau_values(query):
@@ -168,8 +168,19 @@ def bureau_values(query):
         reg_org_codes = Organization.objects.filter(Q(code__in=regional_bureaus) | Q(_parent_organization_code__in=regional_bureaus)).values_list("code", flat=True)
         results = results + list(reg_org_codes)
     if len(results) > 0:
-        return ",".join(results)
+        return results
 
+sort_dict = {
+    "position__title": "pos_title_desc",
+    "position__grade": "pos_grade_code",
+    "position__bureau": "bureau_desc",
+    "ted": "ted",
+    "position__position_number": "position"
+}
+
+def sorting_values(sort):
+    if sort is not None:
+        return sort_dict.get(sort, None)
 
 def convert_pv_query(query):
     '''
@@ -178,19 +189,20 @@ def convert_pv_query(query):
     The TalentMap filters align with the position search filter naming
     '''
     values = {
+        "fv_request_params.order_by": sorting_values(query.get("ordering", None)),
         "fv_request_params.page_index": int(query.get("page", 1)),
         "fv_request_params.page_size": query.get("limit", 25),
         "fv_request_params.freeText": query.get("q", None),
-        "fv_request_params.bid_seasons": query.get("is_available_in_bidseason"),
+        "fv_request_params.bid_seasons": services.convert_multi_value(query.get("is_available_in_bidseason")),
         "fv_request_params.bureaus": bureau_values(query),
-        "fv_request_params.danger_pays": query.get("position__post__danger_pay__in"),
-        "fv_request_params.grades": query.get("position__grade__code__in"),
-        "fv_request_params.languages": query.get("language_codes"),
-        "fv_request_params.differential_pays": query.get("position__post__differential_rate__in"),
-        "fv_request_params.skills": query.get("position__skill__code__in"),
-        "fv_request_params.tod_codes": query.get("position__post__tour_of_duty__code__in"),
+        "fv_request_params.danger_pays": services.convert_multi_value(query.get("position__post__danger_pay__in")),
+        "fv_request_params.grades": services.convert_multi_value(query.get("position__grade__code__in")),
+        "fv_request_params.languages": services.convert_multi_value(query.get("language_codes")),
+        "fv_request_params.differential_pays": services.convert_multi_value(query.get("position__post__differential_rate__in")),
+        "fv_request_params.skills": services.convert_multi_value(query.get("position__skill__code__in")),
+        "fv_request_params.tod_codes": services.convert_multi_value(query.get("position__post__tour_of_duty__code__in")),
         "fv_request_params.location_codes": post_values(query),
-        "fv_request_params.pos_numbers": query.get("position__position_number__in", None),
-        "fv_request_params.seq_nums": query.get("id", None),
+        "fv_request_params.pos_numbers": services.convert_multi_value(query.get("position__position_number__in", None)),
+        "fv_request_params.seq_nums": services.convert_multi_value(query.get("id", None)),
     }
-    return urlencode({i: j for i, j in values.items() if j is not None})
+    return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True)
