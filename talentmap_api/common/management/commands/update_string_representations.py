@@ -15,6 +15,6 @@ class Command(BaseCommand):
         for model in models:
             self.logger.info(f"Updating string representations for model: {model}")
             for instance in list(model.objects.all()):
-                instance.save()
+                instance.save(force_update=True, update_fields=['_string_representation'])
 
         self.logger.info("Updated string representations")
