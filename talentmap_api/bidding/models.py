@@ -189,7 +189,7 @@ class BidCycle(StaticRepresentationModel):
         managed = True
         ordering = ["cycle_start_date"]
 
-class StatusSurvey(StaticRepresentationModel):
+class StatusSurvey(models.Model):
     '''
     The status survey model represents eligiblity status self-identification information
     on a per-bidcycle basis
@@ -199,16 +199,14 @@ class StatusSurvey(StaticRepresentationModel):
     bidcycle = models.ForeignKey(BidCycle, on_delete=models.DO_NOTHING, related_name="status_surveys")
 
     is_differential_bidder = models.BooleanField(default=False)
-    is_fairshare = models.BooleanField(default=False)
-    is_six_eight = models.BooleanField(default=False)
-
+    
     class Meta:
         managed = True
         ordering = ["bidcycle"]
         unique_together = (("user", "bidcycle"),)
 
 
-class UserBidStatistics(StaticRepresentationModel):
+class UserBidStatistics(models.Model):
     '''
     Stores bid statistics for any particular bidcycle for each user
     '''
