@@ -67,6 +67,8 @@ def post_values(query):
         post_ids = query.get("position__post__in").split(",")
         location_codes = Post.objects.filter(id__in=post_ids).values_list("_location_code", flat=True)
         results = results + list(location_codes)
+    if query.get("position__post__code__in"):
+        results = results + query.get("position__post__code__in").split(',')
     if len(results) > 0:
         return results
 
@@ -129,6 +131,11 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function)
 
     return list(map(mapping_function, response["Data"]))
 
+def get_fsbid_results(uri, jwt_token, mapping_function):
+    url = f"{API_ROOT}/{uri}"
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json() # nosec
+    
+    return map(mapping_function, response["Data"])
 
 def get_individual(uri, id, query_mapping_function, jwt_token, mapping_function):
     '''
