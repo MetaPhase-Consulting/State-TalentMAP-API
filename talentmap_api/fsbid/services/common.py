@@ -107,9 +107,10 @@ def overseas_values(query):
 sort_dict = {
     "position__title": "pos_title_desc",
     "position__grade": "pos_grade_code",
-    "position__bureau": "bureau_desc",
+    "position__bureau": "pos_bureau_short_desc",
     "ted": "ted",
-    "position__position_number": "pos_num_text"
+    "position__position_number": "pos_num_text",
+    "posted_date": "cp_post_dt"
 }
 
 
