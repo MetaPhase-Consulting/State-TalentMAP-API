@@ -44,6 +44,7 @@ Jinja2==2.10
 locustio==0.8.1
 lxml==4.1.1
 MarkupSafe==1.0
+maya==0.6.1
 model-mommy==1.4.0
 more-itertools==4.1.0
 msgpack-python==0.5.6
