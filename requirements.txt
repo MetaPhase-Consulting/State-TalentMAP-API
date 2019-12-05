@@ -24,7 +24,7 @@ django-filter==1.1.0
 django-rest-swagger==2.1.2
 django-simple-history==2.0
 django-sslserver==0.21
-djangorestframework==3.8.2
+djangorestframework==3.10.3
 djangorestframework-csv==2.1.0
 djangorestframework-expiring-authtoken==0.1.4
 djangorestframework-filters==0.10.2
