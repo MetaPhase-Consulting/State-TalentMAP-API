@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 @staticmethod
 def fsbid_danger_pay_to_talentmap_danger_pay(data):
     return {
-        "id": data.get("pay_percent_num", 0),
-        "code": data.get("pay_percent_num", None),
+        "id": f'{data.get("pay_percent_num", 0)}',
+        "code": f'{data.get("pay_percent_num", None)}',
         "description": data.get("pay_percentage_text", None)
     }
 
@@ -45,8 +45,8 @@ def fsbid_bureaus_to_talentmap_bureaus(data):
 @staticmethod
 def fsbid_differential_rates_to_talentmap_differential_rates(data):
     return {
-        "id": data.get("pay_percent_num", 0),
-        "code": data.get("pay_percent_num", None),
+        "id": f'{data.get("pay_percent_num", 0)}',
+        "code": f'{data.get("pay_percent_num", None)}',
         "description": data.get("pay_percentage_text", None)
     }
 
