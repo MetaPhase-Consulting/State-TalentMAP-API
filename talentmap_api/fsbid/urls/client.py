@@ -7,6 +7,7 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/suggestions/$', views.FSBidClientSuggestionsView.as_view(), name='FSBid-client-suggestions'),
+    url(r'^(?P<pk>[0-9]+)/assignments/$', views.FSBidClientAssignmentsView.as_view(), name='FSBid-client-assignments'),
     url(r'^export/$', views.FSBidClientCSVView.as_view(), name="FSBid-client_export"),
     url(r'^(?P<pk>[0-9]+)/$', views.FSBidClientView.as_view(), name='FSBid-client'),
     url(r'^$', views.FSBidClientListView.as_view(), name='FSBid-client_list'),

@@ -34,6 +34,17 @@ def client(jwt_token, hru_id, rl_cd, hasHandshake, q):
     response = services.get_fsbid_results(uri, jwt_token, fsbid_clients_to_talentmap_clients)
     return response
 
+def client_assignments(jwt_token, perdet_seq_num):
+    '''
+    Get Assignments by Client
+    '''
+    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
+    uri = f"Assignments?request_params.ad_id={ad_id}"
+    if perdet_seq_num:
+        uri = uri + f'&request_params.perdet_seq_num={perdet_seq_num}'
+    response = services.get_assignment_results(uri, jwt_token, fsbid_client_assignments_to_talentmap_client_assignments)
+    return response
+
 def client_suggestions(jwt_token, perdet_seq_num):
     '''
     Get a suggestion for a client
@@ -147,6 +158,14 @@ def fsbid_clients_to_talentmap_clients(data):
         "role_code": data.get("role_code", None),
         "pos_location_code": data.get("pos_location_code", None),
         "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd"))
+    }
+
+def fsbid_client_assignments_to_talentmap_client_assignments(data, jwt_token):
+    return {
+        "id": data.get("asg_seq_num", None),
+        "create_date": data.get("asg_create_date", None),
+        "update_date": data.get("asg_update_date", None),
+        "position": services_ap.get_unavailable_position(str(int(data.get("pos_seq_num", None))), jwt_token)
     }
 
 def fsbid_clients_to_talentmap_clients_for_csv(data):

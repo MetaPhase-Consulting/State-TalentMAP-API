@@ -39,6 +39,14 @@ class FSBidClientView(BaseView):
         '''
         return Response(services.single_client(request.META['HTTP_JWT'], pk))
 
+class FSBidClientAssignmentsView(BaseView):
+
+    def get(self, request, pk):
+        '''
+        Gets a assignments single client by perdet_seq_num
+        '''
+        return Response(services.client_assignments(request.META['HTTP_JWT'], pk))
+
 class FSBidClientSuggestionsView(BaseView):
 
     def get(self, request, pk):
