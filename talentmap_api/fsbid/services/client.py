@@ -39,7 +39,8 @@ def client_assignments(jwt_token, perdet_seq_num):
     Get Assignments by Client
     '''
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    uri = f"Assignments?request_params.ad_id={ad_id}"
+    # Limit to 100 results - should never exceed that anyways
+    uri = f"Assignments?request_params.ad_id={ad_id}&request_params.page_index=1&request_params.page_size=100"
     if perdet_seq_num:
         uri = uri + f'&request_params.perdet_seq_num={perdet_seq_num}'
     response = services.get_assignment_results(uri, jwt_token, fsbid_client_assignments_to_talentmap_client_assignments)
