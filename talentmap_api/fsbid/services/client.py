@@ -21,7 +21,7 @@ def client(jwt_token, query):
     Get Clients by CDO
     '''
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    uri = f"CDOClients?request_params.ad_id={ad_id}&{convert_client_query(query)}"
+    uri = f"CDOClients?request_params.ad_id={ad_id}&request_params.currentAssignmentOnly=true&{convert_client_query(query)}"
     response = services.get_fsbid_results(uri, jwt_token, fsbid_clients_to_talentmap_clients)
     return response
 
@@ -80,7 +80,7 @@ def single_client(jwt_token, perdet_seq_num):
     Get a single client for a CDO
     '''
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    uri = f"CDOClients?request_params.ad_id={ad_id}&request_params.perdet_seq_num={perdet_seq_num}"
+    uri = f"CDOClients?request_params.ad_id={ad_id}&request_params.perdet_seq_num={perdet_seq_num}&request_params.currentAssignmentOnly=false"
     response = services.get_fsbid_results(uri, jwt_token, fsbid_clients_to_talentmap_clients)
     cdo = cdo_services.single_cdo(jwt_token, perdet_seq_num)
     client = list(response)[0]
@@ -97,7 +97,8 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         fsbid_clients_to_talentmap_clients_for_csv,
         "/api/v1/fsbid/client/",
         host,
-        ad_id
+        ad_id,
+        currentAssignmentOnly
     )
 
     response = HttpResponse(content_type='text/csv')
