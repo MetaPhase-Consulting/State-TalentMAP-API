@@ -325,11 +325,17 @@ LOGGING = {
         'simple': {
             'format': '%(levelname)s %(asctime)s %(message)s'
         },
+        'splunk': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s' #You may need to specify the timezone here. For example: %(asctime)s CST [%(levelname)s] %(name)s: %(message)s
+        },
     },
     'filters': {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
     },
     'handlers': {
         'console': {
@@ -342,6 +348,14 @@ LOGGING = {
             'class': 'logging.handlers.WatchedFileHandler',
             'filename': get_delineated_environment_variable('DJANGO_LOG_DIRECTORY', '/var/log/talentmap/') + get_delineated_environment_variable('DJANGO_LOG_AUTH_NAME', 'auth.log'),
             'formatter': 'simple',
+        },
+        'default': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': get_delineated_environment_variable('DJANGO_LOG_DIRECTORY', '/var/log/talentmap/') + get_delineated_environment_variable('DJANGO_LOG_ACCESS_NAME', 'default.log'),
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'splunk',
         },
         'access': {
             'level': 'INFO',
@@ -415,6 +429,23 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
             'filters': ['require_debug_true']
+        },
+
+        # Splunk logs
+        'django.db': {
+            'handlers': ['default'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['default'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['default'],
+            'level': 'INFO',
+            'propagate': False,
         },
     }
 }
