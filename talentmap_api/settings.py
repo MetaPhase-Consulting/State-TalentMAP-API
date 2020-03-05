@@ -510,8 +510,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'talentmap_api/static/')
 
-FSBID_API_URL = get_delineated_environment_variable('FSBID_API_URL', 'http://mock_fsbid:3334')
-EMPLOYEES_API_URL = get_delineated_environment_variable('EMPLOYEES_API_URL', 'http://mock_fsbid:3334/Employees')
+FSBID_API_URL = get_delineated_environment_variable('FSBID_API_URL', 'http://mock_fsbid:3333')
+EMPLOYEES_API_URL = get_delineated_environment_variable('EMPLOYEES_API_URL', 'http://mock_fsbid:3333/Employees')
 AVATAR_URL = get_delineated_environment_variable('AVATAR_URL', 'https://usdos.sharepoint.com/_layouts/15/userphoto.aspx')
 
 # remove actual values before committing
