@@ -30,3 +30,27 @@ services:
     environment:
       - POSTGRES_DB=talentmap
       - POSTGRES_USER=talentmap-user
+  mock_fsbid:
+    image: metaphase/mock-fsbid
+    links:
+      - mock_db
+    depends_on:
+      - mock_db
+    ports:
+      - 3333:3333
+    environment:
+      - PORT=3333
+      - DB_HOST=mock_db
+      - DB_NAME=mockfsbid
+      - DB_USER=mockfsbid-user
+      - DB_PASSWORD=fsbid_pwd
+      - DB_PORT=5432
+      - DB_CHARSET=utf8
+      - DEBUG=false
+      - DB_CLIENT=pg
+  mock_db:
+    image: postgres:9.6.3
+    environment:
+      - POSTGRES_DB=mockfsbid
+      - POSTGRES_USER=mockfsbid-user
+      - POSTGRES_PASSWORD=fsbid_pwd
