@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from talentmap_api.common.common_helpers import ensure_date, safe_navigation
 from talentmap_api.bidding.models import BidCycle
-from talentmap_api.available_positions.models import AvailablePositionDesignation
+from talentmap_api.available_positions.models import AvailablePositionDesignation, AvailablePositionFavorite
 
 import talentmap_api.fsbid.services.common as services
 
@@ -35,6 +35,7 @@ def get_available_position(id, jwt_token):
         fsbid_ap_to_talentmap_ap
     )
 
+
 def get_unavailable_position(id, jwt_token):
     '''
     Gets an indivdual unavailable position by id
@@ -52,6 +53,9 @@ def get_available_positions(query, jwt_token, host=None):
     '''
     Gets available positions
     '''
+    logger.info(query)
+    if query.get('isFavorite') is not None:
+        filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
         "availablePositions",
         query,
@@ -62,7 +66,7 @@ def get_available_positions(query, jwt_token, host=None):
         "/api/v1/fsbid/available_positions/",
         host
     )
-
+        
 
 def get_available_positions_count(query, jwt_token, host=None):
     '''
@@ -261,3 +265,28 @@ def convert_ap_query(query, cps_codes="OP,HS"):
 
 def convert_up_query(query):
     return (convert_ap_query(query, "FP"))
+
+def filter_outdated_favorites(query, jwt_token, host=None):
+    '''
+    Removes favorites not returned from fsbid
+    '''
+    user_favorites = list(map(lambda x: int(x), query.get('id').split(",")))
+    returned_positions = services.send_get_request(
+        "availablePositions",
+        query,
+        convert_ap_query,
+        jwt_token,
+        fsbid_favorites_to_talentmap_favorites_ids,
+        get_available_positions_count,
+        "/api/v1/fsbid/available_positions/",
+        host
+    ).get('results')
+    # Compare two lists and delete anything not returned by fsbid
+    if user_favorites.sort() != returned_positions.sort():
+        for cp_id in user_favorites:
+            if cp_id not in returned_positions:
+                AvailablePositionFavorite.objects.filter(cp_id=cp_id).delete()
+    
+
+def fsbid_favorites_to_talentmap_favorites_ids(ap):
+    return ap.get("cp_id", None)
