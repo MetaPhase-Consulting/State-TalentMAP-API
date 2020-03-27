@@ -14,6 +14,8 @@ from django.utils.encoding import smart_str
 from talentmap_api.common.common_helpers import ensure_date, safe_navigation
 import talentmap_api.fsbid.services.common as services
 
+from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
+
 API_ROOT = settings.FSBID_API_URL
 
 logger = logging.getLogger(__name__)
@@ -30,6 +32,8 @@ def get_projected_vacancy(id, jwt_token):
         fsbid_pv_to_talentmap_pv
     )
 def get_projected_vacancies(query, jwt_token, host=None):
+    if query.get('isFavorite') is not None:
+        filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
         "futureVacancies",
         query,
@@ -161,3 +165,29 @@ def convert_pv_query(query):
         "fv_request_params.seq_nums": services.convert_multi_value(query.get("id", None)),
     }
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+
+def filter_outdated_favorites(query, jwt_token, host=None):
+    '''
+    Removes favorites not returned from fsbid
+    '''
+    logger.info(query)
+    user_favorites = list(map(lambda x: int(x), query.get('id').split(",")))
+    returned_positions = services.send_get_request(
+        "futureVacancies",
+        query,
+        convert_pv_query,
+        jwt_token,
+        fsbid_favorites_to_talentmap_favorites_ids,
+        get_projected_vacancies_count,
+        "/api/v1/fsbid/projected_vacancies/",
+        host
+    ).get('results')
+    # Compare two lists and delete anything not returned by fsbid
+    if user_favorites.sort() != returned_positions.sort():
+        for fv_seq_num in user_favorites:
+            if fv_seq_num not in returned_positions:
+                ProjectedVacancyFavorite.objects.filter(fv_seq_num=fv_seq_num).delete()
+    
+
+def fsbid_favorites_to_talentmap_favorites_ids(pv):
+    return pv.get("fv_seq_num", None)

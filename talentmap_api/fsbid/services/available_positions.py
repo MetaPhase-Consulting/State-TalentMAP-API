@@ -53,7 +53,6 @@ def get_available_positions(query, jwt_token, host=None):
     '''
     Gets available positions
     '''
-    logger.info(query)
     if query.get('isFavorite') is not None:
         filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
