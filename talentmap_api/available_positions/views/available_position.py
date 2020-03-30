@@ -124,8 +124,12 @@ class AvailablePositionFavoriteActionView(APIView):
         Marks the available position as a favorite
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        AvailablePositionFavorite.objects.get_or_create(user=user, cp_id=pk)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        aps = AvailablePositionFavorite.objects.filter(user=user).values_list("cp_id", flat=True)
+        if len(aps) >= 250:
+            return Response(status=status.HTTP_507_INSUFFICIENT_STORAGE)
+        else:
+            AvailablePositionFavorite.objects.get_or_create(user=user, cp_id=pk)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, pk, format=None):
         '''

@@ -75,9 +75,13 @@ class ProjectedVacancyFavoriteActionView(APIView):
         Marks the projected vacancy as a favorite
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        pvf = ProjectedVacancyFavorite(user=user, fv_seq_num=pk)
-        pvf.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_num", flat=True)
+        if len(pvs) >= 250:
+            return Response(status=status.HTTP_507_INSUFFICIENT_STORAGE)
+        else:
+            pvf = ProjectedVacancyFavorite(user=user, fv_seq_num=pk)
+            pvf.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, pk, format=None):
         '''
