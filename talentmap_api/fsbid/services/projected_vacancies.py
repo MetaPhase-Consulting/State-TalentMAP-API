@@ -32,7 +32,7 @@ def get_projected_vacancy(id, jwt_token):
         fsbid_pv_to_talentmap_pv
     )
 def get_projected_vacancies(query, jwt_token, host=None):
-    if query.get('isFavorite') is not None:
+    if query.get('groomFavorites') is not None:
         filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
         "futureVacancies",
@@ -170,7 +170,6 @@ def filter_outdated_favorites(query, jwt_token, host=None):
     '''
     Removes favorites not returned from fsbid
     '''
-    logger.info(query)
     user_favorites = list(map(lambda x: int(x), query.get('id').split(",")))
     returned_positions = services.send_get_request(
         "futureVacancies",

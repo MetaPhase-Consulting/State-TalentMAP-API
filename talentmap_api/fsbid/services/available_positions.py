@@ -53,7 +53,7 @@ def get_available_positions(query, jwt_token, host=None):
     '''
     Gets available positions
     '''
-    if query.get('isFavorite') is not None:
+    if query.get('groomFavorites') is not None:
         filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
         "availablePositions",

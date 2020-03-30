@@ -43,9 +43,12 @@ class AvailablePositionFavoriteListView(APIView):
         """
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavorite.objects.filter(user=user).values_list("cp_id", flat=True)
-        if len(aps) > 0:
+        if len(aps) >= 250:
             pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit=500&isFavorite=true"), request.META['HTTP_JWT']))
+            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit=250&groomFavorites=true"), request.META['HTTP_JWT']))
+        elif len(aps) > 0:
+            pos_nums = ','.join(aps)
+            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit=250"), request.META['HTTP_JWT']))
         else:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
 
