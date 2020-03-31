@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import QueryDict
+from django.conf import settings
 
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -14,6 +15,7 @@ from talentmap_api.user_profile.models import UserProfile
 
 import talentmap_api.fsbid.services.projected_vacancies as services
 
+FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 
 class ProjectedVacancyFavoriteListView(APIView):
 
@@ -26,12 +28,12 @@ class ProjectedVacancyFavoriteListView(APIView):
         """
         user = UserProfile.objects.get(user=self.request.user)
         pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_num", flat=True)
-        if len(pvs) >= 250:
+        if len(pvs) >= FAVORITES_LIMIT:
             pos_nums = ','.join(pvs)
-            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit=250&groomFavorites=true"), request.META['HTTP_JWT']))
+            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}&groomFavorites=true"), request.META['HTTP_JWT']))
         elif len(pvs) > 0:
             pos_nums = ','.join(pvs)
-            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit=250"), request.META['HTTP_JWT']))
+            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}"), request.META['HTTP_JWT']))
         else:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
 
@@ -76,8 +78,8 @@ class ProjectedVacancyFavoriteActionView(APIView):
         '''
         user = UserProfile.objects.get(user=self.request.user)
         pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_num", flat=True)
-        if len(pvs) >= 250:
-            return Response(status=status.HTTP_507_INSUFFICIENT_STORAGE)
+        if len(pvs) >= FAVORITES_LIMIT:
+            return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
         else:
             pvf = ProjectedVacancyFavorite(user=user, fv_seq_num=pk)
             pvf.save()

@@ -506,3 +506,5 @@ SWAGGER_SETTINGS = {
         },
     },
 }
+
+FAVORITES_LIMIT = 250

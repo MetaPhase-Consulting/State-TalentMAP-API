@@ -2,6 +2,7 @@ import coreapi
 
 from django.shortcuts import get_object_or_404
 from django.http import QueryDict
+from django.conf import settings
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -20,6 +21,8 @@ from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 import talentmap_api.fsbid.services.available_positions as services
 import talentmap_api.fsbid.services.projected_vacancies as pvservices
 import talentmap_api.fsbid.services.common as comservices
+
+FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 
 class AvailablePositionsFilter():
     declared_filters = [
@@ -43,12 +46,12 @@ class AvailablePositionFavoriteListView(APIView):
         """
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavorite.objects.filter(user=user).values_list("cp_id", flat=True)
-        if len(aps) >= 250:
+        if len(aps) >= FAVORITES_LIMIT:
             pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit=250&groomFavorites=true"), request.META['HTTP_JWT']))
+            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}&groomFavorites=true"), request.META['HTTP_JWT']))
         elif len(aps) > 0:
             pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit=250"), request.META['HTTP_JWT']))
+            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}"), request.META['HTTP_JWT']))
         else:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
 
@@ -125,8 +128,8 @@ class AvailablePositionFavoriteActionView(APIView):
         '''
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavorite.objects.filter(user=user).values_list("cp_id", flat=True)
-        if len(aps) >= 250:
-            return Response(status=status.HTTP_507_INSUFFICIENT_STORAGE)
+        if len(aps) >= FAVORITES_LIMIT:
+            return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
         else:
             AvailablePositionFavorite.objects.get_or_create(user=user, cp_id=pk)
             return Response(status=status.HTTP_204_NO_CONTENT)
