@@ -287,10 +287,12 @@ def filter_outdated_favorites(query, jwt_token, host=None):
         host
     ).get('results')
     # Compare two lists and delete anything not returned by fsbid
+    outdated_ids = []
     if user_favorites.sort() != returned_positions.sort():
         for cp_id in user_favorites:
             if cp_id not in returned_positions:
-                AvailablePositionFavorite.objects.filter(cp_id=cp_id).delete()
+                outdated_ids.append(cp_id)
+    AvailablePositionFavorite.objects.filter(cp_id__in=outdated_ids).update(archived=True)
     
 
 def fsbid_favorites_to_talentmap_favorites_ids(ap):

@@ -27,11 +27,12 @@ class ProjectedVacancyFavoriteListView(APIView):
         Return a list of all of the user's favorite projected vacancies.
         """
         user = UserProfile.objects.get(user=self.request.user)
-        pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_num", flat=True)
-        if len(pvs) >= FAVORITES_LIMIT:
+        pvs = ProjectedVacancyFavorite.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
+        pvs_length = len(pvs)
+        if pvs_length >= FAVORITES_LIMIT or pvs_length == 150 or pvs_length == 225:
             pos_nums = ','.join(pvs)
             return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}&groomFavorites=true"), request.META['HTTP_JWT']))
-        elif len(pvs) > 0:
+        elif pvs_length > 0:
             pos_nums = ','.join(pvs)
             return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}"), request.META['HTTP_JWT']))
         else:
@@ -77,7 +78,7 @@ class ProjectedVacancyFavoriteActionView(APIView):
         Marks the projected vacancy as a favorite
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        pvs = ProjectedVacancyFavorite.objects.filter(user=user).values_list("fv_seq_num", flat=True)
+        pvs = ProjectedVacancyFavorite.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
         if len(pvs) >= FAVORITES_LIMIT:
             return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
         else:
