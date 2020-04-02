@@ -39,6 +39,13 @@ class AvailablePositionFavoriteListView(APIView):
 
     permission_classes = (IsAuthenticated,)
 
+    schema = AutoSchema(
+        manual_fields=[
+            coreapi.Field("page", location='query', type='integer', description='A page number within the paginated result set.'),
+            coreapi.Field("limit", location='query', type='integer', description='Number of results to return per page.'),
+        ]
+    )
+
     def get(self, request, *args, **kwargs):
         """
         get:
@@ -47,12 +54,18 @@ class AvailablePositionFavoriteListView(APIView):
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavorite.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
         aps_length = len(aps)
+        limit = request.query_params.get('limit', 15)
+        page = request.query_params.get('page', 1)
         if aps_length >= FAVORITES_LIMIT or aps_length == 150 or aps_length == 225:
             pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}&groomFavorites=true"), request.META['HTTP_JWT']))
+            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={limit}&page={page}&groomFavorites=true"), 
+                                                                       request.META['HTTP_JWT'],
+                                                                       f"{request.scheme}://{request.get_host()}"))
         elif len(aps) > 0:
             pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={FAVORITES_LIMIT}"), request.META['HTTP_JWT']))
+            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={limit}&page={page}"), 
+                                                                       request.META['HTTP_JWT'],
+                                                                       f"{request.scheme}://{request.get_host()}"))
         else:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
 
