@@ -22,7 +22,6 @@ API_ROOT = settings.FSBID_API_URL
 
 logger = logging.getLogger(__name__)
 
-
 def get_available_position(id, jwt_token):
     '''
     Gets an indivdual available position by id
@@ -247,10 +246,13 @@ def convert_ap_query(query, cps_codes="OP,HS"):
 
     The TalentMap filters align with the position search filter naming
     '''
+    limit = query.get("limit", 25)
+    if query.get('groomFavorites') is not None:
+        limit = 999999
     values = {
         "request_params.order_by": services.sorting_values(query.get("ordering", None)),
         "request_params.page_index": int(query.get("page", 1)),
-        "request_params.page_size": query.get("limit", 25),
+        "request_params.page_size": limit,
         "request_params.freeText": query.get("q", None),
         "request_params.cps_codes": services.convert_multi_value(cps_codes),
         "request_params.assign_cycles": services.convert_multi_value(query.get("is_available_in_bidcycle")),
@@ -271,7 +273,7 @@ def convert_ap_query(query, cps_codes="OP,HS"):
 def convert_up_query(query):
     return (convert_ap_query(query, "FP"))
 
-def filter_outdated_favorites(query, jwt_token, host=None):
+async def filter_outdated_favorites(query, jwt_token, host=None):
     '''
     Removes favorites not returned from fsbid
     '''
@@ -292,7 +294,8 @@ def filter_outdated_favorites(query, jwt_token, host=None):
         for cp_id in user_favorites:
             if cp_id not in returned_positions:
                 outdated_ids.append(cp_id)
-    AvailablePositionFavorite.objects.filter(cp_id__in=outdated_ids).update(archived=True)
+    if len(outdated_ids) > 0:
+        AvailablePositionFavorite.objects.filter(cp_id__in=outdated_ids).update(archived=True)
     
 
 def fsbid_favorites_to_talentmap_favorites_ids(ap):
