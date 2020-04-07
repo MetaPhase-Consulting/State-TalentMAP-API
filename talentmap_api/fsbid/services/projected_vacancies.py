@@ -32,8 +32,6 @@ def get_projected_vacancy(id, jwt_token):
         fsbid_pv_to_talentmap_pv
     )
 def get_projected_vacancies(query, jwt_token, host=None):
-    if query.get('groomFavorites') is not None:
-        filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
         "futureVacancies",
         query,
@@ -44,7 +42,18 @@ def get_projected_vacancies(query, jwt_token, host=None):
         "/api/v1/fsbid/projected_vacancies/",
         host
     )
-
+def get_pv_favorite_ids(query, jwt_token, host=None):
+    return services.send_get_request(
+        "futureVacancies",
+        query,
+        convert_pv_query,
+        jwt_token,
+        fsbid_favorites_to_talentmap_favorites_ids,
+        get_projected_vacancies_count,
+        "/api/v1/fsbid/projected_vacancies/",
+        host
+    ).get('results')
+    
 def get_projected_vacancies_count(query, jwt_token, host=None):
     '''
     Gets the total number of PVs for a filterset
@@ -155,7 +164,7 @@ def convert_pv_query(query):
     values = {
         "fv_request_params.order_by": services.sorting_values(query.get("ordering", None)),
         "fv_request_params.page_index": int(query.get("page", 1)),
-        "fv_request_params.page_size": query.get("limit", 25),
+        "fv_request_params.page_size": int(query.get("limit", 25)),
         "fv_request_params.freeText": query.get("q", None),
         "fv_request_params.bid_seasons": services.convert_multi_value(query.get("is_available_in_bidseason")),
         "fv_request_params.bureaus": services.bureau_values(query),
@@ -171,30 +180,6 @@ def convert_pv_query(query):
         "fv_request_params.seq_nums": services.convert_multi_value(query.get("id", None)),
     }
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
-
-def filter_outdated_favorites(query, jwt_token, host=None):
-    '''
-    Removes favorites not returned from fsbid
-    '''
-    user_favorites = list(map(lambda x: int(x), query.get('id').split(",")))
-    returned_positions = services.send_get_request(
-        "futureVacancies",
-        query,
-        convert_pv_query,
-        jwt_token,
-        fsbid_favorites_to_talentmap_favorites_ids,
-        get_projected_vacancies_count,
-        "/api/v1/fsbid/projected_vacancies/",
-        host
-    ).get('results')
-    # Compare two lists and delete anything not returned by fsbid
-    outdated_ids = []
-    if user_favorites.sort() != returned_positions.sort():
-        for fv_seq_num in user_favorites:
-            if fv_seq_num not in returned_positions:
-                outdated_ids.append(fv_seq_num)
-    ProjectedVacancyFavorite.objects.filter(fv_seq_num__in=outdated_ids).update(archived=True)
     
-
 def fsbid_favorites_to_talentmap_favorites_ids(pv):
     return pv.get("fv_seq_num", None)

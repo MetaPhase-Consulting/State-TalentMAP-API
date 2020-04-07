@@ -52,8 +52,6 @@ def get_available_positions(query, jwt_token, host=None):
     '''
     Gets available positions
     '''
-    if query.get('groomFavorites') is not None:
-        filter_outdated_favorites(query, jwt_token, host=None)
     return services.send_get_request(
         "availablePositions",
         query,
@@ -64,7 +62,18 @@ def get_available_positions(query, jwt_token, host=None):
         "/api/v1/fsbid/available_positions/",
         host
     )
-        
+
+def get_ap_favorite_ids(query, jwt_token, host=None):
+    return services.send_get_request(
+        "availablePositions",
+        query,
+        convert_ap_query,
+        jwt_token,
+        fsbid_favorites_to_talentmap_favorites_ids,
+        get_available_positions_count,
+        "/api/v1/fsbid/available_positions/",
+        host
+    ).get('results')
 
 def get_available_positions_count(query, jwt_token, host=None):
     '''
@@ -246,13 +255,10 @@ def convert_ap_query(query, cps_codes="OP,HS"):
 
     The TalentMap filters align with the position search filter naming
     '''
-    limit = query.get("limit", 25)
-    if query.get('groomFavorites') is not None:
-        limit = 999999
     values = {
         "request_params.order_by": services.sorting_values(query.get("ordering", None)),
         "request_params.page_index": int(query.get("page", 1)),
-        "request_params.page_size": limit,
+        "request_params.page_size": query.get("limit", 25),
         "request_params.freeText": query.get("q", None),
         "request_params.cps_codes": services.convert_multi_value(cps_codes),
         "request_params.assign_cycles": services.convert_multi_value(query.get("is_available_in_bidcycle")),
@@ -273,7 +279,7 @@ def convert_ap_query(query, cps_codes="OP,HS"):
 def convert_up_query(query):
     return (convert_ap_query(query, "FP"))
 
-async def filter_outdated_favorites(query, jwt_token, host=None):
+def filter_outdated_favorites(query, jwt_token, host=None):
     '''
     Removes favorites not returned from fsbid
     '''

@@ -1,6 +1,6 @@
 version: '2'
 services:
-  app:
+  app: &app
     build:
       context: .
     ports:
@@ -11,6 +11,7 @@ services:
     depends_on:
       - db
       - mock_fsbid
+      - rabbitmq
     # use this to run in https server locally
     # command: python manage.py runsslserver --certificate /app/talentmap_api/sp.crt --key /app/talentmap_api/sp.key 0.0.0.0:8000
     command: >
@@ -37,6 +38,19 @@ services:
       - POSTGRES_DB=mockfsbid
       - POSTGRES_USER=mockfsbid-user
       - POSTGRES_PASSWORD=fsbid_pwd
+  rabbitmq:
+    image: rabbitmq:3.8-alpine
+  celery_worker:
+    <<: *app
+    command: celery -A talentmap_api worker --loglevel=info
+    ports: []
+    depends_on:
+      - db
+      - mock_fsbid
+      - rabbitmq
+    links: 
+      - db
+      - mock_fsbid
 volumes:
   pgdata:
   mock-pgdata:

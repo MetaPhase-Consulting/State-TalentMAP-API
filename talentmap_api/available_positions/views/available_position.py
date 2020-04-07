@@ -21,6 +21,10 @@ from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 import talentmap_api.fsbid.services.available_positions as services
 import talentmap_api.fsbid.services.projected_vacancies as pvservices
 import talentmap_api.fsbid.services.common as comservices
+import talentmap_api.tasks as tasks
+
+import logging
+logger = logging.getLogger(__name__)
 
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 
@@ -58,10 +62,13 @@ class AvailablePositionFavoriteListView(APIView):
         page = request.query_params.get('page', 1)
         if aps_length >= FAVORITES_LIMIT or aps_length == 150 or aps_length == 225:
             pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={limit}&page={page}&groomFavorites=true"), 
-                                                                       request.META['HTTP_JWT'],
-                                                                       f"{request.scheme}://{request.get_host()}"))
-        elif len(aps) > 0:
+            list_aps = list(map(lambda x: int(x), aps))
+            isAP = True
+            returned_ids = services.get_ap_favorite_ids(QueryDict(f"id={pos_nums}&limit=999999&page=1"), 
+                                                                 request.META['HTTP_JWT'],
+                                                                 f"{request.scheme}://{request.get_host()}")
+            tasks.archive_favorites.delay(list_aps, returned_ids, isAP)
+        if len(aps) > 0:
             pos_nums = ','.join(aps)
             return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={limit}&page={page}"), 
                                                                        request.META['HTTP_JWT'],
