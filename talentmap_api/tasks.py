@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 @shared_task(bind=True, max_retries=3)
 def archive_favorites(self, user_favorites, returned_favorites, isAP):
-    # Compare two lists and delete anything not returned by fsbid
     try:
         outdated_ids = []
         for fav_id in user_favorites:
