@@ -509,4 +509,10 @@ SWAGGER_SETTINGS = {
 
 CELERY_BROKER_URL = "amqp://rabbitmq"
 
+task_annotations = {'*': {
+    'task_track_started': 'True',
+    'task_time_limit': '120/s',
+    'task_soft_time_limit': '30/s',
+}}
+
 FAVORITES_LIMIT = 2
