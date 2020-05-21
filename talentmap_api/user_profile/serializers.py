@@ -116,6 +116,7 @@ class UserProfileSerializer(PrefetchedSerializer):
     cdo = StaticRepresentationField(read_only=True)
     is_cdo = serializers.ReadOnlyField()
     initials = serializers.ReadOnlyField()
+    employee_profile_url = serializers.ReadOnlyField()
     avatar = serializers.ReadOnlyField()
     primary_nationality = StaticRepresentationField(read_only=True)
     secondary_nationality = StaticRepresentationField(read_only=True)

@@ -70,18 +70,27 @@ class UserProfile(StaticRepresentationModel):
         '''
         Returns the user's initials, derived from first name/last name or e-mail
         '''
-        initials = ""
-        if self.user.first_name and self.user.last_name:
-            initials = f"{self.user.first_name[0]}{self.user.last_name[0]}"
-        if len(initials) == 0:
-            # No first name/last name on user object, derive from email
-            # Example email: StateJB@state.gov
-            # [x for x in self.user.email if x.isupper()] - get all capitals
-            # [:2] - get the first two
-            # [::-1] - reverse the list
-            initials = "".join([x for x in self.user.email if x.isupper()][:2][::-1])
+        initials = "FF"
+        # initials = ""
+        # if self.user.first_name and self.user.last_name:
+        #     initials = f"{self.user.first_name[0]}{self.user.last_name[0]}"
+        # if len(initials) == 0:
+        #     # No first name/last name on user object, derive from email
+        #     # Example email: StateJB@state.gov
+        #     # [x for x in self.user.email if x.isupper()] - get all capitals
+        #     # [:2] - get the first two
+        #     # [::-1] - reverse the list
+        #     initials = "".join([x for x in self.user.email if x.isupper()][:2][::-1])
 
         return initials
+
+    @property
+    def employee_profile_url(self):
+        str = "www.talentmap/profile/public/placeholder.com"
+        # if self.per_profile_url:
+        #     str = self.per_profile_url
+        return str
+
 
     @property
     def is_cdo(self):
