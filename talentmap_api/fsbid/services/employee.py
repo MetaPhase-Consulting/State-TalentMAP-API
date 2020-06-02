@@ -30,7 +30,7 @@ def get_employee_information(jwt_token, emp_id):
     try:
         return {
             "skills": map_skill_codes(employee),
-            "grade": employee['per_grade_code'],
+            "grade": employee['per_grade_code'].replace(" ", ""),
             "employee_profile_url": employee['per_profile_url']
         }
     except:
