@@ -27,3 +27,15 @@ class AvailablePositionDesignation(models.Model):
     class Meta:
         managed = True
         ordering = ["cp_id"]
+
+class AvailablePositionFavoriteTandem(StaticRepresentationModel):
+
+    cp_id = models.TextField(null=False)
+    user = models.ForeignKey('user_profile.UserProfile', null=False, on_delete=models.DO_NOTHING, help_text="The user to which this favorite belongs")
+    archived = models.BooleanField(default=False)
+    tandem = models.BooleanField(default=False)
+
+    class Meta: 
+        constraints = [
+            models.UniqueConstraint(fields=['cp_id', 'user', 'tandem'], name='unique_tandem_favorite')
+        ]
