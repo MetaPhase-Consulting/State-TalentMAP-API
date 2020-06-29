@@ -35,7 +35,7 @@ class AvailablePositionFavoriteTandem(StaticRepresentationModel):
     archived = models.BooleanField(default=False)
     tandem = models.BooleanField(default=False)
 
-    class Meta: 
-        constraints = [
-            models.UniqueConstraint(fields=['cp_id', 'user', 'tandem'], name='unique_tandem_favorite')
-        ]
+    class Meta:
+        managed = True
+        ordering = ["cp_id", "tandem"]
+        unique_together = ('cp_id', 'user', 'tandem')
