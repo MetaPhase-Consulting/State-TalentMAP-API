@@ -38,9 +38,9 @@ class ProjectedVacancyFavoriteTandemListView(APIView):
         get:
         Return a list of all of the user's favorite projected vacancies.
         """
-        is_tandem_one = request.query_params.get('is_tandem_one', None)
         user = UserProfile.objects.get(user=self.request.user)
-        if is_tandem_one != None:
+        if request.query_params.get('is_tandem_one', False):
+            is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
             pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False, tandem=is_tandem_one).values_list("fv_seq_num", flat=True)
         else:
             pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
@@ -85,7 +85,7 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
 
         Returns 204 if the projected vacancy is a favorite, otherwise, 404
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one')
+        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
         user = UserProfile.objects.get(user=self.request.user)
         if ProjectedVacancyFavoriteTandem.objects.filter(user=user, fv_seq_num=pk, archived=False, tandem=is_tandem_one).exists():
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -96,7 +96,7 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
         '''
         Marks the projected vacancy as a favorite
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one')
+        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
         user = UserProfile.objects.get(user=self.request.user)
         pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
         services.archive_favorites(pvs, request)

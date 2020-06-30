@@ -53,7 +53,8 @@ class AvailablePositionFavoriteTandemListView(APIView):
         """
         is_tandem_one = request.query_params.get('is_tandem_one', None)
         user = UserProfile.objects.get(user=self.request.user)
-        if is_tandem_one != None:
+        if request.query_params.get('is_tandem_one', False):
+            is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
             aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False, tandem=is_tandem_one).values_list("cp_id", flat=True)
         else: 
             aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
@@ -129,7 +130,7 @@ class AvailablePositionFavoriteTandemActionView(APIView):
 
         Returns 204 if the available position is a favorite, otherwise, 404
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one')
+        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
         user = UserProfile.objects.get(user=self.request.user)
         if AvailablePositionFavoriteTandem.objects.filter(user=user, cp_id=pk, archived=False, tandem=is_tandem_one).exists():
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -140,7 +141,7 @@ class AvailablePositionFavoriteTandemActionView(APIView):
         '''
         Marks the available position as a favorite
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one')
+        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
         services.archive_favorites(aps, request)
