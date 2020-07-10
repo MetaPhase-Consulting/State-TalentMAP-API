@@ -19,7 +19,11 @@ from talentmap_api.user_profile.models import UserProfile
 
 import talentmap_api.fsbid.services.projected_vacancies as services
 
+import logging
+logger = logging.getLogger(__name__)
+
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+
 
 class ProjectedVacancyFavoriteTandemListView(APIView):
 
@@ -39,22 +43,29 @@ class ProjectedVacancyFavoriteTandemListView(APIView):
         Return a list of all of the user's favorite projected vacancies.
         """
         user = UserProfile.objects.get(user=self.request.user)
-        if request.query_params.get('is_tandem_one', False):
-            is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
-            pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False, tandem=is_tandem_one).values_list("fv_seq_num", flat=True)
-        else:
-            pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
-        
-        limit = request.query_params.get('limit', 12)
+        # Set up query set to avoid multiple db calls
+        qs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False)
+        # List of ids to evaluate length and pass to archive service
+        pvs = qs.values_list("fv_seq_num", flat=True)
+        limit = request.query_params.get('limit', 15)
         page = request.query_params.get('page', 1)
         if len(pvs) > 0:
             services.archive_favorites(pvs, request)
-            pos_nums = ','.join(pvs)
-            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={limit}&page={page}"),
-                                                             request.META['HTTP_JWT'],
-                                                             f"{request.scheme}://{request.get_host()}"))
-        else:
-            return Response({"count": 0, "next": None, "previous": None, "results": []})
+            # Format fv_seq_num to be passed to get_pv_tandem
+            tandem_1_pvs = qs.filter(tandem=False).values_list("fv_seq_num", flat=True)
+            tandem_2_pvs = qs.filter(tandem=True).values_list("fv_seq_num", flat=True)
+            # Tandem search returns all results if no params are passed
+            # Raise error to alert user to favorite at least 1 position for tandem 1 & 2
+            if not (tandem_1_pvs and tandem_2_pvs):
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            pos_nums_1 = ','.join(tandem_1_pvs)
+            pos_nums_2 = ','.join(tandem_2_pvs)
+            return Response(services.get_projected_vacancies_tandem(
+                QueryDict(f"id={pos_nums_1}&id-tandem={pos_nums_2}&limit={limit}&page={page}"),
+                request.META['HTTP_JWT'],
+                f"{request.scheme}://{request.get_host()}"))
+        return Response({"count": 0, "next": None, "previous": None, "results": []})
+
 
 class ProjectedVacancyFavoriteTandemIdsListView(APIView):
 
@@ -66,7 +77,7 @@ class ProjectedVacancyFavoriteTandemIdsListView(APIView):
         Return a list of the ids of the user's favorite projected vacancies.
         """
         user = UserProfile.objects.get(user=self.request.user)
-        pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
+        pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values()
         return Response(pvs)
 
 

@@ -1,6 +1,5 @@
 import coreapi
 
-from django.shortcuts import get_object_or_404
 from django.http import QueryDict
 
 from django.conf import settings
@@ -12,17 +11,19 @@ from rest_framework.response import Response
 from rest_framework import status, mixins
 from rest_framework.schemas import AutoSchema
 
-from talentmap_api.common.common_helpers import in_group_or_403
-from talentmap_api.common.mixins import FieldLimitableSerializerMixin
 from talentmap_api.available_positions.models import AvailablePositionFavoriteTandem
 from talentmap_api.user_profile.models import UserProfile
-from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
+from talentmap_api.projected_vacancies.models import ProjectedVacancyFavoriteTandem
 
 import talentmap_api.fsbid.services.available_positions as services
 import talentmap_api.fsbid.services.projected_vacancies as pvservices
 import talentmap_api.fsbid.services.common as comservices
 
+import logging
+logger = logging.getLogger(__name__)
+
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+
 
 class AvailablePositionsFilter():
     declared_filters = [
@@ -34,6 +35,7 @@ class AvailablePositionsFilter():
 
     class Meta:
         fields = "__all__"
+
 
 class AvailablePositionFavoriteTandemListView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -51,23 +53,30 @@ class AvailablePositionFavoriteTandemListView(APIView):
         get:
         Return a list of all of the user's tandem favorite available positions.
         """
-        is_tandem_one = request.query_params.get('is_tandem_one', None)
         user = UserProfile.objects.get(user=self.request.user)
-        if request.query_params.get('is_tandem_one', False):
-            is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
-            aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False, tandem=is_tandem_one).values_list("cp_id", flat=True)
-        else: 
-            aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
+        # Set up query set to avoid multiple db calls
+        qs = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False)
+        # List of ids to evaluate length and pass to archive service
+        aps = qs.values_list("cp_id", flat=True)
         limit = request.query_params.get('limit', 15)
         page = request.query_params.get('page', 1)
         if len(aps) > 0:
             services.archive_favorites(aps, request)
-            pos_nums = ','.join(aps)
-            return Response(services.get_available_positions(QueryDict(f"id={pos_nums}&limit={limit}&page={page}"),
-                                                      request.META['HTTP_JWT'],
-                                                      f"{request.scheme}://{request.get_host()}"))
-        else:
-            return Response({"count": 0, "next": None, "previous": None, "results": []})
+            # Format cp_ids to be passed to get_ap_tandem
+            tandem_1_aps = qs.filter(tandem=False).values_list("cp_id", flat=True)
+            tandem_2_aps = qs.filter(tandem=True).values_list("cp_id", flat=True)
+            # Tandem search returns all results if no params are passed
+            # Raise error to alert user to favorite at least 1 position for tandem 1 & 2
+            if not (tandem_1_aps and tandem_2_aps):
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            pos_nums_1 = ','.join(tandem_1_aps)
+            pos_nums_2 = ','.join(tandem_2_aps)
+            return Response(services.get_available_positions_tandem(
+                QueryDict(f"id={pos_nums_1}&id-tandem={pos_nums_2}&limit={limit}&page={page}"),
+                request.META['HTTP_JWT'],
+                f"{request.scheme}://{request.get_host()}"))
+        return Response({"count": 0, "next": None, "previous": None, "results": []})
+
 
 class AvailablePositionFavoriteTandemIdsListView(APIView):
 
@@ -79,8 +88,9 @@ class AvailablePositionFavoriteTandemIdsListView(APIView):
         Return a list of the ids of the user's favorite available positions.
         """
         user = UserProfile.objects.get(user=self.request.user)
-        aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
+        aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values()
         return Response(aps)
+
 
 class FavoritesTandemCSVView(APIView):
 
@@ -114,6 +124,7 @@ class FavoritesTandemCSVView(APIView):
             data = data + pvdata.get('results')
 
         return comservices.get_ap_and_pv_csv(data, "favorites", True)
+
 
 class AvailablePositionFavoriteTandemActionView(APIView):
     '''
@@ -156,9 +167,7 @@ class AvailablePositionFavoriteTandemActionView(APIView):
         '''
         Removes the available position from favorites
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one')
+        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
         user = UserProfile.objects.get(user=self.request.user)
         AvailablePositionFavoriteTandem.objects.filter(user=user, cp_id=pk, tandem=is_tandem_one).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
