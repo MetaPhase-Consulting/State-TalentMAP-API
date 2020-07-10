@@ -141,9 +141,9 @@ class AvailablePositionFavoriteTandemActionView(APIView):
 
         Returns 204 if the available position is a favorite, otherwise, 404
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
+        is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
-        if AvailablePositionFavoriteTandem.objects.filter(user=user, cp_id=pk, archived=False, tandem=is_tandem_one).exists():
+        if AvailablePositionFavoriteTandem.objects.filter(user=user, cp_id=pk, archived=False, tandem=is_tandem_two).exists():
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -152,7 +152,7 @@ class AvailablePositionFavoriteTandemActionView(APIView):
         '''
         Marks the available position as a favorite
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
+        is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
         services.archive_favorites(aps, request)
@@ -160,14 +160,14 @@ class AvailablePositionFavoriteTandemActionView(APIView):
         if len(aps_after_archive) >= FAVORITES_LIMIT:
             return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
         else:
-            AvailablePositionFavoriteTandem.objects.get_or_create(user=user, cp_id=pk, tandem=is_tandem_one)
+            AvailablePositionFavoriteTandem.objects.get_or_create(user=user, cp_id=pk, tandem=is_tandem_two)
             return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request, pk, format=None):
         '''
         Removes the available position from favorites
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
+        is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
-        AvailablePositionFavoriteTandem.objects.filter(user=user, cp_id=pk, tandem=is_tandem_one).delete()
+        AvailablePositionFavoriteTandem.objects.filter(user=user, cp_id=pk, tandem=is_tandem_two).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

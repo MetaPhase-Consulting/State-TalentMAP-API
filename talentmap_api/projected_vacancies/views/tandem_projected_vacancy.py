@@ -96,9 +96,9 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
 
         Returns 204 if the projected vacancy is a favorite, otherwise, 404
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
+        is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
-        if ProjectedVacancyFavoriteTandem.objects.filter(user=user, fv_seq_num=pk, archived=False, tandem=is_tandem_one).exists():
+        if ProjectedVacancyFavoriteTandem.objects.filter(user=user, fv_seq_num=pk, archived=False, tandem=is_tandem_two).exists():
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -107,7 +107,7 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
         '''
         Marks the projected vacancy as a favorite
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one') == 'true'
+        is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
         pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
         services.archive_favorites(pvs, request)
@@ -115,7 +115,7 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
         if len(pvs_after_archive) >= FAVORITES_LIMIT:
             return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
         else:
-            pvf = ProjectedVacancyFavoriteTandem(user=user, fv_seq_num=pk, tandem=is_tandem_one)
+            pvf = ProjectedVacancyFavoriteTandem(user=user, fv_seq_num=pk, tandem=is_tandem_two)
             pvf.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -123,7 +123,7 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
         '''
         Removes the projected vacancy from favorites
         '''
-        is_tandem_one = request.query_params.get('is_tandem_one')
+        is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
-        ProjectedVacancyFavoriteTandem.objects.get(user=user, fv_seq_num=pk, tandem=is_tandem_one).delete()
+        ProjectedVacancyFavoriteTandem.objects.get(user=user, fv_seq_num=pk, tandem=is_tandem_two).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
