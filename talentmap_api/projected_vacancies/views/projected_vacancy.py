@@ -1,18 +1,14 @@
 import coreapi
 
-from django.shortcuts import render
 from django.http import QueryDict
 from django.conf import settings
 
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.schemas import AutoSchema
 
-
-from talentmap_api.common.mixins import FieldLimitableSerializerMixin
 from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 
 from talentmap_api.user_profile.models import UserProfile
@@ -20,6 +16,7 @@ from talentmap_api.user_profile.models import UserProfile
 import talentmap_api.fsbid.services.projected_vacancies as services
 
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+
 
 class ProjectedVacancyFavoriteListView(APIView):
 
@@ -41,14 +38,16 @@ class ProjectedVacancyFavoriteListView(APIView):
         pvs = ProjectedVacancyFavorite.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
         limit = request.query_params.get('limit', 12)
         page = request.query_params.get('page', 1)
+        ordering = request.query_params.get('ordering', None)
         if len(pvs) > 0:
             services.archive_favorites(pvs, request)
             pos_nums = ','.join(pvs)
-            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={limit}&page={page}"),
+            return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={limit}&page={page}&ordering={ordering}"),
                                                              request.META['HTTP_JWT'],
                                                              f"{request.scheme}://{request.get_host()}"))
         else:
             return Response({"count": 0, "next": None, "previous": None, "results": []})
+
 
 class ProjectedVacancyFavoriteIdsListView(APIView):
 
