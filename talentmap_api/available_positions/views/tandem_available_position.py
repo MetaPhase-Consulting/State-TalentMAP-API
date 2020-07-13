@@ -110,19 +110,36 @@ class FavoritesTandemCSVView(APIView):
         """
         user = UserProfile.objects.get(user=self.request.user)
         data = []
-
-        aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
-        if len(aps) > 0 and request.query_params.get('exclude_available') != 'true':
-            pos_nums = ','.join(aps)
-            apdata = services.get_available_positions(QueryDict(f"id={pos_nums}&limit={len(aps)}&page=1"), request.META['HTTP_JWT'])
+        # AP Tandem
+        qs = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False)
+        aps_len = len(qs.values_list("cp_id", flat=True))
+        tandem_1_aps = qs.filter(tandem=False).values_list("cp_id", flat=True)
+        tandem_2_aps = qs.filter(tandem=True).values_list("cp_id", flat=True)
+        if request.query_params.get('exclude_available') != 'true':
+            if not (tandem_1_aps and tandem_2_aps):
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            ap_pos_nums_1 = ','.join(tandem_1_aps)
+            ap_pos_nums_2 = ','.join(tandem_2_aps)
+            apdata = services.get_available_positions_tandem(
+                QueryDict(f"id={ap_pos_nums_1}&id-tandem={ap_pos_nums_2}&limit={aps_len}&page=1"),
+                request.META['HTTP_JWT'],
+                f"{request.scheme}://{request.get_host()}")
             data = data + apdata.get('results')
-        # TO DO: Change pvs to use tandem once those models are set up
-        pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
-        if len(pvs) > 0 and request.query_params.get('exclude_projected') != 'true':
-            pos_nums = ','.join(pvs)
-            pvdata = pvservices.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={len(pvs)}&page=1"), request.META['HTTP_JWT'])
+        # PV Tandem
+        qs2 = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False)
+        pvs_len = qs2.values_list("fv_seq_num", flat=True)
+        tandem_1_pvs = qs.filter(tandem=False).values_list("fv_seq_num", flat=True)
+        tandem_2_pvs = qs.filter(tandem=True).values_list("fv_seq_num", flat=True)
+        if request.query_params.get('exclude_projected') != 'true':
+            if not (tandem_1_pvs and tandem_2_pvs):
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            pv_pos_nums_1 = ','.join(tandem_1_pvs)
+            pv_pos_nums_2 = ','.join(tandem_2_pvs)
+            pvdata = services.get_available_positions_tandem(
+                QueryDict(f"id={pv_pos_nums_1}&id-tandem={pv_pos_nums_2}&limit={pvs_len}&page=1"),
+                request.META['HTTP_JWT'],
+                f"{request.scheme}://{request.get_host()}")
             data = data + pvdata.get('results')
-
         return comservices.get_ap_and_pv_csv(data, "favorites", True)
 
 
