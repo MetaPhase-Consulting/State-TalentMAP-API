@@ -2,7 +2,6 @@ import re
 import logging
 import csv
 from datetime import datetime
-import maya
 import requests
 
 from django.conf import settings
@@ -10,6 +9,8 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.http import QueryDict
+
+import maya
 
 from talentmap_api.organization.models import Post, Organization, OrganizationGroup
 from talentmap_api.settings import OBC_URL, OBC_URL_EXTERNAL
