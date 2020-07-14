@@ -18,6 +18,7 @@ from talentmap_api.projected_vacancies.models import ProjectedVacancyFavoriteTan
 from talentmap_api.user_profile.models import UserProfile
 
 import talentmap_api.fsbid.services.projected_vacancies as services
+import talentmap_api.fsbid.services.common as comservices
 
 import logging
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ class ProjectedVacancyFavoriteTandemListView(APIView):
         limit = request.query_params.get('limit', 15)
         page = request.query_params.get('page', 1)
         if len(pvs) > 0:
-            services.archive_favorites(pvs, request)
+            comservices.archive_favorites(pvs, request, True, True)
             # Format fv_seq_num to be passed to get_pv_tandem
             tandem_1_pvs = qs.filter(tandem=False).values_list("fv_seq_num", flat=True)
             tandem_2_pvs = qs.filter(tandem=True).values_list("fv_seq_num", flat=True)
@@ -110,7 +111,7 @@ class ProjectedVacancyFavoriteTandemActionView(APIView):
         is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
         pvs = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
-        services.archive_favorites(pvs, request)
+        comservices.archive_favorites(pvs, request, True, True)
         pvs_after_archive = ProjectedVacancyFavoriteTandem.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
         if len(pvs_after_archive) >= FAVORITES_LIMIT:
             return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)

@@ -14,6 +14,7 @@ from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 from talentmap_api.user_profile.models import UserProfile
 
 import talentmap_api.fsbid.services.projected_vacancies as services
+import talentmap_api.fsbid.services.common as comservices
 
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 
@@ -40,7 +41,7 @@ class ProjectedVacancyFavoriteListView(APIView):
         page = request.query_params.get('page', 1)
         ordering = request.query_params.get('ordering', None)
         if len(pvs) > 0:
-            services.archive_favorites(pvs, request)
+            comservices.archive_favorites(pvs, request, True)
             pos_nums = ','.join(pvs)
             return Response(services.get_projected_vacancies(QueryDict(f"id={pos_nums}&limit={limit}&page={page}&ordering={ordering}"),
                                                              request.META['HTTP_JWT'],
@@ -90,7 +91,7 @@ class ProjectedVacancyFavoriteActionView(APIView):
         '''
         user = UserProfile.objects.get(user=self.request.user)
         pvs = ProjectedVacancyFavorite.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
-        services.archive_favorites(pvs, request)
+        comservices.archive_favorites(pvs, request, True)
         pvs_after_archive = ProjectedVacancyFavorite.objects.filter(user=user, archived=False).values_list("fv_seq_num", flat=True)
         if len(pvs_after_archive) >= FAVORITES_LIMIT:
             return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)

@@ -61,7 +61,7 @@ class AvailablePositionFavoriteTandemListView(APIView):
         limit = request.query_params.get('limit', 15)
         page = request.query_params.get('page', 1)
         if len(aps) > 0:
-            services.archive_favorites(aps, request)
+            comservices.archive_favorites(aps, request, False, True)
             # Format cp_ids to be passed to get_ap_tandem
             tandem_1_aps = qs.filter(tandem=False).values_list("cp_id", flat=True)
             tandem_2_aps = qs.filter(tandem=True).values_list("cp_id", flat=True)
@@ -172,7 +172,7 @@ class AvailablePositionFavoriteTandemActionView(APIView):
         is_tandem_two = request.query_params.get('is_tandem_one') == 'false'
         user = UserProfile.objects.get(user=self.request.user)
         aps = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
-        services.archive_favorites(aps, request)
+        comservices.archive_favorites(aps, request, False, True)
         aps_after_archive = AvailablePositionFavoriteTandem.objects.filter(user=user, archived=False).values_list("cp_id", flat=True)
         if len(aps_after_archive) >= FAVORITES_LIMIT:
             return Response({"limit": FAVORITES_LIMIT}, status=status.HTTP_507_INSUFFICIENT_STORAGE)
