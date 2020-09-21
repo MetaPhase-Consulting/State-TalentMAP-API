@@ -55,7 +55,6 @@ ROLE_MAPPING = {
     "FSBidCycleAdministrator": "bidcycle_admin",
     "CDO": "cdo",
     "CDO3": "cdo",
-    "SuperUser": "superuser",
     "Bureau": "bureau_user",
     "AO": "ao_user",
 }
