@@ -1,6 +1,8 @@
 import re
 import logging
 import csv
+import xlsxwriter
+import pandas as pd
 from datetime import datetime
 import requests
 
@@ -280,6 +282,20 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
     writer = csv.writer(response, csv.excel)
     response.write(u'\ufeff'.encode('utf8'))
 
+    # Logic
+    # Step 1: Write to excel file
+    # Step 2: adjust column width (either one set width or per column basis)
+    # Step 3: rewrite/save excel file to a csv file
+
+    # response = HttpResponse(content_type='application/vnd.ms-excel')
+    # response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.xlsx"
+
+    workbook = xlsxwriter.Workbook(filename)
+    worksheet = workbook.add_worksheet()
+
+    # adjusting column width
+    worksheet.set_column('A:T', 40)
+
     # write the headers
     headers = []
     headers.append(smart_str(u"Position"))
@@ -306,8 +322,10 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         headers.append(smart_str(u"Status Code"))
     headers.append(smart_str(u"Position Number"))
     headers.append(smart_str(u"Capsule Description"))
-    writer.writerow(headers)
+    # writer.writerow(headers)
+    worksheet.write_row(0, 0, headers)
 
+    row_num = 0
     for record in data:
         try:
             ted = smart_str(maya.parse(record["ted"]).datetime().strftime('%m/%d/%Y'))
@@ -344,7 +362,13 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         row.append(smart_str("=\"%s\"" % record["position"]["position_number"]))
         row.append(smart_str(record["position"]["description"]["content"]))
 
-        writer.writerow(row)
+        # writer.writerow(row)
+        worksheet.write_row(row_num, 0, row)
+        row_num += 1
+    workbook.close()
+    # convert from excel to csv
+    read_file = pd.read_excel(filename)
+    read_file.to_csv(response)
     return response
 
 
