@@ -2,7 +2,7 @@ import re
 import logging
 import csv
 import xlsxwriter
-import pandas as pd
+import io
 from datetime import datetime
 import requests
 
@@ -276,52 +276,91 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
 
 def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+    # response = HttpResponse(content_type='text/csv')
+    # response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
-    writer = csv.writer(response, csv.excel)
-    response.write(u'\ufeff'.encode('utf8'))
+    # writer = csv.writer(response, csv.excel)
+    # response.write(u'\ufeff'.encode('utf8'))
 
     # Logic
     # Step 1: Write to excel file
-    # Step 2: adjust column width (either one set width or per column basis)
-    # Step 3: rewrite/save excel file to a csv file
+    # Step 2: adjust column width (per column basis)
+    # Step 3: rewrite/save excel file
 
-    # response = HttpResponse(content_type='application/vnd.ms-excel')
-    # response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.xlsx"
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.xlsx"
 
-    workbook = xlsxwriter.Workbook(filename)
-    worksheet = workbook.add_worksheet()
+    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+    worksheet = workbook.add_worksheet('test')
 
     # adjusting column width
-    worksheet.set_column('A:T', 40)
-
     # write the headers
     headers = []
+    col_num = 0
     headers.append(smart_str(u"Position"))
+    worksheet.set_column(col_num, col_num, 37)
+    col_num += 1
     if tandem:
         headers.append(smart_str(u"Tandem"))
+        worksheet.set_column(col_num, col_num, 8)
+        col_num += 1
     headers.append(smart_str(u"Skill"))
+    worksheet.set_column(col_num, col_num, 41)
+    col_num += 1
     headers.append(smart_str(u"Grade"))
+    worksheet.set_column(col_num, col_num, 8)
+    col_num += 1
     headers.append(smart_str(u"Bureau"))
+    worksheet.set_column(col_num, col_num, 61)
+    col_num += 1
     headers.append(smart_str(u"Organization"))
+    worksheet.set_column(col_num, col_num, 66)
+    col_num += 1
     headers.append(smart_str(u"Post City"))
+    worksheet.set_column(col_num, col_num, 13)
+    col_num += 1
     headers.append(smart_str(u"Post Country"))
+    worksheet.set_column(col_num, col_num, 19)
+    col_num += 1
     headers.append(smart_str(u"Tour of Duty"))
+    worksheet.set_column(col_num, col_num, 30)
+    col_num += 1
     headers.append(smart_str(u"Languages"))
+    worksheet.set_column(col_num, col_num, 56)
+    col_num += 1
     if ap:
         headers.append(smart_str(u"Service Needs Differential"))
+        worksheet.set_column(col_num, col_num, 25)
+        col_num += 1
     headers.append(smart_str(u"Post Differential"))
+    worksheet.set_column(col_num, col_num, 16)
+    col_num += 1
     headers.append(smart_str(u"Danger Pay"))
+    worksheet.set_column(col_num, col_num, 11)
+    col_num += 1
     headers.append(smart_str(u"TED"))
+    worksheet.set_column(col_num, col_num, 10)
+    col_num += 1
     headers.append(smart_str(u"Incumbent"))
+    worksheet.set_column(col_num, col_num, 10)
+    col_num += 1
     headers.append(smart_str(u"Bid Cycle/Season"))
+    worksheet.set_column(col_num, col_num, 23)
+    col_num += 1
     if ap:
         headers.append(smart_str(u"Posted Date"))
+        worksheet.set_column(col_num, col_num, 14)
+        col_num += 1
     if ap:
         headers.append(smart_str(u"Status Code"))
+        worksheet.set_column(col_num, col_num, 11)
+        col_num += 1
     headers.append(smart_str(u"Position Number"))
+    worksheet.set_column(col_num, col_num, 16)
+    col_num += 1
     headers.append(smart_str(u"Capsule Description"))
+    worksheet.set_column(col_num, col_num, 70)
+    col_num += 1
     # writer.writerow(headers)
     worksheet.write_row(0, 0, headers)
 
@@ -363,12 +402,9 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         row.append(smart_str(record["position"]["description"]["content"]))
 
         # writer.writerow(row)
-        worksheet.write_row(row_num, 0, row)
-        row_num += 1
+        # worksheet.write_row(row_num, 0, row)
+        # row_num += 1
     workbook.close()
-    # convert from excel to csv
-    read_file = pd.read_excel(filename)
-    read_file.to_csv(response)
     return response
 
 
