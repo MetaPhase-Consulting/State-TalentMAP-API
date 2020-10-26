@@ -2,7 +2,6 @@ import re
 import logging
 import csv
 import xlsxwriter
-import io
 from datetime import datetime
 import requests
 
