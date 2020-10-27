@@ -292,76 +292,44 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
     workbook = xlsxwriter.Workbook(response, {'in_memory': True})
     worksheet = workbook.add_worksheet('test')
 
-    # adjusting column width
     # write the headers
-    headers = []
+    # using a dictionary to simplify column adjusting process
+    headers = {
+        smart_str(u'Position'): 37,
+        smart_str(u'Tandem'): 8,
+        smart_str(u'Skill'): 41,
+        smart_str(u'Grade'): 8,
+        smart_str(u'Organization'): 66,
+        smart_str(u'Post City'): 13,
+        smart_str(u'Post Country'): 19,
+        smart_str(u'Tour of Duty'): 30,
+        smart_str(u'Languages'): 56,
+        smart_str(u'Service Needs Differential'): 25,
+        smart_str(u'Post Differential'): 16,
+        smart_str(u'Danger Pay'): 11,
+        smart_str(u'TED'): 10,
+        smart_str(u'Incumbent'): 10,
+        smart_str(u'Bid Cycle/Season'): 23,
+        smart_str(u'Posted Date'): 14,
+        smart_str(u'Status Code'): 11,
+        smart_str(u'Position Number'): 16,
+        smart_str(u'Capsule Description'): 70
+        }
+    # need to delete values from dictionary if not tandem and/or ap
+    if not tandem:
+        del headers['Tandem']
+    if not ap:
+        del headers['Service Needs Differential']
+        del headers['Posted Date']
+        del headers['Status Code']
+    # need to write header row
+    # loop through dictionary and adjust based on tandem and ap
+    # adjusting column width
     col_num = 0
-    headers.append(smart_str(u"Position"))
-    worksheet.set_column(col_num, col_num, 37)
-    col_num += 1
-    if tandem:
-        headers.append(smart_str(u"Tandem"))
-        worksheet.set_column(col_num, col_num, 8)
+    for header in headers:
+        worksheet.write(0, col_num, header)
+        worksheet.set_column(col_num, col_num, headers[header])
         col_num += 1
-    headers.append(smart_str(u"Skill"))
-    worksheet.set_column(col_num, col_num, 41)
-    col_num += 1
-    headers.append(smart_str(u"Grade"))
-    worksheet.set_column(col_num, col_num, 8)
-    col_num += 1
-    headers.append(smart_str(u"Bureau"))
-    worksheet.set_column(col_num, col_num, 61)
-    col_num += 1
-    headers.append(smart_str(u"Organization"))
-    worksheet.set_column(col_num, col_num, 66)
-    col_num += 1
-    headers.append(smart_str(u"Post City"))
-    worksheet.set_column(col_num, col_num, 13)
-    col_num += 1
-    headers.append(smart_str(u"Post Country"))
-    worksheet.set_column(col_num, col_num, 19)
-    col_num += 1
-    headers.append(smart_str(u"Tour of Duty"))
-    worksheet.set_column(col_num, col_num, 30)
-    col_num += 1
-    headers.append(smart_str(u"Languages"))
-    worksheet.set_column(col_num, col_num, 56)
-    col_num += 1
-    if ap:
-        headers.append(smart_str(u"Service Needs Differential"))
-        worksheet.set_column(col_num, col_num, 25)
-        col_num += 1
-    headers.append(smart_str(u"Post Differential"))
-    worksheet.set_column(col_num, col_num, 16)
-    col_num += 1
-    headers.append(smart_str(u"Danger Pay"))
-    worksheet.set_column(col_num, col_num, 11)
-    col_num += 1
-    headers.append(smart_str(u"TED"))
-    worksheet.set_column(col_num, col_num, 10)
-    col_num += 1
-    headers.append(smart_str(u"Incumbent"))
-    worksheet.set_column(col_num, col_num, 10)
-    col_num += 1
-    headers.append(smart_str(u"Bid Cycle/Season"))
-    worksheet.set_column(col_num, col_num, 23)
-    col_num += 1
-    if ap:
-        headers.append(smart_str(u"Posted Date"))
-        worksheet.set_column(col_num, col_num, 14)
-        col_num += 1
-    if ap:
-        headers.append(smart_str(u"Status Code"))
-        worksheet.set_column(col_num, col_num, 11)
-        col_num += 1
-    headers.append(smart_str(u"Position Number"))
-    worksheet.set_column(col_num, col_num, 16)
-    col_num += 1
-    headers.append(smart_str(u"Capsule Description"))
-    worksheet.set_column(col_num, col_num, 70)
-    col_num += 1
-    # writer.writerow(headers)
-    worksheet.write_row(0, 0, headers)
 
     row_num = 0
     for record in data:
@@ -400,7 +368,7 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         row.append(smart_str("=\"%s\"" % record["position"]["position_number"]))
         row.append(smart_str(record["position"]["description"]["content"]))
 
-        # writer.writerow(row)
+        # writer.writerow(row) apparently "row" is a tuple and not a string, causes error
         # worksheet.write_row(row_num, 0, row)
         # row_num += 1
     workbook.close()
