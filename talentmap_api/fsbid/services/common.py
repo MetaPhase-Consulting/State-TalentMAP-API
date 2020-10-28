@@ -286,93 +286,104 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
     # Step 2: adjust column width (per column basis)
     # Step 3: rewrite/save excel file
 
+    # What's been tested
+    # 1. save as csv and using xlsxwriter to open/save a blank file. (can open file, but can’t right to file)
+    # 2. save as xlsx with content_type=openxml (doesn’t work)
+    # 3. vnd.openxml (doesn’t work)
+    # 4. vnd.ms-excel (doesn’t work)
+    # 5. output = io.BytesIO() (doesn’t work)
+    # 6. content_type=ms-excel with an .xls extension (file opens but data is not readable)
+    # 7. saving a blank .xlsx file without writing to it (doesn't work)
+
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.xlsx"
 
     workbook = xlsxwriter.Workbook(response, {'in_memory': True})
     worksheet = workbook.add_worksheet('test')
+    workbook.close()
+    return response
 
     # write the headers
     # using a dictionary to simplify column adjusting process
-    headers = {
-        smart_str(u'Position'): 37,
-        smart_str(u'Tandem'): 8,
-        smart_str(u'Skill'): 41,
-        smart_str(u'Grade'): 8,
-        smart_str(u'Organization'): 66,
-        smart_str(u'Post City'): 13,
-        smart_str(u'Post Country'): 19,
-        smart_str(u'Tour of Duty'): 30,
-        smart_str(u'Languages'): 56,
-        smart_str(u'Service Needs Differential'): 25,
-        smart_str(u'Post Differential'): 16,
-        smart_str(u'Danger Pay'): 11,
-        smart_str(u'TED'): 10,
-        smart_str(u'Incumbent'): 10,
-        smart_str(u'Bid Cycle/Season'): 23,
-        smart_str(u'Posted Date'): 14,
-        smart_str(u'Status Code'): 11,
-        smart_str(u'Position Number'): 16,
-        smart_str(u'Capsule Description'): 70
-        }
-    # need to delete values from dictionary if not tandem and/or ap
-    if not tandem:
-        del headers['Tandem']
-    if not ap:
-        del headers['Service Needs Differential']
-        del headers['Posted Date']
-        del headers['Status Code']
-    # need to write header row
-    # loop through dictionary and adjust based on tandem and ap
-    # adjusting column width
-    col_num = 0
-    for header in headers:
-        worksheet.write(0, col_num, header)
-        worksheet.set_column(col_num, col_num, headers[header])
-        col_num += 1
+    # headers = {
+    #     smart_str(u'Position'): 37,
+    #     smart_str(u'Tandem'): 8,
+    #     smart_str(u'Skill'): 41,
+    #     smart_str(u'Grade'): 8,
+    #     smart_str(u'Organization'): 66,
+    #     smart_str(u'Post City'): 13,
+    #     smart_str(u'Post Country'): 19,
+    #     smart_str(u'Tour of Duty'): 30,
+    #     smart_str(u'Languages'): 56,
+    #     smart_str(u'Service Needs Differential'): 25,
+    #     smart_str(u'Post Differential'): 16,
+    #     smart_str(u'Danger Pay'): 11,
+    #     smart_str(u'TED'): 10,
+    #     smart_str(u'Incumbent'): 10,
+    #     smart_str(u'Bid Cycle/Season'): 23,
+    #     smart_str(u'Posted Date'): 14,
+    #     smart_str(u'Status Code'): 11,
+    #     smart_str(u'Position Number'): 16,
+    #     smart_str(u'Capsule Description'): 70
+    #     }
+    # # need to delete values from dictionary if not tandem and/or ap
+    # if not tandem:
+    #     del headers['Tandem']
+    # if not ap:
+    #     del headers['Service Needs Differential']
+    #     del headers['Posted Date']
+    #     del headers['Status Code']
+    # # need to write header row
+    # # loop through dictionary and adjust based on tandem and ap
+    # # adjusting column width
+    # col_num = 0
+    # for header in headers:
+    #     worksheet.write(0, col_num, header)
+    #     worksheet.set_column(col_num, col_num, headers[header])
+    #     col_num += 1
 
-    row_num = 0
-    for record in data:
-        try:
-            ted = smart_str(maya.parse(record["ted"]).datetime().strftime('%m/%d/%Y'))
-        except:
-            ted = "None listed"
-        try:
-            posteddate = smart_str(maya.parse(record["posted_date"]).datetime().strftime('%m/%d/%Y')),
-        except:
-            posteddate = "None listed"
+    # row_num = 0
+    # for record in data:
+    #     try:
+    #         ted = smart_str(maya.parse(record["ted"]).datetime().strftime('%m/%d/%Y'))
+    #     except:
+    #         ted = "None listed"
+    #     try:
+    #         posteddate = smart_str(maya.parse(record["posted_date"]).datetime().strftime('%m/%d/%Y')),
+    #     except:
+    #         posteddate = "None listed"
 
-        row = []
-        row.append(smart_str(record["position"]["title"]))
-        if tandem:
-            row.append(smart_str(record.get("tandem_nbr")))
-        row.append(smart_str(record["position"]["skill"]))
-        row.append(smart_str("=\"%s\"" % record["position"]["grade"]))
-        row.append(smart_str(record["position"]["bureau"]))
-        row.append(smart_str(record["position"]["organization"]))
-        row.append(smart_str(record["position"]["post"]["location"]["city"]))
-        row.append(smart_str(record["position"]["post"]["location"]["country"]))
-        row.append(smart_str(record["position"]["tour_of_duty"]))
-        row.append(smart_str(parseLanguagesString(record["position"]["languages"])))
-        if ap:
-            row.append(smart_str(record["position"]["post"].get("has_service_needs_differential")))
-        row.append(smart_str(record["position"]["post"]["differential_rate"]))
-        row.append(smart_str(record["position"]["post"]["danger_pay"]))
-        row.append(ted)
-        row.append(smart_str(record["position"]["current_assignment"]["user"]))
-        row.append(smart_str(record["bidcycle"]["name"]))
-        if ap:
-            row.append(posteddate)
-        if ap:
-            row.append(smart_str(record.get("status_code")))
-        row.append(smart_str("=\"%s\"" % record["position"]["position_number"]))
-        row.append(smart_str(record["position"]["description"]["content"]))
+    #     row = []
+    #     row.append(smart_str(record["position"]["title"]))
+    #     if tandem:
+    #         row.append(smart_str(record.get("tandem_nbr")))
+    #     row.append(smart_str(record["position"]["skill"]))
+    #     row.append(smart_str("=\"%s\"" % record["position"]["grade"]))
+    #     row.append(smart_str(record["position"]["bureau"]))
+    #     row.append(smart_str(record["position"]["organization"]))
+    #     row.append(smart_str(record["position"]["post"]["location"]["city"]))
+    #     row.append(smart_str(record["position"]["post"]["location"]["country"]))
+    #     row.append(smart_str(record["position"]["tour_of_duty"]))
+    #     row.append(smart_str(parseLanguagesString(record["position"]["languages"])))
+    #     if ap:
+    #         row.append(smart_str(record["position"]["post"].get("has_service_needs_differential")))
+    #     row.append(smart_str(record["position"]["post"]["differential_rate"]))
+    #     row.append(smart_str(record["position"]["post"]["danger_pay"]))
+    #     row.append(ted)
+    #     row.append(smart_str(record["position"]["current_assignment"]["user"]))
+    #     row.append(smart_str(record["bidcycle"]["name"]))
+    #     if ap:
+    #         row.append(posteddate)
+    #     if ap:
+    #         row.append(smart_str(record.get("status_code")))
+    #     row.append(smart_str("=\"%s\"" % record["position"]["position_number"]))
+    #     row.append(smart_str(record["position"]["description"]["content"]))
 
-        # writer.writerow(row) apparently "row" is a tuple and not a string, causes error
-        # worksheet.write_row(row_num, 0, row)
-        # row_num += 1
-    workbook.close()
-    return response
+    #     # writer.writerow(row) apparently "row" is a tuple and not a string, causes error
+    #     # worksheet.write_row(row_num, 0, row)
+    #     # row_num += 1
+    # workbook.close()
+    # return response
 
 
 def get_bids_csv(data, filename, jwt_token):
