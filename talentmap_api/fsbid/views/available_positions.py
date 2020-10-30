@@ -9,6 +9,10 @@ from rest_framework.schemas import AutoSchema
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.http import HttpResponse
+import csv
+import xlwt
+
 from talentmap_api.fsbid.filters import AvailablePositionsFilter
 from talentmap_api.fsbid.views.base import BaseView
 
@@ -116,7 +120,29 @@ class FSBidAvailablePositionsEXCELView(BaseView):
         '''
         Gets all available positions
         '''
-        return services.get_available_positions_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}", limit, includeLimit)
+        # tested blank csv and it works correctly
+        # response = HttpResponse(content_type='text/csv')
+        # response['Content-Disposition'] = f"attachment; filename=test_view.csv"
+        # writer = csv.writer(response, csv.excel)
+        # response.write(u'\ufeff'.encode('utf8'))
+
+        # ms-excel/.xls opens, but is corrupted
+        # response = HttpResponse(content_type='application/ms-excel')
+        # response['Content-Disposition'] = "attachment; filename=excelxls_view.xls"
+        # wb = xlwt.Workbook(encoding='utf-8')
+        # ws = wb.add_sheet('Users Data')
+        # ws.write(0, 0, 'test')
+        # wb.save(response)
+
+        # .xlsx does not open at all
+        # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        # response['Content-Disposition'] = "attachment; filename=excelxls_view.xlsx"
+
+        # added new contenttype "vnd.ms-excel" and used .xlsx
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = "attachment; filename=excelxlsx_view.xlsx"
+        return response
+        # return services.get_available_positions_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}", limit, includeLimit)
 
 class FSBidAvailablePositionsCSVView(BaseView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
