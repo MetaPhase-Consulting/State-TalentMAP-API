@@ -297,11 +297,11 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.xlsx"
-
-    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
-    worksheet = workbook.add_worksheet('test')
-    workbook.close()
     return response
+
+    # workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+    # worksheet = workbook.add_worksheet('test')
+    # workbook.close()
 
     # write the headers
     # using a dictionary to simplify column adjusting process
