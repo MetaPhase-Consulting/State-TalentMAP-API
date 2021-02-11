@@ -41,6 +41,7 @@ def get_employee_information(jwt_token, emp_id):
             "skills": map_skill_codes(employee),
             "grade": employee['per_grade_code'].replace(" ", ""),
             "skills_additional": map_skill_codes_additional(skills, employeeSkills),
+            "employee_id": employee['per_seq_num'],
         }
     except:
         return {}
