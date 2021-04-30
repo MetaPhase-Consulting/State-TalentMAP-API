@@ -480,7 +480,10 @@ def bidderHandshakeNotification(bureau_user, cp_id, perdet, jwt, is_accept=True)
 
     action = "accepted" if is_accept else "declined"
     message = f"Bidder has {action} handshake for position with ID {cp_id}"
-    if perdet and jwt and is_accept:
+
+    # send CDO an email if handshake accepted by bidder
+    # Only run this if EMAIL_ENABLED is True so that we don't waste a network request
+    if perdet and jwt and is_accept and EMAIL_ENABLED:
         try:
             cdo = single_cdo(jwt, perdet)
             email = pydash.get(cdo, 'email')
