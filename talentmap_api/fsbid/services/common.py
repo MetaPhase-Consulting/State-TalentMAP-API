@@ -19,6 +19,7 @@ from talentmap_api.available_positions.models import AvailablePositionFavorite, 
 from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
 from talentmap_api.available_tandem.models import AvailableFavoriteTandem
 from talentmap_api.projected_tandem.models import ProjectedFavoriteTandem
+from talentmap_api.bidding.models import BidHandshake
 from talentmap_api.fsbid.services import available_positions as apservices
 from talentmap_api.fsbid.services import projected_vacancies as pvservices
 from talentmap_api.fsbid.services import employee as empservices
@@ -463,6 +464,12 @@ def has_competing_rank(self, perdet, pk):
             # don't bother continuing the loop if we've already found one
             return True
     return False
+
+def get_tmap_hs(perdet, cp_id):
+    try:
+        return BidHandshake.objects.values().get(bidder_perdet=perdet, cp_id=cp_id)
+    except:
+        return {}
 
 def get_bidders_csv(self, pk, data, filename, jwt_token):
     response = HttpResponse(content_type='text/csv')
