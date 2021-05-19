@@ -453,7 +453,8 @@ def fsbid_classifications_to_tmap(cs):
 
 
 def fsbid_assignments_to_tmap(assignments):
-    from talentmap_api.fsbid.services.common import get_post_overview_url, get_post_bidding_considerations_url, get_obc_id
+    # Imports below can add significant overhead time to request! Commented out until needed.
+    # from talentmap_api.fsbid.services.common import get_post_overview_url, get_post_bidding_considerations_url, get_obc_id
     assignmentsCopy = []
     tmap_assignments = []
     if type(assignments) is type(dict()):
@@ -480,9 +481,9 @@ def fsbid_assignments_to_tmap(assignments):
                         "title": pos.get("pos_title_desc", None),
                         "post": {
                             "code": loc.get("gvt_geoloc_cd", None),
-                            "post_overview_url": get_post_overview_url(loc.get("gvt_geoloc_cd", None)),
-                            "post_bidding_considerations_url": get_post_bidding_considerations_url(loc.get("gvt_geoloc_cd", None)),
-                            "obc_id": get_obc_id(loc.get("gvt_geoloc_cd", None)),
+                            # "post_overview_url": get_post_overview_url(loc.get("gvt_geoloc_cd", None)),
+                            # "post_bidding_considerations_url": get_post_bidding_considerations_url(loc.get("gvt_geoloc_cd", None)),
+                            # "obc_id": get_obc_id(loc.get("gvt_geoloc_cd", None)),
                             "location": {
                                 "country": loc.get("country", None),
                                 "code": loc.get("gvt_geoloc_cd", None),
