@@ -27,6 +27,7 @@ class FSBidListView(APIView):
         Gets all bids for the current user
         '''
         user = UserProfile.objects.get(user=self.request.user)
+        # for the tests
         return Response({"results": services.user_bids(user.emp_id, request.META['HTTP_JWT'])})
 
 
