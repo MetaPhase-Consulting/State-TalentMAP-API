@@ -27,7 +27,7 @@ class FSBidListView(APIView):
         '''
         Gets all bids for the current user and position information on those bids
         '''
-        import talentmap_api.fsbid.services.available_positions as av_ps_services
+        from talentmap_api.fsbid.services.available_positions import get_available_position
         user = UserProfile.objects.get(user=self.request.user)
         user_bids = services.user_bids(user.emp_id, request.META['HTTP_JWT'])
         for bid in user_bids:
