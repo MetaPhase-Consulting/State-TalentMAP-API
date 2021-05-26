@@ -24,11 +24,11 @@ class FSBidListView(APIView):
 
     def get(self, request, *args, **kwargs):
         '''
-        Gets all bids for the current user
+        Gets all bids for the current user and position information on those bids
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        # for the tests
-        return Response({"results": services.user_bids(user.emp_id, request.META['HTTP_JWT'])})
+        x = services.user_bids(user.emp_id, request.META['HTTP_JWT']);
+        return Response({"results": x})
 
 
 class FSBidBidListCSVView(APIView):
