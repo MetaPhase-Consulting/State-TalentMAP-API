@@ -10,6 +10,7 @@ from talentmap_api.user_profile.models import UserProfile
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 import talentmap_api.fsbid.services.bid as services
+import talentmap_api.fsbid.services.available_positions as av_ps_services
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +28,10 @@ class FSBidListView(APIView):
         Gets all bids for the current user and position information on those bids
         '''
         user = UserProfile.objects.get(user=self.request.user)
-        x = services.user_bids(user.emp_id, request.META['HTTP_JWT']);
-        return Response({"results": x})
+        user_bids = services.user_bids(user.emp_id, request.META['HTTP_JWT']);
+        for bid in user_bids:
+            pos_id = bid["position"]["id"]
+        return Response({"results": user_bids})
 
 
 class FSBidBidListCSVView(APIView):
