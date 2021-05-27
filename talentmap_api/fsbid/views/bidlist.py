@@ -29,7 +29,8 @@ class FSBidListView(APIView):
         '''
         user = UserProfile.objects.get(user=self.request.user)
         user_bids = services.user_bids(user.emp_id, request.META['HTTP_JWT'])
-        for bid in user_bids:
+        # for bid in user_bids:
+        for bid in list(user_bids):
             print('hi')
     #        pos_id = bid["position"]["id"]
         return Response({"results": user_bids})
