@@ -3,6 +3,13 @@ import coreapi
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.schemas import AutoSchema
+from django.http import QueryDict
+from django.db.models.functions import Concat
+from django.db.models import TextField
+from django.db.models import Min
+from django.db.models import Max
+from django.db.models import Subquery
+from django.db.models import Q
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +17,7 @@ from rest_framework import status
 from talentmap_api.fsbid.filters import BureauPositionsFilter
 from talentmap_api.fsbid.views.base import BaseView
 from talentmap_api.available_positions.models import AvailablePositionRankingLock
+from talentmap_api.bidding.models import BidHandshake
 
 import talentmap_api.fsbid.services.bureau as services
 import talentmap_api.fsbid.services.available_positions as ap_services
@@ -56,9 +64,46 @@ class FSBidBureauPositionsListView(BaseView):
         '''
         Gets all bureau positions
         '''
-        bureau_pos = services.get_bureau_positions(request.query_params, request.META['HTTP_JWT'],
-                                                   f"{request.scheme}://{request.get_host()}")
-        return Response(services.get_bureau_shortlist_indicator(bureau_pos))
+        hs_query_codes = request.query_params.get('lead_hs_status_code', None)
+        temp_hs_query_codes = ["R"]
+        # we need to filter by the status, but we only want to filter on the latest one(update_date) per cp_id;
+        # group by cp_id, sort by latest update_date, filter on statuses and grab the cp_ids
+
+        hs_cp_ids = BidHandshake.objects.values('cp_id', 'status').order_by('update_date')[:1]
+
+
+        # returning the cp_ids and newest date:
+        # hs_cp_ids = BidHandshake.objects.values('cp_id').annotate(Max('update_date'))
+        # filters
+        # .filter(status__in=temp_hs_query_codes).values_list("cp_id", flat=True)
+
+        # hs_cp_ids = BidHandshake.objects.distinct('cp_id').order_by('update_date').filter(status__in=temp_hs_query_codes)
+
+        # newest = BidHandshake.objects.filter(status__in=temp_hs_query_codes).values_list("cp_id", flat=True)
+        # newest2 = BidHandshake.objects.annotate(ej=Subquery(newest.values('cp_id').annotate(Max('update_date'))[:1]))
+
+
+        # hs_cp_ids2 = hs_cp_ids.lol.values_list("cp_id", flat=True)
+        # newest = Comment.objects.filter(post=OuterRef('pk')).order_by('-created_at')
+        # Post.objects.annotate(newest_commenter_email=Subquery(newest.values('email')[:1]))
+        # this would be the sub query. the outer query will just be the filter on the statuses.
+        # BidHandshake.objects.filter(status__in=Subquery(lol.status)).values_list("cp_id", flat=True)
+        # lol.objects.annotate(newest_commenter_email=Subquery(newest.values('email')[:1]))
+
+        print("=============================")
+        print(hs_cp_ids)
+        print(len(hs_cp_ids))
+        print("=============================")
+        if len(hs_cp_ids) > 0:
+            cp_ids = ','.join(hs_cp_ids)
+            query_params_copy = request.query_params.copy()
+            query_params_copy["id"] = cp_ids
+            query_params_copy._mutable = False
+            bureau_pos = services.get_bureau_positions(query_params_copy, request.META['HTTP_JWT'],
+                                                       f"{request.scheme}://{request.get_host()}")
+            return Response(services.get_bureau_shortlist_indicator(bureau_pos))
+        else:
+            return Response({"count": 0, "next": None, "previous": None, "results": []})
 
 
 class FSBidBureauPositionsCSVView(BaseView):
