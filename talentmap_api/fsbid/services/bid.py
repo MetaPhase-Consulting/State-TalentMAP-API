@@ -13,6 +13,7 @@ from talentmap_api.bidding.models import Bid, BidHandshake
 import talentmap_api.fsbid.services.common as services
 import talentmap_api.bidding.services.bidhandshake as bh_services
 import talentmap_api.fsbid.services.available_positions as ap_services
+import talentmap_api.fsbid.services.bureau as bureau
 
 API_ROOT = settings.FSBID_API_URL
 
@@ -157,6 +158,7 @@ def fsbid_bid_to_talentmap_bid(data, jwt_token):
     cpId = int(data.get('cp_id'))
     perdet = str(data.get('perdet_seq_num'))
     positionInfo = ap_services.get_available_position(str(cpId), jwt_token)
+    bidInfo = bureau.get_bureau_position_bids(cpId, {}, jwt_token, '')
 
     return {
         "id": f"{perdet}_{cpId}",
@@ -183,5 +185,6 @@ def fsbid_bid_to_talentmap_bid(data, jwt_token):
         "position_info": positionInfo,
         "handshake": {
             **bh_services.get_bidder_handshake_data(cpId, perdet),
-        }
+        },
+        "bid_info": bidInfo,
     }
