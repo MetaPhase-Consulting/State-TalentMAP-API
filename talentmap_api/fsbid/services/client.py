@@ -634,7 +634,7 @@ def convert_available_bidder_query(query):
     sort_asc = query.get("ordering", "name")[0] != "-"
     ordering = query.get("ordering", "name").lstrip("-")
     values = {
-        "order_by": ordering,
+        "order_by": ordering or 'Name',
         "is_asc": 'true' if sort_asc else 'false',
         "ad_id": query.get("ad_id", None),
     }
