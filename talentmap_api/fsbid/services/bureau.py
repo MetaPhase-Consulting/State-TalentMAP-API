@@ -189,7 +189,6 @@ def fsbid_bureau_positions_to_talentmap(bp):
 
     bh_props = bh_services.get_position_handshake_data(bp.get("cp_id", None))
     handshake = bh_services.get_bidder_handshake_data(bp.get("cp_id", None), bh_props.get("active_handshake_perdet"))
-
     hasHandShakeOffered = False
     if bp.get("cp_status", None) == "HS":
         hasHandShakeOffered = True
