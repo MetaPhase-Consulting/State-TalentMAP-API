@@ -6,7 +6,6 @@ from rest_framework.schemas import AutoSchema
 from django.http import QueryDict
 from django.db.models.functions import Concat
 from django.db.models import TextField
-from datetime import datetime
 from django.db.models import Min
 from django.db.models import Max
 from django.db.models import Subquery
