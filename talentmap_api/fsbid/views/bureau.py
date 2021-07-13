@@ -50,6 +50,7 @@ class FSBidBureauPositionsListView(BaseView):
             coreapi.Field("position__post_indicator__in", location='query', description='Use name values from /references/postindicators/'),
             coreapi.Field("position__post__tour_of_duty__code__in", location='query', description='TOD code'),
             coreapi.Field("position__skill__code__in", location='query', description='Skill Code'),
+            coreapi.Field("lead_hs_status_code", location='query', description='Handshake code(s) to filter on. (O, R, A, D)'),
             coreapi.Field("position__us_codes__in", location='query', description='Use code values from /references/unaccompaniedstatuses/'),
             coreapi.Field("q", location='query', description='Text search'),
         ]
