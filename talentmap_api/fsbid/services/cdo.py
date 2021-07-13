@@ -1,6 +1,5 @@
 import logging
 import jwt
-import pydash
 from django.conf import settings
 from talentmap_api.common.common_helpers import get_avatar_url
 
