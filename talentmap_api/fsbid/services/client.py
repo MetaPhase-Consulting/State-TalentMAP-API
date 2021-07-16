@@ -519,7 +519,7 @@ def get_available_bidders(jwt_token, isCDO, query, host=None):
     uri = f"availablebidders/{cdo}"
     response = send_get_request(
         uri,
-        query,
+        {'ordering': 'name'}, # TODO - temporary fix. Figure out why default mappings not being used
         convert_available_bidder_query,
         jwt_token,
         fsbid_available_bidder_to_talentmap,
