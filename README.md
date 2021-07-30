@@ -11,6 +11,7 @@ A comprehensive research, bidding, and matching system that pairs Foreign Servic
 - Searching and Filtering Positions
 - Saving Searches
 - Favoriting Positions
+- Comparing Positions
 #### Bidding
 - Submitting & Updating Bids (Job Applications)
 - Monitoring Bid Status
