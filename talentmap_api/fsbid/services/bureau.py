@@ -137,7 +137,7 @@ def fsbid_bureau_position_bids_to_talentmap(bid, jwt, cp_id, active_perdet):
     cdo = None
     classifications = None
     has_competing_rank = None
-    emp_id = bid.get("perdet_seq_num", None)
+    emp_id = str(int(float(bid.get("perdet_seq_num", None))))
     if emp_id is not None:
         cdo = cdoservices.single_cdo(jwt, emp_id)
         classifications = classifications_services.get_client_classification(jwt, emp_id)
@@ -348,6 +348,7 @@ def convert_bp_query(query, allowed_status_codes=["FP", "OP", "HS"]):
         "request_params.overseas_ind": services.overseas_values(query),
         "request_params.languages": services.convert_multi_value(query.get("language_codes")),
         "request_params.bureaus": services.convert_multi_value(query.get("position__bureau__code__in")),
+        "request_params.org_codes": services.convert_multi_value(query.get("position__org__code__in")),
         "request_params.grades": services.convert_multi_value(query.get("position__grade__code__in")),
         "request_params.location_codes": services.post_values(query),
         "request_params.danger_pays": services.convert_multi_value(query.get("position__post__danger_pay__in")),
