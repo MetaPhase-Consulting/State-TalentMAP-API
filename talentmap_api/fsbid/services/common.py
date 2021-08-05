@@ -3,6 +3,7 @@ import logging
 import csv
 from datetime import datetime
 import requests
+import requests_cache
 
 from django.conf import settings
 from django.db.models import Q
@@ -31,6 +32,13 @@ CP_API_ROOT = settings.CP_API_URL
 HRDATA_URL = settings.HRDATA_URL
 HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+
+urls_expire_after = {
+    '*/cycles': 30,
+    '*': 0,  # Every other non-matching URL: do not cache
+}
+session = requests_cache.CachedSession(backend='memory', namespace='tmap-cache', urls_expire_after=urls_expire_after)
+
 
 def get_employee_profile_urls(clientid):
     suffix = f"Employees/{clientid}/EmployeeProfileReportByCDO"
@@ -189,7 +197,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
 
 def get_fsbid_results(uri, jwt_token, mapping_function, email=None):
     url = f"{API_ROOT}/{uri}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    response = session.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
 
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
