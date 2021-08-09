@@ -385,7 +385,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False, u
     if isTandem:
         ordering = query.get("ordering", None)
         values[f"{prefix}count"] = query.get("getCount", 'false')
-        values[f"{prefix}order_by"] = services.sorting_values(f"commuterPost,location,tandem,{ordering}", use_post)
+        values[f"{prefix}order_by"] = services.sorting_values(f"commuterPost,location,location_code,tandem,{ordering}", use_post)
         # Common filters
         values[f"{prefix}overseas_ind2"] = services.overseas_values(query)
         values[f"{prefix}location_codes2"] = services.post_values(query)
