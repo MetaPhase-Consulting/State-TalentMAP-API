@@ -3,7 +3,7 @@ import logging
 import csv
 from datetime import datetime
 import requests
-from requests_cache import CachedSession
+import requests_cache
 
 from django.conf import settings
 from django.db.models import Q
@@ -37,7 +37,7 @@ urls_expire_after = {
     '*/cycles': 30,
     '*': 0,  # Every other non-matching URL: do not cache
 }
-session = CachedSession(backend='memory', namespace='tmap-cache', urls_expire_after=urls_expire_after)
+session = requests_cache.CachedSession(backend='memory', namespace='tmap-cache', urls_expire_after=urls_expire_after)
 
 
 def get_employee_profile_urls(clientid):
@@ -148,6 +148,8 @@ sort_dict = {
     "location_city": "geoloc.city",
     "location_country": "geoloc.country",
     "location_state": "geoloc.state",
+    "location": "location_city",
+    "location_code": "pos_location_code",
     "commuterPost": "cpn_desc",
     "tandem": "tandem_nbr",
     "bidder_grade": "grade_code",
@@ -195,9 +197,10 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
         return response.get("Data", {})
 
 
-def get_fsbid_results(uri, jwt_token, mapping_function, email=None):
+def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False):
     url = f"{API_ROOT}/{uri}"
-    response = session.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    method = session if use_cache else requests
+    response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
 
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
