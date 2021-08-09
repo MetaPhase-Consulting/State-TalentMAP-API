@@ -23,7 +23,9 @@ def get_cycles(jwt_token):
     response = common.get_fsbid_results(
         uri,
         jwt_token,
-        mapping_function
+        mapping_function,
+        None,
+        True,
     )
     return list(response)
 
