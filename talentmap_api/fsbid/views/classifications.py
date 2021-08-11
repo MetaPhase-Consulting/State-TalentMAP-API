@@ -8,6 +8,9 @@ import talentmap_api.fsbid.services.classifications as classifications_services
 
 
 class FSBidClassificationsView(BaseView):
+
+    permission_classes = (IsAuthenticated,)
+
     schema = AutoSchema(
         manual_fields=[
             coreapi.Field("perdet_seq_num", location='query', description='ID of user'),
