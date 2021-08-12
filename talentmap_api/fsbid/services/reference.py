@@ -143,20 +143,10 @@ def fsbid_locations_to_talentmap_locations(data):
 @staticmethod
 def fsbid_classifications_to_talentmap_classifications(data):
     glossary_terms = {
-        '3': '3rd Tour Bidders',
-        '4': 'Tenured',
-        'D': 'Differential Bidder',
         'T': 'Tandem',
-        'M': 'Meritorious Step Increases',
-        '6': '6/8 Rule',
-        'F': 'Fair Share',
-        'C': 'Critical Need Language',
-        'C1': 'Critical Need Language 1st Tour Complete',
-        'CC': 'Critical Need Language Final Tour Complete',
-        'R': 'Recommended for Tenure',
+        '8': '6 8 - Six Eight Year Rule',
         'A': 'AMB Ambassador',
-        'F1': 'Pickering Fellows',
-        'F2': 'Rangel Fellows',
+        'F': 'Fair Share',
         'P': 'Pickering Fellow',
     }
     gloss_term = pydash.get(glossary_terms, pydash.get(data, "tp_code", None), None)
