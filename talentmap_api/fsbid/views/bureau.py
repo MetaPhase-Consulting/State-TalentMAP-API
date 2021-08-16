@@ -65,6 +65,7 @@ class FSBidBureauPositionsCSVView(BaseView):
 
     permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_class = BureauPositionsFilter
+    print('test ssh')
 
     def get(self, request, *args, **kwargs):
         '''
