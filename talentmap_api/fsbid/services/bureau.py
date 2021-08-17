@@ -200,7 +200,7 @@ def fsbid_bureau_positions_to_talentmap(bp):
     '''
 
     bh_props = bh_services.get_position_handshake_data(bp.get("cp_id", None))
-    handshake = bh_services.get_bidder_handshake_data(bp.get("cp_id", None), bh_props.get("active_handshake_perdet"))
+    lead_handshake = bh_services.get_lead_handshake_data(bp.get("cp_id", None))
     hasHandShakeOffered = False
 
     if bp.get("cp_status", None) == "HS":
@@ -331,8 +331,8 @@ def fsbid_bureau_positions_to_talentmap(bp):
             "has_handshake_accepted": None
         }],
         "bid_handshake": bh_props,
-        "handshake": {
-            **handshake,
+        "lead_handshake": {
+            **lead_handshake,
         },
         "unaccompaniedStatus": bp.get("us_desc_text", None),
         "isConsumable": bp.get("bt_consumable_allowance_flg", None) == "Y",
