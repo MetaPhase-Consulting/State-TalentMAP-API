@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def get_cycles(jwt_token):
     '''
-    Common function to get bid cycles
+    Gets bid cycles
     '''
     view = views.FSBidCyclesView
     uri = view.uri
@@ -24,7 +24,9 @@ def get_cycles(jwt_token):
     response = common.get_fsbid_results(
         uri,
         jwt_token,
-        mapping_function
+        mapping_function,
+        None,
+        True,
     )
     return list(response)
 
