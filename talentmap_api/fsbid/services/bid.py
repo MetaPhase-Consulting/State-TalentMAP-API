@@ -101,7 +101,9 @@ def remove_bid(employeeId, cyclePositionId, jwt_token):
 
 def map_bids_to_disable_handshake_if_accepted(bids):
     bidsClone = deepcopy(list(bids))
-    hasAcceptedHandshakeIds = pydash.chain(bidsClone).filter_(lambda x: pydash.get(x, 'handshake.hs_status_code') == 'handshake_accepted').map('id').value()
+    hasAcceptedHandshakeIds = pydash.chain(bidsClone).filter_(
+        lambda x: pydash.get(x, 'handshake.bidder_hs_code') == 'handshake_accepted' and pydash.get(x, 'handshake.hs_status_code') != 'handshake_revoked'
+    ).map('id').value()
     bidsClone = pydash.map_(bidsClone, lambda x: {
             **x,
             'accept_handshake_disabled': False if not hasAcceptedHandshakeIds else True if x['id'] not in hasAcceptedHandshakeIds else False
