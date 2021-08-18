@@ -192,7 +192,7 @@ class BidHandshakeBidderActionView(FieldLimitableSerializerMixin,
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             # Return an error if a handshake has already been accepted within active
-            bids = bid_services.user_bids(pk, jwt)
+            bids = bid_services.user_bids(user.emp_id, jwt)
             accept_disabled = pydash.find(bids, lambda x: x['accept_handshake_disabled'] == True)
             if accept_disabled:
                 return Response('A handshake has already been accepted', status=status.HTTP_409_CONFLICT)
