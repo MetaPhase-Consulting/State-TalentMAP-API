@@ -353,7 +353,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False, u
 
     values = {
         # Pagination
-        f"{prefix}order_by": services.sorting_values(query.get("ordering", None), use_post),
+        f"{prefix}order_by": pydash.compact(services.sorting_values(query.get("ordering", None), use_post)),
         f"{prefix}page_index": int(query.get("page", 1)),
         f"{prefix}page_size": query.get("limit", 25),
 
@@ -409,7 +409,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False, u
         values[f"{prefix}skills2"] = services.convert_multi_value(query.get("position__skill__code__in-tandem"))
     
     if use_post:
-        return pydash.omit_by(values, lambda o: o == None)
+        return pydash.omit_by(values, lambda o: o is None or (o == [] and bool(o) == False))
 
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
