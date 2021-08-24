@@ -49,7 +49,6 @@ def map_handshake_data(hs, exclude_revoked=False):
         'hs_date_expiration': None,
     }
 
-    hs = BidHandshake.objects.filter(cp_id=cp_id, bidder_perdet=perdet)
     if exclude_revoked:
         hs = hs.exclude(status='R')
 
@@ -77,12 +76,12 @@ def map_handshake_data(hs, exclude_revoked=False):
 
     return props
 
-def get_bidder_handshake_data(cp_id, perdet):
+def get_bidder_handshake_data(cp_id, perdet, exclude_revoked=False):
     '''
     Return handshake data for a given perdet and cp_id
     '''
     hs = BidHandshake.objects.filter(cp_id=cp_id, bidder_perdet=perdet)
-    return map_handshake_data(hs)
+    return map_handshake_data(hs, exclude_revoked)
 
 def get_lead_handshake_data(cp_id):
     '''
