@@ -22,8 +22,7 @@ def get_position_handshake_data(cp_id):
 
     return props
 
-
-def map_handshake_data(hs):
+def map_handshake_data(hs, exclude_revoked=False):
     '''
     Map handshake data
     '''
@@ -49,6 +48,10 @@ def map_handshake_data(hs):
         'hs_date_revoked': None,
         'hs_date_expiration': None,
     }
+
+    hs = BidHandshake.objects.filter(cp_id=cp_id, bidder_perdet=perdet)
+    if exclude_revoked:
+        hs = hs.exclude(status='R')
 
     if hs.exists():
         hs = hs.first()
