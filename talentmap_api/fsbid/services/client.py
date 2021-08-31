@@ -505,6 +505,8 @@ def fsbid_assignments_to_tmap(assignments):
 def fsbid_languages_to_tmap(languages):
     tmap_languages = []
     for x in languages:
+        if not x.get('empl_language', None):
+            continue
         tmap_languages.append({
             "code": x.get('empl_language_code', None),
             "language": x.get('empl_language', None),
