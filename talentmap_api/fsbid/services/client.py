@@ -543,7 +543,7 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": x.get('empl_high_speaking', None),
             "reading_score": x.get('empl_high_reading', None),
-            "custom_description": f"{x.get('empl_language')} {x.get('empl_high_speaking')}/{x.get('empl_high_reading')}"
+            "custom_description": f"{x.get('empl_language')} {x.get('empl_high_speaking', '--')}/{x.get('empl_high_reading', '--')}"
         })
     return tmap_languages
 
