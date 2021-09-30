@@ -1,11 +1,16 @@
 import logging
-import requests
+import requests as r
 
 from django.conf import settings
 
 from talentmap_api.common.common_helpers import ensure_date
 
 API_ROOT = settings.FSBID_API_URL
+
+CERT = settings.HRONLINE_CERT
+requests = r.Session()
+if CERT:
+    requests.verify = CERT
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +19,7 @@ def get_bid_seasons(bsn_future_vacancy_ind, jwt_token):
     # set future vacancy indicator - default to 'Y'
     future_vacancy_ind = bsn_future_vacancy_ind if bsn_future_vacancy_ind else 'Y'
     url = f"{API_ROOT}/bidSeasons?future_vacancy_ind={future_vacancy_ind}"
-    bid_seasons = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    bid_seasons = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     return sorted(map(fsbid_bid_season_to_talentmap_bid_season, bid_seasons["Data"]), key=lambda k: k['description'])
 
 

@@ -9,7 +9,7 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
-import requests  # pylint: disable=unused-import
+import requests as r
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
@@ -22,6 +22,11 @@ SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 
+CERT = settings.HRONLINE_CERT
+requests = r.Session()
+if CERT:
+    requests.verify = CERT
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,8 +35,7 @@ def get_user_information(jwt_token, perdet_seq_num):
     Gets the office_phone and office_address for the employee
     '''
     url = f"{SECREF_ROOT}/user?request_params.perdet_seq_num={perdet_seq_num}"
-    user = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'},
-                            verify=False).json()  # nosec
+    user = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json() 
     user = next(iter(user.get('Data', [])), {})
     try:
         return {
