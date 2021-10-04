@@ -93,8 +93,10 @@ def has_bureau_permissions(cp_id, jwt_token):
         jwt_token
     )
     try:
-        bureau = str(pos['results'][0].get('position').get('bureau_code'))
-        return any(x.get('code') == bureau for x in bureauPermissions)
+        bureau = [str(pos['results'][0].get('position').get('bureau_code'))]
+        bureau.append(str(pos['results'][0].get('position').get('consultative_bureau_code')))
+        return any(pydash.includes(bureau, x.get('code')) for x in bureauPermissions)
+
     except:
         return False
     return False

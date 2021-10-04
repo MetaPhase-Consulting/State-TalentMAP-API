@@ -243,6 +243,15 @@ def fsbid_bureau_positions_to_talentmap(bp):
         handshakeCycle = handshakeCycle.first()
         handshake_allowed_date = handshakeCycle.handshake_allowed_date
 
+    consultative_b = bp.get('consultative_bureau', None)
+    consultative_bureau = None
+    consultative_bureau_code = None
+    consultative_bureau_short_desc = None
+    if bp.get('consultative_bureau', None) is not None:
+        consultative_bureau = f"({consultative_b.get('bureau_short_desc', None)}) {consultative_b.get('bureau_long_desc', None)}",
+        consultative_bureau_code = consultative_b.get('bur', None)
+        consultative_bureau_short_desc = f"{consultative_b.get('bureau_short_desc', None)}",
+
     return {
         "id": cp_id,
         "status": None,
@@ -263,6 +272,9 @@ def fsbid_bureau_positions_to_talentmap(bp):
             "bureau": f"({bp.get('pos_bureau_short_desc', None)}) {bp.get('pos_bureau_long_desc', None)}",
             "bureau_code": bp.get('bureau_code', None),
             "bureau_short_desc": f"{bp.get('pos_bureau_short_desc', None)}",
+            "consultative_bureau": consultative_bureau,
+            "consultative_bureau_code": consultative_bureau_code,
+            "consultative_bureau_short_desc": consultative_bureau_short_desc,
             "organization": f"({bp.get('org_short_desc', None)}) {bp.get('org_long_desc', None)}",
             "tour_of_duty": bp.get("tod", None),
             "classifications": None,
