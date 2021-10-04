@@ -247,7 +247,7 @@ def fsbid_bureau_positions_to_talentmap(bp):
     consultative_bureau = None
     consultative_bureau_code = None
     consultative_bureau_short_desc = None
-    if bp.get('consultative_bureau', None) is not None:
+    if consultative_b:
         consultative_bureau = f"({consultative_b.get('bureau_short_desc', None)}) {consultative_b.get('bureau_long_desc', None)}",
         consultative_bureau_code = consultative_b.get('bur', None)
         consultative_bureau_short_desc = f"{consultative_b.get('bureau_short_desc', None)}",
