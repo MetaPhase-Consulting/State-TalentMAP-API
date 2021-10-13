@@ -38,7 +38,7 @@ def test_bidder_fixture(authorized_user):
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.usefixtures("test_bidder_fixture")
 def test_bidlist_actions(authorized_client, authorized_user):
-    with patch('talentmap_api.fsbid.services.bid.r.get') as mock_get:
+    with patch('talentmap_api.fsbid.services.bid.requests.get') as mock_get:
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = {'Data': [bid]}
         response = authorized_client.get('/api/v1/fsbid/bidlist/', HTTP_JWT=fake_jwt)
@@ -48,7 +48,7 @@ def test_bidlist_actions(authorized_client, authorized_user):
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.usefixtures("test_bidder_fixture")
 def test_bidlist_position_actions(authorized_client, authorized_user):
-    with patch('talentmap_api.fsbid.services.bid.r.get') as mock_get:
+    with patch('talentmap_api.fsbid.services.bid.requests.get') as mock_get:
         # returns 404 when no position is found
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = {'Data': []}
@@ -60,12 +60,12 @@ def test_bidlist_position_actions(authorized_client, authorized_user):
         response = authorized_client.get('/api/v1/fsbid/bidlist/position/1/', HTTP_JWT=fake_jwt)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    with patch('talentmap_api.fsbid.services.bid.r.post') as mock_post:
+    with patch('talentmap_api.fsbid.services.bid.requests.post') as mock_post:
         mock_post.return_value = Mock(ok=True)
         response = authorized_client.put('/api/v1/fsbid/bidlist/position/1/', HTTP_JWT=fake_jwt)
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    with patch('talentmap_api.fsbid.services.bid.r.delete') as mock_del:
+    with patch('talentmap_api.fsbid.services.bid.requests.delete') as mock_del:
         mock_del.return_value = Mock(ok=True)
         response = authorized_client.delete('/api/v1/fsbid/bidlist/position/1/', HTTP_JWT=fake_jwt)
         assert response.status_code == status.HTTP_204_NO_CONTENT
