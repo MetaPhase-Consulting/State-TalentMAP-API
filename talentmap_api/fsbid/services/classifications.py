@@ -9,8 +9,7 @@ BTP_ROOT = settings.BTP_API_URL
 
 CERT = settings.HRONLINE_CERT
 requests = r.Session()
-if CERT:
-    requests.verify = CERT
+requests.verify = CERT or False
 
 logger = logging.getLogger(__name__)
 
