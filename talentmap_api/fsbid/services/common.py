@@ -2,7 +2,6 @@ import re
 import logging
 import csv
 from datetime import datetime
-import requests
 import requests_cache
 
 from django.conf import settings
@@ -25,6 +24,14 @@ from talentmap_api.fsbid.services import available_positions as apservices
 from talentmap_api.fsbid.services import projected_vacancies as pvservices
 from talentmap_api.fsbid.services import employee as empservices
 
+CERT = settings.HRONLINE_CERT
+if CERT:
+    import requests
+else:
+    import requests as r
+    requests = r.Session()
+    requests.verify = CERT
+
 logger = logging.getLogger(__name__)
 
 API_ROOT = settings.FSBID_API_URL
@@ -33,7 +40,6 @@ HRDATA_URL = settings.HRDATA_URL
 HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 
-CERT = settings.HRONLINE_CERT
 
 urls_expire_after = {
     '*/cycles': 30,
@@ -280,7 +286,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     else:
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
-    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args, verify=CERT).json()
+    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args,).json()
     count = pydash.get(response, "Data[0]")
     count = pydash.get(count, pydash.keys(count)[0])
     return {"count": count}

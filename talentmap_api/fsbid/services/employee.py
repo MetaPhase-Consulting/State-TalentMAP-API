@@ -14,8 +14,12 @@ FSBID_ROOT = settings.FSBID_API_URL
 ORG_ROOT = settings.ORG_API_URL
 
 CERT = settings.HRONLINE_CERT
-requests = r.Session()
-requests.verify = CERT or False
+if CERT:
+    import requests
+else:
+    import requests as r
+    requests = r.Session()
+    requests.verify = CERT
 
 logger = logging.getLogger(__name__)
 
