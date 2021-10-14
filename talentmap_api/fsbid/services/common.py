@@ -35,7 +35,7 @@ FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 
 CERT = settings.HRONLINE_CERT
 requests = r.Session()
-requests.verify = False
+requests.verify = CERT or False
 
 urls_expire_after = {
     '*/cycles': 30,
