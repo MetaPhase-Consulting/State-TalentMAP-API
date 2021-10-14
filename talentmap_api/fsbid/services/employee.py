@@ -1,5 +1,4 @@
 import logging
-import requests as r
 import jwt
 import pydash
 

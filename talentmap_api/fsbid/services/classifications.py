@@ -1,7 +1,6 @@
 import logging
 from urllib.parse import urlencode, quote
 import pydash
-import requests as r
 from django.conf import settings
 
 TP_ROOT = settings.TP_API_URL

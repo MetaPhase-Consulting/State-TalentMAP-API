@@ -1,6 +1,5 @@
 import logging
 import jwt
-import requests as r
 import pydash
 import maya
 from copy import deepcopy

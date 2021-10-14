@@ -9,8 +9,6 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
-import requests as r
-
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import ensure_date

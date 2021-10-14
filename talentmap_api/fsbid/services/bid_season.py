@@ -1,5 +1,4 @@
 import logging
-import requests as r
 
 from django.conf import settings
 
