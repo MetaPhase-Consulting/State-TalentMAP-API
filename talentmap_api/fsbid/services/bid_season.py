@@ -8,11 +8,11 @@ API_ROOT = settings.FSBID_API_URL
 
 CERT = settings.HRONLINE_CERT
 if CERT:
-    import requests
-else:
     import requests as r
     requests = r.Session()
     requests.verify = CERT
+else:
+    import requests
 
 logger = logging.getLogger(__name__)
 

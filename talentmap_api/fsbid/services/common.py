@@ -26,11 +26,11 @@ from talentmap_api.fsbid.services import employee as empservices
 
 CERT = settings.HRONLINE_CERT
 if CERT:
-    import requests
-else:
     import requests as r
     requests = r.Session()
     requests.verify = CERT
+else:
+    import requests
 
 logger = logging.getLogger(__name__)
 
@@ -203,7 +203,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
         url = f"{api_root}/{uri}?{query_mapping_function(queryClone)}"
     else:
         url = f"{api_root}/{uri}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=CERT).json()
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -216,7 +216,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
 def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
-    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery, verify=CERT).json()
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -229,7 +229,7 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
 def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False):
     url = f"{API_ROOT}/{uri}"
     method = session if use_cache else requests
-    response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=CERT).json()
+    response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
@@ -346,10 +346,10 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
     if use_post:
         mappedQuery = pydash.omit_by(query_mapping_function(formattedQuery), lambda o: o == None)
         url = f"{base_url}/{uri}"
-        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery, verify=CERT).json()
+        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     else:
         url = f"{base_url}/{uri}?{query_mapping_function(formattedQuery)}"
-        response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=CERT).json()
+        response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
