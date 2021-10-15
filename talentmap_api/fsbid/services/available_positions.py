@@ -88,15 +88,26 @@ def get_available_positions_tandem(query, jwt_token, host=None):
     '''
     Gets available positions
     '''
+    args = {
+        "uri": "positions/available/tandem",
+        "query": query,
+        "query_mapping_function": partial(convert_ap_query, isTandem=True),
+        "jwt_token": jwt_token,
+        "mapping_function": fsbid_ap_to_talentmap_ap,
+        "count_function": get_available_positions_tandem_count,
+        "base_url": "/api/v1/fsbid/available_positions/tandem/",
+        "host": host,
+        "use_post": USE_CP_API_V2,
+    }
+
+    if USE_CP_API_V2:
+        args['uri'] = 'availableTandem'
+        args['query_mapping_function'] = partial(convert_ap_query, isTandem=True, use_post=True)
+        args['count_function'] = partial(get_available_positions_tandem_count, use_post=True)
+        args['api_root'] = CP_API_V2_URL
+
     return services.send_get_request(
-        "positions/available/tandem",
-        query,
-        partial(convert_ap_query, isTandem=True),
-        jwt_token,
-        fsbid_ap_to_talentmap_ap,
-        get_available_positions_tandem_count,
-        "/api/v1/fsbid/available_positions/tandem/",
-        host
+        **args
     )
 
 
@@ -118,11 +129,22 @@ def get_available_positions_count(query, jwt_token, host=None, use_post=False):
     return services.send_count_request(**args)
 
 
-def get_available_positions_tandem_count(query, jwt_token, host=None):
+def get_available_positions_tandem_count(query, jwt_token, host=None, use_post=False):
     '''
     Gets the total number of available tandem positions for a filterset
     '''
-    return services.send_count_request("positions/available/tandem", query, partial(convert_ap_query, isTandem=True), jwt_token, host)
+    args = {
+        "uri": "positions/available/tandem",
+        "query": query,
+        "query_mapping_function": partial(convert_ap_query, isTandem=True, use_post=use_post),
+        "jwt_token": jwt_token,
+        "host": host,
+        "use_post": use_post,
+    }
+    if use_post:
+        args['uri'] = "availableTandem"
+        args['api_root'] = CP_API_V2_URL
+    return services.send_count_request(**args)
 
 
 def get_available_positions_csv(query, jwt_token, host=None, limit=None, includeLimit=False):

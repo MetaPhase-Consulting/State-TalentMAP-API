@@ -271,6 +271,11 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         newQuery['getCount'] = 'true'
         newQuery['request_params.page_index'] = None
         newQuery['request_params.page_size'] = None
+    if use_post and uri in ('tandem'):
+        newQuery['getCount'] = 'true'
+        newQuery['request_params.page_index'] = None
+        newQuery['request_params.page_size'] = None
+
     if use_post:
         url = f"{api_root}/{uri}"
         args['json'] = query_mapping_function(newQuery)
@@ -278,7 +283,9 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     else:
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
+
     response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False, **args).json()  # nosec
+
     countObj = pydash.get(response, "Data[0]")
     if len(pydash.keys(countObj)):
         count = pydash.get(countObj, pydash.keys(countObj)[0])
