@@ -3,16 +3,9 @@ import logging
 from django.conf import settings
 
 from talentmap_api.common.common_helpers import ensure_date
+from talentmap_api.requests import requests
 
 API_ROOT = settings.FSBID_API_URL
-
-CERT = settings.HRONLINE_CERT
-if CERT:
-    import requests as r
-    requests = r.Session()
-    requests.verify = CERT
-else:
-    import requests
 
 logger = logging.getLogger(__name__)
 

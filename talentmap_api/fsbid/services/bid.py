@@ -13,19 +13,13 @@ from talentmap_api.bidding.models import BidHandshakeCycle
 from talentmap_api.common.common_helpers import ensure_date
 
 from talentmap_api.bidding.models import Bid, BidHandshake
+from talentmap_api.requests import requests
+
 import talentmap_api.fsbid.services.common as services
 import talentmap_api.bidding.services.bidhandshake as bh_services
 import talentmap_api.fsbid.services.available_positions as ap_services
 
 API_ROOT = settings.FSBID_API_URL
-
-CERT = settings.HRONLINE_CERT
-if CERT:
-    import requests as r
-    requests = r.Session()
-    requests.verify = CERT
-else:
-    import requests
 
 logger = logging.getLogger(__name__)
 

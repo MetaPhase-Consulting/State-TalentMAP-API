@@ -2,17 +2,10 @@ import logging
 from urllib.parse import urlencode, quote
 import pydash
 from django.conf import settings
+from talentmap_api.requests import requests
 
 TP_ROOT = settings.TP_API_URL
 BTP_ROOT = settings.BTP_API_URL
-
-CERT = settings.HRONLINE_CERT
-if CERT:
-    import requests as r
-    requests = r.Session()
-    requests.verify = CERT
-else:
-    import requests
 
 logger = logging.getLogger(__name__)
 

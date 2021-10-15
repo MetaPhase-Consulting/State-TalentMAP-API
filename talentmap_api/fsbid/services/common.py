@@ -23,14 +23,7 @@ from talentmap_api.projected_tandem.models import ProjectedFavoriteTandem
 from talentmap_api.fsbid.services import available_positions as apservices
 from talentmap_api.fsbid.services import projected_vacancies as pvservices
 from talentmap_api.fsbid.services import employee as empservices
-
-CERT = settings.HRONLINE_CERT
-if CERT:
-    import requests as r
-    requests = r.Session()
-    requests.verify = CERT
-else:
-    import requests
+from talentmap_api.requests import requests
 
 logger = logging.getLogger(__name__)
 

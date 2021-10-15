@@ -12,6 +12,7 @@ import pydash
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import ensure_date
+from talentmap_api.requests import requests
 
 API_ROOT = settings.FSBID_API_URL
 HRDATA_URL = settings.HRDATA_URL
@@ -19,14 +20,6 @@ HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
-
-CERT = settings.HRONLINE_CERT
-if CERT:
-    import requests as r
-    requests = r.Session()
-    requests.verify = CERT
-else:
-    import requests
 
 logger = logging.getLogger(__name__)
 
