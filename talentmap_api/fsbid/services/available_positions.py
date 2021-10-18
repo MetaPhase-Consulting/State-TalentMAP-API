@@ -368,6 +368,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False, u
         f"{prefix}skills": services.convert_multi_value(query.get("position__skill__code__in")),
         f"{prefix}us_codes": services.convert_multi_value(query.get("position__us_codes__in")),
         f"{prefix}cpn_codes": services.convert_multi_value(query.get("position__cpn_codes__in")),
+        f"{prefix}htf_ind": services.convert_multi_value(query.get("htf_indicator")),
         f"{prefix}freeText": query.get("q", None),
 
     }
@@ -400,7 +401,8 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False, u
         values[f"{prefix}pos_numbers2"] = services.convert_multi_value(query.get("position__position_number__in-tandem", None))
         values[f"{prefix}tod_codes2"] = services.convert_multi_value(query.get("position__post__tour_of_duty__code__in-tandem"))
         values[f"{prefix}skills2"] = services.convert_multi_value(query.get("position__skill__code__in-tandem"))
-    
+        values[f"{prefix}htf_ind2"] = services.convert_multi_value(query.get("htf_indicator-tandem"))
+
     if use_post:
         if isinstance(values[f"{prefix}order_by"], list):
             values[f"{prefix}order_by"] = pydash.compact(values[f"{prefix}order_by"])
@@ -436,6 +438,7 @@ def convert_ap_tandem_query(query, allowed_status_codes=["HS", "OP"]):
         "request_params.location_codes": services.post_values(query),
         "request_params.pos_numbers": services.convert_multi_value(query.get("position__position_number__in", None)),
         "request_params.cp_ids": services.convert_multi_value(query.get("id", None)),
+        "request_params.htf_ind": services.convert_multi_value(query.get("htf_indicator", None)),
 
         # Common filters
         "request_params.overseas_ind2": services.overseas_values(query),
@@ -455,6 +458,7 @@ def convert_ap_tandem_query(query, allowed_status_codes=["HS", "OP"]):
         "request_params.tod_codes2": services.convert_multi_value(query.get("position__post__tour_of_duty__code__in-tandem")),
         "request_params.pos_numbers2": services.convert_multi_value(query.get("position__position_number__in-tandem", None)),
         "request_params.cp_ids2": services.convert_multi_value(query.get("id-tandem", None)),
+        "request_params.htf_ind2": services.convert_multi_value(query.get("htf_indicator-tandem", None)),
     }
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
