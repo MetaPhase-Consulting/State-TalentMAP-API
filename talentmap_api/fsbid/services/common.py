@@ -279,10 +279,14 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     else:
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
-    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args,).json()
-    count = pydash.get(response, "Data[0]")
-    count = pydash.get(count, pydash.keys(count)[0])
-    return {"count": count}
+    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args).json()
+    countObj = pydash.get(response, "Data[0]")
+    if len(pydash.keys(countObj)):
+        count = pydash.get(countObj, pydash.keys(countObj)[0])
+        return { "count": count }
+    else:
+        logger.error(f"No count property could be found. {response}")
+        raise KeyError('No count property could be found')
 
 
 # pre-load since this data rarely changes

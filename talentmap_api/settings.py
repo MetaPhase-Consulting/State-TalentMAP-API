@@ -144,6 +144,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -458,6 +459,8 @@ DATABASES = {
         'NAME': get_delineated_environment_variable("DATABASE_URL"),
         'USER': get_delineated_environment_variable("DATABASE_USER"),
         'PASSWORD': get_delineated_environment_variable("DATABASE_PW"),
+        'CONN_MAX_AGE': 300,
+        'OPTIONS': {'threaded': True}
     }
 }
 
