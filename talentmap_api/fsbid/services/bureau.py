@@ -400,6 +400,7 @@ def convert_bp_query(query, allowed_status_codes=["FP", "OP", "HS"], use_post=Fa
         f"{prefix}skills": convert_multi_value(query.get("position__skill__code__in")),
         f"{prefix}us_codes": convert_multi_value(query.get("position__us_codes__in")),
         f"{prefix}cpn_codes": convert_multi_value(query.get("position__cpn_codes__in")),
+        f"{prefix}htf_ind": convert_multi_value(query.get("htf_indicator")),
         f"{prefix}freeText": query.get("q", None),
         f"{prefix}totalResults": query.get("getCount", 'false'),
     }
