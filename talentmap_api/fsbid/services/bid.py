@@ -218,7 +218,7 @@ def fsbid_bid_to_talentmap_bid(data, jwt_token):
         "reviewer": "",
         "cdo_bid": data.get('cdo_bid') == 'Y',
         "position_info": {
-            "id": str(cpId), # even if we can't return positionInfo, we can at least return id
+            "id": cpId, # even if we can't return positionInfo, we can at least return id
             **positionInfo,
         },
     }
