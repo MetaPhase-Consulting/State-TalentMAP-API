@@ -2,7 +2,6 @@ import re
 import logging
 import csv
 from datetime import datetime
-import requests
 import requests_cache
 from copy import deepcopy
 
@@ -25,6 +24,7 @@ from talentmap_api.projected_tandem.models import ProjectedFavoriteTandem
 from talentmap_api.fsbid.services import available_positions as apservices
 from talentmap_api.fsbid.services import projected_vacancies as pvservices
 from talentmap_api.fsbid.services import employee as empservices
+from talentmap_api.requests import requests
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +33,7 @@ CP_API_V2_ROOT = settings.CP_API_V2_URL
 HRDATA_URL = settings.HRDATA_URL
 HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+
 
 urls_expire_after = {
     '*/cycles': 30,
@@ -199,7 +200,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
         url = f"{api_root}/{uri}?{query_mapping_function(queryClone)}"
     else:
         url = f"{api_root}/{uri}"
-    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -212,7 +213,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
 def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
-    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery, verify=False).json()  # nosec
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -225,7 +226,7 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
 def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False):
     url = f"{API_ROOT}/{uri}"
     method = session if use_cache else requests
-    response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+    response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
@@ -282,7 +283,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     else:
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
-    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False, **args).json()  # nosec
+    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args).json()
     countObj = pydash.get(response, "Data[0]")
     if len(pydash.keys(countObj)):
         count = pydash.get(countObj, pydash.keys(countObj)[0])
@@ -346,16 +347,30 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
     if use_post:
         mappedQuery = pydash.omit_by(query_mapping_function(formattedQuery), lambda o: o == None)
         url = f"{base_url}/{uri}"
-        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery, verify=False).json()  # nosec
+        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     else:
         url = f"{base_url}/{uri}?{query_mapping_function(formattedQuery)}"
-        response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, verify=False).json()  # nosec
+        response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or response.get('return_code', -1) == -1:
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
 
     return map(mapping_function, response.get("Data", {}))
+
+
+def get_bid_stats_for_csv(record):
+    # initial value
+    bid_stats_row_value = 'N/A'
+    bid_stats = pydash.get(record, 'bid_statistics[0]')
+    total_bids = pydash.get(bid_stats, 'total_bids')
+    in_grade_bids = pydash.get(bid_stats, 'in_grade')
+    at_skill_bids = pydash.get(bid_stats, 'at_skill')
+    in_grade_at_skill_bids = pydash.get(bid_stats, 'in_grade_at_skill')
+    # make sure all bid counts are numbers
+    if not pydash.some([total_bids, in_grade_bids, at_skill_bids, in_grade_at_skill_bids], lambda x: not pydash.is_number(x)):
+        bid_stats_row_value = f"{total_bids}({in_grade_bids}/{at_skill_bids}){in_grade_at_skill_bids}"
+    return bid_stats_row_value
 
 
 def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
@@ -391,6 +406,8 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
     if ap:
         headers.append(smart_str(u"Status Code"))
     headers.append(smart_str(u"Position Number"))
+    if ap:
+        headers.append(smart_str(u"Bid Count"))
     headers.append(smart_str(u"Capsule Description"))
     writer.writerow(headers)
 
@@ -428,6 +445,8 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         if ap:
             row.append(smart_str(record.get("status_code")))
         row.append(smart_str("=\"%s\"" % record["position"]["position_number"]))
+        if ap:
+            row.append(get_bid_stats_for_csv(record))
         row.append(smart_str(record["position"]["description"]["content"]))
 
         writer.writerow(row)
@@ -464,6 +483,7 @@ def get_bids_csv(data, filename, jwt_token):
     headers.append(smart_str(u"Bid Status"))
     headers.append(smart_str(u"Handshake Status"))
     headers.append(smart_str(u"Handshake Accepted/Declined by CDO"))
+    headers.append(smart_str(u"Bid Count"))
     headers.append(smart_str(u"Capsule Description"))
 
     writer.writerow(headers)
@@ -499,6 +519,7 @@ def get_bids_csv(data, filename, jwt_token):
                 row.append(smart_str(record.get("status")))
             row.append(hs_status)
             row.append(mapBool[pydash.get(record, "handshake.hs_cdo_indicator", 'default')])
+            row.append(get_bid_stats_for_csv(pydash.get(record, 'position_info')))
             row.append(smart_str(record["position_info"]["position"]["description"]["content"]))
 
             writer.writerow(row)
