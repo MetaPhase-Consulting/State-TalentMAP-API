@@ -52,6 +52,7 @@ class FSBidBureauPositionsListView(BaseView):
             coreapi.Field("position__skill__code__in", location='query', description='Skill Code'),
             coreapi.Field("lead_hs_status_code", location='query', description='Handshake code(s) to filter on. (O, R, A, D)'),
             coreapi.Field("position__us_codes__in", location='query', description='Use code values from /references/unaccompaniedstatuses/'),
+            coreapi.Field("htf_ind", location='query', description='Hard to Fill (Y/N)'),
             coreapi.Field("q", location='query', description='Text search'),
         ]
     )
@@ -142,7 +143,7 @@ class FSBidBureauPositionBidsView(BaseView):
 
         return Response(result)
 
-class FSBidBureauPositionBidsExportView(BaseView):
+class FSBidBureauPositionBidsCSVView(BaseView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_class = BureauPositionsFilter
 
