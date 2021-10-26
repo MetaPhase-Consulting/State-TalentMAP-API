@@ -396,10 +396,13 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
     headers.append(smart_str(u"Languages"))
     if ap:
         headers.append(smart_str(u"Service Needs Differential"))
+        headers.append(smart_str(u"Hard to Fill"))
     headers.append(smart_str(u"Post Differential"))
     headers.append(smart_str(u"Danger Pay"))
     headers.append(smart_str(u"TED"))
     headers.append(smart_str(u"Incumbent"))
+    if not ap:
+        headers.append(smart_str(u"Assignee"))
     headers.append(smart_str(u"Bid Cycle/Season"))
     if ap:
         headers.append(smart_str(u"Posted Date"))
@@ -435,10 +438,13 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         row.append(smart_str(parseLanguagesString(record["position"]["languages"])))
         if ap:
             row.append(smart_str(record["isServiceNeedDifferential"]))
+            row.append(smart_str(record["isHardToFill"]))
         row.append(smart_str(record["position"]["post"]["differential_rate"]))
         row.append(smart_str(record["position"]["post"]["danger_pay"]))
         row.append(ted)
         row.append(smart_str(record["position"]["current_assignment"]["user"]))
+        if not ap:
+            row.append(smart_str(pydash.get(record, 'position.assignee')))
         row.append(smart_str(record["bidcycle"]["name"]))
         if ap:
             row.append(posteddate)
