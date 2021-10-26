@@ -500,7 +500,7 @@ def get_bids_csv(data, filename, jwt_token):
                 ted = smart_str(maya.parse(pydash.get(record, 'position_info.ted')).datetime().strftime('%m/%d/%Y'))
             except:
                 ted = "None listed"
-            hs_status = (pydash.get(record, 'handshake.hs_status_code') or '').replace('_', ' ')
+            hs_status = (pydash.get(record, 'handshake.hs_status_code') or '').replace('_', ' ') or 'N/A'
             row = []
             row.append(smart_str(pydash.get(record, 'position_info.position.title')))
             row.append(smart_str("=\"%s\"" % pydash.get(record, 'position_info.position.position_number')))
@@ -519,10 +519,10 @@ def get_bids_csv(data, filename, jwt_token):
             row.append(ted)
             row.append(smart_str(pydash.get(record, 'position_info.position.current_assignment.user')))
             row.append(smart_str(pydash.get(record, 'position_info.bidcycle.name')))
-            if record.get("status") == "handshake_accepted":
+            if pydash.get(record, "status") == "handshake_accepted":
                 row.append(smart_str("handshake_registered"))
             else:
-                row.append(smart_str(record.get("status")))
+                row.append(smart_str(pydash.get(record, "status") or 'N/A'))
             row.append(hs_status)
             row.append(mapBool[pydash.get(record, "handshake.hs_cdo_indicator", 'default')])
             row.append(get_bid_stats_for_csv(pydash.get(record, 'position_info')))
