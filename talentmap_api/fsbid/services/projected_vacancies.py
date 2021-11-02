@@ -334,9 +334,12 @@ def convert_pv_query(query, isTandem=False, use_post=False):
     if use_post:
         if isinstance(values[f"{prefix}order_by"], list):
             values[f"{prefix}order_by"] = pydash.compact(values[f"{prefix}order_by"])
-        return pydash.omit_by(values, lambda o: o is None or o == [])
+    
+    valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+    if use_post:
+        return valuesToReturn
 
-    return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+    return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
 def get_pv_favorite_ids(query, jwt_token, host=None):
