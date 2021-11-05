@@ -4,7 +4,6 @@ from functools import partial
 from urllib.parse import urlencode, quote
 
 from django.conf import settings
-import requests  # pylint: disable=unused-import
 
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import ensure_date, safe_navigation, validate_values
