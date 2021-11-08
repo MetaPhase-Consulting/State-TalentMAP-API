@@ -1,6 +1,8 @@
 import logging
 import pydash
 
+import requests  # pylint: disable=unused-import
+
 from django.conf import settings
 
 import talentmap_api.fsbid.services.common as common
