@@ -6,6 +6,8 @@ if CERT:
     requests = r.Session()
     requests.verify = CERT
 else:
-    import requests as r
-    requests = r.Session()
-    requests.verify = False
+    import requests
+    # TODO - figure out why this breaks tests
+    # import requests as r
+    # requests = r.Session()
+    # requests.verify = False
