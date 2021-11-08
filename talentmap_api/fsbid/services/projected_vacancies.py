@@ -2,6 +2,7 @@ import logging
 from functools import partial
 from urllib.parse import urlencode, quote
 
+import requests  # pylint: disable=unused-import
 import pydash
 
 from django.conf import settings
