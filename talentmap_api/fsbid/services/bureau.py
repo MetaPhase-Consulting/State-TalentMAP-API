@@ -6,6 +6,8 @@ from functools import partial
 from copy import deepcopy
 import pydash
 
+import requests  # pylint: disable=unused-import
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
