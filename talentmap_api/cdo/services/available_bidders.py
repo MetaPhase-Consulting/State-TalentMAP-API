@@ -12,7 +12,7 @@ from django.utils.encoding import smart_str
 import talentmap_api.bureau.services.available_bidders as bureau_services
 import talentmap_api.fsbid.services.client as client_services
 
-from talentmap_api.common.common_helpers import ensure_date, formatCSV
+from talentmap_api.common.common_helpers import ensure_date, formatCSV, get_formatted_suffix_name
 
 from talentmap_api.common.common_helpers import formatCSV
 from talentmap_api.fsbid.services.common import mapBool
@@ -152,7 +152,9 @@ def get_available_bidders_csv(request):
                 languages += f'{language["custom_description"]}, '
         languages = languages.rstrip(', ')
 
-        cdo_name = f'{pydash.get(record, "cdo.last_name")}, {pydash.get(record, "cdo.first_name")}'
+        cdo_suffix_name = pydash.get(record, "cdo.suffix_name")
+
+        cdo_name = f'{pydash.get(record, "cdo.last_name")}{get_formatted_suffix_name(cdo_suffix_name)}, {pydash.get(record, "cdo.first_name")}'
 
         fields = formatCSV(record, fields_info)
 

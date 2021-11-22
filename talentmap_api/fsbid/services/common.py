@@ -702,4 +702,4 @@ def sort_bids(bidlist, ordering_query):
         logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return bidlist
     return bids
-    
+

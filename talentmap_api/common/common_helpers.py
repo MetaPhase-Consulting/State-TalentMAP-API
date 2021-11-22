@@ -601,3 +601,7 @@ def send_email_thread(subject = '', body = '', recipients = []):
             )
         except:#nosec
             pass
+
+
+def get_formatted_suffix_name(suffix):
+    return f" {suffix}" if suffix else ""
