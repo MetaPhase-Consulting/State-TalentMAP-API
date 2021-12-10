@@ -3,12 +3,12 @@ services:
   app:
     build:
       context: .
-    ports:
-      - 8000:8000
     links:
       - oracle
     depends_on:
       - oracle
+    deploy:
+      replicas: ${REPLICAS-1}
     # use this to run in https server locally
     # command: python manage.py runsslserver --certificate /app/talentmap_api/sp.crt --key /app/talentmap_api/sp.key 0.0.0.0:8000
     command: >
@@ -38,7 +38,6 @@ services:
       - CLIENTS_API_URL=http://host.docker.internal:3333/Clients
       - CLIENTS_API_V2_URL=http://host.docker.internal:3333/v2/clients
       - TP_API_URL=http://host.docker.internal:3333/TrackingPrograms
-      - BTP_API_URL=http://host.docker.internal:3333/BidderTrackingPrograms
       - EMAIL_ENABLED=true
       - EMAIL_HOST=host.docker.internal
       - EMAIL_PORT=1025
@@ -48,9 +47,21 @@ services:
       - EMAIL_USE_TLS=false
       - EMAIL_IS_DEV=false
       - EMAIL_DEV_TO=${EMAIL_DEV_TO}
+  haproxy:
+    image: eeacms/haproxy
+    depends_on:
+    - app
+    ports:
+    - "8000:5000"
+    - "1936:1936"
+    environment:
+      BACKENDS: "app"
+      BACKENDS_PORT: "8000"
+      DNS_ENABLED: "true"
+      LOG_LEVEL: "info"
   oracle:
     ports:
-      - 1521:1521
+        - 1521:1521
     image: mjoyce91/oracle193db:fast
     volumes:
       - oracle:/var/lib/oracle/data/:delegated
