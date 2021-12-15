@@ -240,9 +240,11 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - postman
       - build
       - pylint
+      - postman:
+          requires:
+            - build
       - bandit:
           requires:
             - build
