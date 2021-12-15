@@ -163,7 +163,7 @@ jobs:
           name: Build API
           command: |
             chmod -R 777 ./
-            docker-compose up --no-start
+            REPLICAS=1 docker-compose up --no-start
             docker cp talentmap_api/ state-talentmap-api_app_1:/app/talentmap_api/
             docker cp show_logo.py state-talentmap-api_app_1:/app/
             docker cp wait-for-oracle.sh state-talentmap-api_app_1:/app/
@@ -176,7 +176,7 @@ jobs:
       - run:
           name: Run API
           command: |
-            docker-compose up -d
+            REPLICAS=1 docker-compose up -d
             docker-compose run app sh -c "./wait-for-oracle.sh oracle:1521/oraclepdb talentmap1 talentmap1 '' true"
             docker-compose run app python manage.py migrate
             docker-compose run app python manage.py create_demo_environment
