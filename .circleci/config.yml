@@ -160,19 +160,27 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+          name: Install Docker Compose
+          environment:
+            COMPOSE_VERSION: '1.29.2'
+          command: |
+            curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run:
           name: Build API
           command: |
             chmod -R 777 ./
             REPLICAS=1 docker-compose up --no-start
-            docker cp talentmap_api/ state-talentmap-api_app_1:/app/talentmap_api/
-            docker cp show_logo.py state-talentmap-api_app_1:/app/
-            docker cp wait-for-oracle.sh state-talentmap-api_app_1:/app/
-            docker cp create-oracle-user.sh state-talentmap-api_app_1:/app/
-            docker cp manage.py state-talentmap-api_app_1:/app/
-            docker cp setup.cfg state-talentmap-api_app_1:/app/
-            docker cp healthcheck-alt.sql state-talentmap-api_app_1:/app/
-            docker cp healthcheck.sql state-talentmap-api_app_1:/app/
-            docker cp create-oracle-user.sql state-talentmap-api_app_1:/app/
+            docker cp talentmap_api/ project_app_1:/app/talentmap_api/
+            docker cp show_logo.py project_app_1:/app/
+            docker cp wait-for-oracle.sh project_app_1:/app/
+            docker cp create-oracle-user.sh project_app_1:/app/
+            docker cp manage.py project_app_1:/app/
+            docker cp setup.cfg project_app_1:/app/
+            docker cp healthcheck-alt.sql project_app_1:/app/
+            docker cp healthcheck.sql project_app_1:/app/
+            docker cp create-oracle-user.sql project_app_1:/app/
       - run:
           name: Run API
           command: |
@@ -189,7 +197,10 @@ jobs:
       - run:
           name: Run newman
           command: |
-            docker run --network container:state-talentmap-api_app -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu run "TalentMAP-API.postman_collection.json" --environment="TalentMAP-API.postman_environment.json" --reporters="json,cli" --reporter-json-export="newman-results.json"
+            docker create --name newman --network container:project_app_1 -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu
+            docker cp TalentMAP-API.postman_collection.json newman:/etc/newman
+            docker cp TalentMAP-API.postman_environment.json newman:/etc/newman
+            docker run --network container:project_app_1 -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu run "TalentMAP-API.postman_collection.json" --environment="TalentMAP-API.postman_environment.json" --reporters="json,cli" --reporter-json-export="newman-results.json"
   zap:
     docker:
       - *default-python-node
