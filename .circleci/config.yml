@@ -153,7 +153,9 @@ jobs:
             . venv/bin/activate
             pylint ./talentmap_api/ --rcfile=./.pylintrc --output-format=text || pylint-exit --error-fail $?
   postman:
-    <<: *default-docker-node
+    docker:
+      - *default-python-node
+      - *default-oracle-node
     steps:
       - setup_remote_docker
       - checkout
