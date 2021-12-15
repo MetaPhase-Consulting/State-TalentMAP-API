@@ -152,6 +152,45 @@ jobs:
           command: |
             . venv/bin/activate
             pylint ./talentmap_api/ --rcfile=./.pylintrc --output-format=text || pylint-exit --error-fail $?
+  postman:
+    <<: *default-docker-node
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Build API
+          command: |
+            chmod -R 777 ./
+            docker-compose up --no-start
+            docker cp talentmap_api/ state-talentmap-api_app_1:/app/talentmap_api/
+            docker cp show_logo.py state-talentmap-api_app_1:/app/
+            docker cp wait-for-oracle.sh state-talentmap-api_app_1:/app/
+            docker cp create-oracle-user.sh state-talentmap-api_app_1:/app/
+            docker cp manage.py state-talentmap-api_app_1:/app/
+            docker cp setup.cfg state-talentmap-api_app_1:/app/
+            docker cp healthcheck-alt.sql state-talentmap-api_app_1:/app/
+            docker cp healthcheck.sql state-talentmap-api_app_1:/app/
+            docker cp create-oracle-user.sql state-talentmap-api_app_1:/app/
+      - run:
+          name: Run API
+          command: |
+            docker-compose up -d
+            docker-compose run app sh -c "./wait-for-oracle.sh oracle:1521/oraclepdb talentmap1 talentmap1 '' true"
+            docker-compose run app python manage.py migrate
+            docker-compose run app python manage.py create_demo_environment
+            docker-compose run mock_fsbid npm run migrate
+            docker-compose run mock_fsbid npm run seed
+      - run:
+        name: Docker pull newman
+        command: |
+          docker pull postman/newman
+      - run:
+        name: Run newman
+        command: |
+          docker run --network container:state-talentmap-api_app_1 -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu  \
+          run "TalentMAP-API.postman_collection.json" \
+          --environment="TalentMAP-API.postman_environment.json" \
+          --reporters="json,cli" --reporter-json-export="newman-results.json"
   zap:
     docker:
       - *default-python-node
@@ -191,6 +230,7 @@ jobs:
 workflows:
   build_and_test:
     jobs:
+      - postman
       - build
       - pylint
       - bandit:

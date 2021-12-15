@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "dbbf5daa-f4b7-4118-90be-85ae9cfc0961",
+		"name": "TalentMAP-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /glossary",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var host = pm.environment.get('host');",
+							"var uname = pm.environment.get('uname');",
+							"var upw = pm.environment.get('upw');",
+							"",
+							"pm.sendRequest({",
+							"    url: `${host}/api/v1/accounts/token/`,",
+							"    method: 'POST',",
+							"    header: 'Content-Type:application/x-www-form-urlencoded',",
+							"    body: {",
+							"        mode: 'urlencoded',",
+							"        urlencoded: [",
+							"                { key: \"username\", value: uname },",
+							"                { key: \"password\", value: upw },",
+							"        ]",
+							"    }",
+							"}, (err, res) => {",
+							"    const { token } = res.json();",
+							"    pm.environment.set('Authorization', `Token ${token}`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"res = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains 'results' property\", function () {",
+							"  console.log(pm.response.json())",
+							"  pm.expect(res).to.have.property('results');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/v1/glossary/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"glossary",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
