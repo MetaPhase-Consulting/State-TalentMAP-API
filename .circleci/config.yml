@@ -189,10 +189,7 @@ jobs:
       - run:
         name: Run newman
         command: |
-          docker run --network container:state-talentmap-api_app_1 -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu  \
-          run "TalentMAP-API.postman_collection.json" \
-          --environment="TalentMAP-API.postman_environment.json" \
-          --reporters="json,cli" --reporter-json-export="newman-results.json"
+          docker run --network container:state-talentmap-api_app_1 -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu run "TalentMAP-API.postman_collection.json" --environment="TalentMAP-API.postman_environment.json" --reporters="json,cli" --reporter-json-export="newman-results.json"
   zap:
     docker:
       - *default-python-node
