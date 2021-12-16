@@ -1018,7 +1018,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{host}}/api/v1/fsbid/available_positions/export/?ordering=-posted_date&position__bureau__code__in=120000&position__grade__code__in=08",
+							"raw": "{{host}}/api/v1/fsbid/available_positions/export/",
 							"host": [
 								"{{host}}"
 							],
