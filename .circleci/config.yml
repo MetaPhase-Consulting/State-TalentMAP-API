@@ -197,6 +197,7 @@ jobs:
       - run:
           name: Run newman
           command: |
+            sed -i'.bak' -e 's/localhost:8000/haproxy:5000/g' TalentMAP-API.postman_environment
             docker create --name newman --network container:project_app_1 -v "/$(pwd):/etc/newman" -t postman/newman:ubuntu
             docker cp TalentMAP-API.postman_collection.json newman:/etc/newman
             docker cp TalentMAP-API.postman_environment.json newman:/etc/newman
