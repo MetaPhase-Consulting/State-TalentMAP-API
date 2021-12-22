@@ -30,11 +30,11 @@ def get_agenda_employees(query, jwt_token=None):
         "use_post": False,
     }
 
-    agenda_item = services.send_get_request(
+    agenda_employees= services.send_get_request(
         **args
     )
 
-    return agenda_item
+    return agenda_employees
 
 def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
     '''
