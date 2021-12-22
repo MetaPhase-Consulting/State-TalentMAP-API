@@ -21,6 +21,8 @@ import pydash
 from saml2.config import SPConfig
 from django.apps import AppConfig
 
+from talentmap_api.fsbid.services.agenda_employees import PERSON_API_ROOT
+
 
 # For upgrade to django 3.x
 AppConfig.default = False
@@ -543,6 +545,7 @@ HRDATA_URL_EXTERNAL = get_delineated_environment_variable('HRDATA_URL_EXTERNAL',
 AVATAR_URL = get_delineated_environment_variable('AVATAR_URL', 'https://usdos.sharepoint.com/_layouts/15/userphoto.aspx')
 TP_API_URL = get_delineated_environment_variable('TP_API_URL', 'http://mock_fsbid:3333/TrackingPrograms')
 AGENDA_ITEM_API_URL = get_delineated_environment_variable('AGENDA_ITEM_API_URL', 'http://mock_fsbid:3333/AgendaItems')
+PERSON_API_ROOT = get_delineated_environment_variable('PERSON_API_ROOT_URL', 'http://mock_fsbid:3333/v3/persons') #TODO-mock this
 
 # Whether to use the /v2 endpoints
 USE_CP_API_V2 = bool_env_variable("USE_CP_API_V2")
