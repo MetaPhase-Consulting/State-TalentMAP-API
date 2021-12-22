@@ -21,7 +21,7 @@ def get_single_agenda_item(jwt_token=None, ai_id = None):
     args = {
         "uri": "",
         "id": ai_id,
-        "query_mapping_function": None,
+        "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
         "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
         "use_post": False,
@@ -82,11 +82,11 @@ def convert_agenda_item_query(query):
     '''
     values = {
         # Pagination
-        "page_index": int(query.get("page", 1)),
-        "page_size": query.get("limit", 1000),
-
-        "order_by": query.get("ordering", None), # TODO - use services.sorting_values
-        "filter": services.convert_to_fsbid_ql('perdetseqnum', query.get("perdet", None)),
+        "rp.pageNum": int(query.get("page", 1)),
+        "rp.pageRows": query.get("limit", 1000),
+        "rp.columns": None,
+        "rp.order_by": query.get("ordering", None), # TODO - use services.sorting_values
+        "rp.filter": services.convert_to_fsbid_ql('aiperdetseqnum', query.get("perdet", None)),
     }
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
@@ -99,11 +99,11 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     return {
         "id": data.get("aiseqnum", None),
         "remarks": services.parse_agenda_remarks(data.get("aicombinedremarktext", '')),
-        "panel_date": ensure_date(data.get("pmddttm", None), utc_offset=-5),
+        "panel_date": ensure_date(pydash.get(data, "Panel.pmddttm", None), utc_offset=-5),
         "status": data.get("aisdesctext", None),
         "perdet": data.get("aiperdetseqnum", None),
 
-        "legs": list(map(fsbid_legs_to_talentmap_legs, data.get("legs", []))), # Might be its own endpoint to fetch legs
+        "legs": list(map(fsbid_legs_to_talentmap_legs, data.get("agendaLegs", []))), # Might be its own endpoint to fetch legs
 
         "update_date": ensure_date(data.get("update_date", None), utc_offset=-5), # TODO - find this date
         "modifier_name": data.get("aiupdateid", None), # TODO - this is only the id
