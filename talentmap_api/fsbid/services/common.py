@@ -709,7 +709,7 @@ def sort_bids(bidlist, ordering_query):
 def convert_to_fsbid_ql(column = '', value = '', comparator = 'eq'):
     if not column and not value and not comparator:
         return None
-    return f"{column}|{comparator}|{value}"
+    return f"{column}|{comparator}|{value}|"
 
 
 def categorize_remark(remark = ''):
