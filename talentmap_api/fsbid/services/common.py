@@ -731,3 +731,46 @@ def parse_agenda_remarks(remarks_string = ''):
     values = pydash.filter_(values, lambda o: o and o != ' ')
     values = pydash.map_(values, categorize_remark)
     return values
+
+
+def get_ai_history_csv(data, filename):
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+
+    writer = csv.writer(response, csv.excel)
+    response.write(u'\ufeff'.encode('utf8'))
+
+    # write the headers
+    headers = []
+    headers.append(smart_str(u"Position_Title"))
+    headers.append(smart_str(u"Position_Number"))
+    headers.append(smart_str(u"Org"))
+    headers.append(smart_str(u"ETA"))
+    headers.append(smart_str(u"TED"))
+    headers.append(smart_str(u"TOD"))
+    headers.append(smart_str(u"Grade"))
+    headers.append(smart_str(u"Action"))
+    headers.append(smart_str(u"Travel"))
+    writer.writerow(headers)
+
+    for record in data:
+        try:
+            ted = smart_str(maya.parse(record["ted"]).datetime().strftime('%m/%d/%Y'))
+        except:
+            ted = "None listed"
+
+        row = []
+        # need to update
+        row.append(smart_str(record["Position_Title"]))
+        row.append(smart_str(record["Position_Number"]))
+        row.append(smart_str(record["Org"]))
+        row.append(smart_str(record["ETA"]))
+        row.append(ted)
+        row.append(smart_str(record["TOD"]))
+        row.append(smart_str(record["Grade"]))
+        row.append(smart_str(record["Action"]))
+        row.append(smart_str(record["Travel"]))
+
+        writer.writerow(row)
+    return response

@@ -137,3 +137,22 @@ def fsbid_legs_to_talentmap_legs(data):
 
         "travel": data.get("travel", None), # TODO - find this text
     }
+
+
+def get_agenda_item_history_csv(query, jwt_token, host=None, limit=None):
+
+    data = services.send_get_csv_request(
+        "agendaItemHistory",
+        query,
+        convert_agenda_item_query,
+        jwt_token,
+        fsbid_agenda_items_to_talentmap_agenda_items,
+        AGENDA_ITEM_API_ROOT,
+        host,
+        None,
+        limit
+    )
+
+    response = services.get_ai_history_csv(data, "agenda_item_history", True)
+
+    return response
