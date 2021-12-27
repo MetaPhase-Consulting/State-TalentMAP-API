@@ -21,7 +21,6 @@ import pydash
 from saml2.config import SPConfig
 from django.apps import AppConfig
 
-from talentmap_api.fsbid.services.agenda_employees import PERSON_API_ROOT
 
 
 # For upgrade to django 3.x
