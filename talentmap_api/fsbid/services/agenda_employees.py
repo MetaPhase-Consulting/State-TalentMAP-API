@@ -13,7 +13,7 @@ PERSON_API_ROOT = settings.PERSON_API_URL
 logger = logging.getLogger(__name__)
 
 
-def get_agenda_employees(query, jwt_token=None):
+def get_agenda_employees(query, jwt_token=None, host=None):
     '''
     Get employees
     '''
@@ -25,7 +25,7 @@ def get_agenda_employees(query, jwt_token=None):
         "mapping_function": fsbid_agenda_employee_to_talentmap_agenda_employee,
         "count_function": get_agenda_employees_count,
         "base_url": '',
-        "host": None,
+        "host": host,
         "api_root": PERSON_API_ROOT,
         "use_post": False,
     }
@@ -57,11 +57,11 @@ def convert_agenda_employees_query(query):
     '''
     values = {
         # Pagination
-        "page_index": int(query.get("page", 1)),
-        "page_size": query.get("limit", 1000),
-        "order_by": query.get("ordering", None), # TODO - use services.sorting_values
+        "rp.pageNum": int(query.get("page", 1)),
+        "rp.pageRows": query.get("limit", 1000),
+        "rp.orderBy": query.get("ordering", None), # TODO - use services.sorting_values
 
-        "filter": services.convert_to_fsbid_ql('pertexternalid', query.get("q", None)),
+        "rp.filter": services.convert_to_fsbid_ql('pertexternalid', query.get("q", None)),
         # services.convert_to_fsbid_ql('perdetseqnum', query.get("q", None)),
         # services.convert_to_fsbid_ql('perpiilastname', query.get("q", None)), TODO - passing multiples values
     }

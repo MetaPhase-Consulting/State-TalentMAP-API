@@ -29,4 +29,4 @@ class FSBidAgendaEmployeesListView(BaseView):
         '''
         Gets all agenda employees
         '''
-        return Response(services.get_employee_agendas(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+        return Response(services.get_agenda_employees(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
