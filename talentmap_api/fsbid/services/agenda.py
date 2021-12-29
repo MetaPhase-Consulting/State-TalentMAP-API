@@ -85,7 +85,7 @@ def convert_agenda_item_query(query):
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": query.get("limit", 1000),
         "rp.columns": None,
-        "rp.order_by": services.sorting_values(query.get("ordering", "agenda_id")),
+        "rp.orderBy": services.sorting_values(query.get("ordering", "agenda_id")),
         "rp.filter": services.convert_to_fsbid_ql('aiperdetseqnum', query.get("perdet", None)),
     }
 
