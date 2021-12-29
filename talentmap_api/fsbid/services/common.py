@@ -733,8 +733,7 @@ def parse_agenda_remarks(remarks_string = ''):
     return values
 
 
-def get_ai_history_csv(data, filename):
-
+def get_aih_csv(data, filename):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
@@ -743,8 +742,8 @@ def get_ai_history_csv(data, filename):
 
     # write the headers
     headers = []
-    headers.append(smart_str(u"Position_Title"))
-    headers.append(smart_str(u"Position_Number"))
+    headers.append(smart_str(u"Position Title"))
+    headers.append(smart_str(u"Position Number"))
     headers.append(smart_str(u"Org"))
     headers.append(smart_str(u"ETA"))
     headers.append(smart_str(u"TED"))

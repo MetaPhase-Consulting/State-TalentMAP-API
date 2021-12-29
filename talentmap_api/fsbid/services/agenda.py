@@ -139,20 +139,21 @@ def fsbid_legs_to_talentmap_legs(data):
     }
 
 
-def get_agenda_item_history_csv(query, jwt_token, host=None, limit=None):
+def get_agenda_item_history_csv(query, jwt_token, host, client_id, limit=None):
 
-    data = services.send_get_csv_request(
-        "agendaItemHistory",
-        query,
-        convert_agenda_item_query,
-        jwt_token,
-        fsbid_agenda_items_to_talentmap_agenda_items,
-        AGENDA_ITEM_API_ROOT,
-        host,
-        None,
-        limit
-    )
+    # data = services.send_get_csv_request(
+    #     "agendaItemHistory",
+    #     query,
+    #     convert_agenda_item_query,
+    #     jwt_token,
+    #     fsbid_agenda_items_to_talentmap_agenda_items,
+    #     AGENDA_ITEM_API_ROOT,
+    #     host,
+    #     None,
+    #     limit
+    # )
+    data = {}
 
-    response = services.get_ai_history_csv(data, "agenda_item_history", True)
+    response = services.get_aih_csv(data, "agenda_item_history")
 
     return response
