@@ -59,7 +59,7 @@ def get_agenda_items(jwt_token=None, query = {}, host=None):
 
     return agenda_items
 
-
+# Placeholder. Isn't used and doesn't work.
 def get_agenda_items_count(query, jwt_token, host=None, use_post=False):
     '''
     Gets the total number of agenda items for a filterset
@@ -85,7 +85,7 @@ def convert_agenda_item_query(query):
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": query.get("limit", 1000),
         "rp.columns": None,
-        "rp.order_by": query.get("ordering", None), # TODO - use services.sorting_values
+        "rp.order_by": services.sorting_values(query.get("ordering", "agenda_id")),
         "rp.filter": services.convert_to_fsbid_ql('aiperdetseqnum', query.get("perdet", None)),
     }
 
@@ -96,6 +96,16 @@ def convert_agenda_item_query(query):
 
 def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
 
+    legsToReturn = []
+    assignment = fsbid_aia_to_talentmap_aia(
+                pydash.get(data, "agendaAssignment[0]", {})
+            )
+    legs = (list(map(
+                fsbid_legs_to_talentmap_legs, pydash.get(data, "agendaLegs", [])
+            )))
+    legsToReturn.extend([assignment])
+    legsToReturn.extend(legs)
+
     return {
         "id": data.get("aiseqnum", None),
         "remarks": services.parse_agenda_remarks(data.get("aicombinedremarktext", '')),
@@ -103,7 +113,11 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "status": data.get("aisdesctext", None),
         "perdet": data.get("aiperdetseqnum", None),
 
-        "legs": list(map(fsbid_legs_to_talentmap_legs, data.get("agendaLegs", []))), # Might be its own endpoint to fetch legs
+        "assignment": fsbid_aia_to_talentmap_aia(
+            pydash.get(data, "agendaAssignment[0]", {})
+        ),
+
+        "legs": legsToReturn,
 
         "update_date": ensure_date(data.get("update_date", None), utc_offset=-5), # TODO - find this date
         "modifier_name": data.get("aiupdateid", None), # TODO - this is only the id
@@ -125,15 +139,29 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token = None):
 def fsbid_legs_to_talentmap_legs(data):
 
     return {
-        "id": data.get("ailaiseqnum", None),
-        "pos_title": data.get("postitledesc", None),
-        "pos_num": data.get("posseqnum", None),
-        "org": data.get("posorgshortdesc", None),
-        "eta": data.get("ailetadate", None),
-        "ted": data.get("ailetdtedsepdate", None),
-        "tod": data.get("ailtodothertext", None),
-        "grade": data.get("posgradecode", None),
-        "action": data.get("latabbrdesctext", None),
+        "id": pydash.get(data, "ailaiseqnum", None),
+        "pos_title": pydash.get(data, "agendaLegPosition[0].postitledesc", None),
+        "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
+        "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
+        "eta": pydash.get(data, "ailetadate", None),
+        "ted": pydash.get(data, "ailetdtedsepdate", None),
+        "tod": pydash.get(data, "ailtodothertext", None),
+        "grade": pydash.get(data, "agendaLegPosition[0].posgradecode", None),
+        "action": pydash.get(data, "latabbrdesctext", None),
 
-        "travel": data.get("travel", None), # TODO - find this text
+        "travel": pydash.get(data, "travel", None), # TODO - get this text
+    }
+
+# aia = agenda item assignment
+def fsbid_aia_to_talentmap_aia(data):
+
+    return {
+        "id": pydash.get(data, "asgdasgseqnum", None),
+        "pos_title": pydash.get(data, "position[0].postitledesc", None),
+        "pos_num": pydash.get(data, "position[0].posnumtext", None),
+        "org": pydash.get(data, "position[0].posorgshortdesc", None),
+        "eta": pydash.get(data, "asgdetadate", None),
+        "ted": pydash.get(data, "asgdetdteddate", None),
+        "tod": pydash.get(data, "asgdtoddesctext", None),
+        "grade": pydash.get(data, "position[0].posgradecode", None),
     }

@@ -163,6 +163,9 @@ sort_dict = {
     "bidder_ted": "TED",
     "bidder_name": "full_name",
     "bidder_bid_submitted_date": "bid_submit_date",
+    # Agenda Item History
+    "agenda_id": "aiseqnum",
+    "agenda_status": "aisdesctext",
     # End Todo
     "bidlist_create_date": "create_date",
     "bidlist_location": "position_info.position.post.location.city",
