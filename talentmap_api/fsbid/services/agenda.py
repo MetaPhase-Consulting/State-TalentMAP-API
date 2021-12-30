@@ -109,7 +109,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     return {
         "id": data.get("aiseqnum", None),
         "remarks": services.parse_agenda_remarks(data.get("aicombinedremarktext", '')),
-        "panel_date": ensure_date(pydash.get(data, "Panel.pmddttm", None), utc_offset=-5),
+        "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm", None), utc_offset=-5),
         "status": data.get("aisdesctext", None),
         "perdet": data.get("aiperdetseqnum", None),
 
@@ -138,7 +138,7 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token = None):
 
 def fsbid_legs_to_talentmap_legs(data):
 
-    return {
+    res = {
         "id": pydash.get(data, "ailaiseqnum", None),
         "pos_title": pydash.get(data, "agendaLegPosition[0].postitledesc", None),
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
@@ -151,6 +151,17 @@ def fsbid_legs_to_talentmap_legs(data):
 
         "travel": pydash.get(data, "travel", None), # TODO - get this text
     }
+
+    # Avoid the need to do this logic on the front-end
+    if res['action'] == 'Resign':
+        res['pos_title'] = 'RESIGNATION'
+        res['pos_num'] = 'N/A'
+    
+    if res['action'] == 'Retire':
+        res['pos_title'] = 'RETIREMENT'
+        res['pos_num'] = 'N/A'
+
+    return res
 
 # aia = agenda item assignment
 def fsbid_aia_to_talentmap_aia(data):
