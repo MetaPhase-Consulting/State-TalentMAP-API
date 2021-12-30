@@ -18,38 +18,39 @@ def get_agenda_employees(query, jwt_token=None, host=None):
     Get employees
     '''
     args = {
-        "uri": "",
+        "uri": "agendaItems",
         "query": query,
         "query_mapping_function": None,
         "jwt_token": jwt_token,
         "mapping_function": fsbid_agenda_employee_to_talentmap_agenda_employee,
-        "count_function": get_agenda_employees_count,
+        "count_function": False,
         "base_url": '',
         "host": host,
         "api_root": PERSON_API_ROOT,
         "use_post": False,
     }
 
-    agenda_employees= services.send_get_request(
+    agenda_employees = services.send_get_request(
         **args
     )
 
     return agenda_employees
 
-def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
-    '''
-    Get total number of employees for agenda search
-    '''
-    args = {
-        "uri": "",
-        "query": query,
-        "query_mapping_function": convert_agenda_employees_query,
-        "jwt_token": jwt_token,
-        "host": host,
-        "api_root": PERSON_API_ROOT,
-        "use_post": False,
-    }
-    return services.send_count_request(**args)
+# TO-DO
+# def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
+#     '''
+#     Get total number of employees for agenda search
+#     '''
+#     args = {
+#         "uri": "",
+#         "query": query,
+#         "query_mapping_function": convert_agenda_employees_query,
+#         "jwt_token": jwt_token,
+#         "host": host,
+#         "api_root": PERSON_API_ROOT,
+#         "use_post": False,
+#     }
+#     return services.send_count_request(**args)
 
 def convert_agenda_employees_query(query):
     '''
@@ -72,20 +73,41 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     '''
     Maps FSBid response to expected TalentMAP response
     '''
-    persons = data.get('persons', {})
+    currentAssignment = data.get("currentAssignment", [])[0]
+    position = currentAssignment.get("position", [])[0]
     return {
-        "persons": {
-            "lastName": persons.get("perpiilastname", ""),
-            "firstName": persons.get("perpiifirstname", ""),
-            "middleName": persons.get("perpiimiddlename", ""),
-            "suffix": persons.get("perpiisuffixname", ""),
-            "fullName": persons.get("perpiifullname", ""),
-            "perdet": persons.get("perdetseqnum", ""),
-            "employeeID": persons.get("pertexttcode", ""),
-            # persons.get("perpiiseqnum", ""),
-            # persons.get("perdetperscode", ""),
-            # persons.get("pertexternalid", ""),
-            # persons.get("perdetorgcode", ""),
-            # persons.get("pertcurrentind", ""),
+        "person": {
+            "lastName": data.get("perpiilastname", ""),
+            "firstName": data.get("perpiifirstname", ""),
+            "middleName": data.get("perpiimiddlename", ""),
+            "suffix": data.get("perpiisuffixname", ""),
+            "fullName": data.get("perpiifullname", ""),
+            "perdet": data.get("perdetseqnum", ""),
+            "employeeID": data.get("pertexttcode", ""),
+            "employeeSeqNumber": data.get("perpiiseqnum", ""),
+            "orgCode": data.get("perdetorgcode", ""),
+            # data.get("perdetperscode", ""),
+            # data.get("pertexternalid", ""),
+            # data.get("perdetorgcode", ""),
+            # data.get("pertcurrentind", ""),
+            # data.get("perdetminactemplrcd#ind", ""),
+            # data.get("persdesc", ""),
+            # data.get("rnum", ""),
         },
+        "currentAssignment": {
+            "TED": currentAssignment.get("asgdetdteddate", ""),
+            "TOD": currentAssignment.get("asgdtodcode", ""),
+            "positionSequenceNumber": position.get("posseqnum", ""),
+            "orgDescription": position.get("posorgshortdesc", ""),
+            "positionNumber": position.get("posnumtext", ""),
+            "grade": position.get("posgradecode", ""),
+            "positionTitle": position.get("postitledesc", ""),
+            # currentAssignment.get("asgperdetseqnum", ""),
+            # currentAssignment.get("asgempseqnbr", ""),
+            # currentAssignment.get("asgposseqnum", ""),
+            # currentAssignment.get("asgdasgseqnum", ""),
+            # currentAssignment.get("asgdrevisionnum", ""),
+            # currentAssignment.get("asgdasgscode", ""),
+            # currentAssignment.get("latestAgendaItem", []),
+        }
     }
