@@ -138,6 +138,27 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token = None):
 
 def fsbid_legs_to_talentmap_legs(data):
 
+    # Temporary mapping helper. FSBid will handle this
+    tf_mapping = {
+        "8150": "Post to Post without Home Leave (Direct Transfer)",
+        "8151": "Post to Post with Home Leave",
+        "8152": "Post to U.S. with Home Leave",
+        "8153": "Post to U.S. without Home Leave (Direct Transfer to U.S.)",
+        "8154": "Separation from the Service",
+        "8155": "U.S. to Post",
+        "8156": "Initial Appointment to Post from U.S.",
+        "8157": "Initial Appointment to U.S.",
+        "8158": "Initial Appointment from Overseas",
+        "8159": "Intra U.S. (Transfer from one U.S. Location to Another U.S. Location)",
+        "8160": "Round Trip Home Leave",
+        "8161": "Advance Travel of Dependents",
+        "8162": "Remains of Deceased Dependents",
+        "8169": "SMA Travel",
+    }
+
+    def map_tf(tf = None):
+        return pydash.get(tf_mapping, tf, None)
+
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
         "pos_title": pydash.get(data, "agendaLegPosition[0].postitledesc", None),
@@ -148,8 +169,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "tod": pydash.get(data, "ailtodothertext", None),
         "grade": pydash.get(data, "agendaLegPosition[0].posgradecode", None),
         "action": pydash.get(data, "latabbrdesctext", None),
-
-        "travel": pydash.get(data, "travel", None), # TODO - get this text
+        "travel": map_tf(pydash.get(data, "ailtfcd", None)),
     }
 
     # Avoid the need to do this logic on the front-end
