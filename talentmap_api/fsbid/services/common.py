@@ -210,7 +210,7 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
     if mapping_function:
@@ -226,7 +226,7 @@ def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=Fa
     method = requests
     response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
 
@@ -350,7 +350,7 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
         url = f"{base_url}/{uri}?{query_mapping_function(formattedQuery)}"
         response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
 
