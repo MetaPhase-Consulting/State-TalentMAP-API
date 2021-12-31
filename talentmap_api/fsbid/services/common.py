@@ -338,7 +338,7 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
     formattedQuery = query
     try:
         formattedQuery._mutable = True
-    except:
+    except:#nosec
         pass
 
     if ad_id is not None:
