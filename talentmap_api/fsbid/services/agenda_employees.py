@@ -65,6 +65,7 @@ def convert_agenda_employees_query(query):
         else:
             filterKey = 'perpiifullname'
             comparator = 'contains'
+            filterValue = filterValue.upper()
 
     values = {
         # Pagination
