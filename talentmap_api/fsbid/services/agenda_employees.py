@@ -70,7 +70,7 @@ def convert_agenda_employees_query(query):
         # Pagination
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": query.get("limit", 50),
-        "rp.orderBy": query.get("ordering", None), # TODO - use services.sorting_values
+        "rp.orderBy": "perpiifullname", # TODO - use services.sorting_values
 
         "rp.filter": services.convert_to_fsbid_ql(filterKey, filterValue, comparator),
         # services.convert_to_fsbid_ql('perdetseqnum', query.get("q", None)),
