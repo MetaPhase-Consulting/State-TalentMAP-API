@@ -20,7 +20,7 @@ def get_agenda_employees(query, jwt_token=None, host=None):
     args = {
         "uri": "agendaItems",
         "query": query,
-        "query_mapping_function": None,
+        "query_mapping_function": convert_agenda_employees_query,
         "jwt_token": jwt_token,
         "mapping_function": fsbid_agenda_employee_to_talentmap_agenda_employee,
         "count_function": False,
@@ -56,13 +56,23 @@ def convert_agenda_employees_query(query):
     '''
     Convert TalentMAP filters into FSBid filters
     '''
+    filterValue = query.get("q", None)
+    filterKey = ''
+    comparator = 'eq'
+    if filterValue:
+        if filterValue.isDigit():
+            filterKey = 'perdetseqnum'
+        else:
+            filterKey = 'perpiifullname'
+            comparator = 'contains'
+
     values = {
         # Pagination
         "rp.pageNum": int(query.get("page", 1)),
-        "rp.pageRows": query.get("limit", 1000),
+        "rp.pageRows": query.get("limit", 50),
         "rp.orderBy": query.get("ordering", None), # TODO - use services.sorting_values
 
-        "rp.filter": services.convert_to_fsbid_ql('pertexternalid', query.get("q", None)),
+        "rp.filter": services.convert_to_fsbid_ql(filterKey, filterValue, comparator),
         # services.convert_to_fsbid_ql('perdetseqnum', query.get("q", None)),
         # services.convert_to_fsbid_ql('perpiilastname', query.get("q", None)), TODO - passing multiples values
     }
@@ -73,12 +83,17 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     '''
     Maps FSBid response to expected TalentMAP response
     '''
-    currentAssignment = data.get("currentAssignment", [])[0]
-    position = currentAssignment.get("position", [])[0]
+    current = data.get("currentAssignment", [])
+    currentAssignment = current[0] if current else {}
+    pos = currentAssignment.get("position", [])
+    position = pos[0] if pos else {}
+    firstN = data.get('perpiifirstname', '')
+    lastN = data.get('perpiilastname', '')
+    initials = f"{firstN[0] if firstN else ''}{lastN[0] if lastN else ''}"
     return {
         "person": {
-            "lastName": data.get("perpiilastname", ""),
-            "firstName": data.get("perpiifirstname", ""),
+            "lastName": lastN,
+            "firstName": firstN,
             "middleName": data.get("perpiimiddlename", ""),
             "suffix": data.get("perpiisuffixname", ""),
             "fullName": data.get("perpiifullname", ""),
@@ -86,6 +101,7 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
             "employeeID": data.get("pertexttcode", ""),
             "employeeSeqNumber": data.get("perpiiseqnum", ""),
             "orgCode": data.get("perdetorgcode", ""),
+            "initials": initials,
             # data.get("perdetperscode", ""),
             # data.get("pertexternalid", ""),
             # data.get("perdetorgcode", ""),
