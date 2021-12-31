@@ -36,9 +36,9 @@ class AgendaItemView(BaseView):
 class AgendaItemCSVView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('bureau'), isDjangoGroupMember('ao'),)]
 
-    def get(self, request, client_id):
+    def get(self, request):
         """
         Return a list of all of the items in Agenda Item History for CSV export
         """
-        return services.get_agenda_item_history_csv(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}", client_id)
+        return services.get_agenda_item_history_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
 
