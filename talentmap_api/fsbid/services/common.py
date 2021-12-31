@@ -336,8 +336,11 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
     Gets items from FSBid
     '''
     formattedQuery = query
-    if hasattr(formattedQuery, '_mutable'):
+    try:
         formattedQuery._mutable = True
+    except:
+        pass
+
     if ad_id is not None:
         formattedQuery['ad_id'] = ad_id
     if limit is not None:
