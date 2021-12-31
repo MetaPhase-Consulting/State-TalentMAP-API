@@ -60,8 +60,8 @@ def convert_agenda_employees_query(query):
     filterKey = ''
     comparator = 'eq'
     if filterValue:
-        if filterValue.isDigit():
-            filterKey = 'perdetseqnum'
+        if filterValue.isdigit():
+            filterKey = 'pertexternalid'
         else:
             filterKey = 'perpiifullname'
             comparator = 'contains'
