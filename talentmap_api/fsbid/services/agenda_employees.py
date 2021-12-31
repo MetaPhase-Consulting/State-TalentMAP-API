@@ -96,7 +96,7 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
             "firstName": firstN,
             "middleName": data.get("perpiimiddlename", ""),
             "suffix": data.get("perpiisuffixname", ""),
-            "fullName": data.get("perpiifullname", ""),
+            "fullName": data.get("perpiifullname", "").rstrip(" NMN"),
             "perdet": data.get("perdetseqnum", ""),
             "employeeID": data.get("pertexttcode", ""),
             "employeeSeqNumber": data.get("perpiiseqnum", ""),
