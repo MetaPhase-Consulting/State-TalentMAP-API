@@ -69,7 +69,7 @@ def convert_agenda_employees_query(query):
 
     values = {
         # Pagination
-        "rp.pageNum": int(query.get("page", 1)),
+        "rp.pageNum": query.get("page", 1),
         "rp.pageRows": query.get("limit", 50),
         "rp.orderBy": "perpiifullname", # TODO - use services.sorting_values
 
@@ -85,19 +85,24 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     Maps FSBid response to expected TalentMAP response
     '''
     current = data.get("currentAssignment", [])
-    currentAssignment = current[0] if current else {}
-    pos = currentAssignment.get("position", [])
-    position = pos[0] if pos else {}
+    currentAssignment = pydash.get(current, '[0]') or {} if current else {}
+    pos = pydash.get(currentAssignment, "position") or []
+    position = pydash.get(pos, '[0]') or {} if pos else {}
     firstN = data.get('perpiifirstname', '')
     lastN = data.get('perpiilastname', '')
     initials = f"{firstN[0] if firstN else ''}{lastN[0] if lastN else ''}"
+    fullName = data.get("perpiifullname", "")
+    if pydash.ends_with(fullName, "NMN"):
+        fullName.rstrip(" NMN")
+    if pydash.ends_with(fullName, "Nmn"):
+        fullName.rstrip(" Nmn")
     return {
         "person": {
             "lastName": lastN,
             "firstName": firstN,
             "middleName": data.get("perpiimiddlename", ""),
             "suffix": data.get("perpiisuffixname", ""),
-            "fullName": data.get("perpiifullname", "").rstrip(" NMN"),
+            "fullName": fullName,
             "perdet": data.get("perdetseqnum", ""),
             "employeeID": data.get("pertexternalid", ""),
             "employeeSeqNumber": data.get("perpiiseqnum", ""),
