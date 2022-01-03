@@ -93,9 +93,9 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     initials = f"{firstN[0] if firstN else ''}{lastN[0] if lastN else ''}"
     fullName = data.get("perpiifullname", "")
     if pydash.ends_with(fullName, "NMN"):
-        fullName.rstrip(" NMN")
+        fullName = fullName.rstrip(" NMN")
     if pydash.ends_with(fullName, "Nmn"):
-        fullName.rstrip(" Nmn")
+        fullName = fullName.rstrip(" Nmn")
     return {
         "person": {
             "lastName": lastN,
