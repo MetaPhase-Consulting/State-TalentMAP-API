@@ -28,11 +28,13 @@ from talentmap_api.fsbid.requests import requests
 
 logger = logging.getLogger(__name__)
 
-API_ROOT = settings.FSBID_API_URL
+API_ROOT = settings.WS_ROOT_API_URL
 CP_API_V2_ROOT = settings.CP_API_V2_URL
 HRDATA_URL = settings.HRDATA_URL
 HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+PV_API_V2_URL = settings.PV_API_V2_URL
+CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 
 
 urls_expire_after = {
@@ -196,11 +198,13 @@ def sorting_values(sort, use_post=False):
 
 
 def get_results(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
+    logger.info('hi')
     queryClone = query or {}
     if query_mapping_function:
         url = f"{api_root}/{uri}?{query_mapping_function(queryClone)}"
     else:
         url = f"{api_root}/{uri}"
+    logger.info(url)
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
@@ -212,6 +216,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
 
 
 def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
+    logger.info('hey')
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
@@ -224,8 +229,9 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
         return response.get("Data", {})
 
 
-def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False):
-    url = f"{API_ROOT}/{uri}"
+def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False, api_root=API_ROOT):
+    url = f"{api_root}/{uri}"
+    logger.info(url)
     # TODO - fix SSL issue with use_cache
     # method = session if use_cache else requests
     method = requests
@@ -258,6 +264,7 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
     '''
     pagination = get_pagination(query, count_function(query, jwt_token)['count'], base_url, host) if count_function else {}
     fetch_method = get_results_with_post if use_post else get_results
+    logger.info(uri)
     return {
         **pagination,
         "results": fetch_method(uri, query, query_mapping_function, jwt_token, mapping_function, api_root)
@@ -271,11 +278,11 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     args = {}
 
     newQuery = query.copy()
-    if uri in ('CDOClients', 'positions/futureVacancies/tandem', 'positions/available/tandem', 'cyclePositions'):
+    if api_root == CLIENTS_ROOT_V2 and not uri:
         newQuery['getCount'] = 'true'
-    if api_root == CP_API_V2_ROOT and not uri:
+    if api_root == CP_API_V2_ROOT and (not uri or uri in ('availableTandem')):
         newQuery['getCount'] = 'true'
-    if uri in ('availableTandem', 'tandem'):
+    if api_root == PV_API_V2_URL:
         newQuery['getCount'] = 'true'
 
     if use_post:
