@@ -115,15 +115,15 @@ class FSBidClassificationsView(BaseView):
 
 
 class FSBidPostIndicatorsView(BaseView):
-    uri = "v1/references/postAttributes?codeTableName=PostIndicatorTable"
+    uri = "v1/fsbid/posts/attributes?codeTableName=PostIndicatorTable"
     mapping_function = services.fsbid_post_indicators_to_talentmap_indicators
 
 
 class FSBidUnaccompaniedStatusView(BaseView):
-    uri = "v1/references/postAttributes?codeTableName=UnaccompaniedTable"
+    uri = "v1/fsbid/posts/attributes?codeTableName=UnaccompaniedTable"
     mapping_function = services.fsbid_us_to_talentmap_us
 
 
 class FSBidCommuterPostsView(BaseView):
-    uri = "v1/references/postAttributes?codeTableName=CommuterPostTable"
+    uri = "v1/fsbid/posts/attributes?codeTableName=CommuterPostTable"
     mapping_function = services.fsbid_commuter_posts_to_talentmap_commuter_posts
