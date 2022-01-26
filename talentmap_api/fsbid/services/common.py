@@ -198,13 +198,11 @@ def sorting_values(sort, use_post=False):
 
 
 def get_results(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
-    logger.info('hi')
     queryClone = query or {}
     if query_mapping_function:
         url = f"{api_root}/{uri}?{query_mapping_function(queryClone)}"
     else:
         url = f"{api_root}/{uri}"
-    logger.info(url)
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
@@ -216,7 +214,6 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
 
 
 def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
-    logger.info('hey')
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
@@ -231,7 +228,6 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
 
 def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False, api_root=API_ROOT):
     url = f"{api_root}/{uri}"
-    logger.info(url)
     # TODO - fix SSL issue with use_cache
     # method = session if use_cache else requests
     method = requests
@@ -264,7 +260,6 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
     '''
     pagination = get_pagination(query, count_function(query, jwt_token)['count'], base_url, host) if count_function else {}
     fetch_method = get_results_with_post if use_post else get_results
-    logger.info(uri)
     return {
         **pagination,
         "results": fetch_method(uri, query, query_mapping_function, jwt_token, mapping_function, api_root)
