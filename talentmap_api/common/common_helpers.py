@@ -423,18 +423,19 @@ def sort_legs(agendaLegs):
     #   pull out the nulls
     nullLegs = []
     for idx, val in enumerate(agendaLegs):
-        if val['ailetadate'] is 'null':
+        if not val['eta']:
             nullLegs.append(val)
             agendaLegs.pop(idx)
 
     # sort legs
-    sortedLegs = sorted(agendaLegs, key=lambda d: d['ailetadate'])
+    sortedLegs = sorted(agendaLegs, key=lambda d: d['eta'])
 
     # sort nulls by ted
-    sortedNulls = sorted(nullLegs, key=lambda d: d['ailetdtedsepdate'])
+    sortedNulls = sorted(nullLegs, key=lambda d: d['ted'])
 
     # stick sortednulls in the front of legs
-    return sortedNulls.extend(sortedLegs)
+    sortedNulls.extend(sortedLegs)
+    return sortedNulls
 
 
 def prep_string_for_list(str_val):
