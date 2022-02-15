@@ -271,7 +271,7 @@ def fsbid_clients_to_talentmap_clients(data):
         initials = None
 
     middle_name = get_middle_name(employee)
-    suffix_name = f" {employee['per_suffix_name']}" if employee['per_suffix_name'] else ''
+    suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
     return {
         "id": str(employee.get("pert_external_id", None)),
@@ -306,7 +306,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         if position is not None:
             pos_location = map_location(position.get("currentLocation", None))
     
-    suffix_name = f" {employee['per_suffix_name']}" if employee['per_suffix_name'] else ''
+    suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
     return {
         "id": employee.get("perdet_seq_num", None),
@@ -640,7 +640,7 @@ def fsbid_available_bidder_to_talentmap(data):
         initials = None
 
     middle_name = get_middle_name(employee)
-    suffix_name = f" {employee['per_suffix_name']}" if employee['per_suffix_name'] else ''
+    suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
     res = {
         "id": str(employee.get("pert_external_id", None)),
