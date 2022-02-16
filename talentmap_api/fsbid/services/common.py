@@ -28,11 +28,13 @@ from talentmap_api.fsbid.requests import requests
 
 logger = logging.getLogger(__name__)
 
-API_ROOT = settings.FSBID_API_URL
+API_ROOT = settings.WS_ROOT_API_URL
 CP_API_V2_ROOT = settings.CP_API_V2_URL
 HRDATA_URL = settings.HRDATA_URL
 HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
+PV_API_V2_URL = settings.PV_API_V2_URL
+CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 
 
 urls_expire_after = {
@@ -163,6 +165,14 @@ sort_dict = {
     "bidder_ted": "TED",
     "bidder_name": "full_name",
     "bidder_bid_submitted_date": "bid_submit_date",
+    # Agenda Employees Search
+    "agenda_employee_fullname": "perpiifullname",
+    "agenda_employee_firstname": "perpiifirstname",
+    "agenda_employee_lastname": "perpiilastname",
+    "agenda_employee_id": "pertexternalid",
+    # Agenda Item History
+    "agenda_id": "aiseqnum",
+    "agenda_status": "aisdesctext",
     # End Todo
     "bidlist_create_date": "create_date",
     "bidlist_location": "position_info.position.post.location.city",
@@ -194,7 +204,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     else:
         url = f"{api_root}/{uri}"
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
     if mapping_function:
@@ -207,7 +217,7 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
     if mapping_function:
@@ -216,14 +226,14 @@ def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping
         return response.get("Data", {})
 
 
-def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False):
-    url = f"{API_ROOT}/{uri}"
+def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=False, api_root=API_ROOT):
+    url = f"{api_root}/{uri}"
     # TODO - fix SSL issue with use_cache
     # method = session if use_cache else requests
     method = requests
     response = method.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
 
@@ -235,12 +245,12 @@ def get_fsbid_results(uri, jwt_token, mapping_function, email=None, use_cache=Fa
     return map(mapping_function, response.get("Data", {}))
 
 
-def get_individual(uri, id, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT, use_post=False):
+def get_individual(uri, id, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT, use_post=False, use_id = True):
     '''
     Gets an individual record by the provided ID
     '''
     fetch_method = get_results_with_post if use_post else get_results
-    response = fetch_method(uri, {"id": id}, query_mapping_function, jwt_token, mapping_function, api_root)
+    response = fetch_method(uri if use_id else f"{uri}{id}", {"id": id} if use_id else {}, query_mapping_function, jwt_token, mapping_function, api_root)
     return pydash.get(response, '[0]') or None
 
 
@@ -263,11 +273,11 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     args = {}
 
     newQuery = query.copy()
-    if uri in ('CDOClients', 'positions/futureVacancies/tandem', 'positions/available/tandem', 'cyclePositions'):
+    if api_root == CLIENTS_ROOT_V2 and not uri:
         newQuery['getCount'] = 'true'
-    if api_root == CP_API_V2_ROOT and not uri:
+    if api_root == CP_API_V2_ROOT and (not uri or uri in ('availableTandem')):
         newQuery['getCount'] = 'true'
-    if uri in ('availableTandem', 'tandem'):
+    if api_root == PV_API_V2_URL:
         newQuery['getCount'] = 'true'
 
     if use_post:
@@ -333,7 +343,11 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
     Gets items from FSBid
     '''
     formattedQuery = query
-    formattedQuery._mutable = True
+    try:
+        formattedQuery._mutable = True
+    except:#nosec
+        pass
+
     if ad_id is not None:
         formattedQuery['ad_id'] = ad_id
     if limit is not None:
@@ -347,7 +361,7 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
         url = f"{base_url}/{uri}?{query_mapping_function(formattedQuery)}"
         response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
-    if response.get("Data") is None or response.get('return_code', -1) == -1:
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
 
@@ -703,3 +717,91 @@ def sort_bids(bidlist, ordering_query):
         return bidlist
     return bids
     
+# known comparators:
+# eq: equals
+# in: in
+def convert_to_fsbid_ql(column = '', value = '', comparator = 'eq'):
+    if not column and not value and not comparator:
+        return None
+    return f"{column}|{comparator}|{value}|"
+
+
+def categorize_remark(remark = ''):
+    obj = { 'title': remark, 'type': None }
+    if pydash.starts_with(remark, 'Creator') or pydash.starts_with(remark, 'CDO:') or pydash.starts_with(remark, 'Modifier'):
+        obj['type'] = 'person'
+    return obj
+
+
+def parse_agenda_remarks(remarks_string = ''):
+    remarks = remarks_string
+    if pydash.starts_with(remarks, 'Remarks:'):
+        remarks = pydash.reg_exp_replace(remarks_string, 'Remarks:', '', count=1)
+    # split by semi colon
+    values = remarks.split(';')
+    # remove Nmn (no middle name) from Creator and CDO
+    values = pydash.map_(values, lambda o: pydash.reg_exp_replace(o, ' Nmn', '', ignore_case=True) if pydash.starts_with(o, 'Creator') or pydash.starts_with(o, 'CDO:') else o)
+    # remove nulls or empty spaces
+    values = pydash.filter_(values, lambda o: o and o != ' ')
+    values = pydash.map_(values, categorize_remark)
+    return values
+
+
+def get_aih_csv(data, filename):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+
+    writer = csv.writer(response, csv.excel)
+    response.write(u'\ufeff'.encode('utf8'))
+
+    # write the headers
+    headers = []
+    headers.append(smart_str(u"Position Title"))
+    headers.append(smart_str(u"Position Number"))
+    headers.append(smart_str(u"Org"))
+    headers.append(smart_str(u"ETA"))
+    headers.append(smart_str(u"TED"))
+    headers.append(smart_str(u"TOD"))
+    headers.append(smart_str(u"Grade"))
+    headers.append(smart_str(u"Panel Date"))
+    headers.append(smart_str(u"Status"))
+    headers.append(smart_str(u"Remarks"))
+    writer.writerow(headers)
+
+    for record in data:
+        try:
+            ted = smart_str(maya.parse(pydash.get(record, "assignment.ted")).datetime().strftime('%m/%d/%Y'))
+        except:
+            ted = "None listed"
+
+        try:
+            eta = smart_str(maya.parse(pydash.get(record, "assignment.eta")).datetime().strftime('%m/%d/%Y'))
+        except:
+            eta = "None listed"
+
+        try:
+            panelDate = smart_str(maya.parse(pydash.get(record, "panel_date")).datetime().strftime('%m/%d/%Y'))
+        except:
+            panelDate = "None listed"
+        
+        try:
+            remarks = pydash.map_(pydash.get(record, "remarks", []), 'title')
+            remarks = pydash.join(remarks, '; ')
+        except:
+            remarks = 'None listed'
+
+        row = []
+        # need to update
+        row.append(smart_str(pydash.get(record, "assignment.pos_title")))
+        row.append(smart_str("=\"%s\"" % pydash.get(record, "assignment.pos_num")))
+        row.append(smart_str(pydash.get(record, "assignment.org")))
+        row.append(eta)
+        row.append(ted)
+        row.append(smart_str(pydash.get(record, "assignment.tod")))
+        row.append(smart_str("=\"%s\"" % pydash.get(record, "assignment.grade")))
+        row.append(panelDate)
+        row.append(smart_str(pydash.get(record, "status")))
+        row.append(smart_str(remarks))
+
+        writer.writerow(row)
+    return response

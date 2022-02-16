@@ -48,6 +48,9 @@ urlpatterns = [
     url(r'^api/v1/fsbid/classifications/', include('talentmap_api.fsbid.urls.classifications')),
     url(r'^api/v1/fsbid/positions/', include('talentmap_api.fsbid.urls.positions')),
 
+    # Agenda
+    url(r'^api/v1/fsbid/agenda/', include('talentmap_api.fsbid.urls.agenda')),
+    url(r'^api/v1/fsbid/agenda_employees/', include('talentmap_api.fsbid.urls.agenda_employees')),
 
     # Projected Vacancies
     url(r'^api/v1/projected_vacancy/', include('talentmap_api.projected_vacancies.urls.projected_vacancies')),
@@ -95,6 +98,9 @@ urlpatterns = [
 
     # Swagger
     url(r'^$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
+    # Health Check
+    url(r'^ht/', include('health_check.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Auth patterns
