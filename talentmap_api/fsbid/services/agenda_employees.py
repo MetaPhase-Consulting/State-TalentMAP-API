@@ -116,7 +116,10 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     '''
     Maps FSBid response to expected TalentMAP response
     '''
-    fullName = data.get("tmperperfullname", "")
+    firstN = data.get('perpiifirstname', '')
+    lastN = data.get('perpiilastname', '')
+    initials = f"{firstN[0] if firstN else ''}{lastN[0] if lastN else ''}"
+    fullName = data.get("perpiifullname", "")
     if pydash.ends_with(fullName, "NMN"):
         fullName = fullName.rstrip(" NMN")
     if pydash.ends_with(fullName, "Nmn"):
@@ -124,20 +127,21 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     return {
         "person": {
             "fullName": fullName,
-            "perdet": data.get("tmperperdetseqnum", ""),
-            "employeeID": data.get("tmperpertexternalid", ""),
-            "initials": "",
+            "perdet": data.get("pertexternalid", ""),
+            "employeeID": data.get("pertexternalid", ""),
+            "initials": initials,
+            "cdo": pydash.get(data, "cdos[0].cdo_fullname", None)
         },
         "currentAssignment": {
-            "TED": data.get("tmpercurrentted", ""),
-            "orgDescription": data.get("tmpercurrentorgdesc", ""),
+            "TED": pydash.get(data, "currentAssignment[0].asgdetdteddate", None),
+            "orgDescription": pydash.get(data, "currentAssignment[0].position[0].posorgshortdesc", None),
         },
         "hsAssignment": {
-            "orgDescription": data.get("tmperhsorgdesc", ""),
+            "orgDescription": pydash.get(data, "handshake[0].position[0].posorgshortdesc", None),
         },
         "agenda": {
-            "panelDate": data.get("tmperpanelmeetingdate", ""),
-            "status": data.get("tmperaiscode", ""),
+            "panelDate": pydash.get(data, "latestAgendaItem[0].panels[0].pmddttm", None),
+            "status": pydash.get(data, "latestAgendaItem[0].aisdesctext", None),
         }
     }
 
