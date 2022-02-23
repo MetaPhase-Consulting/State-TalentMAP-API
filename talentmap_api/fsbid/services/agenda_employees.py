@@ -3,14 +3,19 @@ import jwt
 import pydash
 import re
 import maya
+import csv
+from datetime import datetime
 from urllib.parse import urlencode, quote
 
+from django.utils.encoding import smart_str
 from django.conf import settings
+from django.http import HttpResponse
 
 from talentmap_api.fsbid.services import common as services
 
 
 PERSON_API_ROOT = settings.PERSON_API_URL
+API_ROOT = settings.WS_ROOT_API_URL
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +57,64 @@ def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
         "is_template": True,
     }
     return services.send_count_request(**args)
+
+
+def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
+    from talentmap_api.fsbid.services.common import send_get_csv_request
+    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
+    args = {
+        "uri": "v1/tm-persons",
+        "query": query,
+        "query_mapping_function": convert_agenda_employees_query,
+        "jwt_token": jwt_token,
+        "mapping_function": fsbid_agenda_employee_to_talentmap_agenda_employee,
+        "base_url": API_ROOT,
+        "host": host,
+        "use_post": False,
+    }
+
+    data = send_get_csv_request(**args)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f"attachment; filename=agenda_employees_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+
+    writer = csv.writer(response, csv.excel)
+    response.write(u'\ufeff'.encode('utf8'))
+
+    # write the headers
+    writer.writerow([
+        smart_str(u"Name"),
+        smart_str(u"Employee ID"),
+        smart_str(u"CDO"),
+        smart_str(u"Current Organization"),
+        smart_str(u"TED"),
+        smart_str(u"Handshake Organization"),
+        smart_str(u"Panel Meeting Date"),
+        smart_str(u"Agenda Status"),
+    ])
+
+    for record in data:
+        fallback = 'None listed'
+        try:
+            ted = smart_str(maya.parse(record["currentAssignment"]["TED"]).datetime().strftime('%m/%d/%Y'))
+        except:
+            ted = fallback
+        try:
+            panelMeetingDate = smart_str(maya.parse(record["agenda"]["panelDate"]).datetime().strftime('%m/%d/%Y'))
+        except:
+            panelMeetingDate = fallback
+        writer.writerow([
+            smart_str(pydash.get(record, 'person.fullName')),
+            smart_str("=\"%s\"" % pydash.get(record, "person.employeeID")),
+            smart_str(pydash.get(record, 'person.cdo') or fallback),
+            smart_str(pydash.get(record, 'currentAssignment.orgDescription') or fallback),
+            smart_str(ted),
+            smart_str(pydash.get(record, 'handshake.orgDescription') or fallback),
+            smart_str(panelMeetingDate),
+            smart_str(pydash.get(record, 'agenda.status') or fallback),
+        ])
+    return response
+
 
 def convert_agenda_employees_query(query):
     '''
