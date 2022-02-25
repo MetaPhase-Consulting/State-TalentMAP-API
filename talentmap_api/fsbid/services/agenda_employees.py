@@ -190,7 +190,7 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
     return {
         "person": {
             "fullName": fullName,
-            "perdet": data.get("pertexternalid", ""),
+            "perdet": data.get("perdetseqnum", ""),
             "employeeID": data.get("pertexternalid", ""),
             "initials": initials,
             "cdo": pydash.get(data, "cdos[0].cdo_fullname", None)
@@ -200,7 +200,7 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
             "orgDescription": pydash.get(data, "currentAssignment[0].position[0].posorgshortdesc", None),
         },
         "hsAssignment": {
-            "orgDescription": pydash.get(data, "handshake[0].position[0].posorgshortdesc", None),
+            "orgDescription": pydash.get(data, "handshake[0].posorgshortdesc", None),
         },
         "agenda": {
             "panelDate": pydash.get(data, "latestAgendaItem[0].panels[0].pmddttm", None),
