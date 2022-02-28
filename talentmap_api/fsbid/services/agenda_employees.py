@@ -6,6 +6,7 @@ import maya
 import csv
 from datetime import datetime
 from urllib.parse import urlencode, quote
+from functools import partial
 
 from django.utils.encoding import smart_str
 from django.conf import settings
@@ -24,12 +25,18 @@ def get_agenda_employees(query, jwt_token=None, host=None):
     '''
     Get employees
     '''
+    from talentmap_api.fsbid.services.cdo import cdo
+    try:
+        cdos = list(cdo(jwt_token))
+    except:
+        cdos = []
+
     args = {
         "uri": "v1/tm-persons",
         "query": query,
         "query_mapping_function": convert_agenda_employees_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_agenda_employee_to_talentmap_agenda_employee,
+        "mapping_function": partial(fsbid_agenda_employee_to_talentmap_agenda_employee, cdos=cdos),
         "count_function": get_agenda_employees_count,
         "base_url": '',
         "host": host,
@@ -61,13 +68,18 @@ def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
 
 def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
     from talentmap_api.fsbid.services.common import send_get_csv_request
+    from talentmap_api.fsbid.services.cdo import cdo
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
+    try:
+        cdos = list(cdo(jwt_token))
+    except:
+        cdos = []
     args = {
         "uri": "v1/tm-persons",
         "query": query,
         "query_mapping_function": convert_agenda_employees_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_agenda_employee_to_talentmap_agenda_employee,
+        "mapping_function": partial(fsbid_agenda_employee_to_talentmap_agenda_employee, cdos=cdos),
         "base_url": API_ROOT,
         "host": host,
         "use_post": False,
@@ -106,7 +118,7 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
         writer.writerow([
             smart_str(pydash.get(record, 'person.fullName')),
             smart_str("=\"%s\"" % pydash.get(record, "person.employeeID")),
-            smart_str(pydash.get(record, 'person.cdo') or fallback),
+            smart_str(pydash.get(record, 'person.cdo.name') or fallback),
             smart_str(pydash.get(record, 'currentAssignment.orgDescription') or fallback),
             smart_str(ted),
             smart_str(pydash.get(record, 'handshake.orgDescription') or fallback),
@@ -142,6 +154,7 @@ def convert_agenda_employees_query(query):
         { "key": "tmperhsorgcode", "comparator": "IN", "value": query.get("handshake-organizations", None) },
         { "key": "tmpercdoid", "comparator": "IN", "value": query.get("cdos", None) },
         { "key": "tmperhsind", "comparator": "IN", "value": query.get("handshake", None) },
+        { "key": "tmperperscode", "comparator": "IN", "value": "S,L,A,P,U" },
     ]
 
     try:
@@ -175,7 +188,7 @@ def convert_agenda_employees_query(query):
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
-def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
+def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
     '''
     Maps FSBid response to expected TalentMAP response
     '''
@@ -187,12 +200,11 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
         fullName = fullName.rstrip(" NMN")
     if pydash.ends_with(fullName, "Nmn"):
         fullName = fullName.rstrip(" Nmn")
-    cdo = ''
-    if pydash.get(data, 'cdos[0]'):
-        cdoFirstN = pydash.get(data, 'cdos[0].neufirstnm')
-        cdoLastN  = pydash.get(data, 'cdos[0].neulastnm')
-        if cdoFirstN and cdoLastN:
-            cdo = f"{cdoFirstN} {cdoLastN}"
+    cdo = None
+    if pydash.get(data, 'cdos[0].hruid'):
+        hru_id = pydash.get(data, 'cdos[0].hruid')
+        cdoObj = pydash.find(cdos, lambda x: pydash.get(x, 'id') == hru_id)
+        cdo = cdoObj
     return {
         "person": {
             "fullName": fullName,
