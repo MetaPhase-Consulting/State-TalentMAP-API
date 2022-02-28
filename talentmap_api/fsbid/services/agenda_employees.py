@@ -201,8 +201,8 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
     if pydash.ends_with(fullName, "Nmn"):
         fullName = fullName.rstrip(" Nmn")
     cdo = None
-    if pydash.get(data, 'cdos[0].hruid'):
-        hru_id = pydash.get(data, 'cdos[0].hruid')
+    if pydash.get(data, 'cdos[0].echruid'):
+        hru_id = pydash.get(data, 'cdos[0].echruid')
         cdoObj = pydash.find(cdos, lambda x: pydash.get(x, 'id') == hru_id)
         cdo = cdoObj
     return {
