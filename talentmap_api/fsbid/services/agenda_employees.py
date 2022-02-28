@@ -187,13 +187,19 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data):
         fullName = fullName.rstrip(" NMN")
     if pydash.ends_with(fullName, "Nmn"):
         fullName = fullName.rstrip(" Nmn")
+    cdo = ''
+    if pydash.get(data, 'cdos[0]'):
+        cdoFirstN = pydash.get(data, 'cdos[0].neufirstnm')
+        cdoLastN  = pydash.get(data, 'cdos[0].neulastnm')
+        if cdoFirstN and cdoLastN:
+            cdo = f"{cdoFirstN} {cdoLastN}"
     return {
         "person": {
             "fullName": fullName,
             "perdet": data.get("perdetseqnum", ""),
             "employeeID": data.get("pertexternalid", ""),
             "initials": initials,
-            "cdo": pydash.get(data, "cdos[0].cdo_fullname", None)
+            "cdo": cdo,
         },
         "currentAssignment": {
             "TED": pydash.get(data, "currentAssignment[0].asgdetdteddate", None),
