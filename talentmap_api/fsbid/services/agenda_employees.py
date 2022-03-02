@@ -153,9 +153,18 @@ def convert_agenda_employees_query(query):
         { "key": "tmpercurrentorgcode", "comparator": "IN", "value": query.get("current-organizations", None) },
         { "key": "tmperhsorgcode", "comparator": "IN", "value": query.get("handshake-organizations", None) },
         { "key": "tmpercdoid", "comparator": "IN", "value": query.get("cdos", None) },
-        { "key": "tmperhsind", "comparator": "IN", "value": query.get("handshake", None) },
         { "key": "tmperperscode", "comparator": "IN", "value": "S,L,A,P,U" },
     ]
+
+    if query.get("handshake", None):
+        hsObj = { "key": "tmperhsind", "comparator": "IN" }
+        hs = query.get("handshake", None)
+        if hs == 'Y':
+            hsObj['value'] = 'HS'
+            filters.append(hsObj)
+        elif hs == 'N':
+            hsObj['value'] = 'null'
+            filters.append(hsObj)
 
     try:
         if tedStart and tedEnd:
