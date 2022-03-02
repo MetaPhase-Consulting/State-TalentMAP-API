@@ -163,6 +163,7 @@ def convert_agenda_employees_query(query):
             hsObj['value'] = 'HS'
             filters.append(hsObj)
         elif hs == 'N':
+            hsObj['comparator'] = 'EQ'
             hsObj['value'] = 'null'
             filters.append(hsObj)
 
