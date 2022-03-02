@@ -7,6 +7,7 @@ import csv
 from datetime import datetime
 from urllib.parse import urlencode, quote
 from functools import partial
+from copy import deepcopy
 
 from django.utils.encoding import smart_str
 from django.conf import settings
@@ -74,9 +75,12 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
         cdos = list(cdo(jwt_token))
     except:
         cdos = []
+    csvQuery = deepcopy(query)
+    csvQuery['page'] = 1
+    csvQuery['limit'] = 2000
     args = {
         "uri": "v1/tm-persons",
-        "query": query,
+        "query": csvQuery,
         "query_mapping_function": convert_agenda_employees_query,
         "jwt_token": jwt_token,
         "mapping_function": partial(fsbid_agenda_employee_to_talentmap_agenda_employee, cdos=cdos),
