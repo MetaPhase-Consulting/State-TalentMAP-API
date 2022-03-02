@@ -125,7 +125,7 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
             smart_str(pydash.get(record, 'person.cdo.name') or fallback),
             smart_str(pydash.get(record, 'currentAssignment.orgDescription') or fallback),
             smart_str(ted),
-            smart_str(pydash.get(record, 'handshake.orgDescription') or fallback),
+            smart_str(pydash.get(record, 'hsAssignment.orgDescription') or fallback),
             smart_str(panelMeetingDate),
             smart_str(pydash.get(record, 'agenda.status') or fallback),
         ])
