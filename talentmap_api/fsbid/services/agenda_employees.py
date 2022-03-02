@@ -77,7 +77,7 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
         cdos = []
     csvQuery = deepcopy(query)
     csvQuery['page'] = 1
-    csvQuery['limit'] = 2000
+    csvQuery['limit'] = 500
     args = {
         "uri": "v1/tm-persons",
         "query": csvQuery,
