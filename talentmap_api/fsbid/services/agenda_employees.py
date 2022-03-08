@@ -68,7 +68,7 @@ def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
 
 
 def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
-    from talentmap_api.fsbid.services.common import send_get_csv_request
+    from talentmap_api.fsbid.services.common import send_get_csv_request, mapBool
     from talentmap_api.fsbid.services.cdo import cdo
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
     try:
@@ -104,6 +104,7 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"CDO"),
         smart_str(u"Current Organization"),
         smart_str(u"TED"),
+        smart_str(u"Has Handshake"),
         smart_str(u"Handshake Organization"),
         smart_str(u"Panel Meeting Date"),
         smart_str(u"Agenda Status"),
@@ -119,12 +120,16 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
             panelMeetingDate = smart_str(maya.parse(record["agenda"]["panelDate"]).datetime().strftime('%m/%d/%Y'))
         except:
             panelMeetingDate = fallback
+        
+        hasHandshake = True if pydash.get(record, 'hsAssignment.orgDescription') else False
+        
         writer.writerow([
             smart_str(pydash.get(record, 'person.fullName')),
             smart_str("=\"%s\"" % pydash.get(record, "person.employeeID")),
             smart_str(pydash.get(record, 'person.cdo.name') or fallback),
             smart_str(pydash.get(record, 'currentAssignment.orgDescription') or fallback),
             smart_str(ted),
+            smart_str(mapBool[hasHandshake]),
             smart_str(pydash.get(record, 'hsAssignment.orgDescription') or fallback),
             smart_str(panelMeetingDate),
             smart_str(pydash.get(record, 'agenda.status') or fallback),
