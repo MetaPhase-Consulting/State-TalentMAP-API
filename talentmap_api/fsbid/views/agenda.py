@@ -26,6 +26,7 @@ class AgendaItemView(BaseView):
 
 class AgendaItemListView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    serializer_class = AgendaSerializer
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -40,6 +41,14 @@ class AgendaItemListView(BaseView):
         Gets all Agenda Items
         '''
         return Response(services.get_agenda_items(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
+
+    def post(self, request):
+        '''
+        Creates new Agenda Item
+        '''
+        serializer = AgendaSerializer(request.get('Data', None));
+
+        
 
 
 class AgendaItemCSVView(BaseView):
