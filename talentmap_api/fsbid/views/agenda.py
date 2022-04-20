@@ -46,6 +46,7 @@ class AgendaItemListView(BaseView):
         '''
         Creates new Agenda Item
         '''
+        serializer = self.serializer_class(bidder, data=request.data, partial=True)
         serializer = AgendaSerializer(request.get('Data', None));
 
         
