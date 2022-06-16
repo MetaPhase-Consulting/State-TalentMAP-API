@@ -390,3 +390,15 @@ def fsbid_to_talentmap_agenda_remark_categories(data):
     add_these.extend(hard_coded)
 
     return services.map_return_template_cols(add_these, cols_mapping, data)
+
+
+def create_agenda_item(data, jwt_token=None):
+    '''
+    Create agenda item
+    '''
+    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
+    url = f"{AGENDA_API_ROOT}"
+    response = requests.post(url, data={data}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+    response.raise_for_status()
+    return response
+    
