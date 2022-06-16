@@ -52,6 +52,7 @@ class AgendaItemListView(BaseView):
 
         try:
             services.create_agenda_item(request.get('Data', None), jwt)
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
