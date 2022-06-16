@@ -1,5 +1,6 @@
 import logging
 import pydash
+import jwt
 from functools import partial
 from urllib.parse import urlencode, quote
 
@@ -8,6 +9,7 @@ from django.http import QueryDict
 
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import ensure_date, sort_legs
+from talentmap_api.fsbid.requests import requests
 
 AGENDA_API_ROOT = settings.AGENDA_API_URL
 
@@ -398,6 +400,7 @@ def create_agenda_item(data, jwt_token=None):
     '''
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
     url = f"{AGENDA_API_ROOT}"
+    logger.info("---Service Call---", data)
     response = requests.post(url, data={data}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
     response.raise_for_status()
     return response

@@ -2,7 +2,7 @@ import coreapi
 
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_condition import Or
@@ -56,14 +56,14 @@ class AgendaItemActionView(BaseView):
         '''
         Creates new Agenda Item
         '''
-        jwt = request.META['HTTP_JWT']
+        jwt = self.request.META['HTTP_JWT']
         #TO-DO: Use serializers to format data to service call
         try:
             services.create_agenda_item(request.data, jwt)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
-
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        finally:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 
