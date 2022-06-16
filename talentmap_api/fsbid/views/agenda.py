@@ -43,19 +43,28 @@ class AgendaItemListView(BaseView):
         '''
         return Response(services.get_agenda_items(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
 
+    
+
+class AgendaItemActionView(BaseView):
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_STRING,
+    ))
+    
     def post(self, request):
         '''
         Creates new Agenda Item
         '''
         jwt = request.META['HTTP_JWT']
         #TO-DO: Use serializers to format data to service call
-
         try:
-            services.create_agenda_item(request.get('Data', None), jwt)
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            services.create_agenda_item(request.data, jwt)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 
 class AgendaItemCSVView(BaseView):
