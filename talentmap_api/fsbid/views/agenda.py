@@ -10,6 +10,7 @@ from rest_condition import Or
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.agenda as services
 from talentmap_api.common.permissions import isDjangoGroupMember
+from talentmap_api.fsbid.serializers import AgendaSerializer
 
 import logging
 logger = logging.getLogger(__name__)
@@ -46,10 +47,14 @@ class AgendaItemListView(BaseView):
         '''
         Creates new Agenda Item
         '''
-        serializer = self.serializer_class(bidder, data=request.data, partial=True)
-        serializer = AgendaSerializer(request.get('Data', None));
+        jwt = request.META['HTTP_JWT']
+        #TO-DO: Use serializers to format data to service call
 
-        
+        try:
+            services.create_agenda_item(request.get('Data', None), jwt)
+        except Exception as e:
+            logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class AgendaItemCSVView(BaseView):
