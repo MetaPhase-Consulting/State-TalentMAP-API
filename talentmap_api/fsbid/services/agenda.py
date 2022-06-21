@@ -400,8 +400,7 @@ def create_agenda_item(data, jwt_token=None):
     '''
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
     url = f"{AGENDA_API_ROOT}"
-    logger.info("---Service Call---", data)
-    response = requests.post(url, data={data}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+    response = requests.post(url, json=data, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
     response.raise_for_status()
     return response
     

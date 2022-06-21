@@ -49,9 +49,11 @@ class AgendaItemActionView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_STRING,
-    ))
-    
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'Data': openapi.Schema(type=openapi.TYPE_STRING, description='Data'),
+        }))
+
     def post(self, request):
         '''
         Creates new Agenda Item
