@@ -1,5 +1,4 @@
 
-
 class Agenda:
     def __init__(self, **kwargs):
         self.agenda_include_indicator = kwargs["agendaIncludeIndicator"]
