@@ -103,7 +103,7 @@ class AgendaItemActionView(BaseView):
         agenda = Agenda(**request.data)
         panel = Panel(**request.data)
         # TO-DO: Loop through cycleposition array to create more than one leg
-        AgendaLegCyclePosition = AgendaLegCyclePosition(**request.data['agendaLegCyclePosition'][0])
+        agendaLegCyclePosition = AgendaLegCyclePosition(**request.data['agendaLegCyclePosition'][0])
         agendaLegAssignment = AgendaLegAssignment(**request.data['agendaLegAssignment'])
         try:
             services.create_agenda_item(request.data, jwt)
