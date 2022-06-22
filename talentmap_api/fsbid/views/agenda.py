@@ -113,7 +113,6 @@ class AgendaItemActionView(BaseView):
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-
 class AgendaItemCSVView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
