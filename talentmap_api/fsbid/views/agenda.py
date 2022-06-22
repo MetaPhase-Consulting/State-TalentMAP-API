@@ -28,7 +28,6 @@ class AgendaItemView(BaseView):
 
 class AgendaItemListView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-    serializer_class = AgendaSerializer
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -48,6 +47,7 @@ class AgendaItemListView(BaseView):
 
 class AgendaItemActionView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    serializer_class = AgendaSerializer
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
