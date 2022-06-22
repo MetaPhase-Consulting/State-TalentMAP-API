@@ -15,37 +15,27 @@ class Panel:
         self.panel_meeting_id = kwargs["panelMeetingId"]
         self.panel_meeting_category = kwargs["panelMeetingCategory"]
 
-
+# Need to set up two different conditional classes for different types of legs
 class AgendaLeg:
     def __init__(self, **kwargs):
-        self.leg_include_indicator = kwargs["legIncludeIndicator"]
-        self.leg_action_type = kwargs["legActionType"]
-        self.person_id = kwargs["personId"]
-        self.tour_of_duty_code = kwargs["tourOfDutyCode"]
-        self.leg_assignment_id = kwargs["legAssignmentId"]
-        self.leg_assignment_version = kwargs["legAssignmentVersion"]
-        self.leg_start_date = kwargs["legStartDate"]
-        self.leg_end_date = kwargs["legEndDate"]
+        self.leg_include_indicator = kwargs["legIncludeIndicator"] # ailincind
+        self.leg_action_type = kwargs["legActionType"] # aillatcode
+        self.person_id = kwargs["personId"] # ailperdetseqnum
+        self.tour_of_duty_code = kwargs["tourOfDutyCode"] # ailtodcode
+        self.leg_start_date = kwargs["legStartDate"] # ailetadate
+        self.leg_end_date = kwargs["legEndDate"] # ailetdtedsepdate
         
-        
+class AgendaLegCyclePosition(AgendaLeg):
+    def __init__(self, **kwargs):
+        super().__init__
+        self.travel_function_code = kwargs["travelFunctionCode"] # ailtfcd 
+        self.cycle_position_id = kwargs["cyclePositionID"] # ailcpid 
+        self.tour_of_duty_months_num = kwargs["tourOfDutyMonthsNum"] # ailtodmonthsnum 
+        self.tour_of_duty_other_text = kwargs["tourOfDutyOtherText"] # ailtodothertext 
+
 class AgendaLegAssignment(AgendaLeg):
     def __init__(self, **kwargs):
         super().__init__
-# 1st Version
-    ailincind = serializers.ChoiceField(choices=["A"], default="A")
-    aillatcode = serializers.ChoiceField(choices=["S", "E"], default="S")
-    ailperdetseqnum = serializers.IntegerField(max_value=None, min_value=None)
-    ailtodcode = serializers.ChoiceField(choices=["X"], default="X")
-    ailasgseqnum = serializers.IntegerField(max_value=None, min_value=None)
-    ailasgdrevisionnum = serializers.IntegerField(max_value=None, min_value=None)
-    ailetadate = CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)
-    ailetdtedsepdate = CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)
-    # 2nd Version
-    ailtfcd = CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True required=False)
-    ailcpid = serializers.IntegerField(max_value=None, min_value=None required=False)
-    ailtodcode = serializers.ChoiceField(choices=["J"], default="J" required=False)
-    ailtodmonthsnum = serializers.IntegerField(max_value=None, min_value=None required=False)
-    ailtodothertext = CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True required=False)
-    ailetadate = CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True required=False)
-    ailetdtedsepdate = CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True required=False)
+        self.leg_assignment_id = kwargs["legAssignmentId"] # ailasgseqnum
+        self.leg_assignment_version = kwargs["legAssignmentVersion"] # ailasgdrevisionnum
 
