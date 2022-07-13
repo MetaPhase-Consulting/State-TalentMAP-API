@@ -10,8 +10,6 @@ from rest_condition import Or
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.agenda as services
 from talentmap_api.common.permissions import isDjangoGroupMember
-from talentmap_api.fsbid.serializers import AgendaSerializer
-from talentmap_api.fsbid.helpers.agenda import Agenda, AgendaLegCyclePosition, AgendaLegAssignment, Panel
 
 import logging
 logger = logging.getLogger(__name__)
@@ -47,7 +45,6 @@ class AgendaItemListView(BaseView):
 
 class AgendaItemActionView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-    serializer_class = AgendaSerializer
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -92,7 +89,6 @@ class AgendaItemActionView(BaseView):
         '''
         jwt = self.request.META['HTTP_JWT']
         try:
-            print('---------inside view----------')
             services.create_agenda_item(request.data, jwt)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
