@@ -60,13 +60,6 @@ class AgendaItemActionView(BaseView):
             'panelIncludeIndicator': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Include Indicator'),
             'panelMeetingId': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting ID'),
             'panelMeetingCategory': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Category'),
-            'legIncludeIndicator': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Include Indicator'),
-            'legActionType': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Action Type'),
-            'tourOfDutyCode': openapi.Schema(type=openapi.TYPE_STRING, description='Tour Of Duty Code'),
-            'legAssignmentId': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Assignment ID'),
-            'legAssignmentVersion': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Assignment Version'),
-            'legStartDate': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Start Date'),
-            'legEndDate': openapi.Schema(type=openapi.TYPE_STRING, description='Leg End Date'),
             'agendaLegAssignment': openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
@@ -98,14 +91,8 @@ class AgendaItemActionView(BaseView):
         Creates new Agenda Item
         '''
         jwt = self.request.META['HTTP_JWT']
-        #TO-DO: Use serializers to format data to service call
-        logger.info(request.data)
-        agenda = Agenda(**request.data)
-        panel = Panel(**request.data)
-        # TO-DO: Loop through cycleposition array to create more than one leg
-        agendaLegCyclePosition = AgendaLegCyclePosition(**request.data['agendaLegCyclePosition'][0])
-        agendaLegAssignment = AgendaLegAssignment(**request.data['agendaLegAssignment'])
         try:
+            print('---------inside view----------')
             services.create_agenda_item(request.data, jwt)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")

@@ -394,13 +394,80 @@ def fsbid_to_talentmap_agenda_remark_categories(data):
     return services.map_return_template_cols(add_these, cols_mapping, data)
 
 
-def create_agenda_item(data, jwt_token=None):
+def create_agenda_item(query, jwt_token=None):
     '''
     Create agenda item
     '''
-    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    url = f"{AGENDA_API_ROOT}"
-    response = requests.post(url, json=data, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+    args = {
+        'uri': '',
+        'query': query,
+        'query_mapping_function': tmap_create_agenda_to_fsbid,
+        'jwt_token': jwt_token,
+        'api_root': AGENDA_API_ROOT,
+    }
+    response = services.send_post_request(**args) 
     response.raise_for_status()
     return response
     
+def tmap_create_agenda_to_fsbid(data):
+    perdet = data.get('aiperdetseqnum', None)
+    agenda = map_agenda_data(data)
+    panel = map_panel_data(data)
+    agenda_leg_assignment = map_agenda_leg_assignment_data(data.get('agendaLegAssignment', {}), perdet)
+    agenda_legs = [map_agenda_legs_data(leg, perdet) for leg in data.get('agendaLegCyclePosition', [])]
+    mapped_query = {
+        'Data': [
+            agenda
+        ],
+        'Panel': [
+            panel
+        ],
+        'agendaLegs': [
+            agenda_leg_assignment,
+            *agenda_legs
+        ],
+    }                    
+    return mapped_query
+
+def map_agenda_data(agenda):
+    return {
+        'aiincind': agenda.get('agendaIncludeIndicator', None),
+        'aiasgseqnum': agenda.get('assignmentId', None),
+        'aiasgdrevisionnum': agenda.get('assignmentVersion', None),
+        'aiperdetseqnum': agenda.get('personId', None),
+        'aiaiscode': agenda.get('agendaStatusCode', None),
+    }
+
+def map_panel_data(panel):
+    return {
+        'pmiincind': panel.get('panelIncludeIndicator', None),
+        'pmipmseqnum': panel.get('panelMeetingId', None),
+        'pmimiccode': panel.get('panelMeetingCategory', None),
+    }
+
+def map_agenda_leg_assignment_data(agenda_leg_assignment, perdet):
+    return {
+        'ailincind': agenda_leg_assignment.get('legIncludeIndicator', None),
+        'aillatcode': agenda_leg_assignment.get('legActionType', None),
+        'ailperdetseqnum': perdet,
+        'ailtodcode': agenda_leg_assignment.get('tourOfDutyCode', None),
+        'ailasgseqnum': agenda_leg_assignment.get('legAssignmentId', None),
+        'ailasgdrevisionnum': agenda_leg_assignment.get('legAssignmentVersion', None),
+        'ailetadate': agenda_leg_assignment.get('legStartDate', None),
+        'ailetdtedsepdate': agenda_leg_assignment.get('legEndDate', None), 
+    }
+
+def map_agenda_legs_data(agenda_leg, perdet):
+    return {
+        'ailincind': agenda_leg.get('legIncludeIndicator', None),
+        'aillatcode': agenda_leg.get('legActionType', None),
+        'ailtfcd': agenda_leg.get('travelFunctionCode', None),
+        'ailcpid': agenda_leg.get('cyclePositionID', None),
+        'ailperdetseqnum': perdet, 
+        'ailtodcode': agenda_leg.get('tourOfDutyCode', None),
+        'ailtodmonthsnum': agenda_leg.get('tourOfDutyMonthsNum', None),
+        'ailtodothertext': agenda_leg.get('tourOfDutyOtherText', None),
+        'ailetadate': agenda_leg.get('legStartDate', None),
+        'ailetdtedsepdate': agenda_leg.get('legEndDate', None),
+    }                   
+
