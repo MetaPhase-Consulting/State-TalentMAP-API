@@ -1,3 +1,6 @@
+# Not being used - part of ongoing agenda item create/update - TO-DO
+# Can be removed/utilized during data validation
+
 from rest_framework import serializers
 
 class AgendaSerializer(serializers.Serializer):

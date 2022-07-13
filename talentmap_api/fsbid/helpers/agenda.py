@@ -1,4 +1,5 @@
-
+# Not being used - part of ongoing agenda item create/update - TO-DO
+# Can be removed/utilized during data validation
 class Agenda:
     def __init__(self, **kwargs):
         self.agenda_include_indicator = kwargs["agendaIncludeIndicator"]
