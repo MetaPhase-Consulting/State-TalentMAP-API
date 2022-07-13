@@ -859,7 +859,6 @@ def map_return_template_cols(cols, cols_mapping, data):
     return dict(mapped_tuples)
 
 def send_post_request(uri, query, query_mapping_function, jwt_token, api_root=API_ROOT):
-    print('----------inside common function---------')
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
     url = f"{api_root}/{uri}"
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
