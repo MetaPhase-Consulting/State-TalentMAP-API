@@ -590,6 +590,6 @@ def fsbid_to_talentmap_agenda_leg_action_types(data):
 
     add_these.extend(hard_coded)
 
-    # why me - how about now?
+    # why me -
 
     return services.map_return_template_cols(add_these, cols_mapping, data)
