@@ -223,6 +223,8 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
     if pydash.ends_with(fullName, "Nmn"):
         fullName = fullName.rstrip(" Nmn")
     cdo = None
+    print( pydash.get(data, "currentAssignment[0].position[0].currentLocation.city", None),)
+    print('butthole')
     if pydash.get(data, 'cdo[0].echruid'):
         hru_id = pydash.get(data, 'cdo[0].echruid')
         cdoObj = pydash.find(cdos, lambda x: pydash.get(x, 'id') == hru_id)
@@ -238,6 +240,11 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
         "currentAssignment": {
             "TED": pydash.get(data, "currentAssignment[0].asgdetdteddate", None),
             "orgDescription": pydash.get(data, "currentAssignment[0].position[0].posorgshortdesc", None),
+            "location": {
+                "city": pydash.get(data, "currentAssignment[0].position[0].currentLocation.city", None),
+                "state": pydash.get(data, "currentAssignment[0].position[0].currentLocation.state", None),
+                "country": pydash.get(data, "currentAssignment[0].position[0].currentLocation.country", None),
+            }
         },
         "hsAssignment": {
             "orgDescription": pydash.get(data, "handshake[0].posorgshortdesc", None),
