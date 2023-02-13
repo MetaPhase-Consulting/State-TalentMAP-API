@@ -236,22 +236,27 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, remarks={}):
     legsToReturn.extend(sortedLegs)
     statusFull = data.get("aisdesctext", None)
     updaters = pydash.get(data, "updaters") or None
+    reportCategory = {
+        "code": pydash.get(data, "Panel[0].pmimiccode") or None,
+        "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
+    }
+    panelMeetingSeqNum = str(int(pydash.get(data, "Panel[0].pmseqnum"))) if pydash.get(data, "Panel[0].pmseqnum") else ""
     if updaters:
-        updaters = (list(map(
-            fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters,
-            pydash.get(data, "updaters")
-        )))[0]
+        updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
 
     creators = pydash.get(data, "creators") or None
     if creators:
-        fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(creators[0])
+        creators = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(creators[0])
 
     return {
         "id": data.get("aiseqnum", None),
         "remarks": services.parse_agenda_remarks(data.get("aicombinedremarktext") or "", remarks),
         "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm", None), utc_offset=-5),
+        "panel_date_type": pydash.get(data, "Panel[0].pmtcode") or None,
+        "panel_meeting_seq_num": panelMeetingSeqNum,
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
+        "report_category": reportCategory,
         "perdet": data.get("aiperdetseqnum", None),
         "assignment": assignment,
         "legs": legsToReturn,
@@ -332,8 +337,6 @@ def fsbid_legs_to_talentmap_legs(data):
     return res
 
 def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
-    if not data:
-        return {}
     empUser = pydash.get(data, "empUser") or None
     if empUser:
         empUser = (list(map(lambda emp_user : {
@@ -344,7 +347,7 @@ def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
                 "emp_user_suffix_name": emp_user["perpiisuffixname"],
                 "perdet_seqnum": emp_user["perdetseqnum"],
                 "per_desc": emp_user["persdesc"],
-            }, pydash.get(data, "empUser")
+            }, empUser
         )))[0]
 
     return {
@@ -355,7 +358,7 @@ def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
         "first_name": pydash.get(data, "neufirstnm"),
         "middle_name": pydash.get(data, "neumiddlenm"),
         "emp_user": empUser
-        }
+    }
 
 # aia = agenda item assignment
 def fsbid_aia_to_talentmap_aia(data):
