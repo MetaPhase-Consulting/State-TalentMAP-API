@@ -17,6 +17,8 @@ import talentmap_api.fsbid.services.bid as services
 import talentmap_api.fsbid.services.cdo as cdoServices
 import talentmap_api.fsbid.services.classifications as classifications_services
 
+from rest_condition import Or
+
 logger = logging.getLogger(__name__)
 
 
@@ -40,13 +42,13 @@ class FSBidCDOView(BaseView):
 
 class FSBidListView(BaseView):
 
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('cdo'),)
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'), ) ]
 
     def get(self, request, client_id):
         '''
         Gets all bids for the client user
         '''
-        return Response({"results": services.user_bids(client_id, request.META['HTTP_JWT'])})
+        return Response({"results": services.user_bids(client_id, request.META['HTTP_JWT'], query=request.query_params)})
 
 
 class FSBidBidClientListCSVView(APIView):
@@ -61,7 +63,7 @@ class FSBidBidClientListCSVView(APIView):
         '''
         Exports all bids for the client's user to CSV
         '''
-        return services.get_user_bids_csv(client_id, request.META['HTTP_JWT'])
+        return services.get_user_bids_csv(client_id, request.META['HTTP_JWT'], query=request.query_params)
 
 
 class FSBidListBidActionView(APIView):
@@ -90,7 +92,8 @@ class FSBidListBidActionView(APIView):
                 send_email(subject=message, body='Navigate to TalentMAP to see your updated bid tracker.', recipients=[owner.user.email])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=e)
+            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class FSBidListBidRegisterView(APIView):
@@ -130,7 +133,8 @@ class FSBidListBidRegisterView(APIView):
 
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=e)
+            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def delete(self, request, pk, client_id):
         '''
@@ -154,7 +158,8 @@ class FSBidListBidRegisterView(APIView):
             registeredHandshakeNotification(pk, jwt, client_id, False)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=e)
+            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 class FSBidListPositionActionView(BaseView):
@@ -226,4 +231,5 @@ class FSBidClientEditClassifications(APIView):
                 id = classifications_services.delete_client_classification(request.META['HTTP_JWT'], client_id, request.data['delete'])
             return Response(status=status.HTTP_200_OK, data=id)
         except Exception as e:
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=e)
+            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)

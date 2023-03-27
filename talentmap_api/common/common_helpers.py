@@ -177,15 +177,26 @@ def ensure_date(date, utc_offset=0):
     Returns:
         - date (Object) - Datetime
     '''
-    if not date:
-        return None
-    elif isinstance(date, str):
-        return parser.parse(date).astimezone(datetime.timezone.utc) - datetime.timedelta(hours=utc_offset)
-    elif isinstance(date, datetime.date):
-        return date.astimezone(datetime.timezone(datetime.timedelta(hours=utc_offset)))
-    else:
-        logger.warn(f"Parameter {date} must be a date object or string")
-        return None
+    try:
+        if not date:
+            return None
+        elif isinstance(date, str):
+            return parser.parse(date).astimezone(datetime.timezone.utc) - datetime.timedelta(hours=utc_offset)
+        elif isinstance(date, datetime.date):
+            return date.astimezone(datetime.timezone(datetime.timedelta(hours=utc_offset)))
+        else:
+            logger.warn(f"Date parameter must be a date object or string.")
+            logger.warn(f"date: {date}")
+            logger.warn(f"type(date): {type(date)}")
+            return "Invalid date"
+    except ValueError:
+        try:
+            return parser.parse(date + '.000Z').astimezone(datetime.timezone.utc) - datetime.timedelta(hours=utc_offset)
+        except:
+            logger.warn(f"Invalid date: Date parameter must be a date object or string.")
+            logger.warn(f"date: {date}")
+            logger.warn(f"type(date): {type(date)}")
+            return "Invalid date"
 
 
 def validate_filters_exist(filter_list, filter_class):
@@ -414,6 +425,28 @@ def get_avatar_url(email):
         }
     else:
         return {}
+
+def sort_legs(agendaLegs):
+    '''
+    Sorts AgendaItems legs by ailetadate
+    When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
+    '''
+    #   pull out the nulls
+    nullLegs = []
+    for idx, val in enumerate(agendaLegs):
+        if not val['eta']:
+            nullLegs.append(val)
+            agendaLegs.pop(idx)
+
+    # sort legs
+    sortedLegs = sorted(agendaLegs, key=lambda d: d['eta'])
+
+    # sort nulls by ted
+    sortedNulls = sorted(nullLegs, key=lambda d: d['ted'])
+
+    # stick sortednulls in the front of legs
+    sortedNulls.extend(sortedLegs)
+    return sortedNulls
 
 
 def prep_string_for_list(str_val):

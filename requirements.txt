@@ -1,7 +1,7 @@
 appdirs==1.4.3
 argparse==1.4.0
 asn1crypto==0.24.0
-attrs==17.4.0
+attrs==21.2.0
 autopep8==1.5.3
 bandit==1.4.0
 cached-property==1.4.2
@@ -24,6 +24,7 @@ django-cors-headers==3.7.0
 django-debug-toolbar==3.2.1
 django-extensions==2.0.6
 django-filter==2.4.0
+django-health-check==3.16.4
 django-jsonfield==1.4.0
 django-simple-history==3.0.0
 django-sslserver==0.21
@@ -42,7 +43,7 @@ GitPython==2.1.7
 greenlet==0.4.17
 idna==2.6
 isodate==0.6.0
-itsdangerous==0.24
+itsdangerous==2.0.1
 itypes==1.1.0
 Jinja2==2.11.3
 locustio==0.8.1
@@ -56,6 +57,7 @@ openapi-codec==1.3.2
 Paste==2.0.3
 pbr==4.0.1
 pluggy==0.6.0
+psutil==5.8.0
 psycopg2==2.7.4
 psycopg2-binary==2.7.4
 py==1.10.0
@@ -76,6 +78,7 @@ pytz==2018.3
 pyzmq==17.0.0
 repoze.who==2.3
 requests==2.25.1
+requests-cache==0.7.2
 requests-toolbelt==0.8.0
 rest_condition==1.0.3
 simplejson==3.13.2

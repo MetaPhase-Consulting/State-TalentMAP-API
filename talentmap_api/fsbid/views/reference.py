@@ -1,58 +1,63 @@
 import logging
 
+from django.conf import settings
+from rest_framework.response import Response
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.reference as services
+import talentmap_api.fsbid.services.common as common
+
+TP_ROOT = settings.TP_API_URL
 
 logger = logging.getLogger(__name__)
 
 
 class FSBidDangerPayView(BaseView):
-    uri = "dangerpays"
+    uri = "v1/posts/dangerpays"
     mapping_function = services.fsbid_danger_pay_to_talentmap_danger_pay
 
 
 class FSBidCyclesView(BaseView):
-    uri = "cycles"
+    uri = "v1/cycles"
     mapping_function = services.fsbid_cycles_to_talentmap_cycles
 
 
 class FSBidBureausView(BaseView):
-    uri = "bureaus"
+    uri = "v1/fsbid/bureaus"
     mapping_function = services.fsbid_bureaus_to_talentmap_bureaus
 
 
 class FSBidDifferentialRatesView(BaseView):
-    uri = "differentialrates"
+    uri = "v1/posts/differentialrates"
     mapping_function = services.fsbid_differential_rates_to_talentmap_differential_rates
 
 
 class FSBidGradesView(BaseView):
-    uri = "grades"
+    uri = "v1/references/grades"
     mapping_function = services.fsbid_grade_to_talentmap_grade
 
 
 class FSBidLanguagesView(BaseView):
-    uri = "languages"
+    uri = "v1/references/languages"
     mapping_function = services.fsbid_languages_to_talentmap_languages
 
 
 class FSBidTourOfDutiesView(BaseView):
-    uri = "tourofduties"
+    uri = "v1/posts/tourofduties"
     mapping_function = services.fsbid_tour_of_duties_to_talentmap_tour_of_duties
 
 
 class FSBidCodesView(BaseView):
-    uri = "skillCodes"
+    uri = "v1/references/skills"
     mapping_function = services.fsbid_codes_to_talentmap_codes
 
 
 class FSBidLocationsView(BaseView):
-    uri = "locations"
+    uri = "v1/references/Locations"
     mapping_function = services.fsbid_locations_to_talentmap_locations
 
 
 class FSBidConesView(BaseView):
-    uri = "skillCodes"
+    uri = "v1/references/skills"
     mapping_function = services.fsbid_codes_to_talentmap_cones
 
     def modCones(self, results):
@@ -73,8 +78,12 @@ class FSBidConesView(BaseView):
 
 
 class FSBidClassificationsView(BaseView):
-    uri = "bidderTrackingPrograms"
     mapping_function = services.fsbid_classifications_to_talentmap_classifications
+
+    def get(self, request):
+        results = common.get_results('', {}, None, request.META['HTTP_JWT'], self.mapping_function, TP_ROOT)
+        results = self.modClassifications(results)
+        return Response(results)
 
     # BTP return some duplicated objects with unique bid season references
     # This nests those unique values in an array under one object to aggregate the duplicated data
@@ -83,11 +92,12 @@ class FSBidClassificationsView(BaseView):
         duplicate_results = list(results)
         unique_codes = set(map(lambda x: x['code'], duplicate_results))
 
-        nested_results, seasons, classification_text = [], [], ''
+        nested_results, seasons, classification_text, glossary_term = [], [], '', ''
         for code in unique_codes:
             for classification in duplicate_results:
                 if classification['code'] == code:
                     classification_text = classification['text']
+                    glossary_term = classification['glossary_term']
                     season_txt = classification['season_text'].split(' - ')
                     seasons.append({
                         'id': classification['id'],
@@ -97,23 +107,31 @@ class FSBidClassificationsView(BaseView):
             nested_results.append({
                 'code': code,
                 'text': classification_text,
-                'seasons': seasons
+                'seasons': seasons,
+                'glossary_term': glossary_term
             })
             seasons, classification_text = [], ''
         return nested_results
 
-    mod_function = modClassifications
 
 class FSBidPostIndicatorsView(BaseView):
-    uri = "references/postAttributes?codeTableName=PostIndicatorTable"
+    uri = "v1/posts/attributes?codeTableName=PostIndicatorTable"
     mapping_function = services.fsbid_post_indicators_to_talentmap_indicators
 
 
 class FSBidUnaccompaniedStatusView(BaseView):
-    uri = "references/postAttributes?codeTableName=UnaccompaniedTable"
+    uri = "v1/posts/attributes?codeTableName=UnaccompaniedTable"
     mapping_function = services.fsbid_us_to_talentmap_us
 
 
 class FSBidCommuterPostsView(BaseView):
-    uri = "references/postAttributes?codeTableName=CommuterPostTable"
+    uri = "v1/posts/attributes?codeTableName=CommuterPostTable"
     mapping_function = services.fsbid_commuter_posts_to_talentmap_commuter_posts
+
+class FSBidTravelFunctionsView(BaseView):
+
+    def get(self, request):
+        """
+        Return a list of reference data for all travel-functions
+        """
+        return Response(services.get_travel_functions(request.query_params, request.META['HTTP_JWT']))

@@ -9,7 +9,6 @@ from datetime import datetime
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from rest_framework.schemas import AutoSchema
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated
@@ -30,6 +29,8 @@ from talentmap_api.common.common_helpers import in_group_or_403, bidderHandshake
 from talentmap_api.common.permissions import isDjangoGroupMember
 import talentmap_api.fsbid.services.client as client_services
 import talentmap_api.fsbid.services.employee as empservices
+import talentmap_api.fsbid.services.available_positions as ap_services
+import talentmap_api.fsbid.services.bid as bid_services
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +89,11 @@ class BidHandshakeBureauActionView(FieldLimitableSerializerMixin,
 
             if not serializer.is_valid():
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            ap = ap_services.get_available_position(cp_id, self.request.META['HTTP_JWT'])
+            bid_cycle_id = pydash.get(ap, 'bidcycle.id')
 
-            BidHandshake.objects.create(last_editing_user=user, owner=user, bidder_perdet=pk, cp_id=cp_id,
+            BidHandshake.objects.create(last_editing_user=user, owner=user, bidder_perdet=pk, cp_id=cp_id, bid_cycle_id=bid_cycle_id,
                 status='O', date_offered=datetime.now(), expiration_date=expiration)
 
             bureauHandshakeNotification(pk, cp_id, True, self.request.META['HTTP_JWT'])
@@ -133,10 +137,17 @@ class BidHandshakeCdoActionView(FieldLimitableSerializerMixin,
         '''
         user = UserProfile.objects.get(user=self.request.user)
         hs = BidHandshake.objects.filter(bidder_perdet=pk, cp_id=cp_id)
+        jwt = self.request.META['HTTP_JWT']
 
         if not BidHandshake.objects.filter(bidder_perdet=pk, cp_id=cp_id, status__in=['O', 'A', 'D']).exists():
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
+            # Return an error if a handshake has already been accepted within active
+            bids = bid_services.user_bids(pk, jwt)
+            accept_disabled = pydash.find(bids, lambda x: str(int(pydash.get(x, 'position_info.id'))) == str(int(cp_id)) and x['accept_handshake_disabled'] is True)
+            if accept_disabled:
+                return Response('A handshake in this cycle position bid cycle has already been accepted', status=status.HTTP_409_CONFLICT)
+
             hs.update(last_editing_bidder=user, status='A', bidder_status='A', is_cdo_update=True,
                 update_date=datetime.now(), date_accepted=datetime.now())
             cdoHandshakeNotification(pk, cp_id, True)
@@ -179,6 +190,12 @@ class BidHandshakeBidderActionView(FieldLimitableSerializerMixin,
         if not BidHandshake.objects.filter(bidder_perdet=user.emp_id, cp_id=cp_id, status__in=['O', 'A', 'D']).exists():
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
+            # Return an error if a handshake has already been accepted within active
+            bids = bid_services.user_bids(user.emp_id, jwt)
+            accept_disabled = pydash.find(bids, lambda x: str(int(pydash.get(x, 'position_info.id'))) == str(int(cp_id)) and x['accept_handshake_disabled'] is True)
+            if accept_disabled:
+                return Response('A handshake in this cycle position bid cycle has already been accepted', status=status.HTTP_409_CONFLICT)
+
             hs.update(last_editing_bidder=user, status='A', bidder_status='A', is_cdo_update=False,
                 update_date=datetime.now(), date_accepted=datetime.now())
             bidderHandshakeNotification(hs.first().owner, cp_id, user.emp_id, jwt, True)

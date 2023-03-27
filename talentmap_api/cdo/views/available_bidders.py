@@ -3,13 +3,17 @@ import coreapi
 from django.shortcuts import get_object_or_404
 from datetime import datetime
 
-from rest_framework.schemas import AutoSchema
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from rest_condition import Or
 
 from talentmap_api.cdo.serializers import AvailableBiddersSerializer
 import talentmap_api.cdo.services.available_bidders as services
@@ -28,23 +32,22 @@ logger = logging.getLogger(__name__)
 class AvailableBiddersListView(APIView):
 
     serializer_class = AvailableBiddersSerializer
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('cdo'),)
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'), ) ]
 
-    schema = AutoSchema(
-        manual_fields=[
-            coreapi.Field("ordering", location='query', description='Which field to use when ordering the results.'),
-        ]
-    )
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('ordering', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Which field to use when ordering the results.')
+        ])
 
     def get(self, request):
         '''
-        Gets all available bidders for a CDO from FSBID
+        Gets all available bidders for an Internal CDA from FSBID
         '''
         return Response(client_services.get_available_bidders(request.META['HTTP_JWT'], True, request.query_params, f"{request.scheme}://{request.get_host()}"))
 
 class AvailableBidderView(APIView):
 
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('cdo'),)
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'), ) ]
     serializer_class = AvailableBiddersSerializer
 
     def get(self, request, pk):
@@ -55,7 +58,7 @@ class AvailableBidderView(APIView):
 
 
 class AvailableBiddersIdsListView(APIView):
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('cdo'),)
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'), ) ]
 
 
     def get(self, request, *args, **kwargs):
@@ -75,7 +78,7 @@ class AvailableBiddersActionView(FieldLimitableSerializerMixin,
     add, remove, update an Available Bidder instance
     '''
     serializer_class = AvailableBiddersSerializer
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('cdo'),)
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'), ) ]
 
     def put(self, serializer, pk, **ars):
         '''
@@ -111,7 +114,7 @@ class AvailableBiddersActionView(FieldLimitableSerializerMixin,
 
 class AvailableBiddersCSVView(APIView):
 
-    permission_classes = (IsAuthenticated, isDjangoGroupMember('cdo'),)
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'), ) ]
 
     def get(self, request, *args, **kwargs):
         """

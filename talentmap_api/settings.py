@@ -16,9 +16,11 @@ import dj_database_url
 
 import saml2
 import saml2.saml
+import pydash
 
 from saml2.config import SPConfig
 from django.apps import AppConfig
+
 
 
 # For upgrade to django 3.x
@@ -141,9 +143,17 @@ INSTALLED_APPS = [
     'talentmap_api.stats',
     'talentmap_api.fsbid',
     'talentmap_api.cdo',
+
+    # Health Check
+    'health_check',                             # required
+    'health_check.db',                          # stock Django health checkers
+    'health_check.storage',
+    'health_check.contrib.migrations',
+    'health_check.contrib.psutil',              # disk and memory utilization; requires psutil
 ]
 
 MIDDLEWARE = [
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -234,12 +244,14 @@ if ENABLE_SAML2:
 
     def config_settings_loader(request):
         isPublic = False
+        metadataFile = 'remote_metadata_Intranet.xml'
         acs = f"{get_delineated_environment_variable('FRONT_END_ACS_BINDING')}"
         if request.GET.get('public') is not None:
             isPublic = True
             acs = f"{get_delineated_environment_variable('FRONT_END_ACS_BINDING')}"
         if isPublic is True:
             acs = f"{get_delineated_environment_variable('FRONT_END_ACS_BINDING_PUBLIC')}"
+            metadataFile = 'remote_metadata_Go.xml'
         conf = SPConfig()
 
         conf.load({
@@ -306,7 +318,7 @@ if ENABLE_SAML2:
 
             # where the remote metadata is stored
             'metadata': {
-                'local': [os.path.join(BASE_DIR, 'talentmap_api', 'saml2', 'remote_metadata', 'remote_metadata.xml')],
+                'local': [os.path.join(BASE_DIR, 'talentmap_api', 'saml2', 'remote_metadata', metadataFile)],
             },
 
             # set to 1 to output debugging information
@@ -344,6 +356,14 @@ if ENABLE_SAML2:
         })  # End SAML config
         return conf
 
+
+def skip_lb_requests(record):
+    record = pydash.get(record, 'args[0]')
+    if isinstance(record, str) and record.startswith('HEAD / HTTP'):
+        return False
+    return True
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -359,12 +379,17 @@ LOGGING = {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
+        'skip_lb_requests': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': skip_lb_requests
+        }
     },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'simple',
+            'filters': ['skip_lb_requests'],
         },
         'auth': {
             'level': 'DEBUG',
@@ -458,6 +483,8 @@ DATABASES = {
         'NAME': get_delineated_environment_variable("DATABASE_URL"),
         'USER': get_delineated_environment_variable("DATABASE_USER"),
         'PASSWORD': get_delineated_environment_variable("DATABASE_PW"),
+        # 'CONN_MAX_AGE': 300,
+        # 'OPTIONS': {'threaded': True}
     }
 }
 
@@ -505,24 +532,35 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'talentmap_api/static/')
 
-FSBID_API_URL = get_delineated_environment_variable('FSBID_API_URL', 'http://mock_fsbid:3333')
+WS_ROOT_API_URL = get_delineated_environment_variable('WS_ROOT_API_URL', 'http://mock_fsbid:3333')
 SECREF_URL = get_delineated_environment_variable('SECREF_URL', 'http://mock_fsbid:3333/v2/SECREF')
-EMPLOYEES_API_URL = get_delineated_environment_variable('EMPLOYEES_API_URL', 'http://mock_fsbid:3333/Employees')
-CP_API_URL = get_delineated_environment_variable('CP_API_URL', 'http://mock_fsbid:3333/cyclePositions')
-ORG_API_URL = get_delineated_environment_variable('ORG_API_URL', 'http://mock_fsbid:3333/Organizations')
-CLIENTS_API_URL = get_delineated_environment_variable('CLIENTS_API_URL', 'http://mock_fsbid:3333/Clients')
+EMPLOYEES_API_URL = get_delineated_environment_variable('EMPLOYEES_API_URL', 'http://mock_fsbid:3333/v1/Employees')
+CP_API_URL = get_delineated_environment_variable('CP_API_URL', 'http://mock_fsbid:3333/v1/cyclePositions')
+CP_API_V2_URL = get_delineated_environment_variable('CP_API_V2_URL', 'http://mock_fsbid:3333/v2/cyclePositions')
+ORG_API_URL = get_delineated_environment_variable('ORG_API_URL', 'http://mock_fsbid:3333/v1/Organizations')
+CLIENTS_API_URL = get_delineated_environment_variable('CLIENTS_API_URL', 'http://mock_fsbid:3333/v1/Clients')
+CLIENTS_API_V2_URL = get_delineated_environment_variable('CLIENTS_API_V2_URL', 'http://mock_fsbid:3333/v2/clients')
+PV_API_V2_URL = get_delineated_environment_variable('PV_API_V2_URL', 'http://mock_fsbid:3333/v2/futureVacancies')
 HRDATA_URL = get_delineated_environment_variable('HRDATA_URL', 'http://mock_fsbid:3333/HR')
 HRDATA_URL_EXTERNAL = get_delineated_environment_variable('HRDATA_URL_EXTERNAL', 'http://mock_fsbid:3333/HR')
 AVATAR_URL = get_delineated_environment_variable('AVATAR_URL', 'https://usdos.sharepoint.com/_layouts/15/userphoto.aspx')
-TP_API_URL = get_delineated_environment_variable('TP_API_URL', 'http://mock_fsbid:3333/TrackingPrograms')
-BTP_API_URL = get_delineated_environment_variable('BTP_API_URL', 'http://mock_fsbid:3333/BidderTrackingPrograms')
-
+TP_API_URL = get_delineated_environment_variable('TP_API_URL', 'http://mock_fsbid:3333/v1/TrackingPrograms')
+AGENDA_API_URL = get_delineated_environment_variable('AGENDA_API_URL', 'http://mock_fsbid:3333/v1/Agendas')
+PANEL_API_URL = get_delineated_environment_variable('PANEL_API_URL', 'http://mock_fsbid:3333/v1/panels')
+PERSON_API_URL = get_delineated_environment_variable('PERSON_API_URL', 'http://mock_fsbid:3333/v3/persons')
+BIDS_API_V2_URL = get_delineated_environment_variable('BIDS_API_V2_URL', 'http://mock_fsbid:3333/v2/bids')
+POSITIONS_API_URL = get_delineated_environment_variable('POSITIONS_API_URL', 'http://mock_fsbid:3333/v1/positions')
+POSITIONS_API_V2_URL = get_delineated_environment_variable('POSITIONS_API_V2_URL', 'http://mock_fsbid:3333/v2/positions')
+PUBLISHABLE_POSITIONS_API_URL = get_delineated_environment_variable('PUBLISHABLE_POSITIONS_API_URL', 'http://mock_fsbid:3333/v1/publishablePositions')
 SAML_CONFIG_LOADER = 'talentmap_api.settings.config_settings_loader'
 
 # remove actual values before committing
 AD_ID = 'DOMAIN\\USERNAME'
 OBC_URL = get_delineated_environment_variable('OBC_URL', 'http://localhost:4000')
 OBC_URL_EXTERNAL = get_delineated_environment_variable('OBC_URL_EXTERNAL', 'http://localhost:4000/external')
+
+# SSL cert
+HRONLINE_CERT = get_delineated_environment_variable('HRONLINE_CERT', None)
 
 # defaults from https://pypi.org/project/django-cors-headers/ plus our custom headers
 CORS_ALLOW_HEADERS = [
