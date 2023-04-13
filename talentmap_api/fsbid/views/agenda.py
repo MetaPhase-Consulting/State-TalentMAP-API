@@ -1,4 +1,5 @@
 import coreapi
+import time
 
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -148,7 +149,10 @@ class PanelAgendasListView(BaseView):
         '''
         Get agendas for a panel meeting
         '''
-        return Response(services.get_agendas_by_panel(pk, request.META['HTTP_JWT']))
+        start = time.time()
+        x = Response(services.get_agendas_by_panel(pk, request.META['HTTP_JWT']))
+        print('⏰ Full:', time.time() - start)
+        return x
 
 class PanelAgendasCSVView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]

@@ -1,3 +1,4 @@
+import time
 import jwt
 import csv
 import logging
@@ -237,12 +238,23 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     assignment = fsbid_aia_to_talentmap_aia(
         pydash.get(data, "agendaAssignment[0]", {})
     )
-    legs = (list(map(
-        fsbid_legs_to_talentmap_legs, pydash.get(data, "agendaLegs", [])
-    )))
-    sortedLegs = sort_legs(legs)
+    startgigi = time.time()
+    sophie = []
+    elsa = pydash.get(data, "agendaLegs") or []
+    if elsa:
+        for cat in elsa:
+            sophie.append(fsbid_legs_to_talentmap_legs(cat))
+
+    # legs = (list(map(
+    #     fsbid_legs_to_talentmap_legs, pydash.get(data, "agendaLegs", []) or []
+    # )))
+    print('⏰ gigi:', time.time() - startgigi)
+    print(elsa)
+    print('🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛🐈‍⬛')
+    sortedLegs = sort_legs(sophie)
     legsToReturn.extend([assignment])
-    legsToReturn.extend(sortedLegs)
+    if sortedLegs:
+        legsToReturn.extend(sortedLegs)
     statusFull = pydash.get(data, "aisdesctext") or None
     updaters = pydash.get(data, "updaters") or None
     reportCategory = {
@@ -677,9 +689,11 @@ def get_agendas_by_panel(pk, jwt_token):
         "base_url": "/api/v1/panels/",
         "api_root": PANEL_API_ROOT,
     }
+    startABP = time.time()
     agendas_by_panel = services.send_get_request(
         **args
     )
+    print('⏰ ABP:', time.time() - startABP)
     perdets = list(map(lambda x: x["perdet"], agendas_by_panel["results"]))
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
     query = {
@@ -689,6 +703,7 @@ def get_agendas_by_panel(pk, jwt_token):
         "page": 1,
         "limit": 1000,
     }
+    startClients = time.time()
     clients = services.send_get_request(
         "",
         query,
@@ -700,6 +715,7 @@ def get_agendas_by_panel(pk, jwt_token):
         None,
         CLIENTS_ROOT_V2,
     )
+    print('⏰ client:', time.time() - startClients)
     clients_lookup = {}
     for client in clients.get("results") or []:
         perdet = client["perdet_seq_number"]
