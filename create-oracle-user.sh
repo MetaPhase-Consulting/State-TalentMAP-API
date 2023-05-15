@@ -14,7 +14,7 @@ createUser() {
 }
 
 #retries=300
-retries=150
+retries=50
 while ((retries > 0)); do
     if createUser; then
         >&2 echo "User created!"

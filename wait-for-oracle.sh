@@ -20,7 +20,7 @@ checkOracle() {
   fi
 }
 #retries=360
-retries=200
+retries=50
 while ((retries > 0)); do
     if checkOracle; then
         >&2 echo "Connected to Oracle!"
