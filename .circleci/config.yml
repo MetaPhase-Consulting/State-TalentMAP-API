@@ -86,6 +86,9 @@ jobs:
             sudo rm -f instantclient-sdk-linux.x64-19.8.0.0.0dbru.zip
             cd /opt/oracle/instantclient*
             sudo rm -f *jdbc* *occi* *mysql* *README *jar uidrvci genezi adrci
+            echo sophiesophiesophiesophiesophie
+            ls -ltr
+            echo sophiesophiesophiesophiesophie
             cd /etc/ld.so.conf.d
             sudo touch oracle-instantclient.conf
             sudo tee oracle-instantclient.conf \<<<"/opt/oracle/instantclient_19_8"
