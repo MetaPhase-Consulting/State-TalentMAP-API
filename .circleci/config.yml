@@ -94,12 +94,12 @@ jobs:
       - run:
           name: Create Oracle user
           command: |
-            ./wait-for-oracle.sh 127.0.0.1:1521/oraclesid elizabeth 'w0GDB#X4&xd!' 'as sysdba'
-            ./create-oracle-user.sh 127.0.0.1:1521/oraclesid elizabeth 'w0GDB#X4&xd!' 'as sysdba'
-      - run:
-          name: Wait for Oracle
-          command: |
-            ./wait-for-oracle.sh 127.0.0.1:1521/oraclepdb talentmap1 talentmap1 "" true
+            ./wait-for-oracle.sh 127.0.0.1:1521/oraclesid talentmapapi_high talentmap1 'as sysdba'
+#            ./create-oracle-user.sh 127.0.0.1:1521/oraclesid elizabeth 'w0GDB#X4&xd!' 'as sysdba'
+#      - run:
+#          name: Wait for Oracle
+#          command: |
+#            ./wait-for-oracle.sh 127.0.0.1:1521/oraclepdb talentmap1 talentmap1 "" true
       - run:
           name: Python Test Coverage
           command: |

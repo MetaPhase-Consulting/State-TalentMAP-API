@@ -16,6 +16,9 @@ checkOracle() {
     echo exit | /opt/oracle/instantclient_19_8/sqlplus -L "$user"/"$password"@//"$host" "$suffix" @healthcheck-alt.sql | grep -q 'USER'
   else
     echo $user
+    echo $password
+    echo $host
+    echo $suffix
     echo exit | /opt/oracle/instantclient_19_8/sqlplus -L "$user"/"$password"@//"$host" "$suffix" @healthcheck.sql | grep -q 'READ WRITE'
   fi
 }
