@@ -16,6 +16,10 @@ checkOracle() {
     echo password: $password
     echo host: $host
     echo suffix: $suffix
+    echo sophie
+    cd /opt/oracle/instantclient_19_8
+    ls -ltr
+    echo sophie
     echo exit | /opt/oracle/instantclient_19_8/sqlplus -L "$user"/"$password"@//"$host" "$suffix" @healthcheck-alt.sql | grep -q 'USER'
   else
     echo user: $user
