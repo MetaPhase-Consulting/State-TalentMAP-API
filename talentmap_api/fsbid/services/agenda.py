@@ -23,6 +23,25 @@ CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 
 logger = logging.getLogger(__name__)
 
+def get_tod_reference_data(jwt_token):
+    '''
+    Return tod reference data
+    '''
+    args = {
+      "uri": "v1/references/tours-of-duty",
+      "jwt_token": jwt_token,
+      "query": None,
+      "query_mapping_function": None,
+      "mapping_function": None,
+      "count_function": None,
+      "base_url": '',
+    }
+    tod_data = services.send_get_request(
+        **args
+    )
+
+    return pydash.get(tod_data, 'results')
+
 
 def get_single_agenda_item(jwt_token=None, pk=None):
     '''
@@ -34,7 +53,7 @@ def get_single_agenda_item(jwt_token=None, pk=None):
         "query": {'aiseqnum': pk},
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, tod_reference=get_tod_reference_data(jwt_token)),
         "count_function": None,
         "base_url": "/api/v1/fsbid/agenda/",
         "api_root": AGENDA_API_ROOT,
@@ -58,7 +77,7 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         "query": query,
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, tod_reference=get_tod_reference_data(jwt_token)),
         "count_function": None,
         "base_url": "/api/v1/agendas/",
         "host": host,
@@ -173,7 +192,7 @@ def get_agenda_item_history_csv(query, jwt_token, host, limit=None):
         "query": query,
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, tod_reference=get_tod_reference_data(jwt_token)),
         "host": host,
         "use_post": False,
         "base_url": AGENDA_API_ROOT,
@@ -226,7 +245,7 @@ def convert_agenda_item_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
-def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
+def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, tod_reference=[]):
     agendaStatusAbbrev = {
         "Approved": "APR",
         "Deferred - Proposed Position": "XXX",
@@ -242,10 +261,10 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     }
     legsToReturn = []
     assignment = fsbid_aia_to_talentmap_aia(
-        pydash.get(data, "agendaAssignment[0]", {})
+        pydash.get(data, "agendaAssignment[0]", {}), tod_reference
     )
     legs = (list(map(
-        fsbid_legs_to_talentmap_legs, pydash.get(data, "agendaLegs", [])
+        partial(fsbid_legs_to_talentmap_legs, tod_reference), pydash.get(data, "agendaLegs", [])
     )))
     sortedLegs = sort_legs(legs)
     legsToReturn.extend([assignment])
@@ -299,7 +318,7 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token=None):
     }
 
 
-def fsbid_legs_to_talentmap_legs(data):
+def fsbid_legs_to_talentmap_legs(tod_reference, data):
     # Temporary mapping helper. FSBid will handle this
     tf_mapping = {
         "8150": "Post to Post without Home Leave (Direct Transfer)",
@@ -321,6 +340,12 @@ def fsbid_legs_to_talentmap_legs(data):
     def map_tf(tf=None):
         return pydash.get(tf_mapping, tf, None)
 
+    def get_tod_from_ref(code, returnValue):
+        for tod in tod_reference:
+            if tod["todcode"] == code:
+                return tod[returnValue]
+        else: return None
+
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
         "ail_seq_num": pydash.get(data, "ailseqnum", None),
@@ -329,7 +354,9 @@ def fsbid_legs_to_talentmap_legs(data):
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
         "eta": pydash.get(data, "ailetadate", None),
         "ted": pydash.get(data, "ailetdtedsepdate", None),
-        "tod": pydash.get(data, "ailtodothertext", None),
+        "tod": pydash.get(data, "ailtodcode", None),
+        "tod_short_desc": get_tod_from_ref(pydash.get(data, "ailtodcode", None), 'todshortdesc'),
+        "tod_long_desc": get_tod_from_ref(pydash.get(data, "ailtodcode", None), 'toddesctext'),
         "tod_months": pydash.get(data, "ailtodmonthsnum", None),
         "tod_other_text": pydash.get(data, "ailtodothertext", None),
         "grade": pydash.get(data, "agendaLegPosition[0].posgradecode", None),
@@ -385,7 +412,14 @@ def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
     }
 
 # aia = agenda item assignment
-def fsbid_aia_to_talentmap_aia(data):
+def fsbid_aia_to_talentmap_aia(data, tod_reference):
+
+    def get_tod_from_ref(code, returnValue):
+      for tod in tod_reference:
+          if tod["todcode"] == code:
+              return tod[returnValue]
+      else: return None
+
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
         "pos_title": pydash.get(data, "position[0].postitledesc", None),
@@ -393,7 +427,11 @@ def fsbid_aia_to_talentmap_aia(data):
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
         "ted": pydash.get(data, "asgdetdteddate", None),
-        "tod": pydash.get(data, 'todshortdesc', None),
+        "tod": pydash.get(data, "asgdtodcode", None),
+        "tod_short_desc": get_tod_from_ref(pydash.get(data, "asgdtodcode", None), 'todshortdesc'),
+        "tod_long_desc": get_tod_from_ref(pydash.get(data, "asgdtodcode", None), 'toddesctext'),
+        "tod_months": pydash.get(data, "asgdtodmonthsnum", None),
+        "tod_other_text": pydash.get(data, "asgdtodothertext", None),
         "grade": pydash.get(data, "position[0].posgradecode", None),
         "languages": services.parseLanguagesToArr(pydash.get(data, "position[0]", None)),
         "travel": "-",
@@ -707,7 +745,7 @@ def get_agendas_by_panel(pk, jwt_token):
         "query": {},
         "query_mapping_function": convert_agendas_by_panel_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, tod_reference=get_tod_reference_data(jwt_token)),
         "count_function": None,
         "base_url": "/api/v1/panels/",
         "api_root": PANEL_API_ROOT,
