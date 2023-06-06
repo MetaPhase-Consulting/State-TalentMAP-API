@@ -398,7 +398,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "tod": pydash.get(data, "asgdtodcode", None),
         "tod_months": pydash.get(data, "asgdtodmonthsnum", None),
         "tod_other_text": pydash.get(data, "asgdtodothertext", None),
-        "tod_shortdesc": pydash.get(data, "todshortdesc", None),
+        "tod_short_desc": pydash.get(data, "todshortdesc", None),
         "tod_long_desc": pydash.get(data, "toddesctext", None),
         "grade": pydash.get(data, "position[0].posgradecode", None),
         "languages": services.parseLanguagesToArr(pydash.get(data, "position[0]", None)),
