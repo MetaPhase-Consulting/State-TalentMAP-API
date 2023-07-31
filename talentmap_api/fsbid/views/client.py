@@ -40,7 +40,6 @@ class FSBidClientView(BaseView):
         bureau_group = get_group_by_name("bureau_user")
         is_superuser = in_superuser_group(self.request.user)
         isBureauNotSuperuser = (bureau_group in request.user.groups.all()) and not is_superuser
-        # Option 2: we return to FE based on BE check and FE remains same
         return Response(services.single_client(request.META['HTTP_JWT'], pk, isBureauNotSuperuser))
 
 
