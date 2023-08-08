@@ -2,13 +2,11 @@ import re
 import logging
 import csv
 from datetime import datetime
-# import requests_cache
 from copy import deepcopy
 from functools import partial
 
 
 from django.conf import settings
-from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.http import QueryDict
@@ -47,11 +45,15 @@ urls_expire_after = {
 # session = requests_cache.CachedSession(backend='memory', namespace='tmap-cache', urls_expire_after=urls_expire_after)
 
 
-def get_employee_profile_urls(clientid):
-    suffix = f"Employees/{clientid}/EmployeeProfileReportByCDO"
+def get_employee_profile_urls(userid):
+    unredactedSuffix = f"Employees/{userid}/EmployeeProfileReportByCDO"
+    redactedSuffix = f"Employees/{userid}/PrintEmployeeProfileReport"
+
     return {
-        "internal": f"{HRDATA_URL}/{suffix}",
-        "external": f"{HRDATA_URL_EXTERNAL}/{suffix}",
+        "internal": f"{HRDATA_URL}/{unredactedSuffix}",
+        "external": f"{HRDATA_URL_EXTERNAL}/{unredactedSuffix}",
+        "internalRedacted": f"{HRDATA_URL}/{redactedSuffix}",
+        "externalRedacted": f"{HRDATA_URL_EXTERNAL}/{redactedSuffix}",
     }
 
 
@@ -78,7 +80,7 @@ def convert_multi_value(val):
     toReturn = None
     if val is not None:
         toReturn = str(val).split(',')
-    if toReturn is not None and len(toReturn[0]) is 0:
+    if toReturn is not None and len(toReturn[0]) == 0:
         toReturn = None
     return toReturn
 
@@ -195,7 +197,7 @@ sort_dict = {
     "position__grade": "pos_grade_code",
     "position__bureau": "pos_bureau_short_desc",
     "ted": "ted",
-    "position__position_number": "position",
+    "position__position_number": "pos_num_text",
     "posted_date": "cp_post_dt",
     "skill": "skill",
     "grade": "grade",
@@ -230,6 +232,8 @@ sort_dict = {
     "bidlist_create_date": "create_date",
     "bidlist_location": "position_info.position.post.location.city",
     "panel_date": "pmddttm",
+    # Assignments
+    "assignment_start_date": "asgdetadate",
 }
 
 
@@ -268,7 +272,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
 
 
 def get_results_with_post(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
-    mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o == None)
+    mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
     url = f"{api_root}/{uri}"
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
@@ -319,6 +323,18 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
         "results": fetch_method(uri, query, query_mapping_function, jwt_token, mapping_function, api_root)
     }
 
+def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
+    mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
+    url = f"{api_root}/{uri}"
+    response = requests.put(url, data=mappedQuery, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
+        logger.error(f"Fsbid call to '{url}' failed.")
+        return None
+    if mapping_function:
+        return list(map(mapping_function, response.get("Data", {})))
+    else:
+        return response.get("Data", {})
+
 
 def send_count_request(uri, query, query_mapping_function, jwt_token, host=None, api_root=API_ROOT, use_post=False, is_template=False):
     '''
@@ -329,7 +345,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     newQuery = query.copy()
     if api_root == CLIENTS_ROOT_V2 and not uri:
         newQuery['getCount'] = 'true'
-    if api_root == CP_API_V2_ROOT and (not uri or uri in ('availableTandem')):
+    if api_root == CP_API_V2_ROOT and (not uri or uri in 'availableTandem'):
         newQuery['getCount'] = 'true'
     if api_root == PV_API_V2_URL:
         newQuery['getCount'] = 'true'
@@ -343,12 +359,12 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     else:
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
-    
+
     response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args).json()
     countObj = pydash.get(response, "Data[0]")
-    if len(pydash.keys(countObj)):
+    if pydash.keys(countObj):
         count = pydash.get(countObj, pydash.keys(countObj)[0])
-        return { "count": count }
+        return {"count": count}
     else:
         logger.error(f"No count property could be found. {response}")
         raise KeyError('No count property could be found')
@@ -410,7 +426,7 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
         formattedQuery['limit'] = limit
 
     if use_post:
-        mappedQuery = pydash.omit_by(query_mapping_function(formattedQuery), lambda o: o == None)
+        mappedQuery = pydash.omit_by(query_mapping_function(formattedQuery), lambda o: o is None)
         url = f"{base_url}/{uri}"
         response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     else:
@@ -439,7 +455,6 @@ def get_bid_stats_for_csv(record):
 
 
 def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
-
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
@@ -490,7 +505,6 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
         except:
             posteddate = "None listed"
 
-
         if record["position"]["post"]["differential_rate"] is not None:
             formattedDifferential = record["position"]["post"]["differential_rate"]
         else:
@@ -538,7 +552,6 @@ def get_ap_and_pv_csv(data, filename, ap=False, tandem=False):
 
 
 def get_bids_csv(data, filename, jwt_token):
-
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename={filename}_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
@@ -583,7 +596,7 @@ def get_bids_csv(data, filename, jwt_token):
         "submitted": "Submitted",
     }
 
-    bid_status_list = [ 
+    bid_status_list = [
         "handshake_needs_registered",
         "submitted",
     ]
@@ -601,7 +614,7 @@ def get_bids_csv(data, filename, jwt_token):
 
             if hs_offered == "Yes" and status in bid_status_list:
                 hs_offered_bid_status = "handshake_with_another_bidder"
-            
+
             hs_status = (pydash.get(record, 'handshake.hs_status_code') or '').replace('_', ' ') or 'N/A'
             row = []
             row.append(pydash.get(bid_status, hs_offered_bid_status) or 'N/A')
@@ -657,6 +670,7 @@ def archive_favorites(ids, request, isPV=False, favoritesLimit=FAVORITES_LIMIT):
                     AvailablePositionFavorite.objects.filter(cp_id__in=outdated_ids).update(archived=True)
                     AvailableFavoriteTandem.objects.filter(cp_id__in=outdated_ids).update(archived=True)
 
+
 # Determine if the bidder has a competing #1 ranked bid on a position within the requester's org or bureau permissions
 def has_competing_rank(jwt, perdet, pk):
     rankOneBids = AvailablePositionRanking.objects.filter(bidder_perdet=perdet, rank=0).exclude(cp_id=pk).values_list(
@@ -665,7 +679,7 @@ def has_competing_rank(jwt, perdet, pk):
     aps = []
     if rankOneBids:
         ids = ','.join(rankOneBids)
-        ap = apservices.get_available_positions({ 'id': ids, 'page': 1, 'limit': len(rankOneBids) or 1 }, jwt)
+        ap = apservices.get_available_positions({'id': ids, 'page': 1, 'limit': len(rankOneBids) or 1}, jwt)
         aps = pydash.map_(ap['results'], 'id')
 
     for y in aps:
@@ -675,6 +689,7 @@ def has_competing_rank(jwt, perdet, pk):
             # don't bother continuing the loop if we've already found one
             return True
     return False
+
 
 def get_bidders_csv(self, pk, data, filename, jwt_token):
     response = HttpResponse(content_type='text/csv')
@@ -735,7 +750,7 @@ def get_bidders_csv(self, pk, data, filename, jwt_token):
     return response
 
 
-def get_secondary_skill(pos = {}):
+def get_secondary_skill(pos={}):
     skillSecondary = f"{pos.get('pos_staff_ptrn_skill_desc', None)} ({pos.get('pos_staff_ptrn_skill_code')})"
     skillSecondaryCode = pos.get("pos_staff_ptrn_skill_code", None)
     if pos.get("pos_skill_code", None) == pos.get("pos_staff_ptrn_skill_code", None):
@@ -767,22 +782,23 @@ HAND_SHAKE_OFFER_DECLINED_PROP = 'handshake_declined'
 HAND_SHAKE_REVOKED_PROP = 'handshake_offer_revoked'
 
 bid_status_order = {
-  DECLINED_PROP: 10,
-  CLOSED_PROP: 20,
-  HAND_SHAKE_DECLINED_PROP: 30,
-  HAND_SHAKE_OFFER_DECLINED_PROP: 40,
-  HAND_SHAKE_REVOKED_PROP: 50,
-  DRAFT_PROP: 60,
-  SUBMITTED_PROP: 70,
-  HAND_SHAKE_OFFERED_PROP: 80,
-  HAND_SHAKE_OFFER_ACCEPTED_PROP: 90,
-  HAND_SHAKE_NEEDS_REGISTER_PROP: 100,
-  HAND_SHAKE_ACCEPTED_PROP: 110,
-  PRE_PANEL_PROP: 120,
-  PANEL_RESCHEDULED_PROP: 130,
-  IN_PANEL_PROP: 140,
-  APPROVED_PROP: 150,
+    DECLINED_PROP: 10,
+    CLOSED_PROP: 20,
+    HAND_SHAKE_DECLINED_PROP: 30,
+    HAND_SHAKE_OFFER_DECLINED_PROP: 40,
+    HAND_SHAKE_REVOKED_PROP: 50,
+    DRAFT_PROP: 60,
+    SUBMITTED_PROP: 70,
+    HAND_SHAKE_OFFERED_PROP: 80,
+    HAND_SHAKE_OFFER_ACCEPTED_PROP: 90,
+    HAND_SHAKE_NEEDS_REGISTER_PROP: 100,
+    HAND_SHAKE_ACCEPTED_PROP: 110,
+    PRE_PANEL_PROP: 120,
+    PANEL_RESCHEDULED_PROP: 130,
+    IN_PANEL_PROP: 140,
+    APPROVED_PROP: 150,
 }
+
 
 def sort_bids(bidlist, ordering_query):
     ordering = sorting_values(ordering_query)
@@ -794,7 +810,7 @@ def sort_bids(bidlist, ordering_query):
             is_asc = pydash.get(ordering, '[1]') == 'asc'
             bids = sorted(bids, key=lambda x: pydash.get(x, order, '') or '', reverse=not is_asc)
         elif ordering_query in ('status', '-status'):
-            bids = pydash.map_(bids, lambda x: { **x, "ordering": bid_status_order[x['status']] })
+            bids = pydash.map_(bids, lambda x: {**x, "ordering": bid_status_order[x['status']]})
             bids = pydash.sort_by(bids, "ordering", reverse=ordering_query[0] == '-')
             bids = pydash.map_(bids, lambda x: pydash.omit(x, 'ordering'))
             bids.reverse()
@@ -802,7 +818,8 @@ def sort_bids(bidlist, ordering_query):
         logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return bidlist
     return bids
-    
+
+
 # known comparators:
 # eq: equals
 # in: in
@@ -825,18 +842,18 @@ def convert_to_fsbid_ql(filters):
     return formattedFilters
 
 
-def categorize_remark(remark = ''):
-    obj = { 'text': remark, 'type': None }
+def categorize_remark(remark=''):
+    obj = {'text': remark, 'type': None}
     if pydash.starts_with(remark, 'Creator') or pydash.starts_with(remark, 'CDO:') or pydash.starts_with(remark, 'Modifier'):
         obj['type'] = 'person'
     return obj
 
 
-def parse_agenda_remarks(remarks = []):
+def parse_agenda_remarks(remarks=[]):
     remarks_values = []
-    if (remarks):
+    if remarks:
         for remark in remarks:
-            if (pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']):
+            if pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']:
                 if not pydash.get(remark, 'remarkInserts'):
                     continue
                 remark['remarkRefData'][0]['rmrktext'] = pydash.get(remark, 'remarkInserts')[0]['airiinsertiontext']
@@ -850,21 +867,27 @@ def parse_agenda_remarks(remarks = []):
                 continue
             remarkInsertions = pydash.get(remark, 'remarkInserts')
             refRemarkText = pydash.get(remark, 'remarkRefData[0].rmrktext')
+            remark['remarkRefData'][0]['refrmrkinsertions'] = remarkInsertions
+            remark['remarkRefData'][0]['refrmrktext'] = refRemarkText
             refInsertionsText = pydash.get(remark, 'remarkRefData[0].RemarkInserts')
 
-            if (remarkInsertions):
+            if remarkInsertions:
                 for insertion in remarkInsertions:
                     matchText = pydash.find(refInsertionsText, {'riseqnum': insertion['aiririseqnum']})
-                    if (matchText):
+                    if matchText:
                         refRemarkText = refRemarkText.replace(matchText['riinsertiontext'], insertion['airiinsertiontext'])
                     else:
                         continue
 
             remark['remarkRefData'][0]['rmrktext'] = refRemarkText
-            pydash.unset(remark, 'remarkRefData[0].RemarkInserts')
+            if remark['remarkRefData'][0]['rmrkactiveind'] == 'N':
+                remark['remarkRefData'][0]['rmrktext'] = '(Legacy) ' + remark['remarkRefData'][0]['rmrktext']
+                remark['remarkRefData'][0]['refrmrktext'] = remark['remarkRefData'][0]['rmrktext']
+
             remarks_values.append(agendaservices.fsbid_to_talentmap_agenda_remarks(remark['remarkRefData'][0]))
-    
+
     return remarks_values
+
 
 def get_aih_csv(data, filename):
     filename = re.sub(r'(\_)\1+', r'\1', filename.replace(',', '_').replace(' ', '_').replace("'", '_'))
@@ -903,7 +926,7 @@ def get_aih_csv(data, filename):
             panelDate = smart_str(maya.parse(pydash.get(record, "panel_date")).datetime().strftime('%m/%d/%Y'))
         except:
             panelDate = "None listed"
-        
+
         try:
             remarks = pydash.map_(pydash.get(record, "remarks", []), 'text')
             remarks = pydash.join(remarks, '; ')
@@ -926,12 +949,14 @@ def get_aih_csv(data, filename):
         writer.writerow(row)
     return response
 
+
 def map_return_template_cols(cols, cols_mapping, data):
     # cols: an array of strs of the TM data names to map and return
     # cols_mapping: dict to map from TM names(key) to WS names(value)
     props_to_map = pydash.pick(cols_mapping, *cols)
     mapped_tuples = map(lambda x: (x[0], pydash.get(data, x[1]).strip() if type(pydash.get(data, x[1])) == str else pydash.get(data, x[1])), props_to_map.items())
     return dict(mapped_tuples)
+
 
 # optimized map_return_template_cols
 def map_fsbid_template_to_tm(data, mapping):
@@ -951,6 +976,7 @@ def if_str_upper(x):
         return x.upper()
 
     return x
+
 
 # mapping = {
 #   'default': 'None', <-default value for all values (required)
@@ -972,7 +998,7 @@ def csv_fsbid_template_to_tm(data, mapping):
     row = []
 
     for x in mapping['wskeys'].keys():
-        default =  mapping['wskeys'][x]['default'] if 'default' in mapping['wskeys'][x] else mapping['default']
+        default = mapping['wskeys'][x]['default'] if 'default' in mapping['wskeys'][x] else mapping['default']
 
         if 'transformFn' in mapping['wskeys'][x]:
             mapped = mapping['wskeys'][x]['transformFn'](pydash.get(data, x)) or default
@@ -985,8 +1011,9 @@ def csv_fsbid_template_to_tm(data, mapping):
 
     return row
 
+
 def process_dates_csv(date):
-    if (date):
+    if date:
         return maya.parse(date).datetime().strftime('%m/%d/%Y')
     else:
         return "None Listed"
@@ -1021,4 +1048,3 @@ def panel_process_dates_csv(dates):
                 columnOrdering.update({date['mdtcode']: 'None Listed'})
 
     return list(columnOrdering.values())
-

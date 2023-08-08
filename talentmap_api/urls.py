@@ -23,17 +23,18 @@ from djangosaml2.views import echo_attributes
 from talentmap_api.saml2.acs_patch import assertion_consumer_service
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title="TalentMAP API",
-      default_version='v1',
-   ),
-   public=False,
+    openapi.Info(
+        title="TalentMAP API",
+        default_version='v1',
+    ),
+    public=False,
 )
 
 urlpatterns = [
     # Administration related resources
     url(r'^api/v1/homepage/', include('talentmap_api.administration.urls.homepage')),
     url(r'^api/v1/aboutpage/', include('talentmap_api.administration.urls.aboutpage')),
+    url(r'^api/v1/fsbid/admin/panel/', include('talentmap_api.fsbid.urls.admin_panel')),
 
     # Reference
     url(r'^api/v1/fsbid/bid_seasons/', include('talentmap_api.fsbid.urls.bid_seasons')),
@@ -67,6 +68,7 @@ urlpatterns = [
     url(r'^api/v1/fsbid/classifications/', include('talentmap_api.fsbid.urls.classifications')),
     url(r'^api/v1/fsbid/employee/', include('talentmap_api.fsbid.urls.employee')),
     url(r'^api/v1/fsbid/bidlist/', include('talentmap_api.fsbid.urls.bidlist')),
+    url(r'^api/v1/fsbid/persons/', include('talentmap_api.fsbid.urls.persons')),
 
     # Agenda
     url(r'^api/v1/fsbid/agenda/', include('talentmap_api.fsbid.urls.agenda')),
@@ -75,6 +77,9 @@ urlpatterns = [
     # Panel
     url(r'^api/v1/fsbid/panel/', include('talentmap_api.fsbid.urls.panel')),
 
+    # Remark
+    url(r'^api/v1/fsbid/remark/', include('talentmap_api.fsbid.urls.remark')),
+ 
     # Bidding
     url(r'^api/v1/bidding/', include('talentmap_api.bidding.urls.bidding')),
     url(r'^api/v1/bidhandshakecycle/', include('talentmap_api.bidding.urls.bidhandshakecycle')),

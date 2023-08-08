@@ -1,22 +1,22 @@
 import logging
-import jwt
-import pydash
-import re
-import maya
 import csv
 from datetime import datetime
 from urllib.parse import urlencode, quote
 from functools import partial
 from copy import deepcopy
 
+
 from django.utils.encoding import smart_str
 from django.conf import settings
 from django.http import HttpResponse
 
+import jwt
+import maya
+import pydash
+
 from talentmap_api.fsbid.services import common as services
 
 
-PERSON_API_ROOT = settings.PERSON_API_URL
 API_ROOT = settings.WS_ROOT_API_URL
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,6 @@ def get_agenda_employees(query, jwt_token=None, host=None):
     )
 
     return agenda_employees
-
 
 def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
     '''
@@ -120,9 +119,9 @@ def get_agenda_employees_csv(query, jwt_token, rl_cd, host=None):
             panelMeetingDate = smart_str(maya.parse(record["agenda"]["panelDate"]).datetime().strftime('%m/%d/%Y'))
         except:
             panelMeetingDate = fallback
-        
+
         hasHandshake = True if pydash.get(record, 'hsAssignment.orgDescription') else False
-        
+
         writer.writerow([
             smart_str(pydash.get(record, 'person.fullName')),
             smart_str("=\"%s\"" % pydash.get(record, "person.employeeID")),
@@ -141,7 +140,7 @@ def convert_agenda_employees_query(query):
     '''
     Convert TalentMAP filters into FSBid filters
     '''
-    
+
     tedStart = query.get("ted-start")
     tedEnd = query.get("ted-end")
 
@@ -150,7 +149,7 @@ def convert_agenda_employees_query(query):
     empID = query.get("empID").upper() if query.get("empID") else None
 
     activeCodes = "S,L,A,P,U" if not query.get("isInactiveSelected") else None
-    
+
     filters = [
         {"col": "tmpercurrentbureaucode", "com": "IN", "val": query.get("current-bureaus") or None},
         {"col": "tmperhsbureaucode", "com": "IN", "val": query.get("handshake-bureaus") or None},
@@ -184,7 +183,7 @@ def convert_agenda_employees_query(query):
     except:
         logger.info(f"Invalid date {tedStart} or {tedEnd} could not be parsed.")
 
-    filters = pydash.filter_(filters, lambda o: o["val"] != None)
+    filters = pydash.filter_(filters, lambda o: o["val"] is not None)
 
     filters = services.convert_to_fsbid_ql(filters)
 
@@ -210,6 +209,8 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
     firstN = data.get('perpiifirstname', '')
     lastN = data.get('perpiilastname', '')
     initials = f"{firstN[0] if firstN else ''}{lastN[0] if lastN else ''}"
+    suffix = data.get('perpiisuffixname') or ''
+    hasSuffix = len(suffix.strip()) > 0
     fullName = data.get("perpiifullname", "")
     if pydash.ends_with(fullName, "NMN"):
         fullName = fullName.rstrip(" NMN")
@@ -222,7 +223,7 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
         cdo = cdoObj
     return {
         "person": {
-            "fullName": fullName,
+            "fullName": fullName + f"{', '+suffix if hasSuffix else ''} ",
             "perdet": data.get("perdetseqnum", ""),
             "employeeID": data.get("pertexternalid", ""),
             "initials": initials,
@@ -243,6 +244,7 @@ def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
             "panelDate": pydash.get(data, "latestAgendaItem[0].panels[0].pmddttm") or None,
             "status": pydash.get(data, "latestAgendaItem[0].aisdesctext") or None,
             "pmSeqNum": pydash.get(data, "latestAgendaItem[0].panels[0].pmseqnum") or None,
+            "agendaID": pydash.get(data, "latestAgendaItem[0].aiseqnum") or None,
         }
     }
 

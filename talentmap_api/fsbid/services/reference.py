@@ -1,4 +1,6 @@
 import logging
+from urllib.parse import urlencode, quote
+from functools import partial
 import pydash
 
 import requests  # pylint: disable=unused-import
@@ -19,7 +21,7 @@ def get_cycles(jwt_token):
     '''
     view = views.FSBidCyclesView
     uri = view.uri
-    mapping_function = view.mapping_function 
+    mapping_function = view.mapping_function
 
     response = common.get_fsbid_results(
         uri,
@@ -108,6 +110,17 @@ def fsbid_tour_of_duties_to_talentmap_tour_of_duties(data):
         "months": None,
         "long_description": data.get("long_desc", None),
         "short_description": data.get("long_desc", None)
+    }
+
+
+@staticmethod
+def fsbid_tours_of_duty_to_talentmap_tours_of_duty(data):
+    return {
+        "code": data.get("todcode", 0),
+        "is_active": data.get("todstatuscode", None) == "A",
+        "months": data.get("todmonthsnum", 0),
+        "long_description": data.get("toddesctext", None),
+        "short_description": data.get("todshortdesc", None)
     }
 
 
@@ -224,3 +237,102 @@ def fsbid_to_talentmap_travel_functions(data):
     add_these.extend(hard_coded)
 
     return common.map_return_template_cols(add_these, cols_mapping, data)
+
+
+def tmap_to_fsbid_gsa_location_query(query):
+    '''
+    Converts TalentMap filters into FSBid filters
+    '''
+    values = {
+        # Pagination
+        "rp.pageNum": int(query.get("page", 1)),
+        "rp.pageRows": int(query.get("limit", 10)),
+        "rp.columns": None,
+        "rp.orderBy": ["locgvtstcntrydescr", "loccity", "locstate"],
+        "rp.filter": common.convert_to_fsbid_ql([
+            {"col": "locgvtgeoloccd", "val": query.get("code")},
+            {"col": "loceffdt", "val": query.get("effective_date")},
+            {"col": "loceffstatus", "val": query.get("status")},
+            {"col": "locgvtstcntrydescr", "val": query.get("description")},
+            {"col": "loccity", "val": query.get("city")},
+            {"col": "locstate", "val": query.get("countryState")},
+            {"col": "loccounty", "val": query.get("county")},
+            {"col": "loccountry", "val": query.get("country")},
+            {"col": "locgvtleopayarea", "val": query.get("pay_area")},
+            {"col": "locgvtlocalityarea", "val": query.get("locality_area")},
+        ]),
+    }
+
+    if query.get("getCount") == 'true':
+        values["rp.pageNum"] = 0
+        values["rp.pageRows"] = 0
+        values["rp.columns"] = "ROWCOUNT"
+
+    valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+
+    return urlencode(valuesToReturn, doseq=True, quote_via=quote)
+
+
+
+def get_gsa_locations(query, jwt_token):
+    '''
+    Get gsa locations
+    '''
+    expected_keys = [
+        "locgvtgeoloccd",
+        "loceffdt",
+        "loceffstatus",
+        "locgvtstcntrydescr",
+        "loccity",
+        "locstate",
+        "loccounty",
+        "loccountry",
+        "locgvtleopayarea",
+        "locality_area",
+    ]
+
+    mapping_subset = pydash.pick(gsa_locations_cols_mapping, *expected_keys)
+
+    args = {
+        "uri": "v1/references/gsa-locations",
+        "query": query,
+        "query_mapping_function": tmap_to_fsbid_gsa_location_query,
+        "jwt_token": jwt_token,
+        "mapping_function": partial(common.map_fsbid_template_to_tm, mapping=mapping_subset),
+        "count_function": get_gsa_locations_count,
+        "base_url": "/api/v1/references/",
+        "api_root": API_ROOT,
+    }
+
+    return common.send_get_request(**args)
+
+
+def get_gsa_locations_count(query, jwt_token, host=None):
+    '''
+    Get total number of GSA locations
+    '''
+    args = {
+        "uri": "v1/references/gsa-locations",
+        "query": query,
+        "query_mapping_function": tmap_to_fsbid_gsa_location_query,
+        "jwt_token": jwt_token,
+        "host": host,
+        "api_root": API_ROOT,
+        "use_post": False,
+        "is_template": True,
+    }
+    return common.send_count_request(**args)
+
+
+gsa_locations_cols_mapping = {
+    "locgvtgeoloccd": "code",
+    "loceffdt": "effective_date",
+    "loceffstatus": "status",
+    "locgvtstcntrydescr": "description",
+    "loccity": "city",
+    "locstate": "state",
+    "loccounty": "county",
+    "loccountry": "country",
+    "locgvtleopayarea": "pay_area",
+    "locgvtlocalityarea": "locality_area",
+}

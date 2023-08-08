@@ -28,7 +28,7 @@ def get_user_information(jwt_token, perdet_seq_num):
     Gets the office_phone and office_address for the employee
     '''
     url = f"{SECREF_ROOT}/user?request_params.perdet_seq_num={perdet_seq_num}"
-    user = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json() 
+    user = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     user = next(iter(user.get('Data', [])), {})
     try:
         return {
@@ -120,7 +120,7 @@ def client_suggestions(jwt_token, perdet_seq_num):
     return values
 
 
-def single_client(jwt_token, perdet_seq_num, host=None):
+def single_client(jwt_token, perdet_seq_num, is_bureau_not_superuser=False, host=None):
     '''
     Get a single client for a CDO
     '''
@@ -203,7 +203,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
 
     for record in data:
         email_response = get_user_information(jwt_token, record['id'])
-        email = pydash.get(email_response, 'email') or 'None listed' 
+        email = pydash.get(email_response, 'email') or 'None listed'
         writer.writerow([
             smart_str(record["name"]),
             email,
@@ -281,7 +281,7 @@ def fsbid_clients_to_talentmap_clients(data):
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
-        "perdet_seq_number": str(employee.get("perdet_seq_num", None)),
+        "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "grade": employee.get("per_grade_code", None),
         "skills": map_skill_codes(employee),
         "employee_id": str(employee.get("pert_external_id", None)),
@@ -293,7 +293,7 @@ def fsbid_clients_to_talentmap_clients(data):
         # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
         "languages": fsbid_languages_to_tmap(data.get("languages") or []),
-        # "cdos": data.get("cdos"), - Can be used with v2/clients if we want to remove the previous call for CDO lookup 
+        "cdos": data.get("cdos") or [],
         "current_assignment": current_assignment,
         "assignments": fsbid_assignments_to_tmap(assignments),
     }
@@ -308,12 +308,12 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         position = current_assignment.get('currentPosition', None)
         if position is not None:
             pos_location = map_location(position.get("currentLocation", None))
-    
+
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
     return {
         "id": employee.get("perdet_seq_num", None),
-        "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
+        "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
         "grade": employee.get("per_grade_code", None),
         "skills": ' , '.join(map_skill_codes_for_csv(employee)),
         "employee_id": employee.get("pert_external_id", None),

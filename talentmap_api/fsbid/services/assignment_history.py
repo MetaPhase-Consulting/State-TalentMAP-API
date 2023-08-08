@@ -1,8 +1,8 @@
 import logging
-import pydash
 from urllib.parse import urlencode, quote
 from django.conf import settings
-from functools import partial
+
+import pydash
 
 from talentmap_api.common.common_helpers import ensure_date
 from talentmap_api.fsbid.services import common as services
@@ -13,14 +13,14 @@ API_ROOT = settings.WS_ROOT_API_URL
 logger = logging.getLogger(__name__)
 
 
-def assignment_history(query, jwt_token, perdet_seq_num):
+def get_assignments(query, jwt_token):
     '''
-    Get the assignment history for create agenda item research
+    Get assignments
     '''
     response = services.send_get_request(
         "v2/assignments/",
         query,
-        partial(convert_assignment_history_query, perdet_seq_num),
+        convert_assignments_query,
         jwt_token,
         fsbid_assignments_to_talentmap_assignments,
         None,
@@ -28,7 +28,7 @@ def assignment_history(query, jwt_token, perdet_seq_num):
         None,
         API_ROOT,
     )
-    return assignment_history_to_client_format(response)
+    return response
 
 
 def assignment_history_to_client_format(data):
@@ -87,16 +87,19 @@ def assignment_history_to_client_format(data):
     return tmap_assignments
 
 
-def convert_assignment_history_query(perdet_seq_num, query):
+def convert_assignments_query(query):
     filters = services.convert_to_fsbid_ql([
-        { "col": "asgperdetseqnum", "com": "EQ", "val": perdet_seq_num },
+        {"col": "asgperdetseqnum", "val": query.get('perdet_seq_num') or None},
+        {"col": "asgdrevisionnum", "val": "MAX"},
+        {"col": "asgdasgscode", "val": "EF" if query.get('is_effective') else None},
     ])
 
     values = {
-        "rp.pageNum": int(query.get('page', 1)), 
-        "rp.pageRows": int(query.get('limit', 1000)), 
+        "rp.pageNum": int(query.get('page', 1)),
+        "rp.pageRows": int(query.get('limit', 1000)),
         "rp.filter": filters,
         "rp.columns": "asgperdetseqnum",
+        "rp.orderBy": services.sorting_values(query.get("ordering", "-assignment_start_date")),
     }
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
@@ -108,7 +111,7 @@ def fsbid_assignments_to_talentmap_assignments(data):
 
     hard_coded = [
         "id",
-        "position_id", 
+        "position_id",
         "start_date",
         "end_date",
         "asgd_tod_desc_text",
@@ -165,7 +168,6 @@ def fsbid_assignments_to_talentmap_assignments(data):
         "asgs_update_id": "asgsupdateid",
         "asgs_update_date": "asgsupdatedate",
         "position": "position",
-        "asgd_tod_code": "asgdtodcode",
         "asgd_tod_other_text": "asgdtodothertext",
         "asgd_tod_months_num": "asgdtodmonthsnum",
         "tod_code": "todcode",
