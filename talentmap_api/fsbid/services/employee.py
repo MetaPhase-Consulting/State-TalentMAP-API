@@ -345,8 +345,15 @@ def get_employee_profile_report(query, pk, jwt_token=None):
         url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport/"
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
 
+    logger.info(f"get_employee_profile_report --- url: {url}")
+    logger.info(f"get_employee_profile_report --- response_pdf: {response_pdf}")
+    logger.info(f"get_employee_profile_report --- response_pdf.ok: {response_pdf.ok}")
+
+
     if response_pdf.ok:
+        logger.info(f"get_employee_profile_report --- HttpResponse(response_pdf, content_type='arrayBuffer'): {HttpResponse(response_pdf, content_type='arrayBuffer')}")
         return HttpResponse(response_pdf, content_type='arrayBuffer')
     else:
         logger.error(f"Fsbid call to '{url}' failed.")
+        logger.info(f"get_employee_profile_report --- Fsbid call to '{url}' failed.")
         return HttpResponse()
