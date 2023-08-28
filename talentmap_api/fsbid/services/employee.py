@@ -347,11 +347,11 @@ def get_employee_profile_report(query, pk, jwt_token):
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
 
 
-    logger.info(f"👾👾👾 get_employee_profile_report --- url: {url}")
-    logger.info(f"👾👾👾 get_employee_profile_report --- jwt: {jwt_token}")
-    logger.info(f"👾👾👾 get_employee_profile_report --- response_pdf: {response_pdf}")
-    logger.info(f"👾👾👾 get_employee_profile_report --- sophie: {sophie}")
-    logger.info(f"👾👾👾 get_employee_profile_report --- response_pdf.ok: {response_pdf.ok}")
+    logger.info(f"get_employee_profile_report --- url: {url}")
+    logger.info(f"get_employee_profile_report --- jwt: {jwt_token}")
+    logger.info(f"get_employee_profile_report --- response_pdf: {response_pdf}")
+    logger.info(f"get_employee_profile_report --- sophie: {sophie}")
+    logger.info(f"get_employee_profile_report --- response_pdf.ok: {response_pdf.ok}")
 
 
     if response_pdf.ok:
