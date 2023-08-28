@@ -334,7 +334,7 @@ def map_assignments_separations_bids(data):
 
         }
 
-def get_employee_profile_report(query, pk, jwt_token=None):
+def get_employee_profile_report(query, pk, jwt_token):
     '''
     Get Employee Profile Report
     '''
@@ -343,11 +343,15 @@ def get_employee_profile_report(query, pk, jwt_token=None):
 
     if query.get("redacted_report") == "true":
         url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport/"
+    sophie = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
 
-    logger.info(f"get_employee_profile_report --- url: {url}")
-    logger.info(f"get_employee_profile_report --- response_pdf: {response_pdf}")
-    logger.info(f"get_employee_profile_report --- response_pdf.ok: {response_pdf.ok}")
+
+    logger.info(f"👾👾👾 get_employee_profile_report --- url: {url}")
+    logger.info(f"👾👾👾 get_employee_profile_report --- jwt: {jwt_token}")
+    logger.info(f"👾👾👾 get_employee_profile_report --- response_pdf: {response_pdf}")
+    logger.info(f"👾👾👾 get_employee_profile_report --- sophie: {sophie}")
+    logger.info(f"👾👾👾 get_employee_profile_report --- response_pdf.ok: {response_pdf.ok}")
 
 
     if response_pdf.ok:
