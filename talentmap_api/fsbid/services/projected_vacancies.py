@@ -336,3 +336,20 @@ def get_pv_favorite_ids(query, jwt_token, host=None):
 
 def fsbid_favorites_to_talentmap_favorites_ids(pv):
     return pv.get("fv_seq_num", None)
+
+
+def edit_projected_vacancy(query, jwt_token):
+    '''
+    Edit Projected Vacancy
+    '''
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": fsbid_pv_to_talentmap_pv,
+        "jwt_token": jwt_token,
+        "mapping_function": "",
+    }
+
+    return services.send_put_request(
+        **args
+    )
