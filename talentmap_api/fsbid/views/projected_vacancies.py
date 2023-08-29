@@ -123,9 +123,6 @@ class FSBidProjectedVacancyView(BaseView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
-
-class FSBidProjectedVacancyEditView(BaseView):
-
     permission_classes = (IsAuthenticated, isDjangoGroupMember('superuser'))
 
     @swagger_auto_schema(request_body=openapi.Schema(

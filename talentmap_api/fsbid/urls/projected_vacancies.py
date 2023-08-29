@@ -11,7 +11,6 @@ urlpatterns = [
     url(r'^tandem/$', views.FSBidProjectedVacanciesTandemListView.as_view(), name="projected-vacancies-FSBid-projected-vacancies-actions"),
     url(r'^tandem/export/$', views.FSBidProjectedVacanciesTandemCSVView.as_view(), name="projected-vacancies-FSBid-projected-vacancies-actions"),
     url(r'^$', views.FSBidProjectedVacanciesListView.as_view(), name="projected-vacancies-FSBid-projected-vacancies-actions"),
-    url(r'^edit/$', views.FSBidProjectedVacancyEditView.as_view(), name="projected-vacancies-FSBid-projected-vacancies-edit"),
 ]
 
 urlpatterns += router.urls
