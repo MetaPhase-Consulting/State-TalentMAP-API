@@ -350,7 +350,7 @@ def get_employee_profile_report(query, pk, jwt_token):
 
     sophie = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
     nori = requests.get(url2, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
-    elsaurl = f"{AGENDA_API_ROOT}/?rp.pageNum=1&rp.pageRows=1000&rp.orderBy=aiseqnum%20desc&rp.filter=aiperdetseqnum%7CEQ%7C4215989%7C"
+    elsaurl = f"{AGENDA_API_ROOT}/?rp.pageNum=1&rp.pageRows=1000&rp.orderBy=aiseqnum%20desc&rp.filter=aiperdetseqnum%7CEQ%7C412649%7C"
     logger.info(f"get_employee_profile_report --- elsaurl: {elsaurl}")
     elsa = requests.get(elsaurl, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
