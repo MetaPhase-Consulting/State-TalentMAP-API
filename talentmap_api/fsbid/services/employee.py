@@ -16,6 +16,7 @@ import talentmap_api.fsbid.services.bid as bid_services
 
 
 API_ROOT = settings.EMPLOYEES_API_URL
+AGENDA_API_ROOT = settings.AGENDA_API_URL
 ORG_ROOT = settings.ORG_API_URL
 WS_ROOT = settings.WS_ROOT_API_URL
 HR_DATA_ROOT = settings.HRDATA_URL
@@ -343,11 +344,18 @@ def get_employee_profile_report(query, pk, jwt_token):
 
     if query.get("redacted_report") == "true":
         url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport/"
-    sophie = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
+
+    sophie = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+    elsaurl = f"{AGENDA_API_ROOT}/?rp.pageNum=1&rp.pageRows=1000&rp.orderBy=aiseqnum%20desc&rp.filter=aiperdetseqnum%7CEQ%7C4215989%7C"
+    logger.info(f"get_employee_profile_report --- elsaurl: {elsaurl}")
+    elsa = requests.get(elsaurl, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
 
     logger.info(f"get_employee_profile_report --- url: {url}")
+    logger.info(f"get_employee_profile_report --- elsaurl: {elsaurl}")
+    logger.info(f"get_employee_profile_report --- elsa: {elsa}")
     logger.info(f"get_employee_profile_report --- jwt: {jwt_token}")
     logger.info(f"get_employee_profile_report --- response_pdf: {response_pdf}")
     logger.info(f"get_employee_profile_report --- sophie: {sophie}")
