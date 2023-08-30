@@ -204,6 +204,11 @@ class PostPanelView(BaseView):
     # check perms assumptions
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'))]
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("id", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting seq num.'),
+        ])
+
     def get(self, request):
         '''
         Gets post panel
