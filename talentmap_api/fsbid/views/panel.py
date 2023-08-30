@@ -209,3 +209,50 @@ class PostPanelView(BaseView):
         Gets post panel
         '''
         return Response(services.get_post_panel(request.query_params, request.META['HTTP_JWT']))
+    
+    permission_classes = (IsAuthenticated, isDjangoGroupMember('superuser'))
+
+    # TODO: Rename fields with TM query
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'QRY_MODPOSTPNL_REF': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'PMT_DESC_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='PMT Description Text'),
+                    'PMI_SEQ_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='PMI Panel Meeting ID'),
+                    'PMI_OFFICIAL_ITEM_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='PMI Official Item Number'),
+                    'AI_SEQ_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='AI Sequence Number'),
+                    'AI_LABEL_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='AI Label Text'),
+                    'AI_VALID_IND': openapi.Schema(type=openapi.TYPE_STRING, description='AI Valid Ind'),
+                    'AIS_ABBR_DESC_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='AIS Abbreviation Description Text'),
+                    'AIS_DESC_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='AIS Description Text'),
+                    'EMP_FULL_NAME': openapi.Schema(type=openapi.TYPE_STRING, description='Employee Full Name'),
+                    'AI_UPDATE_ID': openapi.Schema(type=openapi.TYPE_INTEGER, description='AI Update ID'),
+                    'AI_UPDATE_DATE': openapi.Schema(type=openapi.TYPE_STRING, description='AI Update Date'),
+                    'AI_AIS_CODE': openapi.Schema(type=openapi.TYPE_STRING, description='AI AIS Code'),
+                    'PM_PMT_CODE': openapi.Schema(type=openapi.TYPE_STRING, description='PM PMT Code'),
+                    'VIRTUAL_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='Virtual Text'),
+                    'PMD_DTTM': openapi.Schema(type=openapi.TYPE_STRING, description='PMD DTTM'),
+                    'MIC_DESC_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='MIC Description Text'),
+                    'AI_CORRECTION_TEXT_IND': openapi.Schema(type=openapi.TYPE_STRING, description='AI Correction Text Ind'),
+                    'MAX_AIH_HOLD_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='Max AIH Hold Number'),
+                    'MAX_AIH_SEQ_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='Max AIH Sequence Number'),
+                    'MAX_AHT_CODE': openapi.Schema(type=openapi.TYPE_INTEGER, description='Max AHT Code'),
+                    'MAX_AIH_HOLD_COMMENT_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='Max AIH Hold Comment Text'),
+                    'AIH_SEQ_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='AIH Sequence Number'),
+                    'AHT_CODE': openapi.Schema(type=openapi.TYPE_STRING, description='AHT Code'),
+                    'AIH_HOLD_NUM': openapi.Schema(type=openapi.TYPE_INTEGER, description='AIH Hold Number'),
+                    'AIH_HOLD_COMMENT_TEXT': openapi.Schema(type=openapi.TYPE_STRING, description='AIH Hold Comment Text'),
+                    'AIH_UPDATE_ID': openapi.Schema(type=openapi.TYPE_INTEGER, description='AIH Update ID'),
+                    'AIH_UPDATE_DATE': openapi.Schema(type=openapi.TYPE_STRING, description='AIH Update Date'),
+                }
+            ), description='Post Panel Processing'),
+        }
+    ))
+
+    def put(self, request):
+        '''
+        Edit post panel
+        '''
+        return Response(services.edit_post_panel(request.data, request.META['HTTP_JWT']))
