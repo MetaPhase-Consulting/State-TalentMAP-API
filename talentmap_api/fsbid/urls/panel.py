@@ -12,10 +12,10 @@ urlpatterns = [
     url(r'^reference/statuses/$', views.PanelStatusesView.as_view(), name='panel-FSBid-reference-statuses'),
     url(r'^reference/types/$', views.PanelTypesView.as_view(), name='panel-FSBid-reference-types'),
     url(r'^meetings/export/$', views.PanelMeetingsCSVView.as_view(), name="panel-meetings-export"),
-    url(r'^meetings/', views.PanelMeetingsView.as_view(), name="panel-meetings-list"),
+    url(r'^meetings/', views.PanelMeetingsView.as_view(), name="panel-meetings-actions"),
+    url(r'^post/$', views.PostPanelView.as_view(), name="post-panel"),
     url(r'^(?P<pk>[0-9]+)/agendas/export/', agenda_views.PanelAgendasCSVView.as_view(), name="panel-agendas-export"),
     url(r'^(?P<pk>[0-9]+)/agendas/', agenda_views.PanelAgendasListView.as_view(), name="panel-agendas-list"),
-
 ]
 
 urlpatterns += router.urls
