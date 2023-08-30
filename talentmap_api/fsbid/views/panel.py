@@ -5,6 +5,8 @@ from drf_yasg import openapi
 
 
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from rest_condition import Or
 from talentmap_api.common.permissions import isDjangoGroupMember
@@ -112,6 +114,80 @@ class PanelMeetingsView(BaseView):
         '''
         return Response(services.get_panel_meetings(request.query_params, request.META['HTTP_JWT']))
 
+    permission_classes = (IsAuthenticated, isDjangoGroupMember('superuser'))
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'pm_seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting ID'),
+            'pm_virtual': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Virtual'),
+            'pm_create_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting Created ID'),
+            'pm_create_date': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Created Date'),
+            'pm_update_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting Updated ID'),
+            'pm_update_date': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Updated Date'),
+            'pms_code': openapi.Schema(type=openapi.TYPE_STRING, description='PMS Code'),
+            'pmt_code': openapi.Schema(type=openapi.TYPE_STRING, description='PMT Code'),
+            'pmt_desc_text': openapi.Schema(type=openapi.TYPE_STRING, description='PMT Description'),
+            'pms_desc_text': openapi.Schema(type=openapi.TYPE_STRING, description='PMS Description'),
+            'panelMeetingDates': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'pm_seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting ID'),
+                    'mdt_code': openapi.Schema(type=openapi.TYPE_STRING, description='MDT Code'),
+                    'pmd_dttm': openapi.Schema(type=openapi.TYPE_STRING, description='Date'),
+                    'mdt_desc_text': openapi.Schema(type=openapi.TYPE_STRING, description='Description'),
+                    'mdt_order_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Order Number'),
+                }
+            ), description='Panel Meeting Dates'),
+        }
+    ))
+
+    def put(self, request):
+        '''
+        Edit panel meeting
+        '''
+        return Response(services.edit_panel(request.data, request.META['HTTP_JWT']))
+    
+    permission_classes = (IsAuthenticated, isDjangoGroupMember('superuser'))
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'pm_seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting ID'),
+            'pm_virtual': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Virtual'),
+            'pm_create_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting Created ID'),
+            'pm_create_date': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Created Date'),
+            'pm_update_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting Updated ID'),
+            'pm_update_date': openapi.Schema(type=openapi.TYPE_STRING, description='Panel Meeting Updated Date'),
+            'pms_code': openapi.Schema(type=openapi.TYPE_STRING, description='PMS Code'),
+            'pmt_code': openapi.Schema(type=openapi.TYPE_STRING, description='PMT Code'),
+            'pmt_desc_text': openapi.Schema(type=openapi.TYPE_STRING, description='PMT Description'),
+            'pms_desc_text': openapi.Schema(type=openapi.TYPE_STRING, description='PMS Description'),
+            'panelMeetingDates': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'pm_seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Panel Meeting ID'),
+                    'mdt_code': openapi.Schema(type=openapi.TYPE_STRING, description='MDT Code'),
+                    'pmd_dttm': openapi.Schema(type=openapi.TYPE_STRING, description='Date'),
+                    'mdt_desc_text': openapi.Schema(type=openapi.TYPE_STRING, description='Description'),
+                    'mdt_order_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Order Number'),
+                }
+            ), description='Panel Meeting Dates'),
+        }
+    ))
+
+    def post(self, request):
+        '''
+        Create panel meeting
+        '''
+        try:
+            services.create_panel(request.data, request.META['HTTP_JWT'])
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
 class PanelMeetingsCSVView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('cdo')), ]
 
@@ -122,3 +198,14 @@ class PanelMeetingsCSVView(BaseView):
         Exports all Panel Meetings to CSV format
         '''
         return services.get_panel_meetings_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+
+
+class PostPanelView(BaseView):
+    # check perms assumptions
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'))]
+
+    def get(self, request):
+        '''
+        Gets post panel
+        '''
+        return Response(services.get_post_panel(request.query_params, request.META['HTTP_JWT']))
