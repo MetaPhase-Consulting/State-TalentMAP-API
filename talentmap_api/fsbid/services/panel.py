@@ -49,6 +49,20 @@ panel_cols_mapping = {
     },
 }
 
+# TODO: Replace with actual fields
+post_panel_cols_mapping = {
+    'pmseqnum': 'pm_seq_num',
+    'pmdpmseqnum': 'pm_seq_num',
+    'pmddttm': 'pmd_dttm',
+    'pmvirtualind': 'pm_virtual',
+    'pmcreateid': 'pm_create_id',
+    'pmcreatedate': 'pm_create_date',
+    'pmupdateid': 'pm_update_id',
+    'panelMeetingDates': {
+        'nameMap': 'panelMeetingDates',
+        'listMap': panel_dates_mapping,
+    },
+}
 
 def get_panel_dates(query, jwt_token):
     '''
@@ -333,3 +347,114 @@ def get_panel_meetings_csv(query, jwt_token, rl_cd, host=None):
     writer.writerows(data['results'])
 
     return response
+
+
+def create_panel(query, jwt_token):
+    '''
+    Create Panel Meeting
+    '''
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": convert_panel_query,
+        "jwt_token": jwt_token,
+        "mapping_function": "",
+    }
+
+    return services.get_results_with_post(
+        **args
+    )
+
+
+def edit_panel(query, jwt_token):
+    '''
+    Edit Panel Meeting
+    '''
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": convert_panel_query,
+        "jwt_token": jwt_token,
+        "mapping_function": "",
+    }
+
+    return services.send_put_request(
+        **args
+    )
+
+
+def convert_post_panel_query(query={}):
+    '''
+    Converts TalentMap query into FSBid query
+    '''
+
+    panel_date_start = query.get("panel-date-start")
+    panel_date_end = query.get("panel-date-end")
+
+    filters = [
+        {'col': 'pmpmtcode', 'val': services.if_str_upper(query.get('type')), 'com': 'IN'},
+        {'col': 'pmscode', 'val': services.if_str_upper(query.get('status')), 'com': 'IN'},
+        {'col': 'pmseqnum', 'val': query.get('id')},
+    ]
+
+    try:
+        if panel_date_start and panel_date_end:
+            start_val = maya.parse(panel_date_start).datetime().strftime("%Y-%m-%d")
+            end_val = (maya.parse(panel_date_end) + timedelta(days=1)).datetime().strftime("%Y-%m-%d")
+            filters.append({"col": "pmddttm", "com": "GTEQ", "val": start_val, "isDate": True})
+            filters.append({"col": "pmddttm", "com": "LTEQ", "val": end_val, "isDate": True})
+    except:
+        logger.info(f"Invalid date {panel_date_start} or {panel_date_end} could not be parsed.")
+
+    values = {
+        'rp.pageNum': int(query.get('page', 1)),
+        'rp.pageRows': int(query.get('limit', 1000)),
+        'rp.orderBy': services.sorting_values(query.get('ordering', 'panel_date')),
+        'rp.filter': services.convert_to_fsbid_ql(filters),
+    }
+
+    if query.get("getCount") == 'true':
+        values["rp.pageNum"] = 0
+        values["rp.pageRows"] = 0
+        values["rp.columns"] = "ROWCOUNT"
+
+    valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+
+    return urlencode(valuesToReturn, doseq=True, quote_via=quote)
+
+def get_post_panel(query, jwt_token):
+    '''
+    Get Post Panel
+    '''
+    expected_keys = ['pmseqnum']
+
+    mapping_subset = pydash.pick(panel_cols_mapping, *expected_keys)
+
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": convert_post_panel_query,
+        "jwt_token": jwt_token,
+        "mapping_function": partial(services.map_fsbid_template_to_tm, mapping=mapping_subset),
+        "base_url": "/api/v1/panels/post",
+        "api_root": PANEL_API_ROOT,
+    }
+
+    return services.send_get_request(**args)
+
+
+def edit_post_panel(query, jwt_token):
+    '''
+    Edit Post Panel
+    '''
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": convert_post_panel_query,
+        "jwt_token": jwt_token,
+        "mapping_function": "",
+    }
+
+    return services.send_put_request(
+        **args
+    )
