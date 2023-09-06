@@ -64,6 +64,73 @@ def convert_capsule_query(query):
     }
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
+def get_publishable_positions_filters(jwt_token):
+    '''
+    Gets Filters for Publishable Positions Page
+    '''
+    args = {
+        "proc_name": 'qry_lstfsbidSearch',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_body": {},
+        "request_mapping_function": publishable_positions_filter_req_mapping,
+        "response_mapping_function": publishable_positions_filter_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def publishable_positions_filter_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": '',
+        "PV_AD_ID_I": '',
+    }
+
+def publishable_positions_filter_res_mapping(data):
+    def status_map(x):
+        return {
+            'code': x.get('PUBS_CD'),
+            'description': x.get('PUBS_DESCR_TXT'),
+        }
+    def cycle_map(x):
+        return {
+            'code': x.get('CYCLE_ID'),
+            'description': x.get('CYCLE_NM_TXT'),
+        }
+    def bureau_map(x):
+        return {
+            # 'code': x.get('ROLE_CODE'),
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def org_map(x):
+        return {
+            'code': x.get('ORG_CODE'),
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def skills_map(x):
+        return {
+            'code': x.get('TBD'),
+            'description': x.get('TBD'),
+        }
+    def grade_map(x):
+        return {
+            'code': x.get('GRD_CD'),
+            'description': x.get('GRD_DESCR_TXT'),
+        }
+
+    return {
+        'statusFilters': list(map(status_map, data.get('QRY_LSTPUBSTATUS_DD_REF'))),
+        'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
+        # Spreadsheet says QRY_LSTBUREAUS_DD_REF, but only contains
+        # a single data point: "ORGS_SHORT_DESC"
+        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
+        # Spreadsheet says QRY_LSTBUREAUSKILLS_DD_REF, but whole payload only contains
+        # "'X'": "x"
+        'skillsFilters': list(map(skills_map, data.get('QRY_LSTBUREAUSKILLS_DD_REF'))),
+        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
+    }
+
 def get_publishable_positions(jwt_token):
     '''
     Gets Publishable positions
