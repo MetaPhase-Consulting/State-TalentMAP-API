@@ -1,11 +1,5 @@
-import logging
-import pydash
-from copy import deepcopy
 from django.conf import settings
-from urllib.parse import urlencode, quote
-from talentmap_api.fsbid.services import common as services, employee
-
-logger = logging.getLogger(__name__)
+from talentmap_api.fsbid.services import common as services
 
 WS_ROOT = settings.WS_ROOT_API_URL
 
