@@ -7,6 +7,7 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     url(r'^filters/$', views.FSBidAdminProjectedVacancyFiltersView.as_view(), name="admin-filters-projected-vacancies"),
+    url(r'^language-offsets/$', views.FSBidAdminProjectedVacancyLanguageOffsetsView.as_view(), name="admin-lang-offsets-projected-vacancies"),
     url(r'^$', views.FSBidAdminProjectedVacancyListView.as_view(), name="admin-projected-vacancies"),
 ]
 

@@ -21,10 +21,39 @@ def get_admin_projected_vacancy_filters(jwt_token):
         **args
     )
 
+def get_admin_projected_vacancy_language_offsets(jwt_token):
+    '''
+    Gets Filters for admin projected_vacancies 
+    '''
+    args = {
+        "proc_name": "PRC_LST_POS_PLO_CRITERIA",
+        "package_name": "PKG_WEBAPI_WRAP",
+        "request_body": {},
+        "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
+        "response_mapping_function": admin_projected_vacancy_language_offsets_response_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
 def admin_projected_vacancy_filter_request_mapping(request):
     return {
         "PV_API_VERSION_I": '',
         "PV_AD_ID_I": '',
+    }
+
+def admin_projected_vacancy_language_offsets_response_mapping(response):
+    def language_offsets_map(x):
+        return {
+            'code': x.get("LOT_SEQ_NUM"),
+            'description': x.get("LO_DESCR_TEXT"),
+        }
+
+    return {
+        'summerLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_S_O"))),
+        'winterLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_W_O"))),
     }
 
 

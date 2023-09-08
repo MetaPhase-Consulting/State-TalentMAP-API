@@ -22,12 +22,25 @@ class FSBidAdminProjectedVacancyFiltersView(BaseView):
 
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
-
     def get(self, request):
         '''
         Gets admin projected vacancy filters
         '''
         result = services.get_admin_projected_vacancy_filters(request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(result)
+
+
+class FSBidAdminProjectedVacancyLanguageOffsetsView(BaseView):
+
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get(self, request):
+        '''
+        Gets admin projected vacancy language offsets
+        '''
+        result = services.get_admin_projected_vacancy_language_offsets(request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
