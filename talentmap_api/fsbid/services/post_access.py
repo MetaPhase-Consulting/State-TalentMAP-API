@@ -1,15 +1,8 @@
-import logging
-import pydash
-from copy import deepcopy
 from django.conf import settings
-from urllib.parse import urlencode, quote
-from talentmap_api.fsbid.services import common as services, employee
-
-logger = logging.getLogger(__name__)
+from talentmap_api.fsbid.services import common as services
 
 WS_ROOT = settings.WS_ROOT_API_URL
 
-# FILTERS
 
 def get_post_access_filters(jwt_token):
     '''
@@ -137,8 +130,6 @@ def map_search_post_access_query(req):
     return mapped_request
 
 
-# POST REQUEST
-
 
 def remove_post_access_permissions(jwt_token, request):
     '''
@@ -146,6 +137,23 @@ def remove_post_access_permissions(jwt_token, request):
     '''
     args = {
         "proc_name": 'prc_mod_org_access',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_body": request,
+        "request_mapping_function": map_search_post_access_post_request,
+        "response_mapping_function": None,
+        "jwt_token": jwt_token,
+
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def grant_post_access_permissions(jwt_token, request):
+    '''
+    Grant Access for a Post
+    '''
+    args = {
+        "proc_name": 'prc_add_org_access',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
         "request_mapping_function": map_search_post_access_post_request,
