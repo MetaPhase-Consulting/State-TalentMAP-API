@@ -136,8 +136,8 @@ def admin_projected_vacancy_request_mapping(request):
     }
     if request.get('bureaus'):
         mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
-    if request.get('orgs'):
-        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('orgs'), 'ORG_SHORT_DESC')
+    if request.get('organizations'):
+        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('organizations'), 'ORG_SHORT_DESC')
     if request.get('bidSeasons'):
         mapped_request['PJSON_BSN_TAB_I'] = services.format_request_data_to_string(request.get('bidSeasons'), 'BSN_ID')
     if request.get('grades'):
