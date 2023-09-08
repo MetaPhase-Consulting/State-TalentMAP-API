@@ -119,7 +119,7 @@ def get_admin_projected_vacancies(query, jwt_token):
     args = {
         "proc_name": "prc_lst_future_vacancies",
         "package_name": "PKG_WEBAPI_WRAP",
-        "request_body": {},
+        "request_body": query,
         "request_mapping_function": admin_projected_vacancy_request_mapping,
         "response_mapping_function": admin_projected_vacancy_response_mapping,
         "jwt_token": jwt_token,
@@ -130,12 +130,23 @@ def get_admin_projected_vacancies(query, jwt_token):
 
 
 def admin_projected_vacancy_request_mapping(request):
-    return {
+    mapped_request = {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-
-        # TO DO: Add mapping for request
     }
+    if request.get('bureaus'):
+        mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
+    if request.get('orgs'):
+        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('orgs'), 'ORG_SHORT_DESC')
+    if request.get('bidSeasons'):
+        mapped_request['PJSON_BSN_TAB_I'] = services.format_request_data_to_string(request.get('bidSeasons'), 'BSN_ID')
+    if request.get('grades'):
+        mapped_request['PJSON_GRADE_TAB_I'] = services.format_request_data_to_string(request.get('grades'), 'GRD_GRADE_CODE')
+    # if request.get('skills'):
+    #    mapped_request['PXML_JOBCAT_I'] = services.format_request_data_to_string(request.get('skills'), 'ORG_SHORT_DESC')
+    if request.get('languages'):
+        mapped_request['PJSON_LANGUAGE_TAB_I'] = services.format_request_data_to_string(request.get('languages'), 'LANG_CODE')
+    return mapped_request
 
 
 def admin_projected_vacancy_response_mapping(response):
