@@ -36,6 +36,7 @@ def spa_filter_res_mapping(data):
         return {
             'code': x.get('PER_SEQ_NUM'),
             'description': x.get('PER_FULL_NAME'),
+            'skillCode': x.get('SKL_CODE')
         }
     def role_map(x):
         return {
@@ -56,6 +57,7 @@ def spa_filter_res_mapping(data):
         return {
             'code': x.get('POS_SEQ_NUM'),
             'description': x.get('POS_NUM_TEXT'),
+            'skillCode': x.get('POS_SKILL_CODE')
         }
 
     return {
