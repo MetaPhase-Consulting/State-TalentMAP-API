@@ -83,7 +83,7 @@ def get_job_categories_data(jwt_token, request):
         "proc_name": 'qry_lstJobCats',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
-        # "request_mapping_function": map_job_categories_query,
+        "request_mapping_function": map_job_categories_query,
         "response_mapping_function": fsbid_to_tm_jc_data_mapping,
         "jwt_token": jwt_token,
     }
@@ -99,7 +99,7 @@ def get_job_category_skills(jwt_token, request):
         "proc_name": 'qry_getJobCat',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
-        # "request_mapping_function": map_job_categories_query,
+        "request_mapping_function": map_jc_skills_query,
         "response_mapping_function": fsbid_to_tm_jc_skills_data_mapping,
         "jwt_token": jwt_token,
     }
@@ -126,11 +126,20 @@ def format_request_data_to_string(request_values, table_key):
     return result_string
 
 
-def map_search_post_access_query():
+def map_job_categories_query():
     mapped_request = {
       "PV_API_VERSION_I": "2", 
       "PV_AD_ID_I": "",
       "QRY_LSTJOBCATS_REF": "",
+    }
+
+    return mapped_request
+
+def map_job_categories_query(req):
+    mapped_request = {
+      "PV_API_VERSION_I": "", 
+      "PV_AD_ID_I": "",
+      "I_JC_ID": req.get('category_id'),
     }
 
     return mapped_request
