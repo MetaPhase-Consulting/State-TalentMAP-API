@@ -116,6 +116,14 @@ def fsbid_to_tm_jc_data_mapping(data):
         }
     return list(map(jc_results_mapping, data.get('QRY_LSTJOBCATS_REF')))
 
+def fsbid_to_tm_jc_skills_data_mapping(data):
+    def jc_skills_results_mapping(x):
+        return {
+            'code': x.get('SKL_CODE') or '-',
+            'description': x.get('SKL_DESC') or 'None Listed',
+        }
+    return list(map(jc_skills_results_mapping, data.get('QRY_LSTSKILLS_REF')))
+
 def format_request_data_to_string(request_values, table_key):
     data_entries = []
     for item in request_values.split(","):
