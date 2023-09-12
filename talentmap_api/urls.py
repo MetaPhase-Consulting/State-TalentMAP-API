@@ -56,7 +56,7 @@ urlpatterns = [
     url(r'^api/v1/projected_vacancy/tandem/', include('talentmap_api.projected_tandem.urls.projected_tandem')),
 
     # Job Categories
-    url(r'^api/v1/fsbid/job_categories/', include('talentmap_api.fsbid.urls.post_access')),
+    url(r'^api/v1/fsbid/job_categories/', include('talentmap_api.fsbid.urls.job_categories')),
 
     # Position Management
     url(r'^api/v1/fsbid/post_access/', include('talentmap_api.fsbid.urls.post_access')),
