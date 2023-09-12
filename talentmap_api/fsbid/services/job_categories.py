@@ -143,7 +143,7 @@ def map_job_categories_query():
 
     return mapped_request
 
-def map_job_categories_query(req):
+def map_jc_skills_query(req):
     mapped_request = {
       "PV_API_VERSION_I": "", 
       "PV_AD_ID_I": "",
