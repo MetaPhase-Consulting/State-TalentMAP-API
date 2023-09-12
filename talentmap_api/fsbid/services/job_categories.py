@@ -82,7 +82,7 @@ def get_job_categories_data(jwt_token, request):
     args = {
         "proc_name": 'qry_lstJobCats',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_body": request,
+        "request_body": {},
         "request_mapping_function": map_job_categories_query,
         "response_mapping_function": fsbid_to_tm_jc_data_mapping,
         "jwt_token": jwt_token,
@@ -136,7 +136,7 @@ def format_request_data_to_string(request_values, table_key):
 
 def map_job_categories_query():
     mapped_request = {
-      "PV_API_VERSION_I": "2", 
+      "PV_API_VERSION_I": "", 
       "PV_AD_ID_I": "",
       "QRY_LSTJOBCATS_REF": "",
     }
