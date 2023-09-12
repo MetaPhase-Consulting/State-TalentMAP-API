@@ -84,7 +84,7 @@ def convert_remark_query(query, is_edit=False):
         'rmrkshortdesctext': query.get('shortDescription'),
         'rmrkmutuallyexclusiveind': 'N',
         'rmrktext': query.get('longDescription'),
-        'rmrkactiveind': query.get('activeIndicator', 'Y'),
+        'rmrkactiveind': 'Y' if query.get('activeIndicator') else 'N',
         'rmrkcreateid': query.get('create_id'),
         'rmrkupdateid': query.get('update_id'),
         # Need to format the date for fsbid service, expects space b/w date and time, not T
@@ -111,14 +111,14 @@ def convert_remark_insert_query(query):
     }
 
 
-def edit_remark(query, jwt_token, host=None):
+def edit_remark(pk, query, jwt_token):
     '''
     Edit Remark
     '''
     hru_id = jwt.decode(jwt_token, verify=False).get('sub')
     query['update_id'] = hru_id
     args = {
-        "uri": "v1/remarks",
+        "uri": f"v1/remarks/{pk}",
         "query": query,
         "query_mapping_function": partial(convert_remark_query, is_edit=True),
         "jwt_token": jwt_token,
