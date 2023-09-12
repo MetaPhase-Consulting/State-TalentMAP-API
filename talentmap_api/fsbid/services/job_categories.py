@@ -124,6 +124,7 @@ def fsbid_to_tm_jc_skills_data_mapping(data):
         return {
             'code': x.get('SKL_CODE') or '-',
             'description': x.get('SKL_DESC') or 'None Listed',
+            'display_skill': x.get('INCLUSION_IND') or 'None Listed'
         }
     return list(map(jc_skills_results_mapping, data.get('QRY_LSTSKILLS_REF')))
 
