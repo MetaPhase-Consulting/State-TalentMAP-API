@@ -319,6 +319,9 @@ def send_get_back_office(proc_name, package_name, request_body, request_mapping_
     logger.info('***REQUEST_BODY***')
     url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
     json_body = request_mapping_function(request_body)
+    logger.info('***json_body***')
+    logger.info(json_body)
+    logger.info('***json_body***')
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
     logger.info('***RESPONSE***')
     logger.info(response)
