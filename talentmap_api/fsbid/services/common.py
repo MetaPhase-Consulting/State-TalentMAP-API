@@ -303,17 +303,6 @@ def get_individual(uri, query, query_mapping_function, jwt_token, mapping_functi
 
 # for calls to BackOffice CRUD POST EP
 def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
-    url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
-    json_body = request_mapping_function(request_body)
-    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
-    if response is None or (response['PV_RETURN_CODE_O'] and response['PV_RETURN_CODE_O'] is not 0):
-        logger.error(f"Fsbid call to '{url}' failed.")
-        return None
-    if response_mapping_function:
-        return response_mapping_function(response)
-    return response
-
-def send_get_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
     logger.info('***REQUEST_BODY***')
     logger.info(request_body)
     logger.info('***REQUEST_BODY***')
@@ -322,7 +311,7 @@ def send_get_back_office(proc_name, package_name, request_body, request_mapping_
     logger.info('***json_body***')
     logger.info(json_body)
     logger.info('***json_body***')
-    response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
     logger.info('***RESPONSE***')
     logger.info(response)
     logger.info('***RESPONSE***')
@@ -332,8 +321,6 @@ def send_get_back_office(proc_name, package_name, request_body, request_mapping_
     if response_mapping_function:
         return response_mapping_function(response)
     return response
-
-
 
 def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_function, count_function, base_url, host=None, api_root=API_ROOT, use_post=False):
     '''

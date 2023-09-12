@@ -118,6 +118,9 @@ def fsbid_to_tm_jc_data_mapping(data):
 
 def fsbid_to_tm_jc_skills_data_mapping(data):
     def jc_skills_results_mapping(x):
+        logger.info('***DATA***')
+        logger.info(data)
+        logger.info('***DATA***')
         return {
             'code': x.get('SKL_CODE') or '-',
             'description': x.get('SKL_DESC') or 'None Listed',
