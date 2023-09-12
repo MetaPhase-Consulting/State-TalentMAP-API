@@ -134,7 +134,7 @@ def format_request_data_to_string(request_values, table_key):
     return result_string
 
 
-def map_job_categories_query():
+def map_job_categories_query(req):
     mapped_request = {
       "PV_API_VERSION_I": "", 
       "PV_AD_ID_I": "",
