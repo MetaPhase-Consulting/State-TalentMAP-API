@@ -331,7 +331,7 @@ def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_func
     logger.info(mappedQuery)
     url = f"{api_root}/{uri}"
     logger.info(url)
-    response = requests.post(url, data=mappedQuery, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
