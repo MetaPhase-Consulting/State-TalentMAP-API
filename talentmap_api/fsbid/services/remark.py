@@ -111,14 +111,14 @@ def convert_remark_insert_query(query):
     }
 
 
-def edit_remark(query, jwt_token, host=None):
+def edit_remark(pk, query, jwt_token):
     '''
     Edit Remark
     '''
     hru_id = jwt.decode(jwt_token, verify=False).get('sub')
     query['update_id'] = hru_id
     args = {
-        "uri": "v1/remarks",
+        "uri": f"v1/remarks/{pk}",
         "query": query,
         "query_mapping_function": partial(convert_remark_query, is_edit=True),
         "jwt_token": jwt_token,

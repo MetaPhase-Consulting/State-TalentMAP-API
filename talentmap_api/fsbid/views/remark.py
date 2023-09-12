@@ -37,7 +37,7 @@ class RemarkView(BaseView):
         '''
         Edit remark to mark inactive/active
         '''
-        return Response(services.edit_remark(request.data, request.META['HTTP_JWT']))
+        return Response(services.edit_remark(pk, request.data, request.META['HTTP_JWT']))
 
 
 class RemarkActionView(BaseView):
