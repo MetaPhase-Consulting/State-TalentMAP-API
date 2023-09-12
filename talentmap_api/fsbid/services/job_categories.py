@@ -87,7 +87,7 @@ def get_job_categories_data(jwt_token, request):
         "response_mapping_function": fsbid_to_tm_jc_data_mapping,
         "jwt_token": jwt_token,
     }
-    return services.send_post_back_office(
+    return services.send_get_back_office(
         **args
     )
 
@@ -103,7 +103,7 @@ def get_job_category_skills(jwt_token, request):
         "response_mapping_function": fsbid_to_tm_jc_skills_data_mapping,
         "jwt_token": jwt_token,
     }
-    return services.send_post_back_office(
+    return services.send_get_back_office(
         **args
     )
 
