@@ -7,15 +7,6 @@ import talentmap_api.fsbid.services.job_categories as services
 
 logger = logging.getLogger(__name__)
 
-# class FSBidPostAccessFiltersView(BaseView):
-#     '''
-#     Gets the Filters for the Search Post Access Page
-#     '''
-#     def get(self, request):
-#         jwt = request.META['HTTP_JWT']
-#         result = services.get_post_access_filters(jwt)
-#         return Response(result)
-
 class FSBidJobCategoriesListView(BaseView):
     '''
     Get a list of all Job Categories
