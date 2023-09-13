@@ -24,12 +24,3 @@ class FSBidJobCategorySkillsListView(BaseView):
         jwt = request.META['HTTP_JWT']
         result = services.get_job_category_skills(jwt, request.query_params)
         return Response(result)
-
-# class FSBidPostAccessActionView(BaseView):
-#     '''
-#     Gets the Data for the Search Post Access Page
-#     '''
-#     def delete(self, request):
-#         jwt = request.META['HTTP_JWT']
-#         result = services.remove_post_access_permissions(jwt, request.data)
-#         return Response(result)
