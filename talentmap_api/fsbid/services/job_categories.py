@@ -9,72 +9,6 @@ logger = logging.getLogger(__name__)
 
 WS_ROOT = settings.WS_ROOT_API_URL
 
-# FILTERS
-
-# def get_post_access_filters(jwt_token):
-#     '''
-#     Gets Filters for Search Post Access Page
-#     '''
-#     args = {
-#         "proc_name": 'prc_lst_bureau_org_tree',
-#         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-#         "request_body": {},
-#         "request_mapping_function": spa_filter_req_mapping,
-#         "response_mapping_function": spa_filter_res_mapping,
-#         "jwt_token": jwt_token,
-#     }
-#     return services.send_post_back_office(
-#         **args
-#     )
-
-# def spa_filter_req_mapping(request):
-#     return {
-#         "PV_API_VERSION_I": '',
-#         "PV_AD_ID_I": '',
-#     }
-
-# def spa_filter_res_mapping(data):
-#     def bureau_map(x):
-#         return {
-#             'code': x.get('Bureau'),
-#             'description': x.get('ORG_SHORT_DESC'),
-#         }
-#     def person_map(x):
-#         return {
-#             'code': x.get('PER_SEQ_NUM'),
-#             'description': x.get('PER_FULL_NAME'),
-#         }
-#     def role_map(x):
-#         return {
-#             'code': x.get('ROLE_CODE'),
-#             'description': x.get('ROLE_DESC'),
-#         }
-#     def org_map(x):
-#         return {
-#             'code': x.get('Org'),
-#             'description': x.get('ORG_DESC'),
-#         }
-#     def location_map(x):
-#         return {
-#             'code': x.get('COUNTRY_STATE_CODE'),
-#             'description': x.get('COUNTRY_STATE_DESC'),
-#         }
-#     def position_map(x):
-#         return {
-#             'code': x.get('POS_SEQ_NUM'),
-#             'description': x.get('POS_NUM_TEXT'),
-#         }
-
-#     return {
-#         'bureauFilters': list(map(bureau_map, data.get('PQRY_BUREAU_LEVEL_O'))),
-#         'personFilters': list(map(person_map, data.get('PQRY_PERSON_LEVEL_O'))),
-#         'roleFilters': list(map(role_map, data.get('PQRY_POST_ROLE_O'))),
-#         'positionFilters': list(map(position_map, data.get('PQRY_POSITION_LEVEL_O'))),
-#         'locationFilters': list(map(location_map, data.get('PQRY_COUNTRY_O'))),
-#         'orgFilters': list(map(org_map, data.get('PQRY_ORG_LEVEL_O'))),
-#     }
-
-
 def get_job_categories_data(jwt_token, request):
     '''
     Gets a list of all Job Categories
@@ -93,7 +27,8 @@ def get_job_categories_data(jwt_token, request):
 
 def get_job_category_skills(jwt_token, request):
     '''
-    Gets a list of Skills associated with a Job Category
+    Returns all Skills with an indicator field set to 1 on those
+    Skills which are associated with the Job Category
     '''
     args = {
         "proc_name": 'qry_getJobCat',
