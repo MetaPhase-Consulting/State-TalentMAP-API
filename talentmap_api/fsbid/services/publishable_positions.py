@@ -68,6 +68,9 @@ def get_publishable_positions_filters(jwt_token):
     '''
     Gets Filters for Publishable Positions Page
     '''
+    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
+    print('in filters service')
+    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
     args = {
         "proc_name": 'qry_lstfsbidSearch',
         "package_name": 'PKG_WEBAPI_WRAP',
@@ -87,6 +90,10 @@ def publishable_positions_filter_req_mapping(request):
     }
 
 def publishable_positions_filter_res_mapping(data):
+    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
+    print('in res mapping')
+    print(data)
+    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
     def status_map(x):
         return {
             'code': x.get('PUBS_CD'),
