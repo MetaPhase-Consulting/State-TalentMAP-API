@@ -57,6 +57,7 @@ urlpatterns = [
 
     # Position Management
     url(r'^api/v1/fsbid/post_access/', include('talentmap_api.fsbid.urls.post_access')),
+    url(r'^api/v1/fsbid/manage_bid_seasons/', include('talentmap_api.fsbid.urls.manage_bid_seasons')),
     url(r'^api/v1/fsbid/capsule_descriptions/', include('talentmap_api.fsbid.urls.capsule_descriptions')),
 
     # CDO
