@@ -58,17 +58,35 @@ def update_bid_seasons_data(jwt_token, request):
 
 def map_bid_season_post_request(req):
     mapped_request = {
-      "PV_API_VERSION_I": "2",  
+      "PV_API_VERSION_I": "",
+      "PV_AD_ID_I": "",
+      "PV_ACTION_I": "U" if req['data']['id'] else "C",
     }
-    
-    mapped_request['PJSON_ORG_ACCESS_I'] = format_request_post_data_to_string(req, 'BOAID')
+
+    mapped_request['PTYP_CUST_BSN_TAB_I'] = format_request_post_data_to_string(req)
     return mapped_request
 
-def format_request_post_data_to_string(request_values, table_key):
-    data_entries = []
-    for item in request_values:
-        data_entry = f'"Data": {{"{table_key}": "{item}", "ACTION": "D"}}'
-        data_entries.append(data_entry)
+def format_request_post_data_to_string(request_values):
+    id = request_values['data']['id'] or ''
+    name = request_values['data']['name']
+    start_date = request_values['data']['startDate'][:10]
+    end_date = request_values['data']['endDate'][:10]
+    panel_cutoff_date = request_values['data']['panelCutoffDate'][:10]
+    future_vacancy = request_values['data']['futureVacancy']
 
-    result_string = "{" + ",".join(data_entries) + "}"
-    return result_string
+    new_dict = {
+      "Data": {
+          "BSN_ID": id,
+          "BSN_DESCR_TEXT": name,
+          "BSN_START_DATE": start_date,
+          "BSN_END_DATE": end_date,
+          "BSN_CREATE_ID": '',
+          "BSN_CREATE_DATE": '',
+          "BSN_UPDATE_ID": '',
+          "BSN_UPDATE_DATE": '',
+          "BSN_PANEL_CUTOFF_DATE": panel_cutoff_date,
+          "BSN_FUTURE_VACANCY_IND": future_vacancy,
+          "SNT_SEQ_NUM": ''
+      }
+    }
+    return new_dict

@@ -16,7 +16,7 @@ class FSBidManageBidSeasonsView(BaseView):
         result = services.get_bid_seasons_data(jwt, request.query_params)
         return Response(result)
     '''
-    Edit an existing Bid Season
+    Create/Edit an existing Bid Season
     '''
     def post(self, request):
         jwt = request.META['HTTP_JWT']
