@@ -6,8 +6,8 @@ from talentmap_api.fsbid.views import publishable_positions as views
 router = routers.SimpleRouter()
 urlpatterns = [
     url(r'^$', views.FSBidPublishablePositionsView.as_view(), name='FSBid-publishable-positions'),
-    url(r'^filters/$', views.FSBidPublishablePositionsFiltersView.as_view(), name='FSBid-publishable-positions-filters'),
     url(r'^(?P<pk>[0-9]+)/$', views.FSBidPublishablePositionsActionView.as_view(), name='FSBid-publishable-positions'),
+    url(r'^filters/$', views.FSBidPublishablePositionsFiltersView.as_view(), name='FSBid-publishable-positions-filters'),
 ]
 
 urlpatterns += router.urls
