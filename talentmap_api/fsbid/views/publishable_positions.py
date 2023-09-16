@@ -18,33 +18,18 @@ class FSBidPublishablePositionsView(APIView):
     # perms TBD
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), ) ]
 
-    def get(self, request, pk):
+    def get(self, request):
         '''
         Get Publishable Positions
         '''
-        result = services.get_publishable_positions(pk, request.META['HTTP_JWT'])
+        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
+        print('in view')
+        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
+        result = services.get_publishable_positions(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
-
-class FSBidPublishablePositionsFiltersView(BaseView):
-    # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), )]
-
-    def get(self, request, *args, **kwargs):
-        '''
-        Get Publishable Positions Filters
-        '''
-        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-        print('in filters view')
-        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-        result = services.get_publishable_positions_filters(request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
-
 
 class FSBidPublishablePositionsActionView(APIView):
     # perms TBD
@@ -69,3 +54,20 @@ class FSBidPublishablePositionsActionView(APIView):
         except Exception as e:
             logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class FSBidPublishablePositionsFiltersView(BaseView):
+    # perms TBD
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), )]
+
+    def get(self, request, *args, **kwargs):
+        '''
+        Get Publishable Positions Filters
+        '''
+        result = services.get_publishable_positions_filters(request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+

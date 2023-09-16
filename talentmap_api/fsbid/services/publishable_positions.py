@@ -64,96 +64,90 @@ def convert_capsule_query(query):
     }
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
-def get_publishable_positions_filters(jwt_token):
+
+
+
+def get_publishable_positions(query, jwt_token):
     '''
-    Gets Filters for Publishable Positions Page
+    Gets Publishable Positions
     '''
     print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-    print('in filters service')
+    print('in service')
+    print(query)
     print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
     args = {
-        "proc_name": 'qry_lstfsbidSearch',
+        "proc_name": 'qry_modPublishPos',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "request_body": {},
-        "request_mapping_function": publishable_positions_filter_req_mapping,
-        "response_mapping_function": publishable_positions_filter_res_mapping,
+        "request_mapping_function": publishable_positions_req_mapping,
+        "response_mapping_function": publishable_positions_res_mapping,
         "jwt_token": jwt_token,
+        "request_body": query,
     }
     return services.send_post_back_office(
         **args
     )
 
-def publishable_positions_filter_req_mapping(request):
+def publishable_positions_req_mapping(request):
+    # what to do about
+    # {'bidCycles': ['1,11'],
     return {
-        "PV_API_VERSION_I": '',
-        "PV_AD_ID_I": '',
+      'PV_API_VERSION_I': '',
+      'PV_AD_ID_I': '',
+      'I_SVT_CODE': '',
+      'I_PPL_CODE': '',
+      'I_GRD_CD': request.get('grades') or '',
+      'I_SKL_CODE_POS': request.get('skills') or '',
+      'I_SKL_CODE_STFG_PTRN': '',
+      'I_ORG_CODE': request.get('orgs') or '',
+      'I_POS_NUM_TXT': '',
+      'I_POS_OVRSES_IND': '',
+      'I_PS_CD': '',
+      'I_LLT_CD': '',
+      'I_LANG_CD': '',
+      'I_LR_CD': '',
+      'I_BUREAU_CD': request.get('bureaus') or '',
+      'I_PUBS_CD': request.get('statuses') or '',
+      'I_JC_ID': '',
+      'I_ORDER_BY': '',
     }
 
-def publishable_positions_filter_res_mapping(data):
-    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-    print('in res mapping')
-    print(data)
-    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-    def status_map(x):
-        return {
-            'code': x.get('PUBS_CD'),
-            'description': x.get('PUBS_DESCR_TXT'),
-        }
-    def cycle_map(x):
-        return {
-            'code': x.get('CYCLE_ID'),
-            'description': x.get('CYCLE_NM_TXT'),
-        }
-    def bureau_map(x):
-        return {
-            # 'code': x.get('ROLE_CODE'),
-            'description': x.get('ORGS_SHORT_DESC'),
-        }
-    def org_map(x):
-        return {
-            'code': x.get('ORG_CODE'),
-            'description': x.get('ORGS_SHORT_DESC'),
-        }
-    def skills_map(x):
-        return {
-            'code': x.get('TBD'),
-            'description': x.get('TBD'),
-        }
-    def grade_map(x):
-        return {
-            'code': x.get('GRD_CD'),
-            'description': x.get('GRD_DESCR_TXT'),
+def publishable_positions_res_mapping(data):
+
+    def pub_pos_map(x):
+     return {
+        'positionNumber': x.get('POS_NUM_TXT'),
+        'skillCode': x.get('SKL_CODE_POS'),
+        'skillDescription': x.get('SKL_DESC_POS'),
+        'positionTitle': x.get('POS_TITLE_TXT'),
+        'bureau': x.get('BUR_SHORT_DESC'),
+        'orgCode': x.get('ORG_CODE'),
+        'orgDescription': x.get('ORGS_SHORT_DESC'),
+         'grade': x.get('GRD_CD'),
+         'status': x.get('PUBS_CD'),
+         'language': x.get('LANG_DESCR_TXT'),
+         'payPlan': x.get('PPL_CODE'),
+         'positionDetails': x.get('PPOS_CAPSULE_DESCR_TXT'),
+         'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
+         'LastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
+         'LastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
+         # FE not currently using the ones below
+         'posSeqNum': x.get('POS_SEQ_NUM'),
+         'aptSeqNum': x.get('APT_SEQUENCE_NUM'),
+         'aptDesc': x.get('APT_DESCRIPTION_TXT'),
+         'psCD': x.get('PS_CD'),
+         'posLtext': x.get('POSLTEXT'),
+         'lrDesc': x.get('LR_DESCR_TXT'),
+         'posAuditExclusionInd': x.get('PPOS_AUDIT_EXCLUSION_IND'),
         }
 
-    return {
-        'statusFilters': list(map(status_map, data.get('QRY_LSTPUBSTATUS_DD_REF'))),
-        'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
-        # Spreadsheet says QRY_LSTBUREAUS_DD_REF, but only contains
-        # a single data point: "ORGS_SHORT_DESC"
-        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
-        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
-        # Spreadsheet says QRY_LSTBUREAUSKILLS_DD_REF, but whole payload only contains
-        # "'X'": "x"
-        'skillsFilters': list(map(skills_map, data.get('QRY_LSTBUREAUSKILLS_DD_REF'))),
-        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
-    }
+    return list(map(pub_pos_map, data.get('QRY_MODPUBLISHPOS_REF')))
 
-def get_publishable_positions(jwt_token):
-    '''
-    Gets Publishable positions
-    '''
-    args = services.send_get_request(
-        "",
-        {},
-        convert_publishable_positions_query,
-        jwt_token,
-        publishable_positions__fisbid_to_talentmap,
-        None,
-        "/api/v1/fsbid/publishablePositions/",
-        None,
-        PUBLISHABLE_POSITIONS_ROOT
-    )
-    return pydash.get(args, 'results[0]') or None
+
+
+
+
+
+
 
 def edit_publishable_position(jwt_token, id, description, updater_id):
     '''
@@ -166,24 +160,71 @@ def edit_publishable_position(jwt_token, id, description, updater_id):
     response.raise_for_status()
     return response
 
-def publishable_positions__fisbid_to_talentmap(capsule):
+
+
+def get_publishable_positions_filters(jwt_token):
     '''
-    Formats FSBid response to TalentMAP format
+    Gets Filters for Publishable Positions Page
     '''
+    args = {
+        'proc_name': 'qry_lstfsbidSearch',
+        'package_name': 'PKG_WEBAPI_WRAP',
+        'request_body': {},
+        'request_mapping_function': publishable_positions_filter_req_mapping,
+        'response_mapping_function': publishable_positions_filter_res_mapping,
+        'jwt_token': jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def publishable_positions_filter_req_mapping(request):
     return {
-        "id": capsule.get("pos_seq_num", None),
-        "description": capsule.get("capsule_descr_txt", None),
-        "last_updated_date": capsule.get("update_date", None), # maybe
-        "updater_id": capsule.get("update_id", None), # maybe
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
     }
 
-def convert_publishable_positions_query(query):
-    '''
-    Converts TalentMap query to FSBid
-    '''
-    values = {
-        "pos_seq_num": query.get("id", None),
-        "capsule_descr_txt": query.get("description", None),
-        "update_id": query.get("updater_id", None),
+def publishable_positions_filter_res_mapping(data):
+
+    def status_map(x):
+        return {
+            'code': x.get('PUBS_CD'),
+            'description': x.get('PUBS_DESCR_TXT'),
+        }
+    def cycle_map(x):
+        return {
+            'code': x.get('CYCLE_ID'),
+            'description': x.get('CYCLE_NM_TXT'),
+        }
+    def bureau_map(x):
+        return {
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def org_map(x):
+        return {
+            'code': x.get('ORG_CODE'),
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def skills_map(x):
+        return {
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def grade_map(x):
+        return {
+            'code': x.get('GRD_CD'),
+            'description': x.get('GRD_DESCR_TXT'),
+        }
+
+    return {
+        'statusFilters': list(map(status_map, data.get('QRY_LSTPUBSTATUS_DD_REF'))),
+        'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
+        # from modi: org_short_desc to be passed in as bureau_cd_i - not for here, for get PP
+        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
+        'skillsFilters': list(map(skills_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
     }
-    return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+
+
+
+
