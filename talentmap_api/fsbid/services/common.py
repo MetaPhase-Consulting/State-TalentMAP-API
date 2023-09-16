@@ -1051,3 +1051,12 @@ def panel_process_dates_csv(dates):
                 columnOrdering.update({date['mdtcode']: 'None Listed'})
 
     return list(columnOrdering.values())
+
+def format_desc_code(desc, code):
+    # Desc (123)
+    # (123)
+    # Desc
+    display_text = f'{desc} ' if desc else ''
+    display_text += f'({code})' if code else ''
+
+    return display_text
