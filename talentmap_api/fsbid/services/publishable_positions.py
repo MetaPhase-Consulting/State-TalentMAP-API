@@ -91,7 +91,7 @@ def publishable_positions_req_mapping(request):
         'I_SKL_CODE_POS': request.get('skills') or '',
         'I_SKL_CODE_STFG_PTRN': '',
         'I_ORG_CODE': request.get('orgs') or '',
-        'I_POS_NUM_TXT': '',
+        'I_POS_NUM_TXT': request.get('posNum') or '',
         'I_POS_OVRSES_IND': '',
         'I_PS_CD': '',
         'I_LLT_CD': '',
