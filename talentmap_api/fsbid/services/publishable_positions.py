@@ -35,7 +35,7 @@ def update_capsule_description(jwt_token, id, description, last_updated_date, up
     '''
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
     uri = f"{PUBLISHABLE_POSITIONS_ROOT}/capsule"
-    url = f"{uri}?pos_seq_num={id}&capsule_descr_txt={description}&last_updated_date={last_updated_date}&update_id={updater_id}&ad_id={ad_id}"
+    url = f"{uri}?pos_seq_num={id}&capsule_descr_txt={description}&update_id={last_updated_date}&update_id={updater_id}&ad_id={ad_id}"
     response = requests.patch(url, data={}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
     response.raise_for_status()
     return response
@@ -144,7 +144,7 @@ def edit_publishable_position(data, jwt_token):
         "proc_name": 'act_modCapsulePos',
         "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_publishable_position_req_mapping,
-        "response_mapping_function": {},
+        "response_mapping_function": edit_publishable_position_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -161,6 +161,13 @@ def edit_publishable_position_req_mapping(request):
       'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
       'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
     }
+
+def edit_publishable_position_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Publishable Positions Edit failed.")
+        return None
+
+    return data
 
 
 def get_publishable_positions_filters(jwt_token):
