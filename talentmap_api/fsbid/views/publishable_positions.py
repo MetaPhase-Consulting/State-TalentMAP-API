@@ -22,9 +22,6 @@ class FSBidPublishablePositionsView(APIView):
         '''
         Get Publishable Positions
         '''
-        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-        print('in view')
-        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
         result = services.get_publishable_positions(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -44,16 +41,17 @@ class FSBidPublishablePositionsActionView(APIView):
         }
     ))
 
-    def patch(self, request, pk):
+    def post(self, request):
         '''
         Edit Publishable Position
         '''
-        try:
-            services.edit_publishable_position(request.META['HTTP_JWT'], pk, **request.data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
+        print('in view')
+        result = services.edit_publishable_position(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
 
 class FSBidPublishablePositionsFiltersView(BaseView):
     # perms TBD

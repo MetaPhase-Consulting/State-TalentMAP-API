@@ -78,6 +78,7 @@ def get_publishable_positions(query, jwt_token):
     args = {
         "proc_name": 'qry_modPublishPos',
         "package_name": 'PKG_WEBAPI_WRAP',
+        "return_code": 'O_RETURN_CODE',
         "request_mapping_function": publishable_positions_req_mapping,
         "response_mapping_function": publishable_positions_res_mapping,
         "jwt_token": jwt_token,
@@ -147,16 +148,39 @@ def publishable_positions_res_mapping(data):
 
 
 
-def edit_publishable_position(jwt_token, id, description, updater_id):
+def edit_publishable_position(data, jwt_token):
     '''
-    Edits Publishable position
+    Edit Publishable Position
     '''
-    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    uri = f"{PUBLISHABLE_POSITIONS_ROOT}/{id}"
-    url = f"{uri}?capsule_descr_txt={description}&update_id={updater_id}"
-    response = requests.patch(url, data={}, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
-    response.raise_for_status()
-    return response
+    print('in service')
+    print(data)
+    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
+    args = {
+        "proc_name": 'act_modCapsulePos',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "return_code": 'O_RETURN_CODE',
+        "request_mapping_function": edit_publishable_position_req_mapping,
+        "response_mapping_function": {},
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_publishable_position_req_mapping(request):
+    return {
+      'PV_API_VERSION_I': '',
+      'PV_AD_ID_I': '',
+      'I_POS_SEQ_NUM': request.get('posSeqNum') or '',
+      'I_PPOS_CAPSULE_DESCR_TXT': request.get('positionDetails') or '',
+      'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
+      'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
+    }
+
+
+
+
 
 
 
@@ -167,6 +191,7 @@ def get_publishable_positions_filters(jwt_token):
     args = {
         'proc_name': 'qry_lstfsbidSearch',
         'package_name': 'PKG_WEBAPI_WRAP',
+        "return_code": 'O_RETURN_CODE',
         'request_body': {},
         'request_mapping_function': publishable_positions_filter_req_mapping,
         'response_mapping_function': publishable_positions_filter_res_mapping,
