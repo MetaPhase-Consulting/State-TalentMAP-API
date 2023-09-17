@@ -65,20 +65,13 @@ def convert_capsule_query(query):
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
 
-
-
 def get_publishable_positions(query, jwt_token):
     '''
     Gets Publishable Positions
     '''
-    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
-    print('in service')
-    print(query)
-    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
     args = {
         "proc_name": 'qry_modPublishPos',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "return_code": 'O_RETURN_CODE',
         "request_mapping_function": publishable_positions_req_mapping,
         "response_mapping_function": publishable_positions_res_mapping,
         "jwt_token": jwt_token,
@@ -89,76 +82,67 @@ def get_publishable_positions(query, jwt_token):
     )
 
 def publishable_positions_req_mapping(request):
-    # what to do about
-    # {'bidCycles': ['1,11'],
     return {
-      'PV_API_VERSION_I': '',
-      'PV_AD_ID_I': '',
-      'I_SVT_CODE': '',
-      'I_PPL_CODE': '',
-      'I_GRD_CD': request.get('grades') or '',
-      'I_SKL_CODE_POS': request.get('skills') or '',
-      'I_SKL_CODE_STFG_PTRN': '',
-      'I_ORG_CODE': request.get('orgs') or '',
-      'I_POS_NUM_TXT': '',
-      'I_POS_OVRSES_IND': '',
-      'I_PS_CD': '',
-      'I_LLT_CD': '',
-      'I_LANG_CD': '',
-      'I_LR_CD': '',
-      'I_BUREAU_CD': request.get('bureaus') or '',
-      'I_PUBS_CD': request.get('statuses') or '',
-      'I_JC_ID': '',
-      'I_ORDER_BY': '',
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_SVT_CODE': '',
+        'I_PPL_CODE': '',
+        'I_GRD_CD': request.get('grades') or '',
+        'I_SKL_CODE_POS': request.get('skills') or '',
+        'I_SKL_CODE_STFG_PTRN': '',
+        'I_ORG_CODE': request.get('orgs') or '',
+        'I_POS_NUM_TXT': '',
+        'I_POS_OVRSES_IND': '',
+        'I_PS_CD': '',
+        'I_LLT_CD': '',
+        'I_LANG_CD': '',
+        'I_LR_CD': '',
+        'I_BUREAU_CD': request.get('bureaus') or '',
+        'I_PUBS_CD': request.get('statuses') or '',
+        'I_JC_ID': '',
+        'I_ORDER_BY': '',
     }
 
 def publishable_positions_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Publishable Positions failed.")
+        return None
 
     def pub_pos_map(x):
-     return {
-        'positionNumber': x.get('POS_NUM_TXT'),
-        'skill': services.format_desc_code(x.get('SKL_DESC_POS'), x.get('SKL_CODE_POS')),
-        'positionTitle': x.get('POS_TITLE_TXT'),
-        'bureau': x.get('BUR_SHORT_DESC'),
-        'org': services.format_desc_code(x.get('ORGS_SHORT_DESC'), x.get('ORG_CODE')),
-        'grade': x.get('GRD_CD'),
-        'status': x.get('PUBS_CD'),
-        'language': x.get('LANG_DESCR_TXT'),
-        'payPlan': x.get('PPL_CODE'),
-        'positionDetails': x.get('PPOS_CAPSULE_DESCR_TXT'),
-        'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
-        'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
-        'lastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
-        # FE not currently using the ones below
-        'posSeqNum': x.get('POS_SEQ_NUM'),
-        'aptSeqNum': x.get('APT_SEQUENCE_NUM'),
-        'aptDesc': x.get('APT_DESCRIPTION_TXT'),
-        'psCD': x.get('PS_CD'),
-        'posLtext': x.get('POSLTEXT'),
-        'lrDesc': x.get('LR_DESCR_TXT'),
-        'posAuditExclusionInd': x.get('PPOS_AUDIT_EXCLUSION_IND'),
+        return {
+            'positionNumber': x.get('POS_NUM_TXT'),
+            'skill': services.format_desc_code(x.get('SKL_DESC_POS'), x.get('SKL_CODE_POS')),
+            'positionTitle': x.get('POS_TITLE_TXT'),
+            'bureau': x.get('BUR_SHORT_DESC'),
+            'org': services.format_desc_code(x.get('ORGS_SHORT_DESC'), x.get('ORG_CODE')),
+            'grade': x.get('GRD_CD'),
+            'status': x.get('PUBS_CD'),
+            'language': x.get('LANG_DESCR_TXT'),
+            'payPlan': x.get('PPL_CODE'),
+            'positionDetails': x.get('PPOS_CAPSULE_DESCR_TXT'),
+            'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
+            'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
+            'lastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
+            # FE not currently using the ones below
+            'posSeqNum': x.get('POS_SEQ_NUM'),
+            'aptSeqNum': x.get('APT_SEQUENCE_NUM'),
+            'aptDesc': x.get('APT_DESCRIPTION_TXT'),
+            'psCD': x.get('PS_CD'),
+            'posLtext': x.get('POSLTEXT'),
+            'lrDesc': x.get('LR_DESCR_TXT'),
+            'posAuditExclusionInd': x.get('PPOS_AUDIT_EXCLUSION_IND'),
         }
 
     return list(map(pub_pos_map, data.get('QRY_MODPUBLISHPOS_REF')))
-
-
-
-
-
-
 
 
 def edit_publishable_position(data, jwt_token):
     '''
     Edit Publishable Position
     '''
-    print('in service')
-    print(data)
-    print('🌷🌷🌷🌷🌷🌷🌷🌷🌷')
     args = {
         "proc_name": 'act_modCapsulePos',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "return_code": 'O_RETURN_CODE',
         "request_mapping_function": edit_publishable_position_req_mapping,
         "response_mapping_function": {},
         "jwt_token": jwt_token,
@@ -179,11 +163,6 @@ def edit_publishable_position_req_mapping(request):
     }
 
 
-
-
-
-
-
 def get_publishable_positions_filters(jwt_token):
     '''
     Gets Filters for Publishable Positions Page
@@ -191,7 +170,6 @@ def get_publishable_positions_filters(jwt_token):
     args = {
         'proc_name': 'qry_lstfsbidSearch',
         'package_name': 'PKG_WEBAPI_WRAP',
-        "return_code": 'O_RETURN_CODE',
         'request_body': {},
         'request_mapping_function': publishable_positions_filter_req_mapping,
         'response_mapping_function': publishable_positions_filter_res_mapping,
@@ -208,6 +186,9 @@ def publishable_positions_filter_req_mapping(request):
     }
 
 def publishable_positions_filter_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Publishable Positions failed.")
+        return None
 
     def status_map(x):
         return {
@@ -230,7 +211,8 @@ def publishable_positions_filter_res_mapping(data):
         }
     def skills_map(x):
         return {
-            'description': x.get('ORGS_SHORT_DESC'),
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
         }
     def grade_map(x):
         return {
@@ -241,13 +223,8 @@ def publishable_positions_filter_res_mapping(data):
     return {
         'statusFilters': list(map(status_map, data.get('QRY_LSTPUBSTATUS_DD_REF'))),
         'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
-        # from modi: org_short_desc to be passed in as bureau_cd_i - not for here, for get PP
         'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
         'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
-        'skillsFilters': list(map(skills_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
     }
-
-
-
-
