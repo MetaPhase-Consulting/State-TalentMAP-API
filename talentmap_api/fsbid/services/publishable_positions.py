@@ -194,7 +194,7 @@ def publishable_positions_filter_req_mapping(request):
 
 def publishable_positions_filter_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Publishable Positions failed.")
+        logger.error(f"Fsbid call for Publishable Positions filters failed.")
         return None
 
     def status_map(x):
