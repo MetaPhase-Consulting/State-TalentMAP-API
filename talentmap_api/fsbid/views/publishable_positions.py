@@ -49,7 +49,7 @@ class FSBidPublishablePositionsActionView(APIView):
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return Response(result)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FSBidPublishablePositionsFiltersView(BaseView):
     # perms TBD
