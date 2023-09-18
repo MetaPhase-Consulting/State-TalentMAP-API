@@ -61,6 +61,7 @@ urlpatterns = [
     # Position Management
     url(r'^api/v1/fsbid/post_access/', include('talentmap_api.fsbid.urls.post_access')),
     url(r'^api/v1/fsbid/capsule_descriptions/', include('talentmap_api.fsbid.urls.capsule_descriptions')),
+    url(r'^api/v1/fsbid/publishable_positions/', include('talentmap_api.fsbid.urls.publishable_positions')),
 
     # CDO
     url(r'^api/v1/fsbid/cdo/', include('talentmap_api.fsbid.urls.cdo')),
