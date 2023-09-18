@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class FSBidPublishablePositionsView(APIView):
     # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
@@ -30,7 +30,7 @@ class FSBidPublishablePositionsView(APIView):
 
 class FSBidPublishablePositionsActionView(APIView):
     # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -53,7 +53,7 @@ class FSBidPublishablePositionsActionView(APIView):
 
 class FSBidPublishablePositionsFiltersView(BaseView):
     # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), )]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
 
     def get(self, request, *args, **kwargs):
         '''
