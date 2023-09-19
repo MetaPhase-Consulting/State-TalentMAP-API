@@ -27,6 +27,7 @@ services:
       - DATABASE_PW=talentmap1
       - DJANGO_DEBUG=true
       - WS_ROOT_API_URL=http://host.docker.internal:3333
+      - BACKOFFICE_CRUD_URL=http://host.docker.internal:3333/v1/backoffice/BackOfficeCRUD
       - EMPLOYEES_API_URL=http://host.docker.internal:3333/v1/Employees
       - SECREF_URL=http://host.docker.internal:3333/v2/SECREF
       - CP_API_URL=http://host.docker.internal:3333/v1/cyclePositions
@@ -52,8 +53,7 @@ services:
       - EMAIL_USE_TLS=false
       - EMAIL_IS_DEV=false
       - EMAIL_DEV_TO=${EMAIL_DEV_TO}
-      - HRDATA_URL=http://localhost:3333/HR
-      - HRDATA_URL_EXTERNAL=http://localhost:3333/HR
+      - HRDATA_URL=http://host.docker.internal:3333/HR
   haproxy:
     image: eeacms/haproxy
     depends_on:

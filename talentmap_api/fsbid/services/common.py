@@ -15,7 +15,7 @@ import maya
 import pydash
 
 from talentmap_api.organization.models import Obc
-from talentmap_api.settings import OBC_URL, OBC_URL_EXTERNAL
+from talentmap_api.settings import BACKOFFICE_CRUD_URL, OBC_URL, OBC_URL_EXTERNAL
 
 from talentmap_api.available_positions.models import AvailablePositionFavorite, AvailablePositionRanking
 from talentmap_api.projected_vacancies.models import ProjectedVacancyFavorite
@@ -31,11 +31,10 @@ logger = logging.getLogger(__name__)
 
 API_ROOT = settings.WS_ROOT_API_URL
 CP_API_V2_ROOT = settings.CP_API_V2_URL
-HRDATA_URL = settings.HRDATA_URL
-HRDATA_URL_EXTERNAL = settings.HRDATA_URL_EXTERNAL
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 PV_API_V2_URL = settings.PV_API_V2_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
+BACKOFFICE_CRUD_URL = settings.BACKOFFICE_CRUD_URL
 
 
 urls_expire_after = {
@@ -43,18 +42,6 @@ urls_expire_after = {
     '*': 0,  # Every other non-matching URL: do not cache
 }
 # session = requests_cache.CachedSession(backend='memory', namespace='tmap-cache', urls_expire_after=urls_expire_after)
-
-
-def get_employee_profile_urls(userid):
-    unredactedSuffix = f"Employees/{userid}/EmployeeProfileReportByCDO"
-    redactedSuffix = f"Employees/{userid}/PrintEmployeeProfileReport"
-
-    return {
-        "internal": f"{HRDATA_URL}/{unredactedSuffix}",
-        "external": f"{HRDATA_URL_EXTERNAL}/{unredactedSuffix}",
-        "internalRedacted": f"{HRDATA_URL}/{redactedSuffix}",
-        "externalRedacted": f"{HRDATA_URL_EXTERNAL}/{redactedSuffix}",
-    }
 
 
 def get_pagination(query, count, base_url, host=None):
@@ -262,6 +249,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     else:
         url = f"{api_root}/{uri}"
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -312,6 +300,14 @@ def get_individual(uri, query, query_mapping_function, jwt_token, mapping_functi
     return pydash.get(response, '[0]') or None
 
 
+
+# for calls to BackOffice CRUD POST EP
+def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
+    url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
+    json_body = request_mapping_function(request_body)
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
+    return response_mapping_function(response)
+
 def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_function, count_function, base_url, host=None, api_root=API_ROOT, use_post=False):
     '''
     Gets items from FSBid
@@ -325,8 +321,10 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
 
 def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
+    logger.info(mappedQuery)
     url = f"{api_root}/{uri}"
-    response = requests.put(url, data=mappedQuery, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    logger.info(url)
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -1048,3 +1046,12 @@ def panel_process_dates_csv(dates):
                 columnOrdering.update({date['mdtcode']: 'None Listed'})
 
     return list(columnOrdering.values())
+
+def format_desc_code(desc, code):
+    # Desc (123)
+    # (123)
+    # Desc
+    display_text = f'{desc} ' if desc else ''
+    display_text += f'({code})' if code else ''
+
+    return display_text
