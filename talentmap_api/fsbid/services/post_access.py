@@ -91,7 +91,7 @@ def get_post_access_data(jwt_token, request):
 
 def post_access_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0) or data == "Invalid JSON":
-        logger.error(f"Fsbid call for Search Post Access filters failed.")
+        logger.error(f"Fsbid call for Search Post Access failed.")
         return None
 
     def spa_results_mapping(x):
