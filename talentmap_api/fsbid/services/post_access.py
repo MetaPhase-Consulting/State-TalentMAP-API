@@ -162,7 +162,7 @@ def remove_post_access_req_mapping(req):
 
 def remove_post_access_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-        logger.error(f"Fsbid call for Publishable Positions Edit failed.")
+        logger.error(f"Fsbid call for Remove Post Access failed.")
 
 def format_request_post_data_to_string(request_values, table_key):
     data_entries = []
