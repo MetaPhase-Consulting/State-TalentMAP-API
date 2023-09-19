@@ -34,6 +34,11 @@ def spa_filter_req_mapping(request):
     }
 
 def spa_filter_res_mapping(data):
+    # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call for Search Post Access filters failed.")
+        return None
+
     def bureau_map(x):
         return {
             'code': x.get('Bureau'),
@@ -93,6 +98,11 @@ def get_post_access_data(jwt_token, request):
 
 
 def fsbid_to_tm_spa_data_mapping(data):
+    # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0) or data == "Invalid JSON":
+        logger.error(f"Fsbid call for Search Post Access filters failed.")
+        return None
+
     def spa_results_mapping(x):
         return {
             'bureau': x.get('BUREAUNAME') or '---',
@@ -148,7 +158,7 @@ def remove_post_access_permissions(jwt_token, request):
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
         "request_mapping_function": map_search_post_access_post_request,
-        "response_mapping_function": None,
+        "response_mapping_function": map_search_post_access_post_response,
         "jwt_token": jwt_token,
 
     }
@@ -163,6 +173,10 @@ def map_search_post_access_post_request(req):
     
     mapped_request['PJSON_ORG_ACCESS_I'] = format_request_post_data_to_string(req, 'BOAID')
     return mapped_request
+
+def map_search_post_access_post_response(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call for Publishable Positions Edit failed.")
 
 def format_request_post_data_to_string(request_values, table_key):
     data_entries = []
