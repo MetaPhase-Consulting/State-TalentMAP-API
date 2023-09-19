@@ -28,7 +28,6 @@ def post_access_filter_req_mapping(request):
     }
 
 def post_access_filter_res_mapping(data):
-    # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error(f"Fsbid call for Search Post Access filters failed.")
         return None
@@ -91,7 +90,6 @@ def get_post_access_data(jwt_token, request):
     )
 
 def post_access_res_mapping(data):
-    # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0) or data == "Invalid JSON":
         logger.error(f"Fsbid call for Search Post Access filters failed.")
         return None
