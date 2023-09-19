@@ -129,7 +129,6 @@ def map_search_post_access_query(req):
         mapped_request['PJSON_ORG_TAB_I'] = format_request_data_to_string(req.get('orgs'), 'ORG_SHORT_DESC')
     if req.get('positions'):
         mapped_request['PJSON_POS_DD_TAB_I'] = format_request_data_to_string(req.get('positions'), 'POS_SEQ_NUM')
-
     return mapped_request
 
 

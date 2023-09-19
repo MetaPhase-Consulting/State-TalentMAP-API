@@ -154,8 +154,6 @@ def single_client(jwt_token, perdet_seq_num, host=None):
         CLIENTS_ROOT_V2,
     )
     cdo = cdo_services.single_cdo(jwt_token, perdet_seq_num)
-    # TO-DO: Use v2/clients here to fill out this payload
-    # WS Request: Add current and historical assignments to one endpoint
     user_info = get_user_information(jwt_token, perdet_seq_num)
     try:
         CLIENT = list(responseAllAssignments['results'])[0]

@@ -306,14 +306,7 @@ def send_post_back_office(proc_name, package_name, request_body, request_mapping
     url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
     json_body = request_mapping_function(request_body)
     response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
-    if response is None or (response['PV_RETURN_CODE_O'] and response['PV_RETURN_CODE_O'] is not 0):
-        logger.error(f"Fsbid call to '{url}' failed.")
-        return None
-    if response_mapping_function:
-        return response_mapping_function(response)
-    return response
-
-
+    return response_mapping_function(response)
 
 def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_function, count_function, base_url, host=None, api_root=API_ROOT, use_post=False):
     '''
@@ -328,8 +321,10 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
 
 def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
+    logger.info(mappedQuery)
     url = f"{api_root}/{uri}"
-    response = requests.put(url, data=mappedQuery, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    logger.info(url)
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -1051,3 +1046,12 @@ def panel_process_dates_csv(dates):
                 columnOrdering.update({date['mdtcode']: 'None Listed'})
 
     return list(columnOrdering.values())
+
+def format_desc_code(desc, code):
+    # Desc (123)
+    # (123)
+    # Desc
+    display_text = f'{desc} ' if desc else ''
+    display_text += f'({code})' if code else ''
+
+    return display_text
