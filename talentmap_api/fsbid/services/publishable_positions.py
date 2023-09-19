@@ -214,7 +214,7 @@ def publishable_positions_filter_res_mapping(data):
     def org_map(x):
         return {
             'code': x.get('ORG_CODE'),
-            'description': x.get('ORGS_SHORT_DESC'),
+            'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORGS_SHORT_DESC')})",
         }
     def skills_map(x):
         return {
