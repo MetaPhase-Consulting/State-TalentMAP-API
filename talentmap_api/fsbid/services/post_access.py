@@ -1,3 +1,4 @@
+import pydash
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
 
@@ -150,23 +151,6 @@ def remove_post_access_permissions(jwt_token, request):
         **args
     )
 
-def grant_post_access_permissions(jwt_token, request):
-    '''
-    Grant Access for a Post
-    '''
-    args = {
-        "proc_name": 'prc_add_org_access',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_body": request,
-        "request_mapping_function": map_search_post_access_post_request,
-        "response_mapping_function": None,
-        "jwt_token": jwt_token,
-
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
 def map_search_post_access_post_request(req):
     mapped_request = {
       "PV_API_VERSION_I": "2",  
@@ -184,3 +168,39 @@ def format_request_post_data_to_string(request_values, table_key):
     result_string = "{" + ",".join(data_entries) + "}"
     return result_string
 
+
+
+def grant_post_access_permissions(jwt_token, request):
+    '''
+    Grant Access for a Post
+    '''
+    args = {
+        "proc_name": 'prc_add_org_access',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_body": request,
+        "request_mapping_function": map_grant_access_request,
+        "response_mapping_function": None,
+        "jwt_token": jwt_token,
+
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def map_grant_access_request(req):
+    mapped_request = {
+      "PV_API_VERSION_I": "",
+      "PV_AD_ID_I": "",
+    }
+    
+    mapped_request['PJSON_ORG_TAB_I'] = format_grant_access_request(req['data']['orgs'], 'ORG_SHORT_DESC')
+    mapped_request['PJSON_EMP_TAB_I'] = format_grant_access_request(req['data']['persons'], 'PER_SEQ_NUM')
+    mapped_request['PJSON_POS_DD_TAB_I'] = format_grant_access_request(req['data']['positions'], 'POS_SEQ_NUM')
+    mapped_request['PJSON_POST_ROLE_TAB_I'] = format_grant_access_request(req['data']['roles'], 'ROLE_CODE')
+    return mapped_request
+
+def format_grant_access_request(request_values, table_key):
+    data_entries = []
+    for item in request_values:
+        data_entries.append({table_key: item['code']})
+    return {"Data": data_entries}
