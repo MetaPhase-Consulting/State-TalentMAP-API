@@ -1,16 +1,10 @@
 import logging
-import pydash
-from copy import deepcopy
-from django.conf import settings
-from urllib.parse import urlencode, quote
-from talentmap_api.fsbid.services import common as services, employee
+from talentmap_api.fsbid.services import common as services
 
 logger = logging.getLogger(__name__)
 
-WS_ROOT = settings.WS_ROOT_API_URL
 
 # FILTERS
-
 def get_post_access_filters(jwt_token):
     '''
     Gets Filters for Search Post Access Page
@@ -19,21 +13,21 @@ def get_post_access_filters(jwt_token):
         "proc_name": 'prc_lst_bureau_org_tree',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": {},
-        "request_mapping_function": spa_filter_req_mapping,
-        "response_mapping_function": spa_filter_res_mapping,
+        "request_mapping_function": post_access_filter_req_mapping,
+        "response_mapping_function": post_access_filter_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
         **args
     )
 
-def spa_filter_req_mapping(request):
+def post_access_filter_req_mapping(request):
     return {
         "PV_API_VERSION_I": '',
         "PV_AD_ID_I": '',
     }
 
-def spa_filter_res_mapping(data):
+def post_access_filter_res_mapping(data):
     # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error(f"Fsbid call for Search Post Access filters failed.")
@@ -88,16 +82,15 @@ def get_post_access_data(jwt_token, request):
         "proc_name": 'prc_lst_org_access',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
-        "request_mapping_function": map_search_post_access_query,
-        "response_mapping_function": fsbid_to_tm_spa_data_mapping,
+        "request_mapping_function": post_access_req_mapping,
+        "response_mapping_function": post_access_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
         **args
     )
 
-
-def fsbid_to_tm_spa_data_mapping(data):
+def post_access_res_mapping(data):
     # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0) or data == "Invalid JSON":
         logger.error(f"Fsbid call for Search Post Access filters failed.")
@@ -116,7 +109,6 @@ def fsbid_to_tm_spa_data_mapping(data):
         }
     return list(map(spa_results_mapping, data.get('PQRY_ORG_ACCESS_O')))
 
-
 def format_request_data_to_string(request_values, table_key):
     data_entries = []
     for item in request_values.split(","):
@@ -126,8 +118,7 @@ def format_request_data_to_string(request_values, table_key):
     result_string = "{" + ",".join(data_entries) + "}"
     return result_string
 
-
-def map_search_post_access_query(req):
+def post_access_req_mapping(req):
     mapped_request = {
       "PV_API_VERSION_I": "2",  
     }
@@ -146,9 +137,6 @@ def map_search_post_access_query(req):
     return mapped_request
 
 
-# POST REQUEST
-
-
 def remove_post_access_permissions(jwt_token, request):
     '''
     Remove Access for a Post
@@ -157,8 +145,8 @@ def remove_post_access_permissions(jwt_token, request):
         "proc_name": 'prc_mod_org_access',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
-        "request_mapping_function": map_search_post_access_post_request,
-        "response_mapping_function": map_search_post_access_post_response,
+        "request_mapping_function": remove_post_access_req_mapping,
+        "response_mapping_function": remove_post_access_res_mapping,
         "jwt_token": jwt_token,
 
     }
@@ -166,7 +154,7 @@ def remove_post_access_permissions(jwt_token, request):
         **args
     )
 
-def map_search_post_access_post_request(req):
+def remove_post_access_req_mapping(req):
     mapped_request = {
       "PV_API_VERSION_I": "2",  
     }
@@ -174,7 +162,7 @@ def map_search_post_access_post_request(req):
     mapped_request['PJSON_ORG_ACCESS_I'] = format_request_post_data_to_string(req, 'BOAID')
     return mapped_request
 
-def map_search_post_access_post_response(data):
+def remove_post_access_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error(f"Fsbid call for Publishable Positions Edit failed.")
 
