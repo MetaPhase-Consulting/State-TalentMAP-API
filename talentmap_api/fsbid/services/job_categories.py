@@ -42,6 +42,22 @@ def get_job_category_skills(jwt_token, request):
         **args
     )
 
+def save_new_job_category(jwt_token, request):
+    '''
+    Saves a new Job Category with skills
+    '''
+    args = {
+        "proc_name": 'act_addJobCat',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_body": request,
+        "request_mapping_function": map_new_category_query,
+        "response_mapping_function": save_new_cat_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
 
 def fsbid_to_tm_jc_data_mapping(data):
     def jc_results_mapping(x):
@@ -56,9 +72,18 @@ def fsbid_to_tm_jc_skills_data_mapping(data):
         return {
             'code': x.get('SKL_CODE') or '-',
             'description': x.get('SKL_DESC') or 'None Listed',
-            'display_skill': x.get('INCLUSION_IND') or 'None Listed'
+            'display_skill': x.get('INCLUSION_IND') or 'None Listed',
+            'update_user_id': x.get('JCS_LAST_UPDT_USER_ID') or 'None Listed',
+            'update_date': x.get('JCS_LAST_UPDT_TMSMP_DT') or 'None Listed'
         }
     return list(map(jc_skills_results_mapping, data.get('QRY_LSTSKILLS_REF')))
+
+def save_new_cat_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Save New Job Category failed.")
+        return None
+
+    return data
 
 def format_request_data_to_string(request_values, table_key):
     data_entries = []
@@ -88,3 +113,12 @@ def map_jc_skills_query(req):
 
     return mapped_request
 
+def map_new_category_query(req):
+    mapped_request = {
+      "PV_API_VERSION_I": "", 
+      "PV_AD_ID_I": "",
+      "I_JC_NM_TXT": req.get('category_name'),
+      "I_SKILL_CODE": req.get('skill_codes'),
+    }
+
+    return mapped_request

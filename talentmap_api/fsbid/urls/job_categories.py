@@ -6,7 +6,8 @@ from talentmap_api.fsbid.views import job_categories as views
 router = routers.SimpleRouter()
 urlpatterns = [
     url(r'^$', views.FSBidJobCategoriesListView.as_view(), name='FSBid-job-categories-list'),
-    url(r'^skills/$', views.FSBidJobCategorySkillsListView.as_view(), name='FSBid-job-category-skills-list'),
+    url(r'^skills$', views.FSBidJobCategorySkillsListView.as_view(), name='FSBid-job-category-skills-list'),
+    url(r'^save_new$', views.FSBidJobCategorySaveNewCatView.as_view(), name='FSBid-job-category-new-cat'),
 ]
 
 urlpatterns += router.urls

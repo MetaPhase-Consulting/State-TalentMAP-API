@@ -24,3 +24,12 @@ class FSBidJobCategorySkillsListView(BaseView):
         jwt = request.META['HTTP_JWT']
         result = services.get_job_category_skills(jwt, request.query_params)
         return Response(result)
+
+class FSBidJobCategorySaveNewCatView(BaseView):
+    '''
+    Create and Save a new Job Category with skills
+    '''
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.save_new_job_category(jwt, request.query_params)
+        return Response(result)
