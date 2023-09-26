@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-import pydash
-from django.conf import settings
-from talentmap_api.fsbid.services import common as services
-=======
 import logging
 from talentmap_api.fsbid.services import common as services
 
 logger = logging.getLogger(__name__)
->>>>>>> e57bb5ddd8f3582f8378a78f026057d493ee4ef3
 
 
-<<<<<<< HEAD
-
-=======
 # FILTERS
->>>>>>> e57bb5ddd8f3582f8378a78f026057d493ee4ef3
 def get_post_access_filters(jwt_token):
     '''
     Gets Filters for Search Post Access Page
@@ -147,10 +137,6 @@ def post_access_req_mapping(req):
     return mapped_request
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e57bb5ddd8f3582f8378a78f026057d493ee4ef3
 def remove_post_access_permissions(jwt_token, request):
     '''
     Remove Access for a Post
