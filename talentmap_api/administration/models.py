@@ -3,7 +3,7 @@ from django.db import models
 
 class HomepageBanner(models.Model):
     '''
-    The banner for the homepage
+    The banner for the homepage testing page
     '''
     text = models.TextField(help_text="The text for the banner")
     is_visible = models.BooleanField(default=False)
