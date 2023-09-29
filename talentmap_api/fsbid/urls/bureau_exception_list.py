@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from rest_framework import routers
 
-from talentmap_api.fsbid.views import publishable_positions as views
+from talentmap_api.fsbid.views import bureau_exception_list as views
 
 router = routers.SimpleRouter()
 urlpatterns = [

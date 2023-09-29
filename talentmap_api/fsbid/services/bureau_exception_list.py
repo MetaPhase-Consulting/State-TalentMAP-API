@@ -27,7 +27,7 @@ def get_bureau_exception_list(query, jwt_token):
         **args
     )
 
-    def bureau_exception_list_req_mapping(request):
+def bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',

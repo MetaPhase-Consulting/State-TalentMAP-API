@@ -9,7 +9,7 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-import talentmap_api.fsbid.services.publishable_positions as services
+import talentmap_api.fsbid.services.bureau_exception_list as services
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
