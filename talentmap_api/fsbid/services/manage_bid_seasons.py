@@ -1,5 +1,8 @@
+import logging
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
+
+logger = logging.getLogger(__name__)
 
 WS_ROOT = settings.WS_ROOT_API_URL
 
@@ -48,13 +51,18 @@ def update_bid_seasons_data(jwt_token, request):
     "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
     "request_body": request,
     "request_mapping_function": map_bid_season_post_request,
-    "response_mapping_function": None,
+    "response_mapping_function": bid_seasons_res_mapping,
     "jwt_token": jwt_token,
     }
 
     return services.send_post_back_office(
         **args
     )
+
+def bid_seasons_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call to Bid Seasons failed.")
+        return None
 
 def map_bid_season_post_request(req):
     mapped_request = {
