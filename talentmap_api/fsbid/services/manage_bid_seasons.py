@@ -60,7 +60,7 @@ def map_bid_season_post_request(req):
     mapped_request = {
       "PV_API_VERSION_I": "",
       "PV_AD_ID_I": "",
-      "PV_ACTION_I": "U" if req['data']['id'] else "C",
+      "PV_ACTION_I": "U" if req['data']['id'] else "I",
     }
 
     mapped_request['PTYP_CUST_BSN_TAB_I'] = format_request_post_data_to_string(req)
