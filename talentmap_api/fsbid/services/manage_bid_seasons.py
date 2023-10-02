@@ -8,8 +8,8 @@ def get_bid_seasons_data(jwt_token, request):
     Gets data for Bid Seasons
     '''
     args = {
-        "proc_name": 'prc_lst_bid_season',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "proc_name": 'prc_lst_bid_seasons',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
         "request_body": request,
         "request_mapping_function": map_manage_bid_seasons_query,
         "response_mapping_function": fsbid_to_tm_mbs_data_mapping,
@@ -45,7 +45,7 @@ def update_bid_seasons_data(jwt_token, request):
     '''
     args = {
     "proc_name": 'prc_iud_bid_season',
-    "package_name": 'PKG_WEBAPI_WRAP',
+    "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
     "request_body": request,
     "request_mapping_function": map_bid_season_post_request,
     "response_mapping_function": None,
@@ -75,7 +75,7 @@ def format_request_post_data_to_string(request_values):
     future_vacancy = request_values['data']['futureVacancy']
 
     new_dict = {
-      "Data": {
+      "Data": [{
           "BSN_ID": id,
           "BSN_DESCR_TEXT": name,
           "BSN_START_DATE": start_date,
@@ -87,6 +87,6 @@ def format_request_post_data_to_string(request_values):
           "BSN_PANEL_CUTOFF_DATE": panel_cutoff_date,
           "BSN_FUTURE_VACANCY_IND": future_vacancy,
           "SNT_SEQ_NUM": ''
-      }
+      }]
     }
     return new_dict
