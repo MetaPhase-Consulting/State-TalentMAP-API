@@ -211,6 +211,25 @@ def grant_post_access_permissions_req_mapping(req):
     return mapped_request
 
 def format_grant_access_request(request_values, table_key):
+    '''
+    transforms into following format
+    {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PJSON_ORG_TAB_I': {
+            'Data': [{'ORG_SHORT_DESC': '328272'}, {'ORG_SHORT_DESC': '527500'}]
+        },
+        'PJSON_EMP_TAB_I': {
+            'Data': []
+        },
+        'PJSON_POS_DD_TAB_I': {
+            'Data': [{'POS_SEQ_NUM': 7}]
+        },
+        'PJSON_POST_ROLE_TAB_I': {
+            'Data': [{'ROLE_CODE': 'FSBid_Org_Capsule'}]
+        }
+    }
+    '''
     data_entries = []
     for item in request_values:
         data_entries.append({table_key: item['code']})
