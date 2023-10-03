@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class FSBidPostAccessFiltersView(BaseView):
     '''
-    Gets the Filters for the Search Post Access Page
+    Gets the Filters for the Post Access Pages
     '''
     def get(self, request):
         jwt = request.META['HTTP_JWT']
@@ -18,7 +18,7 @@ class FSBidPostAccessFiltersView(BaseView):
 
 class FSBidPostAccessListView(BaseView):
     '''
-    Gets the Data for the Search Post Access Page
+    Gets the Data for the Post Access Pages
     '''
     def get(self, request):
         jwt = request.META['HTTP_JWT']
@@ -27,9 +27,13 @@ class FSBidPostAccessListView(BaseView):
 
 class FSBidPostAccessActionView(BaseView):
     '''
-    Gets the Data for the Search Post Access Page
+    Updates Permissions for the Post Access Pages
     '''
     def delete(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.remove_post_access_permissions(jwt, request.data)
+        return Response(result)
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.grant_post_access_permissions(jwt, request.data)
         return Response(result)
