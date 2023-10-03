@@ -185,7 +185,7 @@ def grant_post_access_permissions(jwt_token, request):
         "proc_name": 'prc_add_org_access',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
-        "request_mapping_function": map_grant_access_request,
+        "request_mapping_function": grant_post_access_permissions_req_mapping,
         "response_mapping_function": None,
         "jwt_token": jwt_token,
 
