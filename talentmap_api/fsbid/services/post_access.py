@@ -194,7 +194,7 @@ def grant_post_access_permissions(jwt_token, request):
         **args
     )
 
-def map_grant_access_request(req):
+def grant_post_access_permissions_req_mapping(req):
     mapped_request = {
       "PV_API_VERSION_I": "",
       "PV_AD_ID_I": "",
