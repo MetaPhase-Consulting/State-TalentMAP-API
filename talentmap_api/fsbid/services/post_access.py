@@ -186,13 +186,17 @@ def grant_post_access_permissions(jwt_token, request):
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
         "request_body": request,
         "request_mapping_function": grant_post_access_permissions_req_mapping,
-        "response_mapping_function": None,
+        "response_mapping_function": grant_post_access_res_mapping,
         "jwt_token": jwt_token,
 
     }
     return services.send_post_back_office(
         **args
     )
+
+def grant_post_access_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call to Grant Post Access failed.")
 
 def grant_post_access_permissions_req_mapping(req):
     mapped_request = {
