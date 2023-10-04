@@ -14,21 +14,21 @@ def get_bid_seasons_data(jwt_token, request):
         "proc_name": 'prc_lst_bid_seasons',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
         "request_body": request,
-        "request_mapping_function": map_manage_bid_seasons_query,
-        "response_mapping_function": fsbid_to_tm_mbs_data_mapping,
+        "request_mapping_function": bid_seasons_data_req_mapping,
+        "response_mapping_function": bid_seasons_data_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
         **args
     )
 
-def map_manage_bid_seasons_query(req):
+def bid_seasons_data_req_mapping(req):
     mapped_request = {
       "PV_API_VERSION_I": "2",  
     }
     return mapped_request
 
-def fsbid_to_tm_mbs_data_mapping(data):
+def bid_seasons_data_res_mapping(data):
     def bsm_results_mapping(x):
         return {
             'id': x.get('BSN_ID') or '---',
@@ -55,8 +55,8 @@ def update_bid_seasons_data(jwt_token, request):
     "proc_name": 'prc_iud_bid_season',
     "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
     "request_body": request,
-    "request_mapping_function": bid_seasons_req_mapping,
-    "response_mapping_function": None,
+    "request_mapping_function": update_bid_seasons_data_req_mapping,
+    "response_mapping_function": update_bid_seasons_data_res_mapping,
     "jwt_token": jwt_token,
     }
 
@@ -65,7 +65,7 @@ def update_bid_seasons_data(jwt_token, request):
     )
 
 
-def bid_seasons_req_mapping(req):
+def update_bid_seasons_data_req_mapping(req):
     isUpdate = True if ('id' in req['data'] and req['data']['id'] is not None) else False # Insert will not pass an ID
 
     mapped_request = {
