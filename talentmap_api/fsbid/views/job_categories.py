@@ -25,11 +25,29 @@ class FSBidJobCategorySkillsListView(BaseView):
         result = services.get_job_category_skills(jwt, request.query_params)
         return Response(result)
 
-class FSBidJobCategorySaveNewCatView(BaseView):
+class FSBidJobCategoryCreateView(BaseView):
     '''
-    Create and Save a new Job Category with skills
+    Create a new Job Category with user-selected skills
     '''
     def post(self, request):
         jwt = request.META['HTTP_JWT']
-        result = services.save_new_job_category(jwt, request.query_params)
+        result = services.create_job_category(jwt, request.data)
+        return Response(result)
+
+class FSBidJobCategoryEditView(BaseView):
+    '''
+    Update a Job Category with user-selected skills
+    '''
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.edit_job_category(jwt, request.data)
+        return Response(result)
+
+class FSBidJobCategoryDeleteView(BaseView):
+    '''
+    Delete a Job Category
+    '''
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.delete_job_category(jwt, request.data)
         return Response(result)
