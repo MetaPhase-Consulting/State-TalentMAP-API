@@ -66,7 +66,7 @@ def update_bid_seasons_data(jwt_token, request):
 
 
 def bid_seasons_req_mapping(req):
-    isUpdate = True if id in req['data'] else False # Insert will not pass an ID
+    isUpdate = True if ('id' in req['data'] and req['data']['id'] is not None) else False # Insert will not pass an ID
 
     mapped_request = {
       "PV_API_VERSION_I": "",
