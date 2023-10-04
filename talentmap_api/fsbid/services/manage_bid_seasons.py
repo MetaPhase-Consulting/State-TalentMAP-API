@@ -37,7 +37,7 @@ def fsbid_to_tm_mbs_data_mapping(data):
             'bid_seasons_end_date': x.get('BSN_END_DATE') or '---',
             'bid_seasons_panel_cutoff': x.get('BSN_PANEL_CUTOFF_DATE') or '---',
             'bid_seasons_future_vacancy': x.get('BSN_FUTURE_VACANCY_IND') or 'N',
-            'bid_seasons_snt_seq_num': x.get('SNT_SEQ_NUM') or '---',
+            'bid_seasons_snt_seq_num': x.get('SNT_SEQ_NUM') or '1',
             'bid_seasons_create_id': x.get('BSN_CREATE_ID') or '---',
             'bid_seasons_create_date': x.get('BSN_CREATE_DATE') or '---',
             'bid_seasons_update_id': x.get('BSN_UPDATE_ID') or '---',
@@ -56,19 +56,13 @@ def update_bid_seasons_data(jwt_token, request):
     "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
     "request_body": request,
     "request_mapping_function": bid_seasons_req_mapping,
-    "response_mapping_function": bid_seasons_res_mapping,
+    "response_mapping_function": None,
     "jwt_token": jwt_token,
     }
 
     return services.send_post_back_office(
         **args
     )
-
-
-def bid_seasons_res_mapping(data):
-    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-        logger.error(f"Fsbid call to Bid Seasons failed.")
-        return None
 
 
 def bid_seasons_req_mapping(req):
@@ -91,7 +85,7 @@ def format_request_post_data_to_string(request, isUpdate):
     end_date = request['data']['endDate'][:10]
     panel_cutoff_date = request['data']['panelCutoffDate'][:10]
     future_vacancy = request['data']['futureVacancy']
-    snt_seq_num = request['data']['bid_seasons_snt_seq_num']
+    snt_seq_num = request['data']['season']
     # below values are required for UPDATE, but not for INSERT
     create_id = request['data']['bid_seasons_create_id'] if isUpdate else ""
     create_date = request['data']['bid_seasons_create_date'][:10] if isUpdate else ""

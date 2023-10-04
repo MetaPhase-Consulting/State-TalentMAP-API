@@ -2,7 +2,6 @@ import logging
 
 from talentmap_api.fsbid.views.base import BaseView
 from rest_framework.response import Response
-from rest_framework import status
 import talentmap_api.fsbid.services.manage_bid_seasons as services
 
 logger = logging.getLogger(__name__)
