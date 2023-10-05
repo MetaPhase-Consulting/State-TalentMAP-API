@@ -20,4 +20,4 @@ class FSBidManageBidSeasonsView(BaseView):
     def post(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.update_bid_seasons_data(jwt, request.data)
-        return Response(result)
+        return result

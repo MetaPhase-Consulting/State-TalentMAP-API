@@ -1,6 +1,8 @@
 import logging
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
+from rest_framework.response import Response
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +65,13 @@ def update_bid_seasons_data(jwt_token, request):
     return services.send_post_back_office(
         **args
     )
+
+
+def update_bid_seasons_data_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        error_message = data['PQRY_ERROR_DATA_O'][0]['MSG_TXT']
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
+    return Response(data)
 
 
 def update_bid_seasons_data_req_mapping(req):
