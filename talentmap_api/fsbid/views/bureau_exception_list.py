@@ -37,7 +37,7 @@ class FSBidBureauExceptionBureauListView(APIView):
         '''
         Get Bureau Exception List Bureaus
         '''
-        result = services.get_bureau_exception_list(request.query_params, request.META['HTTP_JWT'])
+        result = services.get_bureau_exception_list_of_bureaus(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

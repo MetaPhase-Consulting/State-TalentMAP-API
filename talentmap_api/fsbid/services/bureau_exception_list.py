@@ -16,7 +16,7 @@ def get_bureau_exception_list(query, jwt_token):
     Gets Bureau Exception List
     '''
     args = {
-        "proc_name": 'qry_modPublishPos',
+        "proc_name": 'qry_lstbureauex',
         "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": bureau_exception_list_req_mapping,
         "response_mapping_function": bureau_exception_list_res_mapping,
@@ -32,7 +32,7 @@ def get_bureau_exception_list_of_bureaus(query, jwt_token):
     Gets Bureau Exception List of Bureaus
     '''
     args = {
-        "proc_name": 'qry_modPublishPos',
+        "proc_name": 'qry_getbureauex',
         "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": bureau_exception_list_of_bureaus_req_mapping,
         "response_mapping_function": bureau_exception_list_of_bureaus_res_mapping,
@@ -102,26 +102,40 @@ def bureau_exception_list_of_bureaus_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error(f"Fsbid call for Bureau Exception List failed.")
         return None
+            
+    def bureau_execp_list_map(x):
+        return {
+            'org_code': x.get('ORG_CODE') or '-',
+            'org_short_desc': x.get('ORGS_SHORT_DESC'),
+        }
+
+    return list(map(bureau_execp_list_map, data.get('QRY_LSTBUREAUS_REF')))
 
 def bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
+        'i_pv_id': "",
+        'i_emp_hru_id': "",
     }
 
 def bureau_exception_list_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error(f"Fsbid call for Bureau Exception List failed.")
         return None
-
+        
     def bureau_execp_map(x):
         return {
-            'id': x.get('JC_ID') or '-',
-            'name': x.get('POS_NUM_TXT'),
-            'bureaus': x.get('BUR_SHORT_DESC'),
+            'id': x.get('PV_ID') or '-',
+            'name': x.get('EMP_FULL_NAME'),
+            'bureaus': x.get('BUREAU_NAME_LIST'),
+            'seq_num': x.get('SEQ_NUM'),
+            'hru_id': x.get('HRU_ID'),
+            'sequence_number': x.get('SEQ_NUM'),
+            'param_value': x.get('PARM_VALUES'),
         }
 
-    return list(map(bureau_execp_map, data.get('QRY_MODPUBLISHPOS_REF')))
+    return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
 
 
     def edit_bureau_exception_list_req_mapping(request):
