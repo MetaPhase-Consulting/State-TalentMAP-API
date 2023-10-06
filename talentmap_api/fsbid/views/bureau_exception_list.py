@@ -9,13 +9,15 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from talentmap_api.user_profile.models import UserProfile
+from talentmap_api.bureau.models import BureauExemptionList
+
 import talentmap_api.fsbid.services.bureau_exception_list as services
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
 
 class FSBidBureauExceptionListView(APIView):
-    # perms TBD
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
@@ -27,3 +29,58 @@ class FSBidBureauExceptionListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+class FSBidBureauExceptionBureauListView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
+
+    def get(self, request):
+        '''
+        Get Bureau Exception List Bureaus
+        '''
+        result = services.get_bureau_exception_list(request.query_params, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+class FSBidBureauExceptionListActionView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pos_seq_num'),
+            'description': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_descr_txt'),
+            'updater_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_id'),
+        }
+    ))
+
+    def post(self, request, pk):
+        '''
+        Add Bureau Exception List
+        '''
+        result = services.add_bureau_exception_list(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, pk):
+        '''
+        Removes the selected bureau ID from bureau list
+        '''
+        results = services.delete_bureau_exception_list(pk, request.META['HTTP_JWT'])
+        if results is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, pk):
+        '''
+        Updates the selected bureau ID from bureau list
+        '''
+        results = services.update_bureau_exception_list(pk, request.data, request.META['HTTP_JWT'])
+        if results is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)

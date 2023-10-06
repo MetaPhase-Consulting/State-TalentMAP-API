@@ -143,6 +143,7 @@ INSTALLED_APPS = [
     'talentmap_api.stats',
     'talentmap_api.fsbid',
     'talentmap_api.cdo',
+    'talentmap_api.bureau',
 
     # Health Check
     'health_check',                             # required
