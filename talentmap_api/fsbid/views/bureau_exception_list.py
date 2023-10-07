@@ -43,19 +43,19 @@ class FSBidBureauExceptionBureauListView(APIView):
 
         return Response(result)
 
-class FSBidBureauExceptionListActionView(APIView):
+class FSBidSaveBureauExceptionListActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pos_seq_num'),
-            'description': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_descr_txt'),
-            'updater_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_id'),
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description='name'),
+            'bureaus': openapi.Schema(type=openapi.TYPE_INTEGER, description='bureaus'),
         }
     ))
 
-    def post(self, request, pk):
+    def post(self, request):
         '''
         Add Bureau Exception List
         '''
@@ -65,21 +65,36 @@ class FSBidBureauExceptionListActionView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def delete(self, request, pk):
+
+class FSBidBureauExceptionListActionView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
+            'name': openapi.Schema(type=openapi.TYPE_STRING, description='name'),
+            'bureaus': openapi.Schema(type=openapi.TYPE_INTEGER, description='bureaus'),
+        }
+    ))
+
+    def put(self, request, pk):
+        print("PUT REQUEST IS HERE!!", request, pk)
         '''
-        Removes the selected bureau ID from bureau list
+        Updates the selected bureau ID from bureau list
         '''
-        results = services.delete_bureau_exception_list(pk, request.META['HTTP_JWT'])
+        results = services.update_bureau_exception_list(pk, request.data, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def put(self, request, pk):
+    def delete(self, request, pk):
+        print("PUT REQUEST IS HERE!!", request, pk)
         '''
-        Updates the selected bureau ID from bureau list
+        Removes the selected bureau ID from bureau list
         '''
-        results = services.update_bureau_exception_list(pk, request.data, request.META['HTTP_JWT'])
+        results = services.delete_bureau_exception_list(pk, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         

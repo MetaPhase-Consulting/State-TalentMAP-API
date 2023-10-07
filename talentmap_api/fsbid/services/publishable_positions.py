@@ -152,6 +152,7 @@ def edit_publishable_position(data, jwt_token):
     )
 
 def edit_publishable_position_req_mapping(request):
+    print("HERER", request)
     return {
       'PV_API_VERSION_I': '',
       'PV_AD_ID_I': '',
