@@ -11,6 +11,7 @@ PUBLISHABLE_POSITIONS_ROOT = settings.PUBLISHABLE_POSITIONS_API_URL
 
 logger = logging.getLogger(__name__)
 
+
 def get_capsule_description(id, jwt_token):
     '''
     Gets an individual capsule description
