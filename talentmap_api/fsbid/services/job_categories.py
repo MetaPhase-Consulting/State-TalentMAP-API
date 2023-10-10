@@ -108,7 +108,7 @@ def create_jc_req_mapping(req):
       "PV_API_VERSION_I": "", 
       "PV_AD_ID_I": "",
       "I_JC_NM_TXT": req.get('category_name'),
-      "I_SKILL_CODE": req.get('skill_codes'),
+      "I_SKILL_CODE": ','.join(req.get('skill_codes')),
     }
     logger.info('===mapped request===')
     logger.info(mapped_request)
