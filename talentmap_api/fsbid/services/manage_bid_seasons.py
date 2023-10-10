@@ -90,16 +90,16 @@ def update_bid_seasons_data_req_mapping(req):
 def format_request_post_data_to_string(request, isUpdate):
     id = request['data']['id'] if isUpdate else ''
     name = request['data']['name']
-    start_date = request['data']['startDate'][:10]
-    end_date = request['data']['endDate'][:10]
-    panel_cutoff_date = request['data']['panelCutoffDate'][:10]
+    start_date = request['data']['startDate']
+    end_date = request['data']['endDate']
+    panel_cutoff_date = request['data']['panelCutoffDate']
     future_vacancy = request['data']['futureVacancy']
     snt_seq_num = request['data']['season']
     # below values are required for UPDATE, but not for INSERT
     create_id = request['data']['bid_seasons_create_id'] if isUpdate else ""
-    create_date = request['data']['bid_seasons_create_date'][:10] if isUpdate else ""
+    create_date = request['data']['bid_seasons_create_date'] if isUpdate else ""
     update_id = request['data']['bid_seasons_update_id'] if isUpdate else ""
-    update_date = request['data']['bid_seasons_update_date'][:10] if isUpdate else ""
+    update_date = request['data']['bid_seasons_update_date'] if isUpdate else ""
 
     new_dict = {
       "Data": [{
