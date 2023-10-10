@@ -33,17 +33,17 @@ def bid_seasons_data_req_mapping(req):
 def bid_seasons_data_res_mapping(data):
     def bsm_results_mapping(x):
         return {
-            'id': x.get('BSN_ID') or '---',
-            'description': x.get('BSN_DESCR_TEXT') or '---',
-            'bid_seasons_begin_date': x.get('BSN_START_DATE') or '---',
-            'bid_seasons_end_date': x.get('BSN_END_DATE') or '---',
-            'bid_seasons_panel_cutoff': x.get('BSN_PANEL_CUTOFF_DATE') or '---',
+            'id': x.get('BSN_ID') or None,
+            'description': x.get('BSN_DESCR_TEXT') or None,
+            'bid_seasons_begin_date': x.get('BSN_START_DATE') or None,
+            'bid_seasons_end_date': x.get('BSN_END_DATE') or None,
+            'bid_seasons_panel_cutoff': x.get('BSN_PANEL_CUTOFF_DATE') or None,
             'bid_seasons_future_vacancy': x.get('BSN_FUTURE_VACANCY_IND') or 'N',
             'bid_seasons_snt_seq_num': x.get('SNT_SEQ_NUM') or '1',
-            'bid_seasons_create_id': x.get('BSN_CREATE_ID') or '---',
-            'bid_seasons_create_date': x.get('BSN_CREATE_DATE') or '---',
-            'bid_seasons_update_id': x.get('BSN_UPDATE_ID') or '---',
-            'bid_seasons_update_date': x.get('BSN_UPDATE_DATE') or '---',
+            'bid_seasons_create_id': x.get('BSN_CREATE_ID') or None,
+            'bid_seasons_create_date': x.get('BSN_CREATE_DATE') or None,
+            'bid_seasons_update_id': x.get('BSN_UPDATE_ID') or None,
+            'bid_seasons_update_date': x.get('BSN_UPDATE_DATE') or None,
         }
     return list(map(bsm_results_mapping, data.get('PQRY_CUST_BSN_TAB_O')))
 
