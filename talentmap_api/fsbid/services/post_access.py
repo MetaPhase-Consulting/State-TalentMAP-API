@@ -28,7 +28,6 @@ def post_access_filter_req_mapping(request):
     }
 
 def post_access_filter_res_mapping(data):
-    # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error(f"Fsbid call for Search Post Access filters failed.")
         return None
@@ -42,6 +41,7 @@ def post_access_filter_res_mapping(data):
         return {
             'code': x.get('PER_SEQ_NUM'),
             'description': x.get('PER_FULL_NAME'),
+            'skillCode': x.get('SKL_CODE')
         }
     def role_map(x):
         return {
@@ -62,6 +62,7 @@ def post_access_filter_res_mapping(data):
         return {
             'code': x.get('POS_SEQ_NUM'),
             'description': x.get('POS_NUM_TEXT'),
+            'skillCode': x.get('POS_SKILL_CODE')
         }
 
     return {
@@ -91,7 +92,6 @@ def get_post_access_data(jwt_token, request):
     )
 
 def post_access_res_mapping(data):
-    # am not able to get an error to get the error code, but PV_RETURN_CODE_O is in non-error payload
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0) or data == "Invalid JSON":
         logger.error(f"Fsbid call for Search Post Access failed.")
         return None
@@ -175,3 +175,62 @@ def format_request_post_data_to_string(request_values, table_key):
     result_string = "{" + ",".join(data_entries) + "}"
     return result_string
 
+
+
+def grant_post_access_permissions(jwt_token, request):
+    '''
+    Grant Access for a Post
+    '''
+    args = {
+        "proc_name": 'prc_add_org_access',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_body": request,
+        "request_mapping_function": grant_post_access_permissions_req_mapping,
+        "response_mapping_function": grant_post_access_res_mapping,
+        "jwt_token": jwt_token,
+
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def grant_post_access_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call to Grant Post Access failed.")
+
+def grant_post_access_permissions_req_mapping(req):
+    mapped_request = {
+      "PV_API_VERSION_I": "",
+      "PV_AD_ID_I": "",
+    }
+    
+    mapped_request['PJSON_ORG_TAB_I'] = format_grant_access_request(req['data']['orgs'], 'ORG_SHORT_DESC')
+    mapped_request['PJSON_EMP_TAB_I'] = format_grant_access_request(req['data']['persons'], 'PER_SEQ_NUM')
+    mapped_request['PJSON_POS_DD_TAB_I'] = format_grant_access_request(req['data']['positions'], 'POS_SEQ_NUM')
+    mapped_request['PJSON_POST_ROLE_TAB_I'] = format_grant_access_request(req['data']['roles'], 'ROLE_CODE')
+    return mapped_request
+
+def format_grant_access_request(request_values, table_key):
+    '''
+    transforms into following format
+    {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PJSON_ORG_TAB_I': {
+            'Data': [{'ORG_SHORT_DESC': '328272'}, {'ORG_SHORT_DESC': '527500'}]
+        },
+        'PJSON_EMP_TAB_I': {
+            'Data': []
+        },
+        'PJSON_POS_DD_TAB_I': {
+            'Data': [{'POS_SEQ_NUM': 7}]
+        },
+        'PJSON_POST_ROLE_TAB_I': {
+            'Data': [{'ROLE_CODE': 'FSBid_Org_Capsule'}]
+        }
+    }
+    '''
+    data_entries = []
+    for item in request_values:
+        data_entries.append({table_key: item['code']})
+    return {"Data": data_entries}
