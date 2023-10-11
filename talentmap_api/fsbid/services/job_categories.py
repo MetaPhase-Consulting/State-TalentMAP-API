@@ -110,7 +110,7 @@ def create_jc_req_mapping(req):
       "I_JC_NM_TXT": req.get('category_name'),
       "I_SKILL_CODE": ','.join(req.get('skill_codes')),
     }
-    logger.info('===mapped request===')
+    logger.info('===mapped CREATE request===')
     logger.info(mapped_request)
 
     return mapped_request
@@ -155,7 +155,7 @@ def edit_jc_req_mapping(req):
         "QRY_ACTION_DATA": "",
         "QRY_ERROR_DATA": "",
     }
-    logger.info('===mapped request===')
+    logger.info('===mapped EDIT request===')
     logger.info(mapped_request)
     return mapped_request
 
@@ -191,7 +191,7 @@ def delete_jc_req_mapping(req):
         "I_JC_LAST_UPDT_TMSMP_DT": req.get('update_date'),
         "I_JC_LAST_UPDT_USER_ID": req.get('update_user_id'),
     }
-    logger.info('===mapped request===')
+    logger.info('===mapped DELETE request===')
     logger.info(mapped_request)
 
     return mapped_request
