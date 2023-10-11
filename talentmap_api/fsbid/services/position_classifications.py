@@ -1,18 +1,17 @@
 import logging
-import requests  # pylint: disable=unused-import
 from talentmap_api.fsbid.services import common as services
 
 
 logger = logging.getLogger(__name__)
 
-def get_positon_classifications(query, jwt_token):
+def get_position_classifications(pk, jwt_token):
     '''
     Gets Position Classifications for a position
     '''
     args = {
         "proc_name": "qry_modPosClasses",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT99",
-        "request_body": query,
+        "request_body": pk,
         "request_mapping_function": position_classifications_request_mapping,
         "response_mapping_function": position_classifications_response_mapping,
         "jwt_token": jwt_token,
@@ -45,16 +44,19 @@ def position_classifications_response_mapping(response):
             'description': x.get('PCT_DESC_TEXT'),
             'short_description': x.get('PCT_SHORT_DESC_TEXT'),
         }
-    def position_classifications_selections(x):
+    def position_classifications_selection(x):
         return {
             'code': x.get('PCT_CODE'),
+            'value': x.get('INC_IND'),
+            'user_id': x.get('POSC_USERID'),
+            'date': x.get('POSC_TMSMP_ID'),
         }
     return {
         'positionClassifications': list(map(position_classifications, response.get('QRY_PCT_REF'))),
-        'positionClassificationsSelections': list(map(position_classifications_selections, response.get('QRY_MODPOSCLASSES_REF'))),
+        'classificationSelections': list(map(position_classifications_selection, response.get('QRY_MODPOSCLASSES_REF'))),
     }
 
-def edit_positon_classifications(data, jwt_token):
+def edit_position_classifications(data, jwt_token):
     '''
     Edit a Position's Position Classifications
     '''
@@ -74,13 +76,13 @@ def edit_positon_classifications_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_INC_IND": "",
-        "I_POS_SEQ_NUM": request.get('posSeqNum') or '',
-        "I_PCT_CODE": "",
-        "I_POSC_UPDATE_ID": request.get('lastUpdatedUserID') or '',
-        "I_POSC_UPDATE_DATE": request.get('lastUpdated') or '',
+        "I_INC_IND": request.get('values'),
+        "I_POS_SEQ_NUM": request.get('id'),
+        "I_PCT_CODE": request.get('codes'),
+        "I_POSC_UPDATE_ID": request.get('updater_ids'),
+        "I_POSC_UPDATE_DATE": request.get('updated_dates'),
         "O_RETURN_CODE": "",
-        "QRY_ACTION_DATA": request.get('position_classifications') or '',
+        "QRY_ACTION_DATA": "",
         "QRY_ERROR_DATA": ""
     }
 
