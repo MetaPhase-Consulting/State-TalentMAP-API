@@ -35,15 +35,15 @@ def bid_seasons_data_res_mapping(data):
         return {
             'id': x.get('BSN_ID') or None,
             'description': x.get('BSN_DESCR_TEXT') or None,
-            'bid_seasons_begin_date': x.get('BSN_START_DATE') or None,
-            'bid_seasons_end_date': x.get('BSN_END_DATE') or None,
-            'bid_seasons_panel_cutoff': x.get('BSN_PANEL_CUTOFF_DATE') or None,
-            'bid_seasons_future_vacancy': x.get('BSN_FUTURE_VACANCY_IND') or 'N',
-            'bid_seasons_snt_seq_num': x.get('SNT_SEQ_NUM') or '1',
-            'bid_seasons_create_id': x.get('BSN_CREATE_ID') or None,
-            'bid_seasons_create_date': x.get('BSN_CREATE_DATE') or None,
-            'bid_seasons_update_id': x.get('BSN_UPDATE_ID') or None,
-            'bid_seasons_update_date': x.get('BSN_UPDATE_DATE') or None,
+            'bidSeasonsBeginDate': x.get('BSN_START_DATE') or None,
+            'bidSeasonsEndDate': x.get('BSN_END_DATE') or None,
+            'bidSeasonsPanelCutoff': x.get('BSN_PANEL_CUTOFF_DATE') or None,
+            'bidSeasonsFutureVacancy': x.get('BSN_FUTURE_VACANCY_IND') or 'N',
+            'bidSeasonsSntSeqNum': x.get('SNT_SEQ_NUM') or '1',
+            'bidSeasonsCreateId': x.get('BSN_CREATE_ID') or None,
+            'bidSeasonsCreateDate': x.get('BSN_CREATE_DATE') or None,
+            'bidSeasonsUpdateId': x.get('BSN_UPDATE_ID') or None,
+            'bidSeasonsUpdateDate': x.get('BSN_UPDATE_DATE') or None,
         }
     return list(map(bsm_results_mapping, data.get('PQRY_CUST_BSN_TAB_O')))
 
@@ -96,10 +96,10 @@ def format_request_post_data_to_string(request, isUpdate):
     future_vacancy = request['data']['futureVacancy']
     snt_seq_num = request['data']['season']
     # below values are required for UPDATE, but not for INSERT
-    create_id = request['data']['bid_seasons_create_id'] if isUpdate else ""
-    create_date = request['data']['bid_seasons_create_date'][:10] if isUpdate else ""
-    update_id = request['data']['bid_seasons_update_id'] if isUpdate else ""
-    update_date = request['data']['bid_seasons_update_date'][:10] if isUpdate else ""
+    create_id = request['data']['bidSeasonsCreateId'] if isUpdate else ""
+    create_date = request['data']['bidSeasonsCreateDate'][:10] if isUpdate else ""
+    update_id = request['data']['bidSeasonsUpdateId'] if isUpdate else ""
+    update_date = request['data']['bidSeasonsUpdateDate'][:10] if isUpdate else ""
 
     new_dict = {
       "Data": [{
