@@ -10,7 +10,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from talentmap_api.user_profile.models import UserProfile
-from talentmap_api.bureau.models import BureauExemptionList
 
 import talentmap_api.fsbid.services.bureau_exception_list as services
 from talentmap_api.common.permissions import isDjangoGroupMember

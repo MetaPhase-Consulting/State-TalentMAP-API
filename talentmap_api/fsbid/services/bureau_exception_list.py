@@ -7,8 +7,6 @@ from django.conf import settings
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
 
-BUREAU_EXCEPTION_LIST_ROOT = settings.BUREAU_EXCEPTION_LIST_API_URL
-
 logger = logging.getLogger(__name__)
 
 def get_bureau_exception_list(query, jwt_token):
