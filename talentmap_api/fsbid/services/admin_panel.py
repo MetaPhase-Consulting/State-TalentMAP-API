@@ -239,7 +239,7 @@ def run_preliminary(data, jwt_token):
     args = {
         "proc_name": 'act_runoffpre',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_mapping_function": run_preliminary_req_mapping,
+        "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_preliminary_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
@@ -248,7 +248,7 @@ def run_preliminary(data, jwt_token):
         **args
     )
 
-def run_preliminary_req_mapping(request):
+def run_panel_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -269,7 +269,7 @@ def run_addendum(data, jwt_token):
     args = {
         "proc_name": 'act_runoffaddendum',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_mapping_function": run_addendum_req_mapping,
+        "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_addendum_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
@@ -277,13 +277,6 @@ def run_addendum(data, jwt_token):
     return services.send_post_back_office(
         **args
     )
-
-def run_addendum_req_mapping(request):
-    return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "I_PM_SEQ_NUM": request,
-    }
 
 def run_addendum_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -299,7 +292,7 @@ def run_post_panel(data, jwt_token):
     args = {
         "proc_name": 'act_runpostpnl',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_mapping_function": run_post_panel_req_mapping,
+        "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_post_panel_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
@@ -307,13 +300,6 @@ def run_post_panel(data, jwt_token):
     return services.send_post_back_office(
         **args
     )
-
-def run_post_panel_req_mapping(request):
-    return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "I_PM_SEQ_NUM": request,
-    }
 
 def run_post_panel_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
