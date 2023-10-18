@@ -6,6 +6,8 @@ import threading
 from pydoc import locate
 import pydash
 
+from rest_framework import status
+from rest_framework.response import Response
 
 from dateutil.relativedelta import relativedelta
 from dateutil import parser
@@ -110,6 +112,32 @@ LANGUAGE_FORMAL_NAMES = {
     "Vietnamese": "Vietnamese",
 }
 
+def view_result(result):
+    '''
+    Returns view result with correct error code
+    '''
+    status = status.HTTP_200_OK
+    if (result.get('return_code') is -1):
+        status = status.HTTP_400_BAD_REQUEST
+    if (result.get('return_code') is -2):
+        status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    return Response(result, status=status)
+
+def service_response(data, objStr, mapping):
+    '''
+    Returns data with additional logger and error handling depending on type
+    '''
+    if data is None:
+        logger.error(f"Fsbid call for {objStr} failed with no return data.")
+    # Rewrite log statement according to clarification received on return code -1
+    if (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is -1):
+        logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+    # Rewrite log statement according to clarification received on return code -2
+    if (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is -2):
+        logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+
+    return mapping(data) if mapping else data
 
 def resolve_path_to_view(request_path):
     '''
