@@ -50,8 +50,7 @@ class FSBidSaveBureauExceptionListActionView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'name': openapi.Schema(type=openapi.TYPE_STRING, description='name'),
-            'bureaus': openapi.Schema(type=openapi.TYPE_INTEGER, description='bureaus'),
+            'bureauCodes': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
         }
     ))
 
@@ -73,12 +72,12 @@ class FSBidBureauExceptionUpdateView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'name': openapi.Schema(type=openapi.TYPE_STRING, description='name'),
-            'bureaus': openapi.Schema(type=openapi.TYPE_INTEGER, description='bureaus'),
+            'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
+            'bureauCodes': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
         }
     ))
 
-    def put(self, request, pk):
+    def post(self, request, pk):
         '''
         Updates the selected bureau ID from bureau list
         '''
@@ -98,12 +97,11 @@ class FSBidBureauExceptionDeleteView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'name': openapi.Schema(type=openapi.TYPE_STRING, description='name'),
-            'bureaus': openapi.Schema(type=openapi.TYPE_INTEGER, description='bureaus'),
+            'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
         }
     ))
 
-    def delete(self, request, pk):
+    def post(self, request, pk):
         '''
         Removes the selected bureau ID from bureau list
         '''

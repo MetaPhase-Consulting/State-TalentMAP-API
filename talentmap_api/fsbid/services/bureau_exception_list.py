@@ -56,7 +56,7 @@ def add_bureau_exception_list(data, jwt_token):
         **args
     )
 
-def delete_bureau_exception_list(pk, data, jwt_token):
+def delete_bureau_exception_list(data, jwt_token):
     '''
     Delete Bureau Exception List
     '''
@@ -72,7 +72,7 @@ def delete_bureau_exception_list(pk, data, jwt_token):
         **args
     )
 
-def update_bureau_exception_list(pk, data, jwt_token):
+def update_bureau_exception_list(data, jwt_token):
     '''
     Update Bureau Exception List
     '''
@@ -139,7 +139,7 @@ def add_bureau_exception_list_req_mapping(request):
         'PV_AD_ID_I': '',
         'PV_ID': '',
         'i_emp_hru_id': request.get('id') or '',
-        'i_PV_VALUE_TXT': request.get('bureaus') or '',
+        'i_PV_VALUE_TXT': request.get('bureauCodes') or '',
         'I_PPOS_LAST_UPDT_USER_ID': '',
         'I_PPOS_LAST_UPDT_TMSMP_DT': '',
     }
