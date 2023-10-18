@@ -13,6 +13,7 @@ from drf_yasg import openapi
 import talentmap_api.fsbid.services.admin_panel as services
 from talentmap_api.fsbid.views.base import BaseView
 from talentmap_api.common.permissions import isDjangoGroupMember
+from talentmap_api.common.common_helpers import view_result
 
 
 logger = logging.getLogger(__name__)
@@ -125,10 +126,7 @@ class FSBidRunPreliminaryActionView(BaseView):
         Run Panel Official Preliminary
         '''
         result = services.run_preliminary(pk, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
+        return view_result(result)
     
 class FSBidRunAddendumActionView(BaseView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
@@ -138,10 +136,7 @@ class FSBidRunAddendumActionView(BaseView):
         Run Panel Official Addendum
         '''
         result = services.run_addendum(pk, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
+        return view_result(result)
     
 class FSBidRunPostPanelActionView(BaseView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
@@ -151,7 +146,4 @@ class FSBidRunPostPanelActionView(BaseView):
         Run Post Panel
         '''
         result = services.run_post_panel(pk, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
+        return view_result(result)

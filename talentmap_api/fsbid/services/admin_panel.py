@@ -5,6 +5,7 @@ import pydash
 from django.conf import settings
 
 from talentmap_api.fsbid.services import common as services
+from talentmap_api.common.common_helpers import service_response
 
 FAVORITES_LIMIT = settings.FAVORITES_LIMIT
 PV_API_V2_URL = settings.PV_API_V2_URL
@@ -224,11 +225,7 @@ def edit_post_panel_req_mapping(request):
     }
 
 def edit_post_panel_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Post Panel Processing Edit failed.")
-        return None
-
-    return data
+    return service_response(data, 'Post Panel Processing Edit')
 
 # ======================== Panel Run Actions ========================
 
@@ -256,11 +253,7 @@ def run_panel_req_mapping(request):
     }
 
 def run_preliminary_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Run Official Preliminary failed.")
-        return None
-
-    return data
+    return service_response(data, 'Run Official Preliminary')
 
 def run_addendum(data, jwt_token):
     '''
@@ -279,11 +272,7 @@ def run_addendum(data, jwt_token):
     )
 
 def run_addendum_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Run Official Addendum failed.")
-        return None
-
-    return data
+    return service_response(data, 'Run Official Addendum')
 
 def run_post_panel(data, jwt_token):
     '''
@@ -302,8 +291,4 @@ def run_post_panel(data, jwt_token):
     )
 
 def run_post_panel_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Run Post Panel failed.")
-        return None
-
-    return data
+    return service_response(data, 'Run Post Panel')
