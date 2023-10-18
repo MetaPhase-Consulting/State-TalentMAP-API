@@ -78,7 +78,7 @@ class FSBidBureauExceptionUpdateView(APIView):
         }
     ))
 
-    def post(self, request, pk):
+    def put(self, request, pk):
         '''
         Updates the selected bureau ID from bureau list
         '''
@@ -103,7 +103,7 @@ class FSBidBureauExceptionDeleteView(APIView):
         }
     ))
 
-    def post(self, request, pk):
+    def delete(self, request, pk):
         '''
         Removes the selected bureau ID from bureau list
         '''
