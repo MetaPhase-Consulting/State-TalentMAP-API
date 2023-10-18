@@ -73,7 +73,6 @@ def delete_bureau_exception_list(pk, data, jwt_token):
     )
 
 def update_bureau_exception_list(pk, data, jwt_token):
-    print('DATA BACKEND', data)
     '''
     Update Bureau Exception List
     '''
@@ -174,7 +173,6 @@ def delete_bureau_exception_list_res_mapping(data):
     return data
 
 def update_bureau_exception_list_req_mapping(request):
-    print("REQUEST", request)
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
