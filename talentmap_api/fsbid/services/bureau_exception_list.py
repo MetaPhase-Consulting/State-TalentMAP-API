@@ -73,6 +73,7 @@ def delete_bureau_exception_list(pk, data, jwt_token):
     )
 
 def update_bureau_exception_list(pk, data, jwt_token):
+    print('DATA BACKEND', data)
     '''
     Update Bureau Exception List
     '''
@@ -122,12 +123,12 @@ def bureau_exception_list_res_mapping(data):
         
     def bureau_execp_map(x):
         return {
-            'id': x.get('PV_ID') or '-',
+            'pv_id': x.get('PV_ID') or '-',
             'name': x.get('EMP_FULL_NAME'),
             'bureaus': x.get('BUREAU_NAME_LIST'),
             'seqNum': x.get('SEQ_NUM'),
-            'hruId': x.get('HRU_ID'),
-            'bureauCodes': x.get('PARM_VALUES'),
+            'id': x.get('HRU_ID'),
+            'bureauCodes': x.get('i_PV_VALUE_TXT'),
         }
 
     return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
@@ -137,10 +138,10 @@ def add_bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'PV_ID': request.get('id') or '',
+        'PV_ID': '',
         'EMP_FULL_NAME': request.get('name') or '',
         'BUREAU_NAME_LIST': request.get('bureaus') or [],
-        'i_emp_hru_id': '',
+        'i_emp_hru_id': request.get('id') or '',
         'i_PV_VALUE_TXT': '',
         'I_PPOS_LAST_UPDT_USER_ID': '',
         'I_PPOS_LAST_UPDT_TMSMP_DT': '',
@@ -157,8 +158,8 @@ def delete_bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'i_PV_ID': request.get('id') or '',
-        'i_emp_hru_id': '',
+        'i_PV_ID': request.get('pv_id') or '',
+        'i_emp_hru_id': request.get('id') or '',
         'i_PV_VALUE_TXT': '',
         "i_last_update_date": '',
         "i_last_update_id": ''
@@ -173,12 +174,13 @@ def delete_bureau_exception_list_res_mapping(data):
     return data
 
 def update_bureau_exception_list_req_mapping(request):
+    print("REQUEST", request)
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        '_pv_id': request.get('id') or 0,
-        'i_emp_hru_id': request.get('empHruId') or '',
-        "i_PV_VALUE_TXT": "",
+        '_pv_id': request.get('pv_id') or 0,
+        'i_emp_hru_id': request.get('id') or '',
+        "i_PV_VALUE_TXT": request.get('bureauCodes') or "",
         "i_last_update_date": "",
         "i_last_update_id": ""
 
