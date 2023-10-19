@@ -280,8 +280,18 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     creators = pydash.get(data, "creators") or None
     if creators:
         creators = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(creators[0])
+
+    # aitodcode is the agenda item combined tod code
+    tod_code = pydash.get(data, "aitodcode")
+    tod_other_text = pydash.get(data, "aicombinedtodothertext")
+    is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
+
     return {
         "id": pydash.get(data, "aiseqnum") or None,
+        "aiCombinedTodCode": pydash.get(data, "aitodcode") or "",
+        "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
+        "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
         "pmi_official_item_num": pydash.get(data, "pmiofficialitemnum") or None,
         "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
         "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm"), utc_offset=-5),
@@ -513,12 +523,11 @@ def convert_create_agenda_item_query(query):
         "aiempseqnbr": pydash.get(query, "personId", ""),
         "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
         "aiaiscode": pydash.get(query, "agendaStatusCode", ""),
-        "aitoddesctext": None,
-        "aitodcode": None,
+        "aitodcode": pydash.get(query, "combinedTod", ""),
+        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
         "aiasgseqnum": pydash.get(query, "assignmentId", ""),
         "aiasgdrevisionnum": pydash.get(query, "assignmentVersion", ""),
-        "aicombinedtodmonthsnum": None,
-        "aicombinedtodothertext": None,
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
