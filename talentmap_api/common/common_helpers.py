@@ -116,13 +116,13 @@ def view_result(result):
     '''
     Returns view result with correct error code
     '''
-    status = status.HTTP_200_OK
+    code = status.HTTP_200_OK
     if (result.get('return_code') is -1):
-        status = status.HTTP_400_BAD_REQUEST
+        code = status.HTTP_400_BAD_REQUEST
     if (result.get('return_code') is -2):
-        status = status.HTTP_500_INTERNAL_SERVER_ERROR
+        code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    return Response(result, status=status)
+    return Response(result, code)
 
 def service_response(data, objStr, mapping = None):
     '''
@@ -130,12 +130,19 @@ def service_response(data, objStr, mapping = None):
     '''
     if data is None:
         logger.error(f"Fsbid call for {objStr} failed with no return data.")
-    # Rewrite log statement according to clarification received on return code -1
-    if (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is -1):
-        logger.error(f"Fsbid call for {objStr} failed with error data returned.")
-    # Rewrite log statement according to clarification received on return code -2
-    if (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is -2):
-        logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+    
+    return_code = data['O_RETURN_CODE']
+    if (return_code and return_code is not 0):
+        # Rewrite log statement according to clarification received on return code -1
+        if (return_code and return_code is -1):
+            logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+        # Rewrite log statement according to clarification received on return code -2
+        if (return_code and return_code is -2):
+            logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+        return {
+            'return_code': return_code,
+            'error_message': data.get('QRY_ERROR_DATA')[0].get('MSG_TXT')
+        }
 
     return mapping(data) if mapping else data
 
