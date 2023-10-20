@@ -336,12 +336,3 @@ gsa_locations_cols_mapping = {
     "locgvtleopayarea": "pay_area",
     "locgvtlocalityarea": "locality_area",
 }
-
-@staticmethod
-def fsbid_position_classifications_to_talentmap_position_classifications(data):
-    reference = data.get("QRY_PCT_REF", None)
-    return {
-        "code": reference.get("PCT_CODE", 0),
-        "description": reference.get("PCT_DESC_TEXT", None),
-        "short_description": reference.get("PCT_SHORT_DESC_TEXT", None),
-    }

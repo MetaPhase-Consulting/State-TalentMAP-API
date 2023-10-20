@@ -23,7 +23,6 @@ urlpatterns = [
     url(r'^unaccompaniedstatuses/$', views.FSBidUnaccompaniedStatusView.as_view(), name='FSBid-unaccompanied-statuses'),
     url(r'^commuterposts/$', views.FSBidCommuterPostsView.as_view(), name='FSBid-commuter-posts'),
     url(r'^travelfunctions/$', views.FSBidTravelFunctionsView.as_view(), name='FSBid-travel-functions'),
-    url(r'^positionclassifications/$', views.FSBidPositionClassificationsView.as_view(), name='FSBid-position-classifications'),
 ]
 
 urlpatterns += router.urls

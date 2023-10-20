@@ -160,8 +160,3 @@ class FSBidTravelFunctionsView(BaseView):
         Return a list of reference data for all travel-functions
         """
         return Response(services.get_travel_functions(request.query_params, request.META['HTTP_JWT']))
-
-class FSBidPositionClassificationsView(BaseView):
-    uri = "v1/position/classifications"
-    mapping_function = services.fsbid_position_classifications_to_talentmap_position_classifications
-    
