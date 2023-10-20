@@ -132,7 +132,7 @@ def service_response(data, objStr, mapping = None):
         logger.error(f"Fsbid call for {objStr} failed with no return data.")
     
     return_code = data['O_RETURN_CODE']
-    if (return_code and return_code is not 0):
+    if (return_code and return_code < 1):
         # Rewrite log statement according to clarification received on return code -1
         if (return_code and return_code is -1):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
