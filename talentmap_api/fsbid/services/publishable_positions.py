@@ -166,7 +166,7 @@ def edit_publishable_position_req_mapping(request):
 def edit_publishable_position_res_mapping(data):
     if data.get('O_RETURN_CODE', -1) != 0:
         logger.error(f"Publishable Positions Edit error return code.")
-        raise ValidationError()
+        raise ValidationError('Publishable Positions Edit error return code.')
 
 
 def get_publishable_positions_filters(jwt_token):
