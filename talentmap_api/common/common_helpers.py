@@ -364,6 +364,35 @@ def has_permission_or_403(user, permission):
     if not user.has_perm(permission):
         raise PermissionDenied
 
+def user_in_any_group(user, groups):
+    '''
+    The function accepts a user and a list of group names
+    Args:
+        - user (Object) - The user instance
+        - groups (list) - A list of the permission groups
+    '''
+    for g in groups:
+        group = get_group_by_name(g)
+        if group in user.groups.all():
+            return True
+
+    return False
+
+
+def user_in_all_groups(user, groups):
+    '''
+    The function accepts a user and a list of group names
+    Args:
+        - user (Object) - The user instance
+        - groups (list) - A list of the permission groups
+    '''
+    for g in groups:
+        group = get_group_by_name(g)
+        if group not in user.groups.all():
+            return False
+
+    return True
+
 
 def in_superuser_group(user):
     '''
