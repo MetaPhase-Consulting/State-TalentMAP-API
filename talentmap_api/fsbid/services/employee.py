@@ -345,16 +345,40 @@ def get_employee_profile_report(query, pk, jwt_token=None):
         url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport"
 
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
-
-    response_pdf_one = requests.get(url, headers={'JWTAuthorization': jwt_token})
-    response_pdf_two = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
-    response_pdf_three = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
-    response_pdf_four = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'arrayBuffer'})
     logger.info('=^_^=')
-    logger.info(response_pdf_one)
-    logger.info(response_pdf_two)
-    logger.info(response_pdf_three)
-    logger.info(response_pdf_four)
+
+    try:
+        response_pdf_one = requests.get(url, headers={'JWTAuthorization': jwt_token})
+        logger.info('response_pdf_one try')
+        logger.info(response_pdf_one)
+    except:
+        logger.info('response_pdf_one except')
+        logger.info(response_pdf_one)
+
+    try:
+        response_pdf_two = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+        logger.info('response_pdf_two try')
+        logger.info(response_pdf_two)
+    except:
+        logger.info('response_pdf_two except')
+        logger.info(response_pdf_two)
+
+    try:
+        response_pdf_three = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+        logger.info('response_pdf_three try')
+        logger.info(response_pdf_three)
+    except:
+        logger.info('response_pdf_three except')
+        logger.info(response_pdf_three)
+
+    try:
+        response_pdf_four = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'arrayBuffer'})
+        logger.info('response_pdf_four try')
+        logger.info(response_pdf_four)
+    except:
+        logger.info('response_pdf_four except')
+        logger.info(response_pdf_four)
+
     logger.info('=^_^=')
 
     if response_pdf.ok:
