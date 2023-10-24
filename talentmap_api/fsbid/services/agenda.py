@@ -353,7 +353,6 @@ def fsbid_legs_to_talentmap_legs(data):
     location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
     lat_code = pydash.get(data, 'aillatcode')
 
-    print('LONG DEEE', tod_long_desc)
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
         "ail_seq_num": pydash.get(data, "ailseqnum", None),
