@@ -339,11 +339,23 @@ def get_employee_profile_report(query, pk, jwt_token=None):
     Get Employee Profile Report
     '''
 
-    url = f"{HR_DATA_ROOT}/Employees/{pk}/EmployeeProfileReportByCDO/"
+    url = f"{HR_DATA_ROOT}/Employees/{pk}/EmployeeProfileReportByCDO"
 
     if query.get("redacted_report") == "true":
-        url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport/"
+        url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport"
+
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
+
+    response_pdf_one = requests.get(url, headers={'JWTAuthorization': jwt_token})
+    response_pdf_two = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+    response_pdf_three = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    response_pdf_four = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'arrayBuffer'})
+    logger.info('=^_^=')
+    logger.info(response_pdf_one)
+    logger.info(response_pdf_two)
+    logger.info(response_pdf_three)
+    logger.info(response_pdf_four)
+    logger.info('=^_^=')
 
     if response_pdf.ok:
         return HttpResponse(response_pdf, content_type='arrayBuffer')
