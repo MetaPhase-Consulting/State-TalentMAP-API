@@ -64,8 +64,6 @@ def get_panel_meeting(pk, jwt_token):
 
 def panel_meeting_request_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
         "I_PM_SEQ_NUM": request,
     }
 
@@ -76,14 +74,17 @@ def panel_meeting_response_mapping(response):
             'description': x.get('MDT_DESC_TEXT'),
             'date': x.get('PMD_DTTM'),
         }
-    return {
-        'panel_id': response.get('O_PM_SEQ_NUM'),
-        'type_code': response.get('O_PMT_CODE'),
-        'type_description': response.get('O_PMT_DESC_TEXT'),
-        'status_code': response.get('O_PMS_CODE'),
-        'status_description': response.get('O_PMS_DESC_TEXT'),
-        'panel_dates': list(map(dates, response.get('QRY_LSTPMD_REF'))),
-    }
+    def success_mapping(x):
+        return {
+            'panel_id': x.get('O_PM_SEQ_NUM'),
+            'type_code': x.get('O_PMT_CODE'),
+            'type_description': x.get('O_PMT_DESC_TEXT'),
+            'status_code': x.get('O_PMS_CODE'),
+            'status_description': x.get('O_PMS_DESC_TEXT'),
+            'panel_dates': list(map(dates, x.get('QRY_LSTPMD_REF'))),
+        }
+    return service_response(response, 'Panel Meeting Data', success_mapping)
+
 
 # ======================== Edit Panel Meeting ========================
 
@@ -105,8 +106,6 @@ def edit_panel_meeting(data, jwt_token):
 
 def edit_panel_meeting_req_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
         "I_PMT_CODE": "",
         "I_PMS_CODE ": "",
         "I_PM_DELETE_IND": "",
@@ -148,8 +147,6 @@ def get_post_panel(pk, jwt_token):
 
 def post_panel_request_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
         "I_PM_SEQ_NUM": request,
     }
 
@@ -175,10 +172,12 @@ def post_panel_response_mapping(response):
             'aih_hold_comment': x.get('AIH_HOLD_COMMENT_TEXT'),
             'aih_sequence_number': x.get('AIH_SEQ_NUM'),
         }
-    return {
-        'statuses': list(map(statuses, response.get('QRY_LSTAIS_DD_REF'))),
-        'values': list(map(values, response.get('QRY_MODPOSTPNL_REF'))),
-    }
+    def success_mapping(x):
+        return {
+            'statuses': list(map(statuses, x.get('QRY_LSTAIS_DD_REF'))),
+            'values': list(map(values, x.get('QRY_MODPOSTPNL_REF'))),
+        }
+    return service_response(response, 'Post Panel Processing Data', success_mapping)
 
 # ======================== Edit Post Panel Processing ========================
 
@@ -202,8 +201,6 @@ def edit_post_panel_req_mapping(request):
     ais_code = request.get('status')
     if ais_code == 'H':
         return {
-            "pv_api_version_i": "",
-            "PV_AD_ID_I": "",
             "I_AI_SEQ_NUM": request.get('sequence_number'),
             "I_AI_UPDATE_ID": request.get('update_id'),
             "I_AI_UPDATE_DATE": request.get('update_date'),
@@ -215,9 +212,7 @@ def edit_post_panel_req_mapping(request):
             "I_AIH_UPDATE_ID": "",
             "I_AIH_UPDATE_DATE": ""
         }
-    return {
-        "pv_api_version_i": "",
-        "PV_AD_ID_I": "",
+    return {\
         "I_AI_SEQ_NUM": request.get('sequence_number'),
         "I_AI_UPDATE_ID": request.get('update_id'),
         "I_AI_UPDATE_DATE": request.get('update_date'),
@@ -247,8 +242,6 @@ def run_preliminary(data, jwt_token):
 
 def run_panel_req_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
         "I_PM_SEQ_NUM": request,
     }
 
