@@ -117,10 +117,10 @@ def view_result(result):
     Returns view result with correct error code
     '''
     code = status.HTTP_200_OK
-    if (result.get('return_code') is -1):
-        code = status.HTTP_400_BAD_REQUEST
-    if (result.get('return_code') is -2):
+    if (result is None):
         code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    if (result.get('return_code') < 0):
+        code = status.HTTP_400_BAD_REQUEST
 
     return Response(result, code)
 
@@ -133,16 +133,20 @@ def service_response(data, objStr, mapping = None):
     
     return_code = data['O_RETURN_CODE']
     if (return_code and return_code < 1):
-        # Rewrite log statement according to clarification received on return code -1
         if (return_code and return_code is -1):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
-        # Rewrite log statement according to clarification received on return code -2
+            return {
+                'return_code': return_code,
+                'fsbid_reference': objStr,
+                'error_message': data.get('QRY_ERROR_DATA')[0].get('MSG_TXT')
+            }
         if (return_code and return_code is -2):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
-        return {
-            'return_code': return_code,
-            'error_message': data.get('QRY_ERROR_DATA')[0].get('MSG_TXT')
-        }
+            return {
+                'return_code': return_code,
+                'fsbid_reference': objStr,
+                'error_message': 'There was an error attempting to call this FSBID endpoint.'
+            }
 
     return mapping(data) if mapping else data
 
