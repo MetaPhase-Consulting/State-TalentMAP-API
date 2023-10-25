@@ -364,20 +364,12 @@ def get_employee_profile_report(query, pk, jwt_token=None):
         logger.info(response_pdf_two)
 
     try:
-        response_pdf_three = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+        response_pdf_three = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'arrayBuffer'})
         logger.info('response_pdf_three try')
         logger.info(response_pdf_three)
     except:
         logger.info('response_pdf_three except')
         logger.info(response_pdf_three)
-
-    try:
-        response_pdf_four = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'arrayBuffer'})
-        logger.info('response_pdf_four try')
-        logger.info(response_pdf_four)
-    except:
-        logger.info('response_pdf_four except')
-        logger.info(response_pdf_four)
 
     logger.info('=^_^=')
 
