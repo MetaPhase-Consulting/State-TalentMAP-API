@@ -339,11 +339,14 @@ def get_employee_profile_report(query, pk, jwt_token=None):
     Get Employee Profile Report
     '''
 
-    url = f"{HR_DATA_ROOT}/Employees/{pk}/EmployeeProfileReportByCDO"
+    url = f"{WS_ROOT}/v1/Employees/{pk}/EmployeeProfileReportByCDO"
 
     if query.get("redacted_report") == "true":
-        url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport"
+        url = f"{WS_ROOT}/v1/Employees/{pk}/PrintEmployeeProfileReport"
 
+    print('🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈')
+    print(url)
+    print('🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈')
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
     logger.info('=^_^=')
 
