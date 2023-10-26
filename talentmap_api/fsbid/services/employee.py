@@ -5,6 +5,8 @@ from urllib.parse import urlencode, quote
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.http import FileResponse, HttpResponse
+from django.core.exceptions import ValidationError
+
 import jwt
 import pydash
 
@@ -339,10 +341,12 @@ def get_employee_profile_report(query, pk, jwt_token=None):
     Get Employee Profile Report
     '''
 
-    url = f"{WS_ROOT}/v1/Employees/{pk}/EmployeeProfileReportByCDO"
 
     if query.get("redacted_report") == "true":
         url = f"{WS_ROOT}/v1/Employees/{pk}/PrintEmployeeProfileReport"
+
+    if query.get("redacted_report") == "false":
+        url = f"{WS_ROOT}/v1/Employees/{pk}/EmployeeProfileReportByCDO"
 
     print('🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈')
     print(url)
@@ -380,4 +384,4 @@ def get_employee_profile_report(query, pk, jwt_token=None):
         return HttpResponse(response_pdf, content_type='arrayBuffer')
     else:
         logger.error(f"Fsbid call to '{url}' failed.")
-        return HttpResponse()
+        raise ValidationError()

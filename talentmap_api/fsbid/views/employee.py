@@ -115,7 +115,9 @@ class FSBidEmployeeProfileReportView(APIView):
         '''
         Get an employee's profile report
         '''
+        # pk is hru id
         if user_in_any_group(request.user, ['cdo', 'ao_user']):
-            return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
-        else:
-            return HttpResponse()
+            try:
+                return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
