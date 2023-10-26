@@ -362,6 +362,8 @@ def fsbid_legs_to_talentmap_legs(data):
     country_state = pydash.get(data, 'ailcountrystatetext') or ''
     location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
     lat_code = pydash.get(data, 'aillatcode')
+    tod_ind = 'INDEFINITE'
+    ted_na = 'N/A'
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -371,7 +373,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
         "eta": pydash.get(data, "ailetadate", None),
-        "ted": pydash.get(data, "ailetdtedsepdate", None),
+        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "ailetdtedsepdate", None),
         "tod": tod_code,
         "tod_is_dropdown": tod_is_dropdown,
         "tod_months": tod_months if is_other_tod else None, # only a custom/other TOD should have months
@@ -440,6 +442,8 @@ def fsbid_aia_to_talentmap_aia(data):
     tod_short_desc = pydash.get(data, "todshortdesc")
     tod_long_desc = pydash.get(data, "toddesctext")
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
+    tod_ind = 'INDEFINITE'
+    ted_na = 'N/A'
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
@@ -447,7 +451,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
-        "ted": pydash.get(data, "asgdetdteddate", None),
+        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "asgdetdteddate", None),
         "tod": tod_code,
         "tod_months": tod_months if is_other_tod else None, # only custom/other TOD should have months and other_text
         "tod_short_desc": tod_other_text if is_other_tod else tod_short_desc,
