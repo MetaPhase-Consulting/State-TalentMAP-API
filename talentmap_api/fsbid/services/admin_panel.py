@@ -212,7 +212,7 @@ def edit_post_panel_req_mapping(request):
             "I_AIH_UPDATE_ID": "",
             "I_AIH_UPDATE_DATE": ""
         }
-    return {\
+    return {
         "I_AI_SEQ_NUM": request.get('sequence_number'),
         "I_AI_UPDATE_ID": request.get('update_id'),
         "I_AI_UPDATE_DATE": request.get('update_date'),
