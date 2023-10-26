@@ -121,13 +121,17 @@ def bureau_exception_list_res_mapping(data):
         return None
         
     def bureau_execp_map(x):
+        if x.get('PARM_VALUES') == None:
+            print('None Type Here')
+        else:
+            print(x.get('PARM_VALUES').split(","))
         return {
             'pv_id': x.get('PV_ID') or '-',
             'name': x.get('EMP_FULL_NAME'),
-            'bureaus': x.get('BUREAU_NAME_LIST'),
+            'bureaus': x.get('BUREAU_NAME_LIST').split(", ") if x.get('BUREAU_NAME_LIST') != None else None,
             'seqNum': x.get('SEQ_NUM'),
             'id': x.get('HRU_ID'),
-            'bureauCodes': x.get('i_PV_VALUE_TXT'),
+            'bureauCodeList': x.get('PARM_VALUES').split(",") if x.get('PARM_VALUES') != None else None,
         }
 
     return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
