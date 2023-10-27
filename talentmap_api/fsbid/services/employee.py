@@ -384,4 +384,4 @@ def get_employee_profile_report(query, pk, jwt_token=None):
         return HttpResponse(response_pdf, content_type='arrayBuffer')
     else:
         logger.error(f"Fsbid call to '{url}' failed.")
-        raise ValidationError()
+        raise ValidationError(f"Fsbid call to '{url}' failed.")
