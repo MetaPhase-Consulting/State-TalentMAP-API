@@ -65,6 +65,16 @@ class FSBidPanelMeetingActionView(APIView):
         }
     ))
 
+    def post(self, request):
+        '''
+        Create Panel Meeting
+        '''
+        result = services.create_panel_meeting(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
     def put(self, request):
         '''
         Edit Panel Meeting
