@@ -348,9 +348,6 @@ def get_employee_profile_report(query, pk, jwt_token=None):
     if query.get("redacted_report") == "false":
         url = f"{WS_ROOT}/v1/Employees/{pk}/EmployeeProfileReportByCDO"
 
-    print('🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈')
-    print(url)
-    print('🐈🐈🐈🐈🐈🐈🐈🐈🐈🐈')
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
     logger.info('=^_^=')
 

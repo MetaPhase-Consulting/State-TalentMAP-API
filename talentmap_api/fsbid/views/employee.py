@@ -110,14 +110,14 @@ class FSBidAssignmentSeparationsBidsView(BaseView):
 
 
 class FSBidEmployeeProfileReportView(APIView):
+    permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('cdo'))]
 
     def get(self, request, pk):
         '''
         Get an employee's profile report
         '''
         # pk is hru id
-        if user_in_any_group(request.user, ['cdo', 'ao_user']):
-            try:
-                return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
