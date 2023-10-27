@@ -349,33 +349,6 @@ def get_employee_profile_report(query, pk, jwt_token=None):
         url = f"{WS_ROOT}/v1/Employees/{pk}/EmployeeProfileReportByCDO"
 
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
-    logger.info('=^_^=')
-
-    try:
-        response_pdf_one = requests.get(url, headers={'JWTAuthorization': jwt_token})
-        logger.info('response_pdf_one try')
-        logger.info(response_pdf_one)
-    except:
-        logger.info('response_pdf_one except')
-        logger.info(response_pdf_one)
-
-    try:
-        response_pdf_two = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
-        logger.info('response_pdf_two try')
-        logger.info(response_pdf_two)
-    except:
-        logger.info('response_pdf_two except')
-        logger.info(response_pdf_two)
-
-    try:
-        response_pdf_three = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'arrayBuffer'})
-        logger.info('response_pdf_three try')
-        logger.info(response_pdf_three)
-    except:
-        logger.info('response_pdf_three except')
-        logger.info(response_pdf_three)
-
-    logger.info('=^_^=')
 
     if response_pdf.ok:
         return HttpResponse(response_pdf, content_type='arrayBuffer')
