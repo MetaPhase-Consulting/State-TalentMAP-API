@@ -7,8 +7,8 @@ router = routers.SimpleRouter()
 urlpatterns = [
     url(r'^$', views.FSBidBureauExceptionListView.as_view(), name='FSBid-bureau-exception-list'),
     url(r'^add/$', views.FSBidSaveBureauExceptionListActionView.as_view(), name='FSBid-bureau-exception-list-add'),
-    url(r'^update/(?P<pk>[0-9]+)/$', views.FSBidBureauExceptionUpdateView.as_view(), name='FSBid-bureau-exception-list-edit'),
-    url(r'^delete/(?P<pk>[0-9]+)/$', views.FSBidBureauExceptionDeleteView.as_view(), name='FSBid-bureau-exception-list-delete'),
+    url(r'^update/$', views.FSBidBureauExceptionUpdateView.as_view(), name='FSBid-bureau-exception-list-edit'),
+    url(r'^delete/$', views.FSBidBureauExceptionDeleteView.as_view(), name='FSBid-bureau-exception-list-delete'),
     url(r'^bureaus/$', views.FSBidBureauExceptionBureauListView.as_view(), name='FSBid-bureau-exception-list-bureaus'),
 ]
 

@@ -50,7 +50,7 @@ class FSBidSaveBureauExceptionListActionView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'bureauCodes': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
+            'bureauCodes': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodes'),
         }
     ))
 
@@ -73,18 +73,18 @@ class FSBidBureauExceptionUpdateView(APIView):
         properties={
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
             'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
-            'bureauCodes': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
+            'bureauCodes': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodes'),
         }
     ))
 
-    def post(self, request, pk):
+    def post(self, request):
         '''
         Updates the selected bureau ID from bureau list
         '''
         user = UserProfile.objects.get(user=self.request.user)
         in_group_or_403(self.request.user, "superuser")
 
-        results = services.update_bureau_exception_list(pk, request.data, request.META['HTTP_JWT'])
+        results = services.update_bureau_exception_list(request.data, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
@@ -101,11 +101,11 @@ class FSBidBureauExceptionDeleteView(APIView):
         }
     ))
 
-    def post(self, request, pk):
+    def post(self, request):
         '''
         Removes the selected bureau ID from bureau list
         '''
-        results = services.delete_bureau_exception_list(pk, request.data, request.META['HTTP_JWT'])
+        results = services.delete_bureau_exception_list(request.data, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
