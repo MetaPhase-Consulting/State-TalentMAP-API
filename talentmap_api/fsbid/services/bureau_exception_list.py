@@ -128,6 +128,8 @@ def bureau_exception_list_res_mapping(data):
             'seqNum': x.get('SEQ_NUM'),
             'id': x.get('HRU_ID'),
             'bureauCodeList': x.get('PARM_VALUES').split(",") if x.get('PARM_VALUES') != None else None,
+            'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
+            'lastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
         }
 
     return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
@@ -158,6 +160,8 @@ def delete_bureau_exception_list_req_mapping(request):
         'i_PV_ID': request.get('pv_id') or '',
         'i_emp_hru_id': request.get('id') or '',
         'i_PV_VALUE_TXT': '',
+        'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
+        'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
     }
 
 def delete_bureau_exception_list_res_mapping(data):
@@ -174,8 +178,8 @@ def update_bureau_exception_list_req_mapping(request):
         '_pv_id': request.get('pv_id') or 0,
         'i_emp_hru_id': request.get('id') or '',
         "i_PV_VALUE_TXT": request.get('bureauCodes') or '',
-        "i_last_update_date": "",
-        "i_last_update_id": "",
+        'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
+        'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
     }
 
 def update_bureau_exception_list_res_mapping(data):
