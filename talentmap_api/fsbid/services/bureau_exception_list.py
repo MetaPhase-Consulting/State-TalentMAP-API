@@ -141,7 +141,7 @@ def add_bureau_exception_list_req_mapping(request):
         'PV_AD_ID_I': '',
         'PV_ID': '',
         'i_emp_hru_id': request.get('id') or '',
-        'i_PV_VALUE_TXT': request.get('bureauCodes') or '',
+        'i_PV_VALUE_TXT': request.get('bureauCodeList') or '',
         'I_PPOS_LAST_UPDT_USER_ID': '',
         'I_PPOS_LAST_UPDT_TMSMP_DT': '',
     }
@@ -177,7 +177,7 @@ def update_bureau_exception_list_req_mapping(request):
         'PV_AD_ID_I': '',
         '_pv_id': request.get('pv_id') or 0,
         'i_emp_hru_id': request.get('id') or '',
-        "i_PV_VALUE_TXT": request.get('bureauCodes') or '',
+        "i_PV_VALUE_TXT": request.get('bureauCodeList') or '',
         'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
         'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
     }

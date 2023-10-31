@@ -74,6 +74,8 @@ class FSBidBureauExceptionUpdateView(APIView):
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
             'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
             'bureauCodes': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodes'),
+            'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
+            'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
         }
     ))
 
@@ -98,6 +100,8 @@ class FSBidBureauExceptionDeleteView(APIView):
         properties={
             'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
             'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
+            'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
+            'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
         }
     ))
 
