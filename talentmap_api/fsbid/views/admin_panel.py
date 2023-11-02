@@ -28,8 +28,6 @@ class CreateRemarkView(BaseView):
         Saves a new Remark
         '''
         try:
-            print('----view----')
-            logger.info(request)
             services.submit_create_remark(request.data, request.META['HTTP_JWT'])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
@@ -71,9 +69,9 @@ class FSBidPanelMeetingActionView(APIView):
         '''
         Create Panel Meeting
         '''
-        result = services.create_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        result = services.modify_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
+        # if result is None:
+        #    return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
     
