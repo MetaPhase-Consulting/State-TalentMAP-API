@@ -184,7 +184,7 @@ def update_bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        '_pv_id': request.get('pv_id') or 0,
+        'i_pv_id': request.get('pv_id') or 0,
         'i_emp_hru_id': request.get('id') or '',
         "i_PV_VALUE_TXT": request.get('bureauCodeList') or '',
         'i_last_update_id': request.get('lastUpdatedUserID') or '',
