@@ -25,90 +25,6 @@ def get_bureau_exception_list(query, jwt_token):
         **args
     )
 
-def get_bureau_exception_list_of_bureaus(query, jwt_token):
-    '''
-    Gets Bureau Exception List of Bureaus
-    '''
-    args = {
-        "proc_name": 'qry_getbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": bureau_exception_list_of_bureaus_req_mapping,
-        "response_mapping_function": bureau_exception_list_of_bureaus_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": query,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-def add_bureau_exception_list(data, jwt_token):
-    '''
-    Add Bureau Exception List
-    '''
-    args = {
-        "proc_name": 'act_addbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": add_bureau_exception_list_req_mapping,
-        "response_mapping_function": add_bureau_exception_list_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def delete_bureau_exception_list(data, jwt_token):
-    '''
-    Delete Bureau Exception List
-    '''
-    args = {
-        "proc_name": 'act_delbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": delete_bureau_exception_list_req_mapping,
-        "response_mapping_function": delete_bureau_exception_list_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def update_bureau_exception_list(data, jwt_token):
-    '''
-    Update Bureau Exception List
-    '''
-    args = {
-        "proc_name": 'act_modbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": update_bureau_exception_list_req_mapping,
-        "response_mapping_function": update_bureau_exception_list_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def bureau_exception_list_of_bureaus_req_mapping(request):
-    return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'i_pv_id': "",
-        'i_emp_hru_id': "",
-    }
-
-def bureau_exception_list_of_bureaus_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Bureau Exception List failed.")
-        return None
-            
-    def bureau_execp_list_map(x):
-        return {
-            'bureauCode': x.get('ORG_CODE') or '-',
-            'description': x.get('ORGS_SHORT_DESC'),
-        }
-
-    return list(map(bureau_execp_list_map, data.get('QRY_LSTBUREAUS_REF')))
-
 def bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
@@ -128,12 +44,70 @@ def bureau_exception_list_res_mapping(data):
             'seqNum': x.get('SEQ_NUM'),
             'id': x.get('HRU_ID'),
             'bureauCodeList': x.get('PARM_VALUES').split(",") if x.get('PARM_VALUES') != None else None,
-            'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
-            'lastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
         }
 
     return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
 
+
+def get_bureau_exception_list_of_bureaus(query, jwt_token):
+    '''
+    Gets Bureau Exception List of Bureaus
+    '''
+    args = {
+        "proc_name": 'qry_getbureauex',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_mapping_function": bureau_exception_list_of_bureaus_req_mapping,
+        "response_mapping_function": bureau_exception_list_of_bureaus_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def bureau_exception_list_of_bureaus_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_pv_id': request.get('pv_id') or '',
+        'i_emp_hru_id': request.get('id') or '',
+    }
+
+def bureau_exception_list_of_bureaus_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Bureau Exception List failed.")
+        return None
+            
+    def bureau_execp_list_map(x):
+        return {
+            'bureauCode': x.get('ORG_CODE') or '-',
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    bureau_exceptions_info = {
+        "id": data.get('O_EMP_HRU_ID') or '',
+        "name": data.get('O_EMP_FULL_NAME') or '',
+        "pv_id": data.get('O_PV_ID') or '',
+        "user_code_list": data.get('O_PV_VALUE_TXT') or '',
+        "lastUpdated": data.get('O_LAST_UPDATE_DATE') or '',
+        "lastUpdatedUserID": data.get('O_LAST_UPDATE_ID') or '',
+    }
+    return list((bureau_exceptions_info, map(bureau_execp_list_map, data.get('QRY_LSTBUREAUS_REF'))))
+
+def add_bureau_exception_list(data, jwt_token):
+    '''
+    Add Bureau Exception List
+    '''
+    args = {
+        "proc_name": 'act_addbureauex',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_mapping_function": add_bureau_exception_list_req_mapping,
+        "response_mapping_function": add_bureau_exception_list_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
 
 def add_bureau_exception_list_req_mapping(request):
     return {
@@ -142,8 +116,8 @@ def add_bureau_exception_list_req_mapping(request):
         'PV_ID': '',
         'i_emp_hru_id': request.get('id') or '',
         'i_PV_VALUE_TXT': request.get('bureauCodeList') or '',
-        'I_PPOS_LAST_UPDT_USER_ID': '',
-        'I_PPOS_LAST_UPDT_TMSMP_DT': '',
+        'i_last_update_id': request.get('lastUpdatedUserID') or '',
+        'i_last_update_date': request.get('lastUpdated') or '',
     }
 
 def add_bureau_exception_list_res_mapping(data):
@@ -153,15 +127,32 @@ def add_bureau_exception_list_res_mapping(data):
 
     return data
 
+
+def delete_bureau_exception_list(data, jwt_token):
+    '''
+    Delete Bureau Exception List
+    '''
+    args = {
+        "proc_name": 'act_delbureauex',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_mapping_function": delete_bureau_exception_list_req_mapping,
+        "response_mapping_function": delete_bureau_exception_list_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
 def delete_bureau_exception_list_req_mapping(request):
     return {
-        'PV_API_VERSION_I': '',
+        'pv_api_version_i': '',
         'PV_AD_ID_I': '',
-        'i_PV_ID': request.get('pv_id') or '',
-        'i_emp_hru_id': request.get('id') or '',
         'i_PV_VALUE_TXT': '',
-        'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
-        'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
+        'i_pv_id': request.get('pv_id') or '',
+        'i_emp_hru_id': request.get('id') or '',
+        'i_last_update_id': request.get('lastUpdatedUserID') or '',
+        'i_last_update_date': request.get('lastUpdated') or '',
     }
 
 def delete_bureau_exception_list_res_mapping(data):
@@ -171,6 +162,24 @@ def delete_bureau_exception_list_res_mapping(data):
 
     return data
 
+
+
+def update_bureau_exception_list(data, jwt_token):
+    '''
+    Update Bureau Exception List
+    '''
+    args = {
+        "proc_name": 'act_modbureauex',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_mapping_function": update_bureau_exception_list_req_mapping,
+        "response_mapping_function": update_bureau_exception_list_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
 def update_bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
@@ -178,8 +187,8 @@ def update_bureau_exception_list_req_mapping(request):
         '_pv_id': request.get('pv_id') or 0,
         'i_emp_hru_id': request.get('id') or '',
         "i_PV_VALUE_TXT": request.get('bureauCodeList') or '',
-        'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
-        'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
+        'i_last_update_id': request.get('lastUpdatedUserID') or '',
+        'i_last_update_date': request.get('lastUpdated') or '',
     }
 
 def update_bureau_exception_list_res_mapping(data):

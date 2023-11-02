@@ -49,8 +49,8 @@ class FSBidSaveBureauExceptionListActionView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'bureauCodes': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodes'),
+            'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
+            'bureauCodeList': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodeList'),
         }
     ))
 
@@ -71,9 +71,9 @@ class FSBidBureauExceptionUpdateView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
-            'bureauCodes': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodes'),
+            'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
+            'pv_id': openapi.Schema(type=openapi.TYPE_STRING, description='pv_id'),
+            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
             'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
             'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
         }
@@ -98,8 +98,9 @@ class FSBidBureauExceptionDeleteView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='id'),
-            'pv_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pv_id'),
+            'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
+            'pv_id': openapi.Schema(type=openapi.TYPE_STRING, description='pv_id'),
+            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
             'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
             'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
         }
