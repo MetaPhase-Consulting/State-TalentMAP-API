@@ -171,6 +171,11 @@ def post_panel_response_mapping(response):
             'aih_hold_number': x.get('AIH_HOLD_NUM'),
             'aih_hold_comment': x.get('AIH_HOLD_COMMENT_TEXT'),
             'aih_sequence_number': x.get('AIH_SEQ_NUM'),
+            'aih_update_id': x.get('AIH_UPDATE_ID'),
+            'aih_update_date': x.get('AIH_UPDATE_DATE'),
+            'max_aht_code': x.get('MAX_AHT_CODE'),
+            'max_aih_hold_number': x.get('MAX_AIH_HOLD_NUM'),
+            'max_aih_hold_comment': x.get('MAX_AIH_HOLD_COMMENT_TEXT'),
         }
     def success_mapping(x):
         return {
@@ -209,8 +214,8 @@ def edit_post_panel_req_mapping(request):
             "I_AIH_HOLD_COMMENT_TEXT": request.get('aih_hold_comment'),
             "I_AIH_HOLD_NUM": request.get('aih_hold_number'),
             "I_AIH_SEQ_NUM": request.get('aih_sequence_number'),
-            "I_AIH_UPDATE_ID": "",
-            "I_AIH_UPDATE_DATE": ""
+            "I_AIH_UPDATE_ID": request.get('aih_update_id'),
+            "I_AIH_UPDATE_DATE": request.get('aih_update_date'),
         }
     return {
         "I_AI_SEQ_NUM": request.get('sequence_number'),
