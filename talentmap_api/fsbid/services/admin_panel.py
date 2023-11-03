@@ -177,10 +177,16 @@ def post_panel_response_mapping(response):
             'max_aih_hold_number': x.get('MAX_AIH_HOLD_NUM'),
             'max_aih_hold_comment': x.get('MAX_AIH_HOLD_COMMENT_TEXT'),
         }
+    def hold_options(x):
+        return {
+            'code': x.get('AHT_CODE'),
+            'description': x.get('AHT_DESC_TEXT'),
+        }
     def success_mapping(x):
         return {
             'statuses': list(map(statuses, x.get('QRY_LSTAIS_DD_REF'))),
             'values': list(map(values, x.get('QRY_MODPOSTPNL_REF'))),
+            'hold_options': list(map(hold_options, x.get('QRY_AHT_REF'))),
         }
     return service_response(response, 'Post Panel Processing Data', success_mapping)
 
