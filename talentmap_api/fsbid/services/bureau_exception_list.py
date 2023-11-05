@@ -27,6 +27,7 @@ def get_bureau_exception_list(query, jwt_token):
 
 def bureau_exception_list_req_mapping(request):
     return {
+        ""
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
     }
@@ -66,8 +67,9 @@ def get_bureau_exception_list_of_bureaus(query, jwt_token):
     )
 
 def bureau_exception_list_of_bureaus_req_mapping(request):
+    print("GETTING USERS LIST OF BUREAUS", request.get('id'))
     return {
-        'PV_API_VERSION_I': '',
+        'pv_api_version_i': '',
         'PV_AD_ID_I': '',
         'i_pv_id': request.get('pv_id') or '',
         'i_emp_hru_id': request.get('id') or '',
@@ -110,14 +112,13 @@ def add_bureau_exception_list(data, jwt_token):
     )
 
 def add_bureau_exception_list_req_mapping(request):
+    print('ADDING BUREAU EXCEPTION LIST', request)
     return {
-        'PV_API_VERSION_I': '',
+        'pv_api_version_i': '',
         'PV_AD_ID_I': '',
-        'PV_ID': '',
+        'i_pv_id': '',
         'i_emp_hru_id': request.get('id') or '',
         'i_PV_VALUE_TXT': request.get('bureauCodeList') or '',
-        'i_last_update_id': request.get('lastUpdatedUserID') or '',
-        'i_last_update_date': request.get('lastUpdated') or '',
     }
 
 def add_bureau_exception_list_res_mapping(data):
@@ -145,10 +146,10 @@ def delete_bureau_exception_list(data, jwt_token):
     )
 
 def delete_bureau_exception_list_req_mapping(request):
+    print('DELETING BUREAU EXCEPTION LIST', request)
     return {
         'pv_api_version_i': '',
         'PV_AD_ID_I': '',
-        'i_PV_VALUE_TXT': '',
         'i_pv_id': request.get('pv_id') or '',
         'i_emp_hru_id': request.get('id') or '',
         'i_last_update_id': request.get('lastUpdatedUserID') or '',
@@ -181,6 +182,7 @@ def update_bureau_exception_list(data, jwt_token):
     )
 
 def update_bureau_exception_list_req_mapping(request):
+    print('UPDATING BUREAU EXCEPTION LIST', request)
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',

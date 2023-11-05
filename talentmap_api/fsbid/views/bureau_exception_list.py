@@ -9,7 +9,6 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from talentmap_api.user_profile.models import UserProfile
 from talentmap_api.common.common_helpers import in_group_or_403
 
 import talentmap_api.fsbid.services.bureau_exception_list as services
@@ -83,7 +82,6 @@ class FSBidBureauExceptionUpdateView(APIView):
         '''
         Updates the selected bureau ID from bureau list
         '''
-        user = UserProfile.objects.get(user=self.request.user)
         in_group_or_403(self.request.user, "superuser")
 
         results = services.update_bureau_exception_list(request.data, request.META['HTTP_JWT'])
