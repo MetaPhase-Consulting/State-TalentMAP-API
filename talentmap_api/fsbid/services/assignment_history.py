@@ -98,7 +98,8 @@ def convert_assignments_query(query):
         "rp.pageNum": int(query.get('page', 1)),
         "rp.pageRows": int(query.get('limit', 1000)),
         "rp.filter": filters,
-        "rp.columns": "asgperdetseqnum",
+        "rp.columns": "asgsdesctext",
+        # "rp.columns": "asgperdetseqnum",
         "rp.orderBy": services.sorting_values(query.get("ordering", "-assignment_start_date")),
     }
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
@@ -141,7 +142,8 @@ def fsbid_assignments_to_talentmap_assignments(data):
         "asg_update_date": "asgupdatedate",
         "asgd_asg_seq_num": "asgdasgseqnum",
         "asgd_revision_num": "asgdrevisionnum",
-        "asgd_asgs_code": "asgdasgscode",
+        "asgd_asgs_code": "asgsdesctext",
+        # "asgd_asgs_code": "asgdasgscode",
         "asgd_lat_code": "asgdlatcode",
         "asgd_tfcd": "asgdtfcd",
         "asgd_tod_code": "asgdtodcode",
