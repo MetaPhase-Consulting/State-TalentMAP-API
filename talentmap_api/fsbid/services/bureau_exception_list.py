@@ -3,7 +3,6 @@ from urllib.parse import urlencode, quote
 import jwt
 import pydash
 from django.conf import settings
-import json
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
