@@ -49,7 +49,7 @@ class FSBidSaveBureauExceptionListActionView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
-            'bureauCodeList': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='bureauCodeList'),
+            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
         }
     ))
 
