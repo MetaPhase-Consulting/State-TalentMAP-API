@@ -1,4 +1,6 @@
+from hashlib import new
 import logging
+from functools import partial
 
 import pydash
 import jwt
@@ -93,65 +95,88 @@ def modify_panel_meeting_and_dates(query, jwt_token):
     '''
     Modify Panel Meeting and Panel Meeting Dates
     '''
+    # Inject decoded hru
+    query['hru_id'] = jwt.decode(jwt_token, verify=False).get('sub')
+
+    # Unpack requested changes 
+    panel_type = query.get("panelMeetingType")
+    panel_status = query.get("panelMeetingStatus")
+    panel_date = query.get("panelMeetingDate")
+    add_date = query.get("addendumCutoff")
+    cut_date = query.get("prelimCutoff")
+
+    # Unpack original resource 
+    ref = query.get("originalReference", {})
+    refDates = ref.get("panelMeetingDates", {})
+
     # Check for existing panel meeting
-    # if query.get("originalReference", {}).get("pm_seq_num"):
-    #     print('editing pm')
-    #     panel_meeting = edit_panel_meeting(query, jwt_token)
-    # else:
-    #     print('creating pm')
-    #     panel_meeting = create_panel_meeting(query, jwt_token)
+    existing_pm_seq_num = ref.get("pm_seq_num")
+    # Change back to none
+    newly_created_pm_seq_num = 1
 
-    # TO DO: verify res for edit and create consistency
-    # pm_seq_num = pydash.get(panel_meeting, "[0].pm_seq_num")
-    pm_seq_num = 1
+    if panel_status or panel_type:
+        if not existing_pm_seq_num:
+            print('creating pm')
+            panel_meeting = create_panel_meeting(query, jwt_token)
+            # TO DO: verify res for edit and create consistency
+            # newly_created_pm_seq_num = pydash.get(panel_meeting, "[0].pm_seq_num", None)
+        elif (panel_status != ref.get("pms_code")) or (panel_type != ref.get("pmt_code")):
+             print('editing pm')
+             panel_meeting = edit_panel_meeting(query, jwt_token)
+           
+    if existing_pm_seq_num or newly_created_pm_seq_num:
+        query["pmdpmseqnum"] = existing_pm_seq_num if existing_pm_seq_num else newly_created_pm_seq_num
+        
+        meet = dict(*filter(lambda x: x.get("mdt_code", "") == "MEET", refDates))
+        add = dict(*filter(lambda x: x.get("mdt_code", "") == "ADD", refDates))
+        cut = dict(*filter(lambda x: x.get("mdt_code", "") == "CUT", refDates))
 
-    if pm_seq_num:
-        query["pmseqnum"] = pm_seq_num
-
-        ref = query.get("originalReference", {})
-        refDates = ref.get("panelMeetingDates", {})
-        meet = filter(lambda x: x.get("mdt_code", "") == "MEET", refDates)
-        add = filter(lambda x: x.get("mdt_code", "") == "ADD", refDates)
-        cut = filter(lambda x: x.get("mdt_code", "") == "CUT", refDates)
         print('------------meet--------------')
-        print(*meet)
+        print(meet)
         print('------------add--------------')
-        print(*add)
+        print(add)
         print('------------cut--------------')
-        print(*cut)
+        print(cut)
 
-        if query.get("panelMeetingDate"):
-            if meet:
-                edit_panel_meeting_date(query, jwt_token)
-            else:
-                create_panel_meeting_date(query, jwt_token)
-
-        if query.get("addendumCutoff"):
-            if add:
-                edit_panel_meeting_date(query, jwt_token)
-            else:
-                create_panel_meeting_date(query, jwt_token)
-
-        if query.get("prelimCutoff"):
-            if cut:
-                edit_panel_meeting_date(query, jwt_token)
-            else:
-                create_panel_meeting_date(query, jwt_token)
+        if panel_date:
+            if not meet:
+                create_panel_meeting_date(query, panel_date, "MEET", jwt_token)
+            elif panel_date != meet.get("pmd_dttm"):
+                edit_panel_meeting_date(query, panel_date, meet, jwt_token)
+        if add_date:
+            if not add:
+                create_panel_meeting_date(query, add_date, "ADD", jwt_token)
+            elif add_date != add.get("pmd_dttm"):
+                edit_panel_meeting_date(query, add_date, add, jwt_token)
+        if cut_date:
+            if not cut:
+                create_panel_meeting_date(query, cut_date, "CUT", jwt_token)
+            elif cut_date != cut.get("pmd_dttm"):
+                edit_panel_meeting_date(query, cut_date, cut, jwt_token)
     else:
         logger.error("PM create failed")
 
 
+def edit_pmd_mapping(query, date, original_data):
+    mapped_query = {
+        "pmdpmseqnum": query.get("pmdpmseqnum"),
+        "pmdmdtcode": original_data.get("mdt_code"),
+        "pmddttm": date.replace("T", " "),
+        "pmdupdatedate": original_data.get("pmd_update_date", "").replace("T", " "),
+        "pmdupdateid": query.get("hru_id"),
+        "pmdcreatedate": original_data.get("pmd_create_date", "").replace("T", " "),
+        "pmdcreateid": original_data.get("pmd_create_id"),
+    }
+    return mapped_query
+
+
 def create_panel_meeting(query, jwt_token):
-
-    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
-    query['hru_id'] = hru_id
-
     args = {
         "uri": "v1/panels/meeting",
         "query": query,
         "query_mapping_function": convert_panel_meeting_create_query,
         "jwt_token": jwt_token,
-        "mapping_function": "",
+        "mapping_function": None,
     }
 
     return services.get_results_with_post(
@@ -159,14 +184,14 @@ def create_panel_meeting(query, jwt_token):
     )
 
 
-def create_panel_meeting_date(query, jwt_token):
-    pmseqnum = query.get("pmseqnum")
+def create_panel_meeting_date(query, date, date_type, jwt_token):
+    pmseqnum = query.get("pmdpmseqnum")
     args = {
         "uri": f"v1/panels/meeting/{pmseqnum}/dates",
         "query": query,
-        "query_mapping_function": convert_panel_meeting_date_query,
+        "query_mapping_function": partial(create_pmd_mapping, date=date, date_type=date_type),
         "jwt_token": jwt_token,
-        "mapping_function": "",
+        "mapping_function": None,
     }
 
     return services.get_results_with_post(
@@ -175,59 +200,57 @@ def create_panel_meeting_date(query, jwt_token):
 
 
 def convert_panel_meeting_create_query(query):
+    hru_id = query.get("hru_id")
     mapped_query = {
         "pmvirtualind": "N",
-        "pmcreateid": query.get("hru_id"),
-        "pmcreatedate": "",
-        "pmupdateid": query.get("hru_id"),
-        "pmupdatedate": "",
+        "pmcreateid": hru_id,
+        "pmupdateid": hru_id,
         "pmpmscode": query.get("panelMeetingStatus", "I"),
         "pmpmtcode": query.get("panelMeetingType", "ID"),
+    }
+    print(mapped_query)
+    return mapped_query
+
+
+def create_pmd_mapping(query, date, date_type):
+    hru_id = query.get("hru_id")
+    mapped_query = {
+        "pmdpmseqnum": query.get("pmdpmseqnum"),
+        "pmdmdtcode": date_type,
+        "pmddttm": date.replace("T", " "),
+        "pmdupdateid": hru_id,
+        "pmdcreateid": hru_id,
     }
     return mapped_query
 
 
-def convert_panel_meeting_date_query(query):
-    return {
-        "pmdpmseqnum": query.get("pmseqnum"),
-        "pmdmdtcode": query.get("type"),
-        "pmddttm": query.get("date"),
-        "pmdcreateid": query.get("hru_id"),
-        "pmdupdateid": query.get("hru_id")
-    }
-
 
 # ======================== Edit Panel Meeting ========================
 def edit_panel_meeting(query, jwt_token):
-
-    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
-    query['hru_id'] = hru_id
     pm_seq_num = query.get("originalReference", {}).get("pm_seq_num")
-
     args = {
         "uri": f"v1/panels/meeting/{pm_seq_num}",
         "query": query,
         "query_mapping_function": convert_panel_meeting_edit_query,
         "jwt_token": jwt_token,
-        "mapping_function": "",
+        "mapping_function": None,
     }
-
-    return services.get_results_with_post(
+    return services.send_put_request(
         **args
     )
 
 
-def edit_panel_meeting_date(query, jwt_token):
-    pmseqnum = query.get("pmseqnum")
+def edit_panel_meeting_date(query, date, original_data, jwt_token):
+    pmseqnum = query.get("pmdpmseqnum")
     args = {
         "uri": f"v1/panels/meeting/{pmseqnum}/dates",
         "query": query,
-        "query_mapping_function": convert_panel_meeting_date_query,
+        "query_mapping_function": partial(edit_pmd_mapping, date=date, original_data=original_data),
         "jwt_token": jwt_token,
-        "mapping_function": "",
+        "mapping_function": None,
     }
 
-    return services.get_results_with_post(
+    return services.send_put_request(
         **args
     )
 
@@ -237,29 +260,15 @@ def convert_panel_meeting_edit_query(query):
     ref = query.get("originalReference", {})
     mapped_query = {
         "pmseqnum": ref.get("pm_seq_num"),
-        # Virtual ind not used and assumed to always be defaulted to 'N'
         "pmvirtualind": "N",
         "pmcreateid": ref.get("pm_create_id"),
         "pmupdateid": query.get("hru_id"),
-        # FSBID expects space b/w date and time, not T
-        "pmcreatedate": ref.get("pm_create_date").replace('T', ' '),
-        "pmupdatedate": ref.get("pm_update_date").replace('T', ' '),
+        "pmcreatedate": ref.get("pm_create_date").replace("T", " "),
+        "pmupdatedate": ref.get("pm_update_date").replace("T", " "),
         "pmpmscode": query.get("panelMeetingStatus"),
         "pmpmtcode": query.get("panelMeetingType"),
     }
     return mapped_query
-
-
-def convert_panel_meeting_date_edit_query(query):
-    return {
-        "pmdpmseqnum": query.get("pm_seq_num"),
-        "pmdmdtcode": query.get("type"),
-        "pmddttm": query.get("date"),
-        "pmdupdatedate": "",
-        "pmdupdateid": query.get("hru_id"),
-        "pmdcreatedate": query.get("create_date"),
-        "pmdcreateid": query.get("creator_id"),
-    }
 
 
 # ======================== Post Panel Processing ========================
