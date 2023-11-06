@@ -1,4 +1,3 @@
-from hashlib import new
 import logging
 from functools import partial
 
@@ -116,27 +115,18 @@ def modify_panel_meeting_and_dates(query, jwt_token):
 
     if panel_status or panel_type:
         if not existing_pm_seq_num:
-            print('creating pm')
             panel_meeting = create_panel_meeting(query, jwt_token)
             # TO DO: verify res for edit and create consistency
             # newly_created_pm_seq_num = pydash.get(panel_meeting, "[0].pm_seq_num", None)
         elif (panel_status != ref.get("pms_code")) or (panel_type != ref.get("pmt_code")):
-             print('editing pm')
              panel_meeting = edit_panel_meeting(query, jwt_token)
            
     if existing_pm_seq_num or newly_created_pm_seq_num:
         query["pmdpmseqnum"] = existing_pm_seq_num if existing_pm_seq_num else newly_created_pm_seq_num
-        
+
         meet = dict(*filter(lambda x: x.get("mdt_code", "") == "MEET", refDates))
         add = dict(*filter(lambda x: x.get("mdt_code", "") == "ADD", refDates))
         cut = dict(*filter(lambda x: x.get("mdt_code", "") == "CUT", refDates))
-
-        print('------------meet--------------')
-        print(meet)
-        print('------------add--------------')
-        print(add)
-        print('------------cut--------------')
-        print(cut)
 
         if panel_date:
             if not meet:
@@ -208,7 +198,6 @@ def convert_panel_meeting_create_query(query):
         "pmpmscode": query.get("panelMeetingStatus", "I"),
         "pmpmtcode": query.get("panelMeetingType", "ID"),
     }
-    print(mapped_query)
     return mapped_query
 
 
