@@ -16,12 +16,12 @@ from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
 
-class FSBidBureauExceptionListView(APIView):
+class FSBidBureauExceptionUserListView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
-        Get Bureau Exception List
+        Gets Bureau Exception List of Users
         '''
         result = services.get_bureau_exception_list(request.query_params, request.META['HTTP_JWT'])
         if result is None:
@@ -34,15 +34,15 @@ class FSBidBureauExceptionBureauListView(APIView):
 
     def get(self, request):
         '''
-        Get Bureau Exception List Bureaus
+        Get Bureau Exception List of Bureaus
         '''
-        result = services.get_bureau_exception_list_of_bureaus(request.query_params, request.META['HTTP_JWT'])
+        result = services.get_users_bureau_list(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
 
-class FSBidSaveBureauExceptionListActionView(APIView):
+class FSBidBureauExceptionAddView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -55,7 +55,7 @@ class FSBidSaveBureauExceptionListActionView(APIView):
 
     def post(self, request):
         '''
-        Add Bureau Exception List
+        Adds Bureau from users Bureau Access List
         '''
         result = services.add_bureau_exception_list(request.data, request.META['HTTP_JWT'])
         if result is None:
@@ -80,7 +80,7 @@ class FSBidBureauExceptionUpdateView(APIView):
 
     def post(self, request):
         '''
-        Updates the selected bureau ID from bureau list
+        Updates Bureau from users Bureau Access List
         '''
         in_group_or_403(self.request.user, "superuser")
 
@@ -106,7 +106,7 @@ class FSBidBureauExceptionDeleteView(APIView):
 
     def post(self, request):
         '''
-        Removes the selected bureau ID from bureau list
+        Removes Bureau from users Bureau Access List
         '''
         results = services.delete_bureau_exception_list(request.data, request.META['HTTP_JWT'])
         if results is None:
