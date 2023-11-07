@@ -21,7 +21,7 @@ class FSBidBureauExceptionUserListView(APIView):
 
     def get(self, request):
         '''
-        Gets Bureau Exception List of User
+        Gets Bureau Exception List of Users
         '''
         result = services.get_bureau_exception_list(request.query_params, request.META['HTTP_JWT'])
         if result is None:
