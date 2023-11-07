@@ -66,7 +66,7 @@ def bureau_exception_list_of_bureaus_req_mapping(request):
     return {
         'pv_api_version_i': '',
         'PV_AD_ID_I': '',
-        'i_pv_id': request.get('pv_id'),
+        'i_pv_id': request.get('pvId'),
         'i_emp_hru_id': request.get('id'),
     }
 
@@ -144,7 +144,7 @@ def delete_bureau_exception_list_req_mapping(request):
     return {
         'pv_api_version_i': '',
         'PV_AD_ID_I': '',
-        'i_pv_id': request.get('pv_id'),
+        'i_pv_id': request.get('pvId'),
         'i_emp_hru_id': request.get('id'),
         'i_last_update_id': request.get('lastUpdatedUserID'),
         'i_last_update_date': request.get('lastUpdated'),
@@ -179,7 +179,7 @@ def update_bureau_exception_list_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'i_pv_id': request.get('pv_id'),
+        'i_pv_id': request.get('pvId'),
         'i_emp_hru_id': request.get('id'),
         "i_PV_VALUE_TXT": request.get('bureauCodeList'),
         'i_last_update_id': request.get('lastUpdatedUserID'),
