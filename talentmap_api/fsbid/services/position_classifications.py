@@ -1,8 +1,11 @@
 import logging
 from talentmap_api.fsbid.services import common as services
+from talentmap_api.common.common_helpers import service_response
 
 
 logger = logging.getLogger(__name__)
+
+# ======================== Get Position Classifications ========================
 
 def get_position_classifications(pk, jwt_token):
     '''
@@ -51,10 +54,14 @@ def position_classifications_response_mapping(response):
             'user_id': x.get('POSC_USERID'),
             'date': x.get('POSC_TMSMP_ID'),
         }
-    return {
-        'positionClassifications': list(map(position_classifications, response.get('QRY_PCT_REF'))),
-        'classificationSelections': list(map(position_classifications_selection, response.get('QRY_MODPOSCLASSES_REF'))),
-    }
+    def success_mapping(x):
+        return {
+            'positionClassifications': list(map(position_classifications, x.get('QRY_PCT_REF'))),
+            'classificationSelections': list(map(position_classifications_selection, x.get('QRY_MODPOSCLASSES_REF'))),
+        }
+    return service_response(response, 'Panel Classifications Data', success_mapping)
+
+# ======================== Edit Position Classifications ========================
 
 def edit_position_classifications(data, jwt_token):
     '''
@@ -87,8 +94,4 @@ def edit_positon_classifications_req_mapping(request):
     }
 
 def edit_positon_classifications_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Position Classifications Edit failed.")
-        return None
-
-    return data
+    return service_response(data, 'Post Position Classifications Edit')
