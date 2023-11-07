@@ -3,7 +3,6 @@ import logging
 from rest_condition import Or
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from talentmap_api.fsbid.views.base import BaseView
 from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
@@ -13,7 +12,7 @@ import talentmap_api.fsbid.services.bureau_exception_list as services
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 
-class FSBidBureauExceptionUserListView(APIView):
+class FSBidBureauExceptionUsersView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
@@ -26,7 +25,7 @@ class FSBidBureauExceptionUserListView(APIView):
 
         return Response(result)
 
-class FSBidBureauExceptionBureauListView(APIView):
+class FSBidBureauExceptionBureausView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
