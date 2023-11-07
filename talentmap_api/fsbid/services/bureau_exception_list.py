@@ -1,7 +1,4 @@
 import logging
-from urllib.parse import urlencode, quote
-
-from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
 
 logger = logging.getLogger(__name__)

@@ -1,5 +1,3 @@
-import logging
-
 from rest_condition import Or
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -45,7 +43,7 @@ class FSBidBureauExceptionAddView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
-            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
+            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodeList'),
         }
     ))
 
@@ -67,7 +65,7 @@ class FSBidBureauExceptionUpdateView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
-            'pv_id': openapi.Schema(type=openapi.TYPE_STRING, description='pv_id'),
+            'pvId': openapi.Schema(type=openapi.TYPE_STRING, description='pvId'),
             'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
             'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
             'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
@@ -91,7 +89,7 @@ class FSBidBureauExceptionDeleteView(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
-            'pv_id': openapi.Schema(type=openapi.TYPE_STRING, description='pv_id'),
+            'pvId': openapi.Schema(type=openapi.TYPE_STRING, description='pvId'),
             'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
             'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
             'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
