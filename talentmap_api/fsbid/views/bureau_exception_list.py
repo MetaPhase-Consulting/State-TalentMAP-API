@@ -9,12 +9,9 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from talentmap_api.common.common_helpers import in_group_or_403
-
 import talentmap_api.fsbid.services.bureau_exception_list as services
 from talentmap_api.common.permissions import isDjangoGroupMember
 
-logger = logging.getLogger(__name__)
 
 class FSBidBureauExceptionUserListView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
@@ -82,8 +79,6 @@ class FSBidBureauExceptionUpdateView(APIView):
         '''
         Updates Bureau from users Bureau Access List
         '''
-        in_group_or_403(self.request.user, "superuser")
-
         results = services.update_bureau_exception_list(request.data, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
