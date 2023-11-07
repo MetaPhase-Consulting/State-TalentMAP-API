@@ -18,8 +18,8 @@ from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
 
-class FSBidPositionClassificationsView(BaseView):
-    # perms TBD
+class FSBidPositionClassificationsView(APIView):
+
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def get(self, request, pk):
@@ -33,7 +33,7 @@ class FSBidPositionClassificationsView(BaseView):
         return Response(result)
 
 class FSBidPositionClassificationsActionView(APIView):
-    # perms TBD
+
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
