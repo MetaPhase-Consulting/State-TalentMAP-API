@@ -19,6 +19,10 @@ logger = logging.getLogger(__name__)
 
 panel_dates_mapping = {
     'pmdpmseqnum': 'pm_seq_num',
+    'pmdupdatedate': 'pmd_update_date',
+    'pmdupdateid': 'pmd_update_id',
+    'pmdcreatedate': 'pmd_create_date',
+    'pmdcreateid': 'pmd_create_id',
     'pmdmdtcode': 'mdt_code',
     'pmddttm': 'pmd_dttm',
     'mdtcode': 'mdt_code',
