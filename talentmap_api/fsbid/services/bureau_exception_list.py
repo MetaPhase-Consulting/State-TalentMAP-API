@@ -1,8 +1,5 @@
 import logging
 from urllib.parse import urlencode, quote
-import jwt
-import pydash
-from django.conf import settings
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
@@ -11,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 def get_bureau_exception_list(query, jwt_token):
     '''
-    Gets Bureau Exception List
+    Gets Bureau Exception List of Users
     '''
     args = {
         "proc_name": 'qry_lstbureauex',
@@ -49,7 +46,7 @@ def bureau_exception_list_res_mapping(data):
     return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
 
 
-def get_bureau_exception_list_of_bureaus(query, jwt_token):
+def get_users_bureau_list(query, jwt_token):
     '''
     Gets Bureau Exception List of Bureaus
     '''
@@ -95,7 +92,7 @@ def bureau_exception_list_of_bureaus_res_mapping(data):
 
 def add_bureau_exception_list(data, jwt_token):
     '''
-    Add Bureau Exception List
+    Adds Bureau from users Bureau Access List
     '''
     args = {
         "proc_name": 'act_addbureauex',
@@ -128,7 +125,7 @@ def add_bureau_exception_list_res_mapping(data):
 
 def delete_bureau_exception_list(data, jwt_token):
     '''
-    Delete Bureau Exception List
+    Removes Bureau from users Bureau Access List
     '''
     args = {
         "proc_name": 'act_delbureauex',
@@ -163,7 +160,7 @@ def delete_bureau_exception_list_res_mapping(data):
 
 def update_bureau_exception_list(data, jwt_token):
     '''
-    Update Bureau Exception List
+    Updates Bureau from users Bureau Access List
     '''
     args = {
         "proc_name": 'act_modbureauex',
