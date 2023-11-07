@@ -14,7 +14,7 @@ from talentmap_api.common.permissions import isDjangoGroupMember
 
 
 class FSBidBureauExceptionUserListView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
@@ -27,7 +27,7 @@ class FSBidBureauExceptionUserListView(APIView):
         return Response(result)
 
 class FSBidBureauExceptionBureauListView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''

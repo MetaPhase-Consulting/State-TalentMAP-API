@@ -37,7 +37,7 @@ def bureau_exception_list_res_mapping(data):
         return {
             'pvId': x.get('PV_ID'),
             'name': x.get('EMP_FULL_NAME'),
-            'bureaus': x.get('BUREAU_NAME_LIST') if x.get('BUREAU_NAME_LIST') != " " else None,
+            'bureaus': x.get('BUREAU_NAME_LIST') if x.get('BUREAU_NAME_LIST') != " " or x.get('BUREAU_NAME_LIST') != "" else None,
             'seqNum': x.get('EMP_SEQ_NBR'),
             'id': x.get('HRU_ID'),
             'bureauCodeList': x.get('PARM_VALUES') if x.get('PARM_VALUES') != " " else None,
