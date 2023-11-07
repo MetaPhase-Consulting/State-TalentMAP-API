@@ -118,7 +118,7 @@ def add_bureau_exception_list_req_mapping(request):
 
 def add_bureau_exception_list_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Bureau Exception List Edit failed.")
+        logger.error(f"Fsbid call for Bureau Exception List Add failed.")
         return None
 
     return data
@@ -152,7 +152,7 @@ def delete_bureau_exception_list_req_mapping(request):
 
 def delete_bureau_exception_list_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Bureau Exception List Edit failed.")
+        logger.error(f"Fsbid call for Bureau Exception List Delete failed.")
         return None
 
     return data
@@ -188,7 +188,7 @@ def update_bureau_exception_list_req_mapping(request):
 
 def update_bureau_exception_list_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Bureau Exception List Edit failed.")
+        logger.error(f"Fsbid call for Bureau Exception List Update failed.")
         return None
 
     return data
