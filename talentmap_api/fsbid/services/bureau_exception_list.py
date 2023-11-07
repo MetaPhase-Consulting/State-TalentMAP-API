@@ -34,7 +34,6 @@ def bureau_exception_list_res_mapping(data):
         return None
         
     def bureau_execp_map(x):
-        print('TTTTT', x.get('BUREAU_NAME_LIST'))
         return {
             'pvId': x.get('PV_ID'),
             'name': x.get('EMP_FULL_NAME'),
