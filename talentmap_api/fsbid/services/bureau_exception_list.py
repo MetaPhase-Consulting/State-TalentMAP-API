@@ -84,7 +84,7 @@ def bureau_exception_list_of_bureaus_res_mapping(data):
         "id": data.get('O_EMP_HRU_ID'),
         "name": data.get('O_EMP_FULL_NAME'),
         "pvId": data.get('O_PV_ID'),
-        "user_code_list": data.get('O_PV_VALUE_TXT'),
+        "userCodeList": data.get('O_PV_VALUE_TXT'),
         "lastUpdated": data.get('O_LAST_UPDATE_DATE'),
         "lastUpdatedUserID": data.get('O_LAST_UPDATE_ID'),
         "bureauRefList" : list(map(bureau_execp_list_map, data.get('QRY_LSTBUREAUS_REF'))),
