@@ -70,7 +70,10 @@ def update_bid_seasons_data(jwt_token, request):
 def update_bid_seasons_data_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         error_message = data['PQRY_ERROR_DATA_O'][0]['MSG_TXT']
-        return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
+        if error_message == 'The bid season dates cannot overlap an existing bid season.':
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to update/create this Bid Season. Please try again.')
     return Response(data)
 
 
