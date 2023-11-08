@@ -144,6 +144,9 @@ def modify_panel_meeting_and_dates(query, jwt_token):
                 edit_panel_meeting_date(query, cut_date, cut, jwt_token)
     else:
         logger.error("PM create failed")
+        return None
+
+    return {}
 
 
 def edit_pmd_mapping(query, date, original_data):
