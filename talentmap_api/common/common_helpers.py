@@ -124,7 +124,7 @@ def view_result(result):
 
     return Response(result, code)
 
-def service_response(data, objStr, mapping = None):
+def service_response(data, objStr, mapping=None):
     '''
     Returns data with additional logger and error handling depending on type
     '''
