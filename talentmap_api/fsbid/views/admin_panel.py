@@ -70,8 +70,8 @@ class FSBidPanelMeetingActionView(APIView):
         Create Panel Meeting
         '''
         result = services.modify_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
-        # if result is None:
-        #    return Response(status=status.HTTP_404_NOT_FOUND)
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
     
