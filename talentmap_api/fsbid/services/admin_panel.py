@@ -111,13 +111,12 @@ def modify_panel_meeting_and_dates(query, jwt_token):
     # Check for existing panel meeting
     existing_pm_seq_num = ref.get("pm_seq_num")
     # Change back to none
-    newly_created_pm_seq_num = 1
+    newly_created_pm_seq_num = None
 
     if panel_status or panel_type:
         if not existing_pm_seq_num:
             panel_meeting = create_panel_meeting(query, jwt_token)
-            # TO DO: verify res for edit and create consistency
-            # newly_created_pm_seq_num = pydash.get(panel_meeting, "[0].pm_seq_num", None)
+            newly_created_pm_seq_num = pydash.get(panel_meeting, "[0].pm_seq_num", None)
         elif (panel_status != ref.get("pms_code")) or (panel_type != ref.get("pmt_code")):
              panel_meeting = edit_panel_meeting(query, jwt_token)
            
@@ -216,9 +215,9 @@ def create_pmd_mapping(query, date, date_type):
 
 # ======================== Edit Panel Meeting ========================
 def edit_panel_meeting(query, jwt_token):
-    pm_seq_num = query.get("originalReference", {}).get("pm_seq_num")
+    pmseqnum = query.get("originalReference", {}).get("pm_seq_num")
     args = {
-        "uri": f"v1/panels/meeting/{pm_seq_num}",
+        "uri": f"v1/panels/meeting/{pmseqnum}",
         "query": query,
         "query_mapping_function": convert_panel_meeting_edit_query,
         "jwt_token": jwt_token,
