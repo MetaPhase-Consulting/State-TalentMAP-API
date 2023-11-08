@@ -39,7 +39,7 @@ drf-yasg==1.20.0
 freezegun==0.3.10
 future==0.16.0
 gitdb2==2.0.3
-GitPython==2.1.7
+GitPython==3.1.37
 greenlet==0.4.17
 idna==2.6
 isodate==0.6.0
