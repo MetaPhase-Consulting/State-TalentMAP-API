@@ -65,6 +65,9 @@ urlpatterns = [
     url(r'^api/v1/fsbid/capsule_descriptions/', include('talentmap_api.fsbid.urls.capsule_descriptions')),
     url(r'^api/v1/fsbid/publishable_positions/', include('talentmap_api.fsbid.urls.publishable_positions')),
 
+    # Position Classifications
+    url(r'^api/v1/fsbid/position_classifications/', include('talentmap_api.fsbid.urls.position_classifications')),
+
     # CDO
     url(r'^api/v1/fsbid/cdo/', include('talentmap_api.fsbid.urls.cdo')),
     url(r'^api/v1/fsbid/client/', include('talentmap_api.fsbid.urls.client')),
