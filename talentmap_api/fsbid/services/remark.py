@@ -125,7 +125,7 @@ def edit_remark(pk, query, jwt_token):
         "mapping_function": "",
     }
 
-    return services.send_put_request(
+    return services.send_post_request(
         **args
     )
 
