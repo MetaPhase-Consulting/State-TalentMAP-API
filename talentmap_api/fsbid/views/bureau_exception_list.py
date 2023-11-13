@@ -10,7 +10,7 @@ import talentmap_api.fsbid.services.bureau_exception_list as services
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 
-class FSBidBureauExceptionUsersView(APIView):
+class FSBidBureauExceptionsUsersView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
@@ -23,7 +23,7 @@ class FSBidBureauExceptionUsersView(APIView):
 
         return Response(result)
 
-class FSBidBureauExceptionBureausView(APIView):
+class FSBidBureauExceptionsBureausView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
@@ -36,7 +36,7 @@ class FSBidBureauExceptionBureausView(APIView):
 
         return Response(result)
 
-class FSBidBureauExceptionAddView(APIView):
+class FSBidBureauExceptionsAddActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -57,8 +57,7 @@ class FSBidBureauExceptionAddView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-class FSBidBureauExceptionUpdateView(APIView):
+class FSBidBureauExceptionsUpdateActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -82,7 +81,7 @@ class FSBidBureauExceptionUpdateView(APIView):
         
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FSBidBureauExceptionDeleteView(APIView):
+class FSBidBureauExceptionsDeleteActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
