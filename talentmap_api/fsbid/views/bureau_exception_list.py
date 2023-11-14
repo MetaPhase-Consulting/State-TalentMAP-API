@@ -6,37 +6,37 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-import talentmap_api.fsbid.services.bureau_exception_list as services
+import talentmap_api.fsbid.services.bureau_exceptions as services
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 
-class FSBidBureauExceptionsUsersView(APIView):
+class FSBidBureauExceptionsView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
-        Gets Bureau Exception List of Users
+        Get Bureau Exceptions
         '''
-        result = services.get_bureau_exception_list(request.query_params, request.META['HTTP_JWT'])
+        result = services.get_bureau_exceptions(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
 
-class FSBidBureauExceptionsBureausView(APIView):
+class FSBidBureauExceptionsUserMetaDataView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
-        Get Bureau Exception List of Bureaus
+        Get User Bureau Exceptions and MetaData Required for Actions
         '''
-        result = services.get_users_bureau_list(request.query_params, request.META['HTTP_JWT'])
+        result = services.get_user_bureau_exceptions_and_metadata(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
 
-class FSBidBureauExceptionsAddActionView(APIView):
+class FSBidBureauExceptionsUserAddActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -49,15 +49,16 @@ class FSBidBureauExceptionsAddActionView(APIView):
 
     def post(self, request):
         '''
-        Adds Bureau from users Bureau Access List
+        Add Bureau Exceptions to a User
+        used the first time Bureau Exceptions are added to a user
         '''
-        result = services.add_bureau_exception_list(request.data, request.META['HTTP_JWT'])
+        result = services.add_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FSBidBureauExceptionsUpdateActionView(APIView):
+class FSBidBureauExceptionsUserUpdateActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -73,15 +74,15 @@ class FSBidBureauExceptionsUpdateActionView(APIView):
 
     def post(self, request):
         '''
-        Updates Bureau from users Bureau Access List
+        Update User Bureau Exceptions
         '''
-        results = services.update_bureau_exception_list(request.data, request.META['HTTP_JWT'])
+        results = services.update_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FSBidBureauExceptionsDeleteActionView(APIView):
+class FSBidBureauExceptionsUserDeleteActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -97,9 +98,10 @@ class FSBidBureauExceptionsDeleteActionView(APIView):
 
     def post(self, request):
         '''
-        Removes Bureau from users Bureau Access List
+        Deletes all Bureau Exceptions from a User
+        will remove all Bureau Exceptions from User, regardless of it all Bureaus are sent in for removal
         '''
-        results = services.delete_bureau_exception_list(request.data, request.META['HTTP_JWT'])
+        results = services.delete_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
         if results is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
