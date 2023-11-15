@@ -43,7 +43,7 @@ def bureau_exceptions_res_mapping(data):
     return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
 
 
-def get_user_bureau_exceptions_and_metadata(query, jwt_token):
+def get_user_bureau_exceptions_and_metadata(data, jwt_token):
     '''
     Get User Bureau Exceptions and MetaData Required for Actions
     '''
@@ -53,7 +53,7 @@ def get_user_bureau_exceptions_and_metadata(query, jwt_token):
         "request_mapping_function": user_bureau_exceptions_and_metadata_req_mapping,
         "response_mapping_function": user_bureau_exceptions_and_metadata_res_mapping,
         "jwt_token": jwt_token,
-        "request_body": query,
+        "request_body": data,
     }
     return services.send_post_back_office(
         **args
