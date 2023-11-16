@@ -23,6 +23,19 @@ class FSBidBureauExceptionsView(APIView):
 
         return Response(result)
 
+class FSBidBureauExceptionsRefDataBureausView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+
+    def get(self, request):
+        '''
+        Get Bureau Exceptions Ref Data for Bureaus
+        '''
+        result = services.get_bureau_exceptions_ref_data_bureaus(request.query_params, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
 class FSBidBureauExceptionsUserMetaDataView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
