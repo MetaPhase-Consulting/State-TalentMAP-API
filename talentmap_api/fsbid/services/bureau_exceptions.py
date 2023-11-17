@@ -29,16 +29,28 @@ def bureau_exceptions_res_mapping(data):
         return None
         
     def bureau_execp_map(x):
+        # to flag object with all null values and prevent .strip on it
+        if x.get('HRU_ID') is None:
+            return {}
+
+        userBureauNameList = x.get('BUREAU_NAME_LIST', '').strip() or ''
+        userBureauNameList = userBureauNameList.split(',') if userBureauNameList else []
+
+        userBureauCodeList = x.get('PARM_VALUES', '').strip() or ''
+        userBureauCodeList = userBureauCodeList.split(',') if userBureauCodeList else []
+
         return {
             'pvId': x.get('PV_ID'),
             'name': x.get('EMP_FULL_NAME'),
-            'bureaus': x.get('BUREAU_NAME_LIST') if x.get('BUREAU_NAME_LIST') != " " and x.get('BUREAU_NAME_LIST') != "" else None,
-            'seqNum': x.get('EMP_SEQ_NBR'),
-            'id': x.get('HRU_ID'),
-            'bureauCodeList': x.get('PARM_VALUES') if x.get('PARM_VALUES') != " " else None,
+            'userBureauNameList': userBureauNameList,
+            'empSeqNum': x.get('EMP_SEQ_NBR'),
+            'hruId': x.get('HRU_ID'),
+            'userBureauCodeList': userBureauCodeList,
         }
 
-    return list(map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF')))
+    result = map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF'))
+
+    return list(filter(lambda x: x != {}, result))
 
 
 def get_bureau_exceptions_ref_data_bureaus(query, jwt_token):
@@ -96,28 +108,24 @@ def user_bureau_exceptions_and_metadata_req_mapping(request):
         'pv_api_version_i': '',
         'PV_AD_ID_I': '',
         'i_pv_id': request.get('pvId'),
-        'i_emp_hru_id': request.get('id'),
+        'i_emp_hru_id': request.get('hruId'),
     }
 def user_bureau_exceptions_and_metadata_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error(f"FSBid call for User Bureau Exceptions and MetaData Required for Actions failed.")
         return None
+
+    userBureauCodeList = data.get('O_PV_VALUE_TXT', '').strip() or ''
+    userBureauCodeList = userBureauCodeList.split(',') if userBureauCodeList else []
             
-    def bureau_execp_list_map(x):
-        return {
-            'bureauCode': x.get('ORG_CODE'),
-            'description': x.get('ORGS_SHORT_DESC'),
-        }
-    bureau_exceptions_info = {
-        "id": data.get('O_EMP_HRU_ID'),
+    return {
+        "hruId": data.get('O_EMP_HRU_ID'),
         "name": data.get('O_EMP_FULL_NAME'),
         "pvId": data.get('O_PV_ID'),
-        "userCodeList": data.get('O_PV_VALUE_TXT'),
+        "userBureauCodeList": userBureauCodeList,
         "lastUpdated": data.get('O_LAST_UPDATE_DATE'),
         "lastUpdatedUserID": data.get('O_LAST_UPDATE_ID'),
-        "bureauRefList" : list(map(bureau_execp_list_map, data.get('QRY_LSTBUREAUS_REF'))),
     }
-    return bureau_exceptions_info
 
 
 def add_user_bureau_exceptions(data, jwt_token):
@@ -139,10 +147,10 @@ def add_user_bureau_exceptions(data, jwt_token):
 def add_user_bureau_exceptions_req_mapping(request):
     return {
         'pv_api_version_i': '',
-        'PV_AD_ID_I': '',
+        'pv_ad_id_i': '',
         'i_pv_id': '',
-        'i_emp_hru_id': request.get('id'),
-        'i_PV_VALUE_TXT': request.get('bureauCodeList'),
+        'i_emp_hru_id': request.get('hruId'),
+        'i_pv_value_txt': request.get('bureauCodeList'),
     }
 def add_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -169,13 +177,13 @@ def update_user_bureau_exceptions(data, jwt_token):
     )
 def update_user_bureau_exceptions_req_mapping(request):
     return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
+        'pv_api_version_i': '',
+        'pv_ad_id_i': '',
         'i_pv_id': request.get('pvId'),
-        'i_emp_hru_id': request.get('id'),
-        "i_PV_VALUE_TXT": request.get('bureauCodeList'),
-        'i_last_update_id': request.get('lastUpdatedUserID'),
-        'i_last_update_date': request.get('lastUpdated'),
+        'i_emp_hru_id': request.get('hruId'),
+        'i_pv_value_txt': request.get('bureauCodeList'),
+        'i_last_update_id': request.get('lastUpdatedUserId'),
+        'i_last_update_date': request.get('lastUpdatedDate'),
     }
 def update_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -204,11 +212,11 @@ def delete_user_bureau_exceptions(data, jwt_token):
 def delete_user_bureau_exceptions_req_mapping(request):
     return {
         'pv_api_version_i': '',
-        'PV_AD_ID_I': '',
+        'pv_ad_id_i': '',
         'i_pv_id': request.get('pvId'),
-        'i_emp_hru_id': request.get('id'),
-        'i_last_update_id': request.get('lastUpdatedUserID'),
-        'i_last_update_date': request.get('lastUpdated'),
+        'i_emp_hru_id': request.get('hruId'),
+        'i_last_update_id': request.get('lastUpdatedUserId'),
+        'i_last_update_date': request.get('lastUpdatedDate'),
     }
 def delete_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
