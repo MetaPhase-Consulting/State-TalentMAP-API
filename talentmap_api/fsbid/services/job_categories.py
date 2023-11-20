@@ -21,9 +21,9 @@ def get_job_categories_data(jwt_token, request):
 
 def job_categories_req_mapping(req):
     mapped_request = {
-      "PV_API_VERSION_I": "",
-      "PV_AD_ID_I": "",
-      "QRY_LSTJOBCATS_REF": "",
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "QRY_LSTJOBCATS_REF": "",
     }
 
     return mapped_request
@@ -105,10 +105,10 @@ def create_job_category(jwt_token, request):
 
 def create_jc_req_mapping(req):
     mapped_request = {
-      "PV_API_VERSION_I": "", 
-      "PV_AD_ID_I": "",
-      "I_JC_NM_TXT": req.get('category_name'),
-      "I_SKILL_CODE": ','.join(req.get('skill_codes')),
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_JC_NM_TXT": req.get('category_name'),
+        "I_SKILL_CODE": ','.join(req.get('skill_codes')),
     }
 
     return mapped_request
