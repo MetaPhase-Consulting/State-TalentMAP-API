@@ -288,8 +288,18 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     creators = pydash.get(data, "creators") or None
     if creators:
         creators = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(creators[0])
+
+    # aitodcode is the agenda item combined tod code
+    tod_code = pydash.get(data, "aitodcode")
+    tod_other_text = pydash.get(data, "aicombinedtodothertext")
+    is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
+
     return {
         "id": pydash.get(data, "aiseqnum") or None,
+        "aiCombinedTodCode": pydash.get(data, "aitodcode") or "",
+        "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
+        "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
         "pmi_official_item_num": pydash.get(data, "pmiofficialitemnum") or None,
         "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
         "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm"), utc_offset=-5),
@@ -360,6 +370,8 @@ def fsbid_legs_to_talentmap_legs(data):
     country_state = pydash.get(data, 'ailcountrystatetext') or ''
     location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
     lat_code = pydash.get(data, 'aillatcode')
+    tod_ind = 'INDEFINITE'
+    ted_na = 'N/A'
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -369,7 +381,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
         "eta": pydash.get(data, "ailetadate", None),
-        "ted": pydash.get(data, "ailetdtedsepdate", None),
+        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "ailetdtedsepdate", None),
         "tod": tod_code,
         "tod_is_dropdown": tod_is_dropdown,
         "tod_months": tod_months if is_other_tod else None, # only a custom/other TOD should have months
@@ -438,6 +450,8 @@ def fsbid_aia_to_talentmap_aia(data):
     tod_short_desc = pydash.get(data, "todshortdesc")
     tod_long_desc = pydash.get(data, "toddesctext")
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
+    tod_ind = 'INDEFINITE'
+    ted_na = 'N/A'
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
@@ -445,7 +459,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
-        "ted": pydash.get(data, "asgdetdteddate", None),
+        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "asgdetdteddate", None),
         "tod": tod_code,
         "tod_months": tod_months if is_other_tod else None, # only custom/other TOD should have months and other_text
         "tod_short_desc": tod_other_text if is_other_tod else tod_short_desc,
@@ -521,12 +535,11 @@ def convert_create_agenda_item_query(query):
         "aiempseqnbr": pydash.get(query, "personId", ""),
         "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
         "aiaiscode": pydash.get(query, "agendaStatusCode", ""),
-        "aitoddesctext": None,
-        "aitodcode": None,
+        "aitodcode": pydash.get(query, "combinedTod", ""),
+        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
         "aiasgseqnum": pydash.get(query, "assignmentId", ""),
         "aiasgdrevisionnum": pydash.get(query, "assignmentVersion", ""),
-        "aicombinedtodmonthsnum": None,
-        "aicombinedtodothertext": None,
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
