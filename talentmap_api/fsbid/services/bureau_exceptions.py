@@ -123,8 +123,8 @@ def user_bureau_exceptions_and_metadata_res_mapping(data):
         "name": data.get('O_EMP_FULL_NAME'),
         "pvId": data.get('O_PV_ID'),
         "userBureauCodeList": userBureauCodeList,
-        "lastUpdated": data.get('O_LAST_UPDATE_DATE'),
-        "lastUpdatedUserID": data.get('O_LAST_UPDATE_ID'),
+        "lastUpdatedDate": data.get('O_LAST_UPDATE_DATE'),
+        "lastUpdatedUserId": data.get('O_LAST_UPDATE_ID'),
     }
 
 
