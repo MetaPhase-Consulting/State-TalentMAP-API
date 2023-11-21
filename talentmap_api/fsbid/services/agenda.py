@@ -300,6 +300,10 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
         "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
         "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "ahtCode": pydash.get(data, "ahtcode") or None,
+        "ahtDescText": pydash.get(data, "ahtdesctext") or None,
+        "aihHoldNum": pydash.get(data, "aihholdnum") or None,
+        "aihHoldComment": pydash.get(data, "aihholdcommenttext") or None,
         "pmi_official_item_num": pydash.get(data, "pmiofficialitemnum") or None,
         "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
         "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm"), utc_offset=-5),
@@ -320,6 +324,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "creators": creators,
         "updaters": updaters,
         "user": {},
+
     }
 
 
