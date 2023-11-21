@@ -25,7 +25,7 @@ def bureau_exceptions_req_mapping(request):
     }
 def bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"FSBid call for Bureau Exceptions failed.")
+        logger.error('FSBid call for Bureau Exceptions failed.')
         return None
         
     def bureau_execp_map(x):
@@ -75,7 +75,7 @@ def bureau_exceptions_ref_data_bureaus_req_mapping(request):
     }
 def bureau_exceptions_ref_data_bureaus_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"FSBid call for Bureau Exceptions Ref Data for Bureaus failed.")
+        logger.error('FSBid call for Bureau Exceptions Ref Data for Bureaus failed.')
         return None
 
     def bureau_execp_ref_data_map(x):
@@ -112,7 +112,7 @@ def user_bureau_exceptions_and_metadata_req_mapping(request):
     }
 def user_bureau_exceptions_and_metadata_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"FSBid call for User Bureau Exceptions and MetaData Required for Actions failed.")
+        logger.error('FSBid call for User Bureau Exceptions and MetaData Required for Actions failed.')
         return None
 
     userBureauCodeList = data.get('O_PV_VALUE_TXT', '').strip() or ''
@@ -154,7 +154,7 @@ def add_user_bureau_exceptions_req_mapping(request):
     }
 def add_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"FSBid call for Adding Bureau Exceptions to a User failed.")
+        logger.error('FSBid call for Adding Bureau Exceptions to a User failed.')
         return None
 
     return data
@@ -187,7 +187,7 @@ def update_user_bureau_exceptions_req_mapping(request):
     }
 def update_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"FSBid call for Updating User Bureau Exceptions failed.")
+        logger.error('FSBid call for Updating User Bureau Exceptions failed.')
         return None
 
     return data
@@ -220,7 +220,7 @@ def delete_user_bureau_exceptions_req_mapping(request):
     }
 def delete_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"FSBid call for Deleting all Bureau Exceptions from a User failed.")
+        logger.error('FSBid call for Deleting all Bureau Exceptions from a User failed.')
         return None
 
     return data
