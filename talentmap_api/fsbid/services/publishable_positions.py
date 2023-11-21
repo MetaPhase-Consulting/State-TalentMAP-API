@@ -3,6 +3,7 @@ from urllib.parse import urlencode, quote
 import jwt
 import pydash
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
@@ -163,11 +164,9 @@ def edit_publishable_position_req_mapping(request):
     }
 
 def edit_publishable_position_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Publishable Positions Edit failed.")
-        return None
-
-    return data
+    if data.get('O_RETURN_CODE', -1) != 0:
+        logger.error(f"Publishable Positions Edit error return code.")
+        raise ValidationError('Publishable Positions Edit error return code.')
 
 
 def get_publishable_positions_filters(jwt_token):
