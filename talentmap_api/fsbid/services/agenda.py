@@ -257,6 +257,14 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "Ready": "RDY",
         "Withdrawn": "WDR"
     }
+    logger.info('==== fsbid_single_agenda_item_to_talentmap_single_agenda_item ====')
+    logger.info('==== data results ====')
+    logger.info(data)
+    logger.info('==== creators ====')
+    logger.info(pydash.get(data, "creators"))
+    logger.info('==== updaters ====')
+    logger.info(pydash.get(data, "updaters"))
+    logger.info('================================')
     legsToReturn = []
     assignment = fsbid_aia_to_talentmap_aia(
         pydash.get(data, "agendaAssignment[0]", {})
@@ -292,6 +300,10 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
         "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
         "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "ahtCode": pydash.get(data, "ahtcode") or None,
+        "ahtDescText": pydash.get(data, "ahtdesctext") or None,
+        "aihHoldNum": pydash.get(data, "aihholdnum") or None,
+        "aihHoldComment": pydash.get(data, "aihholdcommenttext") or None,
         "pmi_official_item_num": pydash.get(data, "pmiofficialitemnum") or None,
         "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
         "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm"), utc_offset=-5),
@@ -312,6 +324,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "creators": creators,
         "updaters": updaters,
         "user": {},
+
     }
 
 
@@ -817,12 +830,24 @@ def get_agendas_by_panel(pk, jwt_token):
     )
     clients_lookup = {}
     for client in clients.get("results") or []:
+        logger.info('==== get_panels_by_agenda ====')
+        logger.info('==== single client from v2/clients call ====')
+        logger.info(client)
+        logger.info('================================')
         perdet = client["perdet_seq_number"]
         clients_lookup[perdet] = client
+    logger.info('==== get_panels_by_agenda ====')
+    logger.info('==== clients_lookup variable ====')
+    logger.info(clients_lookup)
+    logger.info('================================')
 
     # get vice data to add to agendas_by_panel
     pos_seq_nums = []
     for agenda in agendas_by_panel["results"]:
+        logger.info('==== get_panels_by_agenda ====')
+        logger.info('==== agenda ====')
+        logger.info(agenda)
+        logger.info('================================')
         legs = pydash.get(agenda, "legs")
         for leg in legs:
             if ('ail_pos_seq_num' in leg) and (leg["ail_pos_seq_num"] is not None):
@@ -831,6 +856,10 @@ def get_agendas_by_panel(pk, jwt_token):
 
     for agenda in agendas_by_panel["results"]:
         client = clients_lookup.get(agenda["perdet"]) or {}
+        logger.info('==== get_panels_by_agenda ====')
+        logger.info('==== client variable ====')
+        logger.info(client)
+        logger.info('================================')
         agenda["user"] = client
         legs = pydash.get(agenda, "legs")
         # append vice data to add to agendas_by_panel

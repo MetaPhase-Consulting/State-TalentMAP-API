@@ -43,6 +43,7 @@ urlpatterns = [
     # Bureau
     url(r'^api/v1/fsbid/bureau/positions/', include('talentmap_api.fsbid.urls.bureau')),
     url(r'^api/v1/bureau/', include('talentmap_api.bureau.urls.bureau')),
+    url(r'^api/v1/fsbid/bureau_exceptions/', include('talentmap_api.fsbid.urls.bureau_exceptions')),
 
     # Available Positions
     url(r'^api/v1/fsbid/available_positions/', include('talentmap_api.fsbid.urls.available_positions')),
@@ -63,6 +64,9 @@ urlpatterns = [
     url(r'^api/v1/fsbid/manage_bid_seasons/', include('talentmap_api.fsbid.urls.manage_bid_seasons')),
     url(r'^api/v1/fsbid/capsule_descriptions/', include('talentmap_api.fsbid.urls.capsule_descriptions')),
     url(r'^api/v1/fsbid/publishable_positions/', include('talentmap_api.fsbid.urls.publishable_positions')),
+
+    # Position Classifications
+    url(r'^api/v1/fsbid/position_classifications/', include('talentmap_api.fsbid.urls.position_classifications')),
 
     # CDO
     url(r'^api/v1/fsbid/cdo/', include('talentmap_api.fsbid.urls.cdo')),
