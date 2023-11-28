@@ -33,19 +33,19 @@ def bureau_exceptions_res_mapping(data):
         if x.get('HRU_ID') is None:
             return {}
 
-        userBureauNameList = x.get('BUREAU_NAME_LIST', '').strip() or ''
-        userBureauNameList = userBureauNameList.split(',') if userBureauNameList else []
+        userBureauNames = x.get('BUREAU_NAME_LIST', '').strip() or ''
+        userBureauNames = userBureauNames.split(',') if userBureauNames else []
 
-        userBureauCodeList = x.get('PARM_VALUES', '').strip() or ''
-        userBureauCodeList = userBureauCodeList.split(',') if userBureauCodeList else []
+        userBureauCodes = x.get('PARM_VALUES', '').strip() or ''
+        userBureauCodes = userBureauCodes.split(',') if userBureauCodes else []
 
         return {
             'pvId': x.get('PV_ID'),
             'name': x.get('EMP_FULL_NAME'),
-            'userBureauNameList': userBureauNameList,
+            'userBureauNames': userBureauNames,
             'empSeqNum': x.get('EMP_SEQ_NBR'),
             'hruId': x.get('HRU_ID'),
-            'userBureauCodeList': userBureauCodeList,
+            'userBureauCodes': userBureauCodes,
         }
 
     result = map(bureau_execp_map, data.get('QRY_LSTBUREAUEXCEPTIONS_REF'))
@@ -115,14 +115,14 @@ def user_bureau_exceptions_and_metadata_res_mapping(data):
         logger.error('FSBid call for User Bureau Exceptions and MetaData Required for Actions failed.')
         return None
 
-    userBureauCodeList = data.get('O_PV_VALUE_TXT', '').strip() or ''
-    userBureauCodeList = userBureauCodeList.split(',') if userBureauCodeList else []
+    userBureauCodes = data.get('O_PV_VALUE_TXT', '').strip() or ''
+    userBureauCodes = userBureauCodes.split(',') if userBureauCodes else []
             
     return {
         "hruId": data.get('O_EMP_HRU_ID'),
         "name": data.get('O_EMP_FULL_NAME'),
         "pvId": data.get('O_PV_ID'),
-        "userBureauCodeList": userBureauCodeList,
+        "userBureauCodes": userBureauCodes,
         "lastUpdatedDate": data.get('O_LAST_UPDATE_DATE'),
         "lastUpdatedUserId": data.get('O_LAST_UPDATE_ID'),
     }
