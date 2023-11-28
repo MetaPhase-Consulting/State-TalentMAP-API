@@ -20,8 +20,8 @@ def get_bureau_exceptions(query, jwt_token):
     )
 def bureau_exceptions_req_mapping(request):
     return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
+        'pv_api_version_i': '',
+        'pv_ad_id_i': '',
     }
 def bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -70,8 +70,8 @@ def get_bureau_exceptions_ref_data_bureaus(query, jwt_token):
     )
 def bureau_exceptions_ref_data_bureaus_req_mapping(request):
     return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
+        'pv_api_version_i': '',
+        'pv_ad_id_i': '',
     }
 def bureau_exceptions_ref_data_bureaus_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -106,7 +106,7 @@ def get_user_bureau_exceptions_and_metadata(data, jwt_token):
 def user_bureau_exceptions_and_metadata_req_mapping(request):
     return {
         'pv_api_version_i': '',
-        'PV_AD_ID_I': '',
+        'pv_ad_id_i': '',
         'i_pv_id': request.get('pvId'),
         'i_emp_hru_id': request.get('hruId'),
     }
