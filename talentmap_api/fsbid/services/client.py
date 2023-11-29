@@ -14,7 +14,6 @@ import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import ensure_date
 from talentmap_api.fsbid.requests import requests
 
-HRDATA_URL = settings.HRDATA_URL
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
@@ -552,7 +551,7 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": s or empty_score,
             "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language')).strip()} {s or empty_score}/{r or empty_score}"
+            "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
         })
     return tmap_languages
 

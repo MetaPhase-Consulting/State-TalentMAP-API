@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.core.exceptions import ValidationError
 
 import talentmap_api.fsbid.services.publishable_positions as services
 from talentmap_api.common.permissions import isDjangoGroupMember
@@ -45,8 +46,11 @@ class FSBidPublishablePositionsActionView(APIView):
         '''
         Edit Publishable Position
         '''
-        result = services.edit_publishable_position(request.data, request.META['HTTP_JWT'])
-        if result is None:
+        try:
+            services.edit_publishable_position(request.data, request.META['HTTP_JWT'])
+        except ValidationError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
