@@ -542,7 +542,6 @@ ORG_API_URL = get_delineated_environment_variable('ORG_API_URL', 'http://mock_fs
 CLIENTS_API_URL = get_delineated_environment_variable('CLIENTS_API_URL', 'http://mock_fsbid:3333/v1/Clients')
 CLIENTS_API_V2_URL = get_delineated_environment_variable('CLIENTS_API_V2_URL', 'http://mock_fsbid:3333/v2/clients')
 PV_API_V2_URL = get_delineated_environment_variable('PV_API_V2_URL', 'http://mock_fsbid:3333/v2/futureVacancies')
-HRDATA_URL = get_delineated_environment_variable('HRDATA_URL', 'http://mock_fsbid:3333/HR')
 AVATAR_URL = get_delineated_environment_variable('AVATAR_URL', 'https://usdos.sharepoint.com/_layouts/15/userphoto.aspx')
 TP_API_URL = get_delineated_environment_variable('TP_API_URL', 'http://mock_fsbid:3333/v1/TrackingPrograms')
 AGENDA_API_URL = get_delineated_environment_variable('AGENDA_API_URL', 'http://mock_fsbid:3333/v1/Agendas')
