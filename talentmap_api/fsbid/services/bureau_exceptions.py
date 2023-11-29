@@ -82,7 +82,7 @@ def bureau_exceptions_ref_data_bureaus_res_mapping(data):
         return {
             'code': x.get('ORG_CODE'),
             'short_description': x.get('ORGS_SHORT_DESC'),
-            'long_description': x.get('ORGS_LONG_DESC'),
+            'long_description': x.get('ORGS_LONG_DESC').strip(),
         }
 
     return list(map(bureau_execp_ref_data_map, data.get('QRY_LSTBUREAUS_REF')))
