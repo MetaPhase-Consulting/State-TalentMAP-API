@@ -655,7 +655,6 @@ def fsbid_available_bidder_to_talentmap(data):
         "initials": initials,
         "perdet_seq_number": str(employee.get("perdet_seq_num", None)),
         "grade": employee.get("per_grade_code", None),
-        "pay_plan": employee.get("per_pay_plan_code", None),
         "skills": map_skill_codes(employee),
         "employee_id": str(employee.get("pert_external_id", None)),
         "role_code": data.get("rl_cd", None),
