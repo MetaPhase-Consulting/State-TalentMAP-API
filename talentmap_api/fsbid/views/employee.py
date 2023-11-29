@@ -6,12 +6,14 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.contrib.auth.models import Group
+from django.http import HttpResponse
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from talentmap_api.common.permissions import isDjangoGroupMemberOrReadOnly, isDjangoGroupMember
 from talentmap_api.fsbid.views.base import BaseView
 from rest_framework.views import APIView
+from talentmap_api.common.common_helpers import user_in_any_group
 import talentmap_api.fsbid.services.employee as services
 
 logger = logging.getLogger(__name__)
@@ -108,10 +110,14 @@ class FSBidAssignmentSeparationsBidsView(BaseView):
 
 
 class FSBidEmployeeProfileReportView(APIView):
-    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('cdo'))]
 
     def get(self, request, pk):
         '''
         Get an employee's profile report
         '''
-        return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
+        # pk is hru id
+        try:
+            return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
