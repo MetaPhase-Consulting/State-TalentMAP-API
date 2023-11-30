@@ -305,6 +305,10 @@ def get_individual(uri, query, query_mapping_function, jwt_token, mapping_functi
 def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
     url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
     json_body = request_mapping_function(request_body)
+    print('🍀🍀🍀🍀🍀🍀🍀🍀🍀')
+    print(url)
+    print(json_body)
+    print('🍀🍀🍀🍀🍀🍀🍀🍀🍀')
     try:
         response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
     except:
