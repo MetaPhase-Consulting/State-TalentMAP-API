@@ -8,6 +8,7 @@ from drf_yasg import openapi
 
 import talentmap_api.fsbid.services.bureau_exceptions as services
 from talentmap_api.common.permissions import isDjangoGroupMember
+from django.core.exceptions import ValidationError
 
 
 class FSBidBureauExceptionsView(APIView):
@@ -18,6 +19,19 @@ class FSBidBureauExceptionsView(APIView):
         Get Bureau Exceptions
         '''
         result = services.get_bureau_exceptions(request.query_params, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+class FSBidBureauExceptionsRefDataBureausView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+
+    def get(self, request):
+        '''
+        Get Bureau Exceptions Ref Data for Bureaus
+        '''
+        result = services.get_bureau_exceptions_ref_data_bureaus(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -52,8 +66,11 @@ class FSBidBureauExceptionsUserAddActionView(APIView):
         Add Bureau Exceptions to a User
         used the first time Bureau Exceptions are added to a user
         '''
-        result = services.add_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
-        if result is None:
+        try:
+            services.add_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
+        except ValidationError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -76,10 +93,13 @@ class FSBidBureauExceptionsUserUpdateActionView(APIView):
         '''
         Update User Bureau Exceptions
         '''
-        results = services.update_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
-        if results is None:
+        try:
+            services.update_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
+        except ValidationError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FSBidBureauExceptionsUserDeleteActionView(APIView):
@@ -101,8 +121,11 @@ class FSBidBureauExceptionsUserDeleteActionView(APIView):
         Deletes all Bureau Exceptions from a User
         will remove all Bureau Exceptions from User, regardless of it all Bureaus are sent in for removal
         '''
-        results = services.delete_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
-        if results is None:
+        try:
+            services.delete_user_bureau_exceptions(request.data, request.META['HTTP_JWT'])
+        except ValidationError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
         return Response(status=status.HTTP_204_NO_CONTENT)
