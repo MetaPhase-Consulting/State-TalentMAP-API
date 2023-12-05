@@ -131,11 +131,12 @@ def modify_agenda(query={}, jwt_token=None, host=None):
             else:
                  panel_meeting_item = create_panel_meeting_item(query, jwt_token)
                  newly_created_pmi_seq_num = pydash.get(panel_meeting_item, '[0].pmi_seq_num')
-    except:
+    except Exception as e:
         logger.error("Error updating/creating PMI")
+        logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return 
 
-
+    
     if newly_created_pmi_seq_num or existing_pmi_pm_seq_num:
         query['pmiseqnum'] = newly_created_pmi_seq_num if newly_created_pmi_seq_num else existing_pmi_pm_seq_num
         logger.info('4. calling ai ---------------------------------------------------')
@@ -176,8 +177,9 @@ def edit_panel_meeting_item(query, jwt_token):
     '''
     Edit PMI
     '''
+    pmiseqnum = query.get("refData", {}).get("pmi_seq_num")
     args = {
-        "uri": "v1/panels/meetingItem",
+        "uri": f"v1/panels/meetingItem/{pmiseqnum}",
         "query": query,
         "query_mapping_function": convert_edit_panel_meeting_item_query,
         "jwt_token": jwt_token,
@@ -567,6 +569,7 @@ def convert_create_panel_meeting_item_query(query):
         "pmiupdateid": creator_id,
     }
     
+
 def convert_edit_panel_meeting_item_query(query):
     refData = query.get("refData")
     return {
@@ -577,10 +580,11 @@ def convert_edit_panel_meeting_item_query(query):
         "pmilabeltext": refData.get("pmi_label_text"),
         "pmimiccode": query.get("panelMeetingCategory"),
         "pmicreateid": refData.get("pmi_create_id"),
-        "pmicreatedate": refData.get("pmi_create_date").replace("T", " "),
+        "pmicreatedate": refData.get("pmi_create_date", "").replace("T", " "),
         "pmiupdateid": query.get("hru_id"),
-        "pmiupdatedate": query.get("pmi_update_date").replace("T", " "),
+        "pmiupdatedate": refData.get("pmi_update_date", "").replace("T", " "),
     }
+
 
 def convert_create_agenda_item_query(query):
     '''
