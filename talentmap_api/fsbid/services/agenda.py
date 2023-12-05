@@ -95,25 +95,50 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         "results": agenda_items,
     }
 
-def create_agenda(query={}, jwt_token=None, host=None):
+def modify_agenda(query={}, jwt_token=None, host=None):
     '''
-    Create agenda
+    Create/Edit Agenda
     '''
-    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
-    query['hru_id'] = hru_id
-    logger.info(f"1. query --------------------------------------------------- {query}")
-    logger.info('2. validating ai ---------------------------------------------------')
     ai_validation = ai_validator.validate_agenda_item(query)
-    logger.info(f"2a. ai valid {ai_validation['allValid']}")
+
     if not ai_validation['allValid']:
         return ai_validation
-    logger.info('3. calling pmi ---------------------------------------------------')
-    panel_meeting_item = create_panel_meeting_item(query, jwt_token)
-    logger.info(f"3a. pmi return {panel_meeting_item}")
-    pmi_seq_num = pydash.get(panel_meeting_item, '[0].pmi_seq_num')
 
-    if pmi_seq_num:
-        query['pmiseqnum'] = pmi_seq_num
+    # Possible ref data for comparison to determine create or edit
+    refData = query.get("refData")
+
+    # Inject decoded hru_id
+    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
+    query['hru_id'] = hru_id
+
+    # Unpack PMI request
+    meeting_category = query.get("panelMeetingCategory")
+    meeting_id = query.get("panelMeetingId")
+
+    # Original PMI
+    existing_pmi_seq_num = refData.get("pmi_seq_num")
+    existing_pmi_mic_code = refData.get("pmi_mic_code")
+    existing_pmi_pm_seq_num = refData.get("pmi_pm_seq_num")
+    
+    # TBD with AI
+    newly_created_pmi_seq_num = None
+
+    try:
+        if meeting_category or meeting_id:
+            if existing_pmi_seq_num:
+                if (meeting_category != existing_pmi_mic_code) or (meeting_id != existing_pmi_pm_seq_num):
+                    panel_meeting_item = edit_panel_meeting_item(query, jwt_token)
+            else:
+                 panel_meeting_item = create_panel_meeting_item(query, jwt_token)
+                 newly_created_pmi_seq_num = pydash.get(panel_meeting_item, '[0].pmi_seq_num')
+    except Exception as e:
+        logger.error("Error updating/creating PMI")
+        logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
+        return 
+
+    
+    if newly_created_pmi_seq_num or existing_pmi_pm_seq_num:
+        query['pmiseqnum'] = newly_created_pmi_seq_num if newly_created_pmi_seq_num else existing_pmi_pm_seq_num
         logger.info('4. calling ai ---------------------------------------------------')
         agenda_item = create_agenda_item(query, jwt_token)
         logger.info(f"4a. ai return {agenda_item}")
@@ -138,12 +163,30 @@ def create_panel_meeting_item(query, jwt_token):
     args = {
         "uri": "v1/panels/meetingItem",
         "query": query,
-        "query_mapping_function": convert_panel_meeting_item_query,
+        "query_mapping_function": convert_create_panel_meeting_item_query,
         "jwt_token": jwt_token,
         "mapping_function": "",
     }
 
     return services.get_results_with_post(
+        **args
+    )
+
+
+def edit_panel_meeting_item(query, jwt_token):
+    '''
+    Edit PMI
+    '''
+    pmiseqnum = query.get("refData", {}).get("pmi_seq_num")
+    args = {
+        "uri": f"v1/panels/meetingItem/{pmiseqnum}",
+        "query": query,
+        "query_mapping_function": convert_edit_panel_meeting_item_query,
+        "jwt_token": jwt_token,
+        "mapping_function": "",
+    }
+
+    return services.send_put_request(
         **args
     )
 
@@ -257,14 +300,6 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "Ready": "RDY",
         "Withdrawn": "WDR"
     }
-    logger.info('==== fsbid_single_agenda_item_to_talentmap_single_agenda_item ====')
-    logger.info('==== data results ====')
-    logger.info(data)
-    logger.info('==== creators ====')
-    logger.info(pydash.get(data, "creators"))
-    logger.info('==== updaters ====')
-    logger.info(pydash.get(data, "updaters"))
-    logger.info('================================')
     legsToReturn = []
     assignment = fsbid_aia_to_talentmap_aia(
         pydash.get(data, "agendaAssignment[0]", {})
@@ -281,7 +316,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "code": pydash.get(data, "Panel[0].pmimiccode") or None,
         "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
     }
-    panelMeetingSeqNum = str(int(pydash.get(data, "Panel[0].pmseqnum"))) if pydash.get(data, "Panel[0].pmseqnum") else ""
+
     if updaters:
         updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
 
@@ -293,6 +328,8 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     tod_code = pydash.get(data, "aitodcode")
     tod_other_text = pydash.get(data, "aicombinedtodothertext")
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
+    
+    panel = data.get("Panel")[0]
 
     return {
         "id": pydash.get(data, "aiseqnum") or None,
@@ -304,12 +341,19 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "ahtDescText": pydash.get(data, "ahtdesctext") or None,
         "aihHoldNum": pydash.get(data, "aihholdnum") or None,
         "aihHoldComment": pydash.get(data, "aihholdcommenttext") or None,
-        "pmi_official_item_num": pydash.get(data, "pmiofficialitemnum") or None,
         "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
-        "panel_date": ensure_date(pydash.get(data, "Panel[0].pmddttm"), utc_offset=-5),
-        "meeting_category": pydash.get(data, "Panel[0].pmimiccode") or None,
-        "panel_date_type": pydash.get(data, "Panel[0].pmtcode") or None,
-        "panel_meeting_seq_num": panelMeetingSeqNum,
+        "pmd_dttm": ensure_date(panel.get("pmddttm"), utc_offset=-5),
+        "pmt_code": panel.get("pmtcode") or None,
+        "pmi_pm_seq_num": panel.get("pmipmseqnum"),
+        "pmi_seq_num": panel.get("pmiseqnum"),
+        "pmi_official_item_num": panel.get("pmiofficialitemnum") or None,
+        "pmi_addendum_ind": panel.get("pmiaddendumind") or None,
+        "pmi_label_text": panel.get("pmilabeltext") or None,
+        "pmi_mic_code": panel.get("pmimiccode"),
+        "pmi_create_id": panel.get("pmicreateid"),
+        "pmi_create_date": panel.get("pmicreatedate"),
+        "pmi_update_id": panel.get("pmiupdateid"),
+        "pmi_update_date": panel.get("pmiupdatedate"),
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
         "report_category": reportCategory,
@@ -324,7 +368,6 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "creators": creators,
         "updaters": updaters,
         "user": {},
-
     }
 
 
@@ -517,16 +560,29 @@ def convert_agenda_statuses_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
-def convert_panel_meeting_item_query(query):
-    '''
-    Converts TalentMap query into FSBid query
-    '''
+def convert_create_panel_meeting_item_query(query):
     creator_id = pydash.get(query, "hru_id")
     return {
         "pmimiccode": pydash.get(query, "panelMeetingCategory") or "D",
         "pmipmseqnum": int(pydash.get(query, "panelMeetingId")),
         "pmicreateid": creator_id,
         "pmiupdateid": creator_id,
+    }
+    
+
+def convert_edit_panel_meeting_item_query(query):
+    refData = query.get("refData")
+    return {
+        "pmipmseqnum": int(query.get("panelMeetingId")),
+        "pmiseqnum": refData.get("pmi_seq_num"),
+        "pmiofficialitemnum": refData.get("pmi_official_item_num"),
+        "pmiaddendumind": refData.get("pmi_addendum_ind"),
+        "pmilabeltext": refData.get("pmi_label_text"),
+        "pmimiccode": query.get("panelMeetingCategory"),
+        "pmicreateid": refData.get("pmi_create_id"),
+        "pmicreatedate": refData.get("pmi_create_date", "").replace("T", " "),
+        "pmiupdateid": query.get("hru_id"),
+        "pmiupdatedate": refData.get("pmi_update_date", "").replace("T", " "),
     }
 
 
