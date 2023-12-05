@@ -377,8 +377,8 @@ def fsbid_legs_to_talentmap_legs(data):
     lat_code = pydash.get(data, 'aillatcode')
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
-    skill_code = f'({pydash.get(data, "agendaLegPosition[0].posstaffptrnskillcode")})' if pydash.get(data, "agendaLegPosition[0].posstaffptrnskillcode") else None
-    skill_desc = f'{pydash.get(data, "agendaLegPosition[0].posstaffptrnskilldesc")}' if pydash.get(data, "agendaLegPosition[0].posstaffptrnskilldesc") else None
+    skill_code = f'({pydash.get(data, "agendaLegPosition[0].posskillcode")})' if pydash.get(data, "agendaLegPosition[0].posskillcode") else None
+    skill_desc = f'{pydash.get(data, "agendaLegPosition[0].posskilldesc")}' if pydash.get(data, "agendaLegPosition[0].posskilldesc") else None
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
