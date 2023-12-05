@@ -88,7 +88,7 @@ def parseLanguage(lang):
             language["language"] = match.group(1).strip()
             language["reading_proficiency"] = match.group(3).replace(' ', '')
             language["spoken_proficiency"] = match.group(4).replace(' ', '')
-            language["representation"] = f"{match.group(1).strip()} {match.group(2).replace(' ', '')} {match.group(3).replace(' ', '')}/{match.group(4).replace(' ', '')}"
+            language["representation"] = f"{match.group(1).strip()} {match.group(2).replace(' ', '')} {match.group(4).replace(' ', '')}/{match.group(3).replace(' ', '')}"
             return language
 
 
