@@ -377,8 +377,8 @@ def fsbid_legs_to_talentmap_legs(data):
     lat_code = pydash.get(data, 'aillatcode')
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
-    skill_code = f'({pydash.get(data, "agendaLegPosition[0].posskillcode")})' if pydash.get(data, "agendaLegPosition[0].posskillcode") else None
-    skill_desc = f'{pydash.get(data, "agendaLegPosition[0].posskilldesc")}' if pydash.get(data, "agendaLegPosition[0].posskilldesc") else None
+    skill_code = pydash.get(data, "agendaLegPosition[0].posskillcode") if pydash.get(data, "agendaLegPosition[0].posskillcode") else None
+    skill_desc = pydash.get(data, "agendaLegPosition[0].posskilldesc") if pydash.get(data, "agendaLegPosition[0].posskilldesc") else None
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -460,8 +460,8 @@ def fsbid_aia_to_talentmap_aia(data):
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
-    skill_code = f'({pydash.get(data, "position[0].posskillcode")})' if pydash.get(data, "position[0].posskillcode") else None
-    skill_desc = f'{pydash.get(data, "position[0].posskilldesc")}' if pydash.get(data, "position[0].posskilldesc") else None
+    skill_code = pydash.get(data, "position[0].posskillcode") if pydash.get(data, "position[0].posskillcode") else None
+    skill_desc = pydash.get(data, "position[0].posskilldesc") if pydash.get(data, "position[0].posskilldesc") else None
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
