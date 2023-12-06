@@ -85,9 +85,10 @@ def parseLanguage(lang):
         match = LANG_PATTERN.search(lang)
         if match:
             language = {}
+            # lang comes in as 'Spanish(SP) 1/2', with  1 being the speaking score and 2 being the reading score
             language["language"] = match.group(1).strip()
-            language["reading_proficiency"] = match.group(3).replace(' ', '')
-            language["spoken_proficiency"] = match.group(4).replace(' ', '')
+            language["spoken_proficiency"] = match.group(3).replace(' ', '')
+            language["reading_proficiency"] = match.group(4).replace(' ', '')
             language["representation"] = f"{match.group(1).strip()} {match.group(2).replace(' ', '')} {match.group(3).replace(' ', '')}/{match.group(4).replace(' ', '')}"
             return language
 
