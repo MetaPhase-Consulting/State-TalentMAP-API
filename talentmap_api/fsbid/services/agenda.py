@@ -402,8 +402,8 @@ def fsbid_legs_to_talentmap_legs(data):
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
         "skill": f"({pydash.get(data, 'agendaLegPosition[0].posskillcode')}) {pydash.get(data, 'agendaLegPosition[0].posskilldesc')}",
         "skill_code": {pydash.get(data, 'agendaLegPosition[0].posskillcode')},
-        "skill_secondary": skill2.get("agendaLegPosition[0].skill_secondary"),
-        "skill_secondary_code": skill2.get("agendaLegPosition[0].skill_secondary_code"),
+        "skill_secondary": skill2.get("skill_secondary"),
+        "skill_secondary_code": skill2.get("skill_secondary_code"),
     }
     
     # Remove fields not applicable for separation leg action types
@@ -484,8 +484,8 @@ def fsbid_aia_to_talentmap_aia(data):
         "pay_plan_desc": pydash.get(data, "position[0].pospayplandesc", None),
         "skill": f"({pydash.get(data, 'position[0].posskillcode')}) {pydash.get(data, 'position[0].posskilldesc')}",
         "skill_code": pydash.get(data, 'position[0].posskillcode'),
-        "skill_secondary": skill2.get("position[0].skill_secondary"),
-        "skill_secondary_code": skill2.get("position[0].skill_secondary_code"), 
+        "skill_secondary": skill2.get("skill_secondary"),
+        "skill_secondary_code": skill2.get("skill_secondary_code"), 
     }
 
 
