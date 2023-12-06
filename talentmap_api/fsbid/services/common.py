@@ -780,8 +780,8 @@ def get_secondary_skill(pos={}):
     }
 
 def get_secondary_agenda_skill(legs={}):
-    skillSecondary = f"({legs.get('per_skill_2_code')}) {legs.get('per_skill_2_desc', None)}"
-    skillSecondaryCode = legs.get("per_skill_2_code", None)
+    skillSecondary = f"({legs.get('posskill2code')}) {legs.get('posskill2desc', None)}"
+    skillSecondaryCode = legs.get("posskill2code", None)
     if legs.get("per_skill_code", None) == legs.get("posskillcode", None):
         skillSecondary = None
         skillSecondaryCode = None
