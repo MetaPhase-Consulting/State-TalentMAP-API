@@ -779,6 +779,19 @@ def get_secondary_skill(pos={}):
         "skill_secondary_code": skillSecondaryCode,
     }
 
+def get_secondary_agenda_skill(legs={}):
+    skillSecondary = f"({legs.get('per_skill_2_code')}) {legs.get('per_skill_2_desc', None)}"
+    skillSecondaryCode = legs.get("per_skill_2_code", None)
+    if legs.get("per_skill_code", None) == legs.get("posskillcode", None):
+        skillSecondary = None
+        skillSecondaryCode = None
+    if not legs.get("pos_skill_code", None) or not legs.get("posskillcode", None):
+        skillSecondary = None
+        skillSecondaryCode = None
+    return {
+        "skill_secondary": skillSecondary,
+        "skill_secondary_code": skillSecondaryCode,
+    }
 
 APPROVED_PROP = 'approved'
 CLOSED_PROP = 'closed'
