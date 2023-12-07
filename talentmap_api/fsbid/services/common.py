@@ -779,15 +779,18 @@ def get_secondary_skill(pos={}):
         "skill_secondary_code": skillSecondaryCode,
     }
 
-def get_secondary_agenda_skill(legs={}):
-    skillSecondary = f"({legs.get('posskill2code')}) {legs.get('posskill2desc', None)}"
-    skillSecondaryCode = legs.get("posskill2code", None)
-    if legs.get("per_skill_code", None) == legs.get("posskillcode", None):
-        skillSecondary = None
-        skillSecondaryCode = None
-    if not legs.get("pos_skill_code", None) or not legs.get("posskillcode", None):
-        skillSecondary = None
-        skillSecondaryCode = None
+def get_secondary_skill_agenda(data={}):
+    skillSecondary = ""
+    skillSecondaryCode = ""
+    
+    if data.get('position', [{}])[0].get('posstaffptrnskillcode') :
+        skillSecondary = f"({data.get('position', [{}])[0].get('posstaffptrnskillcode', None)}) {data.get('position', [{}])[0].get('posstaffptrnskilldesc', None)}"
+        skillSecondaryCode = data.get('position', [{}])[0].get('posstaffptrnskillcode', None)
+
+    if data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskillcode') :
+        skillSecondary = f"({data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskillcode', None)}) {data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskilldesc', None)}"
+        skillSecondaryCode = data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskillcode', None)
+
     return {
         "skill_secondary": skillSecondary,
         "skill_secondary_code": skillSecondaryCode,

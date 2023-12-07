@@ -377,7 +377,7 @@ def fsbid_legs_to_talentmap_legs(data):
     lat_code = pydash.get(data, 'aillatcode')
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
-    skill2 = services.get_secondary_agenda_skill(pydash.get(data, "agendaLegPosition[0]", {}))
+    skill2 = services.get_secondary_skill_agenda(data)
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -462,7 +462,7 @@ def fsbid_aia_to_talentmap_aia(data):
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
-    skill2 = services.get_secondary_agenda_skill(pydash.get(data, "position[0]", {}))
+    skill2 = services.get_secondary_skill_agenda(data)
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
