@@ -76,7 +76,7 @@ class AgendaItemActionView(BaseView):
         Create single agenda
         '''
         try:
-            services.create_agenda(request.data, request.META['HTTP_JWT'])
+            services.modify_agenda(request.data, request.META['HTTP_JWT'])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")

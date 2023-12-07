@@ -150,7 +150,7 @@ def add_user_bureau_exceptions_req_mapping(request):
         'pv_ad_id_i': '',
         'i_pv_id': '',
         'i_emp_hru_id': request.get('hruId'),
-        'i_pv_value_txt': request.get('bureauCodeList'),
+        'i_pv_value_txt': ','.join(request.get('bureauCodeList')),
     }
 def add_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -181,7 +181,7 @@ def update_user_bureau_exceptions_req_mapping(request):
         'pv_ad_id_i': '',
         'i_pv_id': request.get('pvId'),
         'i_emp_hru_id': request.get('hruId'),
-        'i_pv_value_txt': request.get('bureauCodeList'),
+        'i_pv_value_txt': ','.join(request.get('bureauCodeList')),
         'i_last_update_id': request.get('lastUpdatedUserId'),
         'i_last_update_date': request.get('lastUpdatedDate'),
     }
