@@ -41,7 +41,7 @@ def bureau_exceptions_res_mapping(data):
 
         return {
             'pvId': x.get('PV_ID'),
-            'name': x.get('EMP_FULL_NAME'),
+            'name': services.remove_nmn(x.get('EMP_FULL_NAME')),
             'userBureauNames': userBureauNames,
             'empSeqNum': x.get('EMP_SEQ_NBR'),
             'hruId': x.get('HRU_ID'),
@@ -120,7 +120,7 @@ def user_bureau_exceptions_and_metadata_res_mapping(data):
             
     return {
         "hruId": data.get('O_EMP_HRU_ID'),
-        "name": data.get('O_EMP_FULL_NAME'),
+        "name": services.remove_nmn(data.get('O_EMP_FULL_NAME')),
         "pvId": data.get('O_PV_ID'),
         "userBureauCodes": userBureauCodes,
         "lastUpdatedDate": data.get('O_LAST_UPDATE_DATE'),
