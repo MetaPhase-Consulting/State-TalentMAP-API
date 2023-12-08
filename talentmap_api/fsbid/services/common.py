@@ -782,13 +782,13 @@ def get_secondary_skill(pos={}):
     }
 
 def get_secondary_skill_agenda(data={}):
-    skillSecondary = f"({data.get('agendaLegPosition[0].posstaffptrnskillcode', None)}) {data.get('agendaLegPosition[0].posstaffptrnskilldesc')}"
-    skillSecondaryCode = data.get('agendaLegPosition[0].posstaffptrnskillcode', None)
+    skillSecondary = f"({data.get('posstaffptrnskillcode')}) {data.get('posstaffptrnskilldesc', None)}"
+    skillSecondaryCode = data.get('posstaffptrnskillcode', None)
 
-    if data.get('agendaLegPosition[0].posskillcode', None) == data.get('agendaLegPosition[0].posstaffptrnskillcode', None):
+    if data.get('posskillcode', None) == data.get('posstaffptrnskillcode', None):
         skillSecondary = None
         skillSecondaryCode = None
-    if  not data.get('agendaLegPosition[0].posskillcode', None) or not data.get('agendaLegPosition[0].posstaffptrnskillcode', None):
+    if  not data.get('posskillcode', None) or not data.get('posstaffptrnskillcode', None):
         skillSecondary = None
         skillSecondaryCode = None
 
