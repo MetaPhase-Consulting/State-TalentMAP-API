@@ -784,13 +784,13 @@ def get_secondary_skill_agenda(data={}):
     skillSecondary = ""
     skillSecondaryCode = ""
     
-    if data.get('position', [{}])[0].get('posstaffptrnskillcode') :
-        skillSecondary = f"({data.get('position', [{}])[0].get('posstaffptrnskillcode', None)}) {data.get('position', [{}])[0].get('posstaffptrnskilldesc', None)}"
-        skillSecondaryCode = data.get('position', [{}])[0].get('posstaffptrnskillcode', None)
+    if data.get('position[0].posstaffptrnskillcode') :
+        skillSecondary = f"({data.get('position[0].posstaffptrnskillcode', '')}) {data.get('position[0].posstaffptrnskilldesc', None)}"
+        skillSecondaryCode = data.get('position[0].posstaffptrnskillcode', None)
 
-    if data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskillcode') :
-        skillSecondary = f"({data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskillcode', None)}) {data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskilldesc', None)}"
-        skillSecondaryCode = data.get('agendaLegPosition', [{}])[0].get('posstaffptrnskillcode', None)
+    if data.get('agendaLegPosition[0].posstaffptrnskillcode') :
+        skillSecondary = f"({data.get('agendaLegPosition[0].posstaffptrnskillcode', '')}) {data.get('agendaLegPosition[0].posstaffptrnskilldesc', None)}"
+        skillSecondaryCode = data.get('agendaLegPosition[0].posstaffptrnskillcode', None)
 
     return {
         "skill_secondary": skillSecondary,
