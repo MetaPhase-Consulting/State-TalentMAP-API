@@ -190,7 +190,7 @@ def fsbid_bureau_position_bids_to_talentmap(bid, jwt, cp_id, active_perdet):
         "name": fullname,
         "email": pydash.get(bid, "userDetails.gal_smtp_email_address_text"),
         "grade": bid.get("grade_code"),
-        "skill": f"TESTING",
+        "skill": f"{bid.get('skill_desc', None)} ({bid.get('skill_code')})",
         "skill_code": bid.get("skill_code", None),
         "language": bid.get("language_txt", None),
         "ted": ted,
