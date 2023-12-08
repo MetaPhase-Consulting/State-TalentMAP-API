@@ -769,6 +769,7 @@ def get_bidders_csv(self, pk, data, filename, jwt_token):
 def get_secondary_skill(pos={}):
     skillSecondary = f"{pos.get('pos_staff_ptrn_skill_desc', None)} ({pos.get('pos_staff_ptrn_skill_code')})"
     skillSecondaryCode = pos.get("pos_staff_ptrn_skill_code", None)
+
     if pos.get("pos_skill_code", None) == pos.get("pos_staff_ptrn_skill_code", None):
         skillSecondary = None
         skillSecondaryCode = None
@@ -781,16 +782,15 @@ def get_secondary_skill(pos={}):
     }
 
 def get_secondary_skill_agenda(data={}):
-    skillSecondary = ""
-    skillSecondaryCode = ""
-    
-    if data.get('position[0].posstaffptrnskillcode') :
-        skillSecondary = f"({data.get('position[0].posstaffptrnskillcode', '')}) {data.get('position[0].posstaffptrnskilldesc', None)}"
-        skillSecondaryCode = data.get('position[0].posstaffptrnskillcode', None)
+    skillSecondary = f"({data.get('agendaLegPosition[0].posstaffptrnskillcode', None)}) {data.get('agendaLegPosition[0].posstaffptrnskilldesc')}"
+    skillSecondaryCode = data.get('agendaLegPosition[0].posstaffptrnskillcode', None)
 
-    if data.get('agendaLegPosition[0].posstaffptrnskillcode') :
-        skillSecondary = f"({data.get('agendaLegPosition[0].posstaffptrnskillcode', '')}) {data.get('agendaLegPosition[0].posstaffptrnskilldesc', None)}"
-        skillSecondaryCode = data.get('agendaLegPosition[0].posstaffptrnskillcode', None)
+    if data.get('agendaLegPosition[0].posskillcode', None) == data.get('agendaLegPosition[0].posstaffptrnskillcode', None):
+        skillSecondary = None
+        skillSecondaryCode = None
+    if  not data.get('agendaLegPosition[0].posskillcode', None) or not data.get('agendaLegPosition[0].posstaffptrnskillcode', None):
+        skillSecondary = None
+        skillSecondaryCode = None
 
     return {
         "skill_secondary": skillSecondary,
