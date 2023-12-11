@@ -781,20 +781,33 @@ def get_secondary_skill(pos={}):
         "skill_secondary_code": skillSecondaryCode,
     }
 
-def get_secondary_skill_agenda(data={}):
-    skillSecondary = f"({data.get('posstaffptrnskillcode')}) {data.get('posstaffptrnskilldesc', None)}"
-    skillSecondaryCode = data.get('posstaffptrnskillcode', None)
+def get_skills(data={}):
+    skill_1_code = data.get('posskillcode')
+    skill_1_description = data.get('posskilldesc')
+    skill_1_representation = ''
+    skill_2_code = data.get('posstaffptrnskillcode')
+    skill_2_description = data.get('posstaffptrnskilldesc')
+    skill_2_representation = ''
+    combined_skills_representation = '-' 
 
-    if data.get('posskillcode', None) == data.get('posstaffptrnskillcode', None):
-        skillSecondary = None
-        skillSecondaryCode = None
-    if  not data.get('posskillcode', None) or not data.get('posstaffptrnskillcode', None):
-        skillSecondary = None
-        skillSecondaryCode = None
+    # assumes code and description exist together
+    if skill_1_code:
+        skill_1_representation = f'({skill_1_code}) {skill_1_description}'
+        combined_skills_representation = skill_1_representation
+        if (skill_1_code != skill_2_code) and skill_2_code:
+            skill_2_representation = f'({skill_2_code}) {skill_2_description}'
+            combined_skills_representation = f'{skill_1_representation}, {skill_2_representation}'
+
+    # return custom skill if it exists, combined string of skill and grade if not 
 
     return {
-        "skill_secondary": skillSecondary,
-        "skill_secondary_code": skillSecondaryCode,
+        "skill_1_code": skill_1_code,
+        "skill_1_description": skill_1_description,
+        "skill_1_representation": skill_1_representation,
+        "skill_2_code": skill_2_code,
+        "skill_2_description": skill_2_description,
+        "skill_2_representation": skill_2_representation,
+        "combined_skills_representation": combined_skills_representation,
     }
 
 APPROVED_PROP = 'approved'
