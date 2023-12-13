@@ -1102,3 +1102,14 @@ def format_desc_code(desc, code):
     display_text += f'({code})' if code else ''
 
     return display_text
+
+def remove_nmn(name):
+    # "Fernandez, Ahmad Nmn "        -> Fernandez, Ahmad
+    # "Townsend-Babi, Sal-Tore nmN " -> Townsend-Babi, Sal-Tore
+    # "Dickerson, Thelma Jones NMN"  -> Dickerson, Thelma Jones
+    # "Payne,    nmn Nathanial "     -> Payne, Nathanial
+    # "nmnCraig, nmnMolNmnlie Nmn"   -> nmnCraig, nmnMolNmnlie
+
+    nmn_pattern = "\s+nmn(?!\w)"
+
+    return re.sub(nmn_pattern, "", name, flags=re.I)
