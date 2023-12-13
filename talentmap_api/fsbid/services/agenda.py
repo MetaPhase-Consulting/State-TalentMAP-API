@@ -112,21 +112,20 @@ def modify_agenda(query={}, jwt_token=None, host=None):
     query['hru_id'] = hru_id
 
     # Unpack PMI request
-    meeting_category = query.get("panelMeetingCategory")
-    meeting_id = query.get("panelMeetingId")
+    pmi_mic_code = query.get("panelMeetingCategory")
+    pmi_pm_seq_num = query.get("panelMeetingId")
 
     # Original PMI
     existing_pmi_seq_num = refData.get("pmi_seq_num")
     existing_pmi_mic_code = refData.get("pmi_mic_code")
     existing_pmi_pm_seq_num = refData.get("pmi_pm_seq_num")
     
-    # TBD with AI
     newly_created_pmi_seq_num = None
 
     try:
-        if meeting_category or meeting_id:
+        if pmi_mic_code or pmi_pm_seq_num:
             if existing_pmi_seq_num:
-                if (meeting_category != existing_pmi_mic_code) or (meeting_id != existing_pmi_pm_seq_num):
+                if (pmi_mic_code != existing_pmi_mic_code) or (pmi_pm_seq_num != existing_pmi_pm_seq_num):
                     panel_meeting_item = edit_panel_meeting_item(query, jwt_token)
             else:
                  panel_meeting_item = create_panel_meeting_item(query, jwt_token)
@@ -136,25 +135,73 @@ def modify_agenda(query={}, jwt_token=None, host=None):
         logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return 
 
-    
+    # Only continue if PMI exists
     if newly_created_pmi_seq_num or existing_pmi_pm_seq_num:
-        query['pmiseqnum'] = newly_created_pmi_seq_num if newly_created_pmi_seq_num else existing_pmi_pm_seq_num
-        logger.info('4. calling ai ---------------------------------------------------')
-        agenda_item = create_agenda_item(query, jwt_token)
-        logger.info(f"4a. ai return {agenda_item}")
-        ai_seq_num = pydash.get(agenda_item, '[0].ai_seq_num')
-        if ai_seq_num:
-            query['aiseqnum'] = ai_seq_num
-            if pydash.get(query, 'agendaLegs'):
-                logger.info('5. calling ail ---------------------------------------------------')
-                for x in query['agendaLegs']:
-                    agenda_item_leg = create_agenda_item_leg(x, query, jwt_token)
-                    logger.info(f"5a. ail return {agenda_item_leg}")
-        else:
-            logger.error("AI create failed")
-    else:
-        logger.error("PMI create failed")
+        try:
+            # Inject PMI seq num into query
+            query['pmiseqnum'] = newly_created_pmi_seq_num if newly_created_pmi_seq_num else existing_pmi_pm_seq_num
 
+            # Unpack AI request
+            status_code = query.get("agendaStatusCode")
+            tod_code = query.get("combinedTod")
+            tod_combined_months_num = query.get("combinedTodMonthsNum")
+            tod_combined_other_text = query.get("combinedTodOtherText")
+            asg_seq_num = query.get("assignmentId")
+            asg_revision_num = query.get("assignmentVersion")
+
+            # Original AI
+            existing_asg = refData.get("assignment", {})
+            existing_ai_seq_num = refData.get("id")
+            existing_status_code = refData.get("status_short")
+            existing_tod_code = refData.get("aiCombinedTodCode")
+            existing_tod_combined_months_num = refData.get("aiCombinedTodMonthsNum")
+            existing_tod_combined_other_text = refData.get("aiCombinedTodOtherText")
+            existing_asg_seq_num = existing_asg.get("id")
+            existing_asg_revision_num = existing_asg.get("revision_num")
+
+            newly_created_ai_seq_num = None
+
+            if (status_code or tod_code or tod_combined_months_num or 
+                tod_combined_other_text or asg_seq_num or asg_revision_num):
+                if existing_ai_seq_num:
+                    if ((status_code != existing_status_code) or
+                        (tod_code != existing_tod_code) or
+                        (tod_combined_months_num != existing_tod_combined_months_num) or
+                        (tod_combined_other_text != existing_tod_combined_other_text) or
+                        (asg_seq_num != existing_asg_seq_num) or
+                        (asg_revision_num != existing_asg_revision_num)
+                    ):
+                        # TO-DO edit
+                        agenda_item = edit_agenda_item(query, jwt_token)
+                else:
+                    agenda_item = create_agenda_item(query, jwt_token)
+                    newly_created_ai_seq_num = pydash.get(agenda_item, '[0].ai_seq_num')
+        except Exception as e:
+            logger.error("Error updating/creating AI")
+            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
+            return 
+
+        try:
+            # Only continue if AI exists
+            if newly_created_ai_seq_num or existing_ai_seq_num:
+                query["aiseqnum"] = newly_created_ai_seq_num if newly_created_ai_seq_num else existing_ai_seq_num
+                # Grab all legs from ref data and delete them
+                # Recreate all new legs from new payload - assumes validator caught any errors beforehand
+                if pydash.get(query, 'agendaLegs'):
+                    for x in query['agendaLegs']:
+                        agenda_item_leg = create_agenda_item_leg(x, query, jwt_token)
+                        logger.info(f"5a. ail return {agenda_item_leg}")
+            else:
+                logger.error("AI does not exist")
+        except Exception as e:
+            logger.error("Error updating/creating AIL")
+            logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
+            return 
+    else:
+        logger.error("PMI does not exist")
+
+
+   
 
 def create_panel_meeting_item(query, jwt_token):
     '''
@@ -503,6 +550,7 @@ def fsbid_aia_to_talentmap_aia(data):
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
+        "revision_num": data.get("asgdrevisionnum"),
         "pos_title": pydash.get(data, "position[0].postitledesc", None),
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
