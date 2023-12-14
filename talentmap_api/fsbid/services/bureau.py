@@ -163,9 +163,9 @@ def fsbid_bureau_position_bids_to_talentmap(bid, jwt, cp_id, active_perdet):
         has_competing_rank_value = has_competing_rank(jwt, emp_id, cp_id)
 
     hasHandShakeOffered = False
-    if bid.get("handshake_code", None) == "HS":
+    if pydash.get(bid, "handshake_code", None) == "HS":
         hasHandShakeOffered = True
-    ted = ensure_date(bid.get("TED", None), utc_offset=-5)
+    ted = ensure_date(pydash.get(bid, "TED", None), utc_offset=-5)
 
     handshake = bh_services.get_bidder_handshake_data(cp_id, emp_id)
 
@@ -189,16 +189,16 @@ def fsbid_bureau_position_bids_to_talentmap(bid, jwt, cp_id, active_perdet):
         "emp_id": emp_id,
         "name": fullname,
         "email": pydash.get(bid, "userDetails.gal_smtp_email_address_text"),
-        "grade": bid.get("grade_code"),
-        "skill": f"{bid.get('skill_desc', None)} ({bid.get('skill_code')})",
-        "skill_code": bid.get("skill_code", None),
-        "language": bid.get("language_txt", None),
+        "grade": pydash.get(bid, "grade_code"),
+        "skill": f'{pydash.get(bid, "skill_desc", None)} ({pydash.get(bid, "skill_code", None)})',
+        "skill_code": pydash.get(bid, "skill_code", None),
+        "language": pydash.get(bid, "language_txt", None),
         "ted": ted,
         "has_handshake_offered": hasHandShakeOffered,
-        "submitted_date": ensure_date(bid.get('ubw_submit_dt'), utc_offset=-5),
+        "submitted_date": ensure_date(pydash.get(bid, 'ubw_submit_dt'), utc_offset=-5),
         # fsbid hs offered stats are for register, not to be confused with TM HS functionality
-        "handshake_registered": bid.get('ubw_handshake_offered_flag'),
-        "handshake_registered_date": ensure_date(bid.get('ubw_handshake_offered_dt'), utc_offset=-5),
+        "handshake_registered": pydash.get(bid, 'ubw_handshake_offered_flag'),
+        "handshake_registered_date": ensure_date(pydash.get(bid, 'ubw_handshake_offered_dt'), utc_offset=-5),
         "cdo": cdo,
         "classifications": classifications,
         "has_competing_rank": has_competing_rank_value,
