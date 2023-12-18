@@ -172,7 +172,6 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         (asg_seq_num != existing_asg_seq_num) or
                         (asg_revision_num != existing_asg_revision_num)
                     ):
-                        # TO-DO edit
                         agenda_item = edit_agenda_item(query, jwt_token)
                 else:
                     agenda_item = create_agenda_item(query, jwt_token)
@@ -272,7 +271,7 @@ def create_agenda_item(query, jwt_token):
 
 def edit_agenda_item(query, jwt_token):
     '''
-    Create AI
+    Edit AI
     '''
     aiseqnum = query.get("refData", {}).get("ai_seq_num")
     args = {
