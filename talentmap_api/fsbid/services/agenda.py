@@ -211,6 +211,8 @@ def modify_agenda(query={}, jwt_token=None, host=None):
             logger.error("Error updating/creating AIL")
             logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
             return 
+
+        return newly_created_ai_seq_num or existing_ai_seq_num
     else:
         logger.error("PMI does not exist")
 

@@ -73,11 +73,10 @@ class AgendaItemActionView(BaseView):
 
     def post(self, request):
         '''
-        Create single agenda
+        Create or Edit Agenda
         '''
         try:
-            services.modify_agenda(request.data, request.META['HTTP_JWT'])
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(services.modify_agenda(request.data, request.META['HTTP_JWT']))
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
