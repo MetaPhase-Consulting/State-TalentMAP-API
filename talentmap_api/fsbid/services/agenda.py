@@ -15,6 +15,7 @@ from talentmap_api.fsbid.services import common as services
 from talentmap_api.fsbid.services import client as client_services
 import talentmap_api.fsbid.services.agenda_item_validator as ai_validator
 from talentmap_api.common.common_helpers import ensure_date, sort_legs
+from talentmap_api.fsbid.requests import requests
 
 AGENDA_API_ROOT = settings.AGENDA_API_URL
 PANEL_API_ROOT = settings.PANEL_API_URL
@@ -185,12 +186,26 @@ def modify_agenda(query={}, jwt_token=None, host=None):
             # Only continue if AI exists
             if newly_created_ai_seq_num or existing_ai_seq_num:
                 query["aiseqnum"] = newly_created_ai_seq_num if newly_created_ai_seq_num else existing_ai_seq_num
-                # Grab all legs from ref data and delete them
-                # Recreate all new legs from new payload - assumes validator caught any errors beforehand
-                if pydash.get(query, 'agendaLegs'):
-                    for x in query['agendaLegs']:
-                        agenda_item_leg = create_agenda_item_leg(x, query, jwt_token)
-                        logger.info(f"5a. ail return {agenda_item_leg}")
+                
+                # Unpack existing AIL
+                existing_legs = refData.get("legs")
+
+                # Unpack new AIL
+                legs = query.get("agendaLegs")
+
+                if legs:
+                    if existing_legs:
+                        # Delete existing AILs 
+                        # Create new AILs from payload - assumes validator caught any errors beforehand
+                        existing_ails = [{"ailseqnum": x.get("ail_seq_num"), "ailupdatedate": x.get("ail_update_date", "").replace("T", " "),} for x in existing_legs if x.get("ail_seq_num")]
+                        for ail in existing_ails:
+                            ai_seq_num = query["aiseqnum"]
+                            delete_agenda_item_leg(ail, ai_seq_num, jwt_token)
+                    for leg in legs:
+                        agenda_item_leg = create_agenda_item_leg(leg, query, jwt_token)
+                        if not pydash.get(agenda_item_leg, "[0].ail_seq_num"):
+                            logger.error("Error creating AIL")
+
             else:
                 logger.error("AI does not exist")
         except Exception as e:
@@ -255,6 +270,35 @@ def create_agenda_item(query, jwt_token):
     )
 
 
+def edit_agenda_item(query, jwt_token):
+    '''
+    Create AI
+    '''
+    aiseqnum = query.get("refData", {}).get("ai_seq_num")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}",
+        "query": query,
+        "query_mapping_function": convert_create_agenda_item_query,
+        "jwt_token": jwt_token,
+        "mapping_function": "",
+    }
+
+    return services.send_put_request(
+        **args
+    )
+
+
+def delete_agenda_item_leg(query, ai_seq_num, jwt_token):
+    '''
+    Delete AIL
+    '''
+    # Move to common function if delete pattern emerges
+    ail_seq_num = query.get("ailseqnum")
+    ail_update_date = query.get("ailupdatedate")
+    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/legs/{ail_seq_num}?ailupdatedate={ail_update_date}"
+    return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+
+
 def create_agenda_item_leg(data, query, jwt_token):
     '''
     Create AIL
@@ -268,7 +312,7 @@ def create_agenda_item_leg(data, query, jwt_token):
         "mapping_function": ""
     }
 
-    return services.get_results_with_post(
+    return services.send_post_request(
         **args
     )
 
@@ -471,6 +515,7 @@ def fsbid_legs_to_talentmap_legs(data):
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
         "ail_seq_num": pydash.get(data, "ailseqnum", None),
+        "ail_update_date": data.get("ailupdatedate"),
         "ail_pos_seq_num": pydash.get(data, "ailposseqnum", None),
         "pos_title": pydash.get(data, "agendaLegPosition[0].postitledesc", None),
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
