@@ -511,6 +511,7 @@ def fsbid_legs_to_talentmap_legs(data):
     lat_code = pydash.get(data, 'aillatcode')
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
+    skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -534,6 +535,11 @@ def fsbid_legs_to_talentmap_legs(data):
         "is_separation": False,
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
+        "skill": skills_data.get("skill_1_representation"),
+        "skill_code": skills_data.get("skill_1_code"),
+        "skill_secondary": skills_data.get("skill_2_representation"),
+        "skill_secondary_code": skills_data.get("skill_2_code"),
+        "custom_skills_description": skills_data.get("combined_skills_representation"),
     }
     
     # Remove fields not applicable for separation leg action types
@@ -592,6 +598,7 @@ def fsbid_aia_to_talentmap_aia(data):
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
+    skills_data = services.get_skills(pydash.get(data, 'position[0]', {}))
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
@@ -612,6 +619,11 @@ def fsbid_aia_to_talentmap_aia(data):
         "is_separation": False,
         "pay_plan": pydash.get(data, "position[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "position[0].pospayplandesc", None),
+        "skill": skills_data.get("skill_1_representation"),
+        "skill_code": skills_data.get("skill_1_code"),
+        "skill_secondary": skills_data.get("skill_2_representation"),
+        "skill_secondary_code": skills_data.get("skill_2_code"),
+        "custom_skills_description": skills_data.get("combined_skills_representation"),
     }
 
 
