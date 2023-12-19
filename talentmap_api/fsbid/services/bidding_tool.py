@@ -145,7 +145,7 @@ def bidding_tool_response_mapping(response):
             'quarters_types': list(map(quarters_types, x.get('QRY_LSTQUARTERSTYPE_REF'))),
             'ehcps': list(map(ehcps, x.get('QRY_LSTEHCP_REF'))),
         }
-    return service_response(response, 'Panel Classifications Data', success_mapping)
+    return service_response(response, 'Bidding Tool Data', success_mapping)
 
 
 # ======================== Delete Bidding Tool ========================
@@ -235,6 +235,78 @@ def create_bidding_tool_request_mapping(request):
 def create_bidding_tool_response_mapping(data):
     return service_response(data, 'Bidding Tool Create')
 
+# ======================== Get Bidding Tool Create Data ========================
+
+def get_bidding_tool_create_data(data, jwt_token):
+    '''
+    Get Bidding Tool Create Data
+    '''
+    args = {
+        "proc_name": "qry_addBiddingTool",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "request_body": data,
+        "request_mapping_function": bidding_tool_create_data_request_mapping,
+        "response_mapping_function": bidding_tool_create_data_response_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def bidding_tool_create_data_request_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+def bidding_tool_create_data_response_mapping(response):
+    def locations(x):
+        return {
+            'code': x.get('POS_LOCATION_CODE'),
+            'state_country': x.get('GSA_STATE_COUNTRY'),
+            'dsv_nm': x.get('DSV_NM'),
+        }
+    def statuses(x):
+        return {
+            'code': x.get('BTS_CODE'),
+            'description': x.get('BTS_DESC_TEXT'),
+        }
+    def tods(x):
+        return {
+            'code': x.get('TOD_CODE'),
+            'description': x.get('TOD_DESC_TEXT'),
+        }
+    def unaccompanied_statuses(x):
+        return {
+            'code': x.get('US_CODE'),
+            'description': x.get('US_DESC_TEXT'),
+        }
+    def housing_types(x):
+        return {
+            'code': x.get('HT_CODE'),
+            'description': x.get('HT_DESC_TEXT'),
+        }
+    def quarters_types(x):
+        return {
+            'code': x.get('QT_CODE'),
+            'description': x.get('QT_DESC_TEXT'),
+        }
+    def ehcps(x):
+        return {
+            'code': x.get('EHCP_CODE'),
+            'description': x.get('EHCP_SHORT_DESC_TEXT'),
+        }
+    def success_mapping(x):
+        return {
+            'locations': list(map(locations, x.get('QRY_LSTLOCATIONS_REF'))),
+            'statuses': list(map(statuses, x.get('QRY_LSTSTATUS_REF'))),
+            'tods': list(map(tods, x.get('QRY_LSTTODS_REF'))),
+            'unaccompanied_statuses': list(map(unaccompanied_statuses, x.get('QRY_LSTUNACCOMPSTATUS_REF'))),
+            'housing_types': list(map(housing_types, x.get('QRY_LSTHOUSINGTYPE_REF'))),
+            'quarters_types': list(map(quarters_types, x.get('QRY_LSTQUARTERSTYPE_REF'))),
+            'ehcps': list(map(ehcps, x.get('QRY_LSTEHCP_REF'))),
+        }
+    return service_response(response, 'Bidding Tool Create Data', success_mapping)
 
 # ======================== Edit Bidding Tool ========================
 
