@@ -351,6 +351,11 @@ def send_post_request(uri, query, query_mapping_function, jwt_token, mapping_fun
     else:
         return response.get("Data", {})
 
+def send_delete_request(uri, query, query_mapping_function, jwt_token, api_root=API_ROOT):
+    url = f"{api_root}/{uri}"
+    mapped_query = query_mapping_function(query) if query_mapping_function else query
+    response = requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mapped_query)
+
 
 def send_count_request(uri, query, query_mapping_function, jwt_token, host=None, api_root=API_ROOT, use_post=False, is_template=False):
     '''
