@@ -144,4 +144,19 @@ class FSBidBiddingToolActionsView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+class FSBidBiddingToolCreateView(APIView):
+
+    # ======================== Get Bidding Tool Create Data ========================
+
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    def get(self, request):
+        '''
+        Gets Bidding Tool Create Data
+        '''
+        result = services.get_bidding_tool_create_data(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
