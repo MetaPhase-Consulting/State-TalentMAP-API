@@ -76,7 +76,8 @@ class AgendaItemActionView(BaseView):
         Create or Edit Agenda
         '''
         try:
-            return Response(services.modify_agenda(request.data, request.META['HTTP_JWT']))
+            res = services.modify_agenda(request.data, request.META['HTTP_JWT'])
+            return Response(res) if res else Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
