@@ -275,7 +275,7 @@ def edit_agenda_item(query, jwt_token):
     '''
     Edit AI
     '''
-    aiseqnum = query.get("refData", {}).get("ai_seq_num")
+    aiseqnum = query.get("refData", {}).get("id")
     args = {
         "uri": f"v1/agendas/{aiseqnum}",
         "query": query,
