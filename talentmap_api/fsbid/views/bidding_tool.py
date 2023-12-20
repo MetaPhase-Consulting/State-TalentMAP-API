@@ -149,7 +149,7 @@ class FSBidBiddingToolCreateView(APIView):
 
     # ======================== Get Bidding Tool Create Data ========================
 
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
 
     def get(self, request):
         '''
