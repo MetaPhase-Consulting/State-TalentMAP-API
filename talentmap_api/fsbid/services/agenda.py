@@ -266,7 +266,7 @@ def create_agenda_item(query, jwt_token):
         "mapping_function": "",
     }
 
-    return services.get_results_with_post(
+    return services.send_post_request(
         **args
     )
 
@@ -697,7 +697,7 @@ def convert_create_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     user_id = pydash.get(query, "hru_id")
-    return {
+    q = {
         "aipmiseqnum": pydash.get(query, "pmiseqnum", ""),
         "aiempseqnbr": pydash.get(query, "personId", ""),
         "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
@@ -717,6 +717,10 @@ def convert_create_agenda_item_query(query):
         "aiseqnumref": None,
         "aiitemcreatorid": user_id,
     }
+    logger.info('creating AI query mapping')
+    logger.info(q)
+    print(q)
+    return q
 
 def convert_agenda_item_leg_query(query, leg={}):
     '''
