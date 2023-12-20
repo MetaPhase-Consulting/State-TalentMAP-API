@@ -49,7 +49,7 @@ def get_bidding_tool(pk, jwt_token):
     Get Bidding Tool
     '''
     args = {
-        "proc_name": "qry_lstbiddingtool",
+        "proc_name": "qry_getbiddingtool",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
         "request_body": pk,
         "request_mapping_function": bidding_tool_request_mapping,
