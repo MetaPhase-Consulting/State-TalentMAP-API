@@ -706,7 +706,7 @@ def convert_create_agenda_item_query(query):
         "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
         "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
         "aiasgseqnum": pydash.get(query, "assignmentId", ""),
-        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion", ""),
+        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion") or 1,
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
