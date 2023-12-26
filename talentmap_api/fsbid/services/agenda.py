@@ -446,6 +446,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "pmi_create_date": panel.get("pmicreatedate"),
         "pmi_update_id": panel.get("pmiupdateid"),
         "pmi_update_date": panel.get("pmiupdatedate"),
+        "status_code": data.get("aiaiscode") or None,
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
         "report_category": reportCategory,
