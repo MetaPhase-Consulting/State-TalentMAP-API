@@ -99,6 +99,10 @@ def validate_individual_leg(leg):
             'valid': True,
             'errorMessage': ''
         },
+        'eta': {
+            'valid': True,
+            'errorMessage': ''
+        },
         'tod': validate_tod(leg['tod'], leg['tod_months'], leg['tod_long_desc']),
         'legActionType': {
             'valid': True,
@@ -113,6 +117,12 @@ def validate_individual_leg(leg):
             'errorMessage': ''
         }
     }
+
+    # Leg - must have ETA
+    if not leg['eta']:
+        individual_leg_validation['eta']['valid'] = False
+        individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
+        whole_leg_valid = False
 
     # Leg - must have TED
     if not leg['ted']:
