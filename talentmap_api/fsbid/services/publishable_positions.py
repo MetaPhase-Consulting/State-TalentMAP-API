@@ -124,6 +124,7 @@ def publishable_positions_res_mapping(data):
             'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
             'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
             'lastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
+            'deto_rwa': False,  # WiP DETO/RWA
             # FE not currently using the ones below
             'posSeqNum': x.get('POS_SEQ_NUM'),
             'aptSeqNum': x.get('APT_SEQUENCE_NUM'),
