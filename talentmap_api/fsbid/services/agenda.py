@@ -745,8 +745,8 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text
-        "ailetadate": None,
-        "ailetdtedsepdate": pydash.get(leg, "ted", None),
+        "ailetadate": leg.get("eta", "").replace("T", " "),
+        "ailetdtedsepdate": leg.get("ted", "").replace("T", " "),
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
         "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
