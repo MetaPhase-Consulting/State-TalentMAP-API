@@ -735,6 +735,8 @@ def convert_agenda_item_leg_query(query, leg={}):
     is_other_tod = True if (tod_code == 'X') and (tod_long_desc) else False
     tod_months = pydash.get(leg, "tod_months")
     return {
+    ted = leg.get("ted", "").replace("T", " ")
+    eta = leg.get("eta", "").replace("T", " ")
         "ailaiseqnum": pydash.get(query, "aiseqnum"),
         "aillatcode": pydash.get(leg, "legActionType", ""),
         "ailtfcd": pydash.get(leg, "travelFunctionCode", ""),
@@ -745,8 +747,8 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text
-        "ailetadate": leg.get("eta", "").replace("T", " "),
-        "ailetdtedsepdate": leg.get("ted", "").replace("T", " "),
+        "ailetadate": eta[:eta.rfind(".000Z")],
+        "ailetdtedsepdate": ted[:ted.rfind(".000Z")],
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
         "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
