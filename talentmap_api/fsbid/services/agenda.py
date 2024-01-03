@@ -734,9 +734,9 @@ def convert_agenda_item_leg_query(query, leg={}):
     tod_long_desc = pydash.get(leg, "tod_long_desc")
     is_other_tod = True if (tod_code == 'X') and (tod_long_desc) else False
     tod_months = pydash.get(leg, "tod_months")
-    return {
     ted = leg.get("ted", "").replace("T", " ")
     eta = leg.get("eta", "").replace("T", " ")
+    return {
         "ailaiseqnum": pydash.get(query, "aiseqnum"),
         "aillatcode": pydash.get(leg, "legActionType", ""),
         "ailtfcd": pydash.get(leg, "travelFunctionCode", ""),
