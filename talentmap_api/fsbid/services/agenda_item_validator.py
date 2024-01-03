@@ -131,13 +131,13 @@ def validate_individual_leg(leg):
         whole_leg_valid = False
 
     # Leg - must have Action
-    if not leg['legActionType']:
+    if not leg.get('legActionType'):
         individual_leg_validation['legActionType']['valid'] = False
         individual_leg_validation['legActionType']['errorMessage'] = 'Missing Action'
         whole_leg_valid = False
 
     # Leg - must have Travel - NEED TO CONFIRM THIS
-    if not leg['travelFunctionCode']:
+    if not leg.get('travelFunctionCode'):
         individual_leg_validation['travelFunctionCode']['valid'] = True
         individual_leg_validation['travelFunctionCode']['errorMessage'] = 'Missing Travel'
         # Can be nullable according to DB - need to follow up in FSBID
