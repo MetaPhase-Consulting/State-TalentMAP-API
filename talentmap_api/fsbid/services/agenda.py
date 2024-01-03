@@ -172,7 +172,6 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         (asg_seq_num != existing_asg_seq_num) or
                         (asg_revision_num != existing_asg_revision_num)
                     ):
-                        # TO-DO edit
                         agenda_item = edit_agenda_item(query, jwt_token)
                 else:
                     agenda_item = create_agenda_item(query, jwt_token)
@@ -212,6 +211,8 @@ def modify_agenda(query={}, jwt_token=None, host=None):
             logger.error("Error updating/creating AIL")
             logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
             return 
+
+        return newly_created_ai_seq_num or existing_ai_seq_num
     else:
         logger.error("PMI does not exist")
 
@@ -265,16 +266,16 @@ def create_agenda_item(query, jwt_token):
         "mapping_function": "",
     }
 
-    return services.get_results_with_post(
+    return services.send_post_request(
         **args
     )
 
 
 def edit_agenda_item(query, jwt_token):
     '''
-    Create AI
+    Edit AI
     '''
-    aiseqnum = query.get("refData", {}).get("ai_seq_num")
+    aiseqnum = query.get("refData", {}).get("id")
     args = {
         "uri": f"v1/agendas/{aiseqnum}",
         "query": query,
@@ -445,6 +446,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "pmi_create_date": panel.get("pmicreatedate"),
         "pmi_update_id": panel.get("pmiupdateid"),
         "pmi_update_date": panel.get("pmiupdatedate"),
+        "status_code": data.get("aiaiscode") or None,
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
         "report_category": reportCategory,
@@ -696,7 +698,7 @@ def convert_create_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     user_id = pydash.get(query, "hru_id")
-    return {
+    q = {
         "aipmiseqnum": pydash.get(query, "pmiseqnum", ""),
         "aiempseqnbr": pydash.get(query, "personId", ""),
         "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
@@ -705,7 +707,7 @@ def convert_create_agenda_item_query(query):
         "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
         "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
         "aiasgseqnum": pydash.get(query, "assignmentId", ""),
-        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion", ""),
+        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion") or 1,
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
@@ -716,6 +718,10 @@ def convert_create_agenda_item_query(query):
         "aiseqnumref": None,
         "aiitemcreatorid": user_id,
     }
+    logger.info('creating AI query mapping')
+    logger.info(q)
+    print(q)
+    return q
 
 def convert_agenda_item_leg_query(query, leg={}):
     '''
@@ -739,8 +745,8 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text
-        "ailetadate": None,
-        "ailetdtedsepdate": pydash.get(leg, "legEndDate", None),
+        "ailetadate": leg.get("eta", "").replace("T", " "),
+        "ailetdtedsepdate": leg.get("ted", "").replace("T", " "),
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
         "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
