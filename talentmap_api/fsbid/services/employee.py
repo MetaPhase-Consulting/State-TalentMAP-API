@@ -305,7 +305,7 @@ def map_assignments_separations_bids(data):
             # TO DO: Standardize skill desc for multi
             "custom_skills_description": data.get("position", {}).get("skill"),
             "asg_seq_num": pydash.get(data, 'id'),
-            "revision_num": pydash.get(pos, 'asgd_revision_num'),
+            "revision_num": pydash.get(data, 'asgd_revision_num'),
             "languages": pydash.get(pos, 'languages'),
             "eta": data.get('start_date'),
             "ted": data.get('end_date'),
