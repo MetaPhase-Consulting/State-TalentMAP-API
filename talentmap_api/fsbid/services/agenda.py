@@ -740,8 +740,8 @@ def convert_agenda_item_leg_query(query, leg={}):
     eta = leg.get("eta", "").replace("T", " ")
     return {
         "ailaiseqnum": pydash.get(query, "aiseqnum"),
-        "aillatcode": pydash.get(leg, "legActionType", ""),
-        "ailtfcd": pydash.get(leg, "travelFunctionCode", ""),
+        "aillatcode": pydash.get(leg, "action_code", ""),
+        "ailtfcd": pydash.get(leg, "travel_code", ""),
         "ailcpid": int(pydash.get(leg, "cpId") or 0) or None,
         "ailempseqnbr": int(pydash.get(query, "personId") or 0) or None,
         "ailperdetseqnum": int(pydash.get(query, "personDetailId") or 0) or None,
