@@ -745,7 +745,7 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailcpid": int(pydash.get(leg, "cpId") or 0) or None,
         "ailempseqnbr": int(pydash.get(query, "personId") or 0) or None,
         "ailperdetseqnum": int(pydash.get(query, "personDetailId") or 0) or None,
-        "ailposseqnum": int(pydash.get(leg, "posSeqNum") or 0) or None,
+        "ailposseqnum": int(pydash.get(leg, "ail_pos_seq_num") or 0) or None,
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text

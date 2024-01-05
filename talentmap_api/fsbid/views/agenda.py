@@ -65,7 +65,7 @@ class AgendaItemActionView(BaseView):
                     'legStartDate': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Start Date'),
                     'ted': openapi.Schema(type=openapi.TYPE_STRING, description='Leg End Date'),
                     'travel_code': openapi.Schema(type=openapi.TYPE_STRING, description='Travel Function Code'),
-                    'posSeqNum': openapi.Schema(type=openapi.TYPE_INTEGER, description='Position ID'),
+                    'ail_pos_seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Position ID'),
                     'cpId': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Position ID'), }
             ), description='Legs'),
         }
