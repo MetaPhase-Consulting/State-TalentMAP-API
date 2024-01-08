@@ -521,6 +521,8 @@ def fsbid_legs_to_talentmap_legs(data):
         "ail_update_date": data.get("ailupdatedate"),
         "ail_pos_seq_num": pydash.get(data, "ailposseqnum", None),
         "ail_cp_id": pydash.get(data, "ailcpid", None),
+        "ail_asg_seq_num": pydash.get(data, "ailasgseqnum", None),
+        "ail_asgd_revision_num": pydash.get(data, "ailasgdrevisionnum", None),
         "pos_title": pydash.get(data, "agendaLegPosition[0].postitledesc", None),
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
