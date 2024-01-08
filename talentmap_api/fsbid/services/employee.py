@@ -299,13 +299,14 @@ def map_assignments_separations_bids(data):
             "pay_plan": pydash.get(pos, 'pospayplancode'),
         }
     if is_assignment:
-        logger.info('----------elsa-------------')
+        logger.info('----------sophie-------------')
         logger.info(data)
+        data.get('tod_code')
         logger.info('-----------------------')
 
         tod_long_desc = data.get('tod_desc_text')
         tod_short_desc = data.get('tod_short_desc')
-        if data.get('tod_code') is 'X':
+        if data.get('tod_code') == 'X':
             tod_long_desc = data.get('asgd_tod_other_text')
             tod_short_desc = data.get('asgd_tod_other_text')
 
