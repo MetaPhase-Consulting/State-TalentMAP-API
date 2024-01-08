@@ -270,6 +270,11 @@ def map_assignments_separations_bids(data):
     is_bid = bool(data.get('hs_code')) 
     is_assignment = bool(data.get('status')) 
     is_separation = bool(data.get('seq_num'))
+    logger.info('------isbid isasg issep------')
+    logger.info(is_bid)
+    logger.info(is_assignment)
+    logger.info(is_separation)
+    logger.info('----------')
 
     pos = pydash.get(data, 'pos', {})
     if is_bid:
@@ -294,6 +299,9 @@ def map_assignments_separations_bids(data):
             "pay_plan": pydash.get(pos, 'pospayplancode'),
         }
     if is_assignment:
+        logger.info('-----------------------')
+        logger.info(data)
+        logger.info('-----------------------')
         return {
             "status": pydash.get(data, 'status'),
             "org": pydash.get(pos, 'posorgshortdesc'),
@@ -309,7 +317,8 @@ def map_assignments_separations_bids(data):
             "languages": pydash.get(pos, 'languages'),
             "eta": data.get('start_date'),
             "ted": data.get('end_date'),
-            "tod_long_desc": data.get('tod_short_desc'),
+            "tod_long_desc": data.get('tod_desc_text'),
+            "tod_short_desc": data.get('tod_short_desc'),
             "separation_location": {},
             "is_bid": is_bid,
             "is_assignment": is_assignment,

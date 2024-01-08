@@ -182,4 +182,8 @@ def fsbid_assignments_to_talentmap_assignments(data):
 
     add_these.extend(hard_coded)
 
-    return services.map_return_template_cols(add_these, cols_mapping, data)
+    x = services.map_return_template_cols(add_these, cols_mapping, data)
+    logger.info('------fsbid_assignments_to_talentmap_assignments------')
+    logger.info(x)
+    logger.info('---------------------')
+    return x
