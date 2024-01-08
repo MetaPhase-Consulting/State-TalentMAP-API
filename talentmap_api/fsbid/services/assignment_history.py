@@ -32,9 +32,6 @@ def get_assignments(query, jwt_token):
 
 
 def assignment_history_to_client_format(data):
-    print('👻👻👻👻👻👻👻👻👻👻')
-    print(data)
-    print('👻👻👻👻👻👻👻👻👻👻')
     # needs to be updated once fully integrated
     from talentmap_api.fsbid.services.common import get_post_overview_url, get_post_bidding_considerations_url, get_obc_id
     assignmentsCopy = []
@@ -187,8 +184,4 @@ def fsbid_assignments_to_talentmap_assignments(data):
 
     add_these.extend(hard_coded)
 
-    x = services.map_return_template_cols(add_these, cols_mapping, data)
-    logger.info('------fsbid_assignments_to_talentmap_assignments------')
-    logger.info(x)
-    logger.info('---------------------')
-    return x
+    return services.map_return_template_cols(add_these, cols_mapping, data)
