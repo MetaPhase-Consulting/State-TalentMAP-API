@@ -99,12 +99,16 @@ def validate_individual_leg(leg):
             'valid': True,
             'errorMessage': ''
         },
-        'tod': validate_tod(leg['tod'], leg['tod_months'], leg['tod_long_desc']),
-        'legActionType': {
+        'eta': {
             'valid': True,
             'errorMessage': ''
         },
-        'travelFunctionCode': {
+        'tod': validate_tod(leg['tod'], leg['tod_months'], leg['tod_long_desc']),
+        'action_code': {
+            'valid': True,
+            'errorMessage': ''
+        },
+        'travel_code': {
             'valid': True,
             'errorMessage': ''
         },
@@ -114,6 +118,12 @@ def validate_individual_leg(leg):
         }
     }
 
+    # Leg - must have ETA
+    if not leg['eta']:
+        individual_leg_validation['eta']['valid'] = False
+        individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
+        whole_leg_valid = False
+
     # Leg - must have TED
     if not leg['ted']:
         individual_leg_validation['ted']['valid'] = False
@@ -121,15 +131,15 @@ def validate_individual_leg(leg):
         whole_leg_valid = False
 
     # Leg - must have Action
-    if not leg['legActionType']:
-        individual_leg_validation['legActionType']['valid'] = False
-        individual_leg_validation['legActionType']['errorMessage'] = 'Missing Action'
+    if not leg.get('action_code'):
+        individual_leg_validation['action_code']['valid'] = False
+        individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
         whole_leg_valid = False
 
     # Leg - must have Travel - NEED TO CONFIRM THIS
-    if not leg['travelFunctionCode']:
-        individual_leg_validation['travelFunctionCode']['valid'] = True
-        individual_leg_validation['travelFunctionCode']['errorMessage'] = 'Missing Travel'
+    if not leg.get('travel_code'):
+        individual_leg_validation['travel_code']['valid'] = True
+        individual_leg_validation['travel_code']['errorMessage'] = 'Missing Travel'
         # Can be nullable according to DB - need to follow up in FSBID
         whole_leg_valid = True
 
