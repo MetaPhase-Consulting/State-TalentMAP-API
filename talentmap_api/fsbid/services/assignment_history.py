@@ -32,6 +32,9 @@ def get_assignments(query, jwt_token):
 
 
 def assignment_history_to_client_format(data):
+    print('👻👻👻👻👻👻👻👻👻👻')
+    print(data)
+    print('👻👻👻👻👻👻👻👻👻👻')
     # needs to be updated once fully integrated
     from talentmap_api.fsbid.services.common import get_post_overview_url, get_post_bidding_considerations_url, get_obc_id
     assignmentsCopy = []
@@ -52,7 +55,9 @@ def assignment_history_to_client_format(data):
                     "end_date": ensure_date(x['end_date']),
                     # TO DO: Clean up
                     "status": x['asgd_asgs_text'] or x['asgd_asgs_code'],
-                    "tod_short_desc": x.get('todshortdesc') or None,
+                    "tod_desc_text": x.get('tod_desc_text') or None,
+                    "tod_short_desc": x.get('tod_short_desc') or None,
+                    "asgd_tod_other_text": x.get('asgd_tod_other_text') or None,
                     "asgd_revision_num": x['asgd_revision_num'],
                     "position": {
                         "grade": pos.get("posgradecode") or None,
