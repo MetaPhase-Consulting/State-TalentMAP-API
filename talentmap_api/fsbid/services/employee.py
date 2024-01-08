@@ -299,7 +299,7 @@ def map_assignments_separations_bids(data):
             "pay_plan": pydash.get(pos, 'pospayplancode'),
         }
     if is_assignment:
-        logger.info('-----------------------')
+        logger.info('----------elsa-------------')
         logger.info(data)
         logger.info('-----------------------')
 
