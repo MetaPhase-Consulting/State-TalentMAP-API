@@ -403,12 +403,12 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     legsToReturn.extend([assignment])
     legsToReturn.extend(sortedLegs)
     statusFull = pydash.get(data, "aisdesctext") or None
-    updaters = pydash.get(data, "updaters") or None
     reportCategory = {
         "code": pydash.get(data, "Panel[0].pmimiccode") or None,
         "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
     }
 
+    updaters = pydash.get(data, "updaters") or None
     if updaters:
         updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
 
@@ -703,6 +703,8 @@ def convert_create_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     user_id = pydash.get(query, "hru_id")
+    aiseqnum = query.get("refData", {}).get("id")
+
     q = {
         "aipmiseqnum": pydash.get(query, "pmiseqnum", ""),
         "aiempseqnbr": pydash.get(query, "personId", ""),
@@ -723,6 +725,12 @@ def convert_create_agenda_item_query(query):
         "aiseqnumref": None,
         "aiitemcreatorid": user_id,
     }
+
+    if aiseqnum:
+        del q['aicreateid']
+        del q['aicreatedate']
+        del q['aiitemcreatorid']
+
     logger.info('creating AI query mapping')
     logger.info(q)
     print(q)
