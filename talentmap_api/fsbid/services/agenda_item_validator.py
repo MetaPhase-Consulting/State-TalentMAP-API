@@ -119,13 +119,13 @@ def validate_individual_leg(leg):
     }
 
     # Leg - must have ETA, if not separation
-    if not leg['eta'] and not leg.get('is_separation', False):
+    if not leg['eta'] and not leg.get('is_separation') or False:
         individual_leg_validation['eta']['valid'] = False
         individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
         whole_leg_valid = False
 
     # Leg - must have TED, if not separation
-    if not leg['ted'] and not leg.get('is_separation', False):
+    if not leg['ted'] and not leg.get('is_separation') or False:
         individual_leg_validation['ted']['valid'] = False
         individual_leg_validation['ted']['errorMessage'] = 'Missing TED'
         whole_leg_valid = False
