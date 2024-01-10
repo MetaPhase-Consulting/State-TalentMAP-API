@@ -520,6 +520,9 @@ def fsbid_legs_to_talentmap_legs(data):
         "ail_seq_num": pydash.get(data, "ailseqnum", None),
         "ail_update_date": data.get("ailupdatedate"),
         "ail_pos_seq_num": pydash.get(data, "ailposseqnum", None),
+        "ail_cp_id": pydash.get(data, "ailcpid", None),
+        "ail_asg_seq_num": pydash.get(data, "ailasgseqnum", None),
+        "ail_asgd_revision_num": pydash.get(data, "ailasgdrevisionnum", None),
         "pos_title": pydash.get(data, "agendaLegPosition[0].postitledesc", None),
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
@@ -740,12 +743,12 @@ def convert_agenda_item_leg_query(query, leg={}):
     eta = leg.get("eta", "").replace("T", " ")
     return {
         "ailaiseqnum": pydash.get(query, "aiseqnum"),
-        "aillatcode": pydash.get(leg, "legActionType", ""),
-        "ailtfcd": pydash.get(leg, "travelFunctionCode", ""),
-        "ailcpid": int(pydash.get(leg, "cpId") or 0) or None,
+        "aillatcode": pydash.get(leg, "action_code", ""),
+        "ailtfcd": pydash.get(leg, "travel_code", ""),
+        "ailcpid": int(pydash.get(leg, "ail_cp_id") or 0) or None,
         "ailempseqnbr": int(pydash.get(query, "personId") or 0) or None,
         "ailperdetseqnum": int(pydash.get(query, "personDetailId") or 0) or None,
-        "ailposseqnum": int(pydash.get(leg, "posSeqNum") or 0) or None,
+        "ailposseqnum": int(pydash.get(leg, "ail_pos_seq_num") or 0) or None,
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text
@@ -758,8 +761,8 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailemprequestedsepind": None,
         "ailcreateid": user_id,
         "ailupdateid": user_id,
-        "ailasgseqnum": int(pydash.get(leg, "legAssignmentId") or 0) or None,
-        "ailasgdrevisionnum": int(pydash.get(leg, "legAssignmentVersion") or 0) or None,
+        "ailasgseqnum": int(pydash.get(leg, "ail_asg_seq_num") or 0) or None,
+        "ailasgdrevisionnum": int(pydash.get(leg, "ail_asgd_revision_num") or 0) or None,
         "ailsepseqnum": None,
         "ailsepdrevisionnum": None,
     }

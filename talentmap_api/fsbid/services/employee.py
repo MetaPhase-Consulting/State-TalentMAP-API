@@ -294,6 +294,12 @@ def map_assignments_separations_bids(data):
             "pay_plan": pydash.get(pos, 'pospayplancode'),
         }
     if is_assignment:
+        tod_long_desc = data.get('tod_desc_text')
+        tod_short_desc = data.get('tod_short_desc')
+        if data.get('tod_code') == 'X':
+            tod_long_desc = data.get('asgd_tod_other_text')
+            tod_short_desc = data.get('asgd_tod_other_text')
+
         return {
             "status": pydash.get(data, 'status'),
             "org": pydash.get(pos, 'posorgshortdesc'),
@@ -305,11 +311,12 @@ def map_assignments_separations_bids(data):
             # TO DO: Standardize skill desc for multi
             "custom_skills_description": data.get("position", {}).get("skill"),
             "asg_seq_num": pydash.get(data, 'id'),
-            "revision_num": pydash.get(pos, 'asgd_revision_num'),
+            "revision_num": pydash.get(data, 'asgd_revision_num'),
             "languages": pydash.get(pos, 'languages'),
             "eta": data.get('start_date'),
             "ted": data.get('end_date'),
-            "tod_long_desc": data.get('tod_short_desc'),
+            "tod_long_desc": tod_long_desc,
+            "tod_short_desc": tod_short_desc,
             "separation_location": {},
             "is_bid": is_bid,
             "is_assignment": is_assignment,
