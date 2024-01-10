@@ -136,12 +136,7 @@ def validate_individual_leg(leg):
         individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
         whole_leg_valid = False
 
-    # Leg - must have Travel - NEED TO CONFIRM THIS
-    if not leg.get('travel_code'):
-        individual_leg_validation['travel_code']['valid'] = True
-        individual_leg_validation['travel_code']['errorMessage'] = 'Missing Travel'
-        # Can be nullable according to DB - need to follow up in FSBID
-        whole_leg_valid = True
+    # Leg - Can be nullable according to DB, so validation removed
 
     # Leg - must have duty station for separation
     if leg.get('is_separation', False) and not leg.get('separation_location', False):
