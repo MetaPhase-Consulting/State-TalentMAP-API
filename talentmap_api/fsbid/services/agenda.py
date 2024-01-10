@@ -279,7 +279,7 @@ def edit_agenda_item(query, jwt_token):
     args = {
         "uri": f"v1/agendas/{aiseqnum}",
         "query": query,
-        "query_mapping_function": convert_create_agenda_item_query,
+        "query_mapping_function": convert_edit_agenda_item_query,
         "jwt_token": jwt_token,
         "mapping_function": "",
     }
@@ -726,15 +726,44 @@ def convert_create_agenda_item_query(query):
         "aiitemcreatorid": user_id,
     }
 
-    if aiseqnum:
-        del q['aicreateid']
-        del q['aicreatedate']
-        del q['aiitemcreatorid']
-
     logger.info('creating AI query mapping')
     logger.info(q)
     print(q)
     return q
+
+def convert_edit_agenda_item_query(query):
+    '''
+    Converts TalentMap query into FSBid query
+    '''
+    refData = query.get("refData", {})
+    q = {
+        "aiseqnum": refData.get("id"),
+        "aipmiseqnum": refData.get("pmi_seq_num"),
+        "aiempseqnbr": query.get("personId", ""),
+        "aiperdetseqnum": query.get("personDetailId", ""),
+        "aiaiscode": query.get("agendaStatusCode", ""),
+        "aitodcode": query.get("combinedTod", ""),
+        "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
+        "aiasgseqnum": query.get("assignmentId", ""),
+        "aiasgdrevisionnum": query.get("assignmentVersion") or 1,
+        "aicombinedremarktext": None,
+        "aicorrectiontext": None,
+        "ailabeltext": None,
+        "aisorttext": None,
+        "aicreateid": refData.get("creator_name"),
+        "aicreatedate": refData.get("creator_date", "").replace("T", " "),
+        "aiupdateid": query.get("hru_id"),
+        "aiupdatedate": refData.get("modifier_date", "").replace("T", " "),
+        "aiseqnumref": None,
+        "aiitemcreatorid": query.get("refData", {}).get("creator_name")
+    }
+
+    logger.info('editing AI query mapping')
+    logger.info(q)
+    print(q)
+    return q
+
 
 def convert_agenda_item_leg_query(query, leg={}):
     '''
