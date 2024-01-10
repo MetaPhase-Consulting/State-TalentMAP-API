@@ -1,7 +1,8 @@
 import logging
-
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
+from rest_framework.response import Response
+from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -46,3 +47,92 @@ def assignment_cycles_res_mapping(data):
             'post_view': x.get('CYCLE_POST_VIEWABLE_IND') or None,
         }
     return list(map(results_mapping, data.get('QRY_LSTASSIGNCYCLES_REF')))
+
+
+def create_assignment_cycle(jwt_token, request):
+    '''
+    Create a new Assignment Cycle for the Cycle Management Page
+    '''
+    args = {
+        "proc_name": 'act_addassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": create_assignment_cycles_req_mapping,
+        "response_mapping_function": create_assignment_cycles_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def create_assignment_cycles_req_mapping(req):
+    name = req['data']['assignmentCycle']
+    cycle_category = req['data']['cycleCategory']
+    cycle_status = req['data']['cycleStatus']
+    exclusive_positions = "Y" if req['data']['exclusivePositions'] else "N"
+    post_viewable = "Y" if req['data']['postViewable'] else "N"
+
+    cycle_boundries = req['data']['cycleBoundries'][0][:10]
+    six_month_language = req['data']['sixMonthLanguage'][0][:10]
+    twelve_month_language = req['data']['twelveMonthLanguage'][0][:10]
+    twenty_four_month_language = req['data']['twentyFourMonthLanguage'][0][:10]
+    bureau_position_review = req['data']['bureauPositionReview'][:10]
+    bidding_start = req['data']['biddingStart'][:10]
+    bid_due = req['data']['bidDue'][:10]
+    bureau_pre_season_bid_review = req['data']['bureauPreSeasonBidReview'][:10]
+    bureau_early_season_bid_review = req['data']['bureauEarlySeasonBidReview'][:10]
+    bureau_bid_review = req['data']['bureauBidReview'][:10]
+    bid_audit = req['data']['bidAudit'][:10]
+    bid_book_review = req['data']['bidBookReview'][:10]
+    bid_count_review = req['data']['bidCountReview'][:10]
+    htf_review = req['data']['htfReview'][:10]
+    organization_count_review = req['data']['organizationCountReview'][:10]
+    mds_review = req['data']['mdsReview'][:10]
+    assigned_bidder = req['data']['assignedBidder'][:10]
+    start_dates_string = ",".join(
+        [
+            cycle_boundries,
+            six_month_language,
+            twelve_month_language,
+            twenty_four_month_language,
+            bureau_position_review,
+            bidding_start,
+            bid_due,
+            bureau_pre_season_bid_review,
+            bureau_early_season_bid_review,
+            bureau_bid_review,
+            bid_audit,
+            bid_book_review,
+            bid_count_review,
+            htf_review,
+            organization_count_review,
+            mds_review,
+            assigned_bidder,
+        ]
+    )
+    cycle_boundries_end = req['data']['cycleBoundries'][1][:10]
+    six_month_language_end = req['data']['sixMonthLanguage'][1][:10]
+    twelve_month_language_end = req['data']['twelveMonthLanguage'][1][:10]
+    twenty_four_month_language_end = req['data']['twentyFourMonthLanguage'][1][:10]
+    end_dates_string = ",".join([cycle_boundries_end, six_month_language_end, twelve_month_language_end, twenty_four_month_language_end])
+
+    mapped_request = {
+        "PV_API_VERSION_I": "",
+        'PV_AD_ID_I': '',
+        "i_cycle_nm_txt": name,
+        "i_cc_cd": cycle_category,
+        "i_cs_cd": cycle_status,
+        "i_cycle_exclusive_pos_flg": exclusive_positions,
+        "i_cycle_post_viewable_ind": post_viewable,
+        "i_cdt_cd": "CYCLE,6MOLANG,12MOLANG,24MOLANG,BURPOS,BIDSTART,BIDDUE,BURPREBD,BUREARLY,BURBID,BIDAUDIT,BIDBOOK,BIDCOUNT,BIDHTF,BIDORG,BIDMDS,PANLASG",
+    }
+    mapped_request['i_cd_bgn_dt'] = start_dates_string
+    mapped_request['i_cd_end_dt'] = end_dates_string + ",,,,,,,,,,,,,"
+    return mapped_request
+
+
+def create_assignment_cycles_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to create this Assignment Cycle. Please try again.')
+    return Response(data)
