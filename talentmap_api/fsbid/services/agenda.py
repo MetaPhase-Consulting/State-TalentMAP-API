@@ -425,10 +425,10 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
 
     return {
         "id": pydash.get(data, "aiseqnum") or None,
-        "aiCombinedTodCode": pydash.get(data, "aitodcode") or "",
-        "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
-        "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
-        "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "aiCombinedTodCode": pydash.get(data, "aitodcode"),
+        "aiCombinedTodDescText": pydash.get(data, "aitoddesctext"),
+        "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else None,  # only custom/other TOD should have months and other_text
+        "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else None,  # only custom/other TOD should have months and other_text
         "ahtCode": pydash.get(data, "ahtcode") or None,
         "ahtDescText": pydash.get(data, "ahtdesctext") or None,
         "aihHoldNum": pydash.get(data, "aihholdnum") or None,
@@ -708,9 +708,10 @@ def convert_create_agenda_item_query(query):
         "aiempseqnbr": pydash.get(query, "personId", ""),
         "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
         "aiaiscode": pydash.get(query, "agendaStatusCode", ""),
-        "aitodcode": pydash.get(query, "combinedTod", ""),
-        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
-        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
+        "aitodcode": pydash.get(query, "combinedTod"),
+        "aitoddesctext": pydash.get(query, "combinedTodDescText"),
+        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum"),
+        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText"),
         "aiasgseqnum": pydash.get(query, "assignmentId", ""),
         "aiasgdrevisionnum": pydash.get(query, "assignmentVersion") or 1,
         "aicombinedremarktext": None,
