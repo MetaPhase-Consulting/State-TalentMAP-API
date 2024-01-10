@@ -7,6 +7,7 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     url(r'^$', views.FSBidAssignmentCyclesListView.as_view(), name='FSBid-assignment-cycles-list'),
+    url(r'^create/$', views.FSBidAssignmentCyclesCreateView.as_view(), name="FSBid-assignment-cycles-create"),
 ]
 
 urlpatterns += router.urls
