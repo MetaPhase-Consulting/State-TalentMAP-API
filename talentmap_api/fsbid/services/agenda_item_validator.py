@@ -103,7 +103,7 @@ def validate_individual_leg(leg):
             'valid': True,
             'errorMessage': ''
         },
-        'tod': validate_tod(leg.get('is_separation') or False, leg),
+        'tod': validate_tod(leg),
         'action_code': {
             'valid': True,
             'errorMessage': ''
@@ -118,14 +118,14 @@ def validate_individual_leg(leg):
         }
     }
 
-    # Leg - must have ETA
-    if not leg['eta']:
+    # Leg - must have ETA, if not separation
+    if not leg['eta'] and not leg.get('is_separation') or False:
         individual_leg_validation['eta']['valid'] = False
         individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
         whole_leg_valid = False
 
-    # Leg - must have TED
-    if not leg['ted']:
+    # Leg - must have TED, if not separation
+    if not leg['ted'] and not leg.get('is_separation') or False:
         individual_leg_validation['ted']['valid'] = False
         individual_leg_validation['ted']['errorMessage'] = 'Missing TED'
         whole_leg_valid = False
@@ -152,10 +152,11 @@ def validate_individual_leg(leg):
     return (individual_leg_validation, whole_leg_valid)
 
 
-def validate_tod(is_separation, leg):
+def validate_tod(leg):
     tod = leg.get('tod') or None
     tod_months = leg.get('tod_months') or None
     tod_long_desc = leg.get('tod_long_desc') or None
+    is_separation = leg.get('is_separation') or False
 
     tod_validation = {
         'valid': True,
