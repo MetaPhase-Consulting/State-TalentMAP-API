@@ -103,7 +103,7 @@ def validate_individual_leg(leg):
             'valid': True,
             'errorMessage': ''
         },
-        'tod': validate_tod(leg),
+        'tod': validate_tod(leg.get('is_separation') or False, leg),
         'action_code': {
             'valid': True,
             'errorMessage': ''
@@ -152,7 +152,7 @@ def validate_individual_leg(leg):
     return (individual_leg_validation, whole_leg_valid)
 
 
-def validate_tod(leg):
+def validate_tod(is_separation, leg):
     tod = leg.get('tod', None)
     tod_months = leg.get('tod_months', None)
     tod_long_desc = leg.get('tod_long_desc', None)
@@ -162,8 +162,8 @@ def validate_tod(leg):
         'errorMessage': ''
     }
 
-    # Leg - must have TOD
-    if not tod:
+    # Leg - must have TOD, if not separation
+    if not tod and not is_separation:
         tod_validation['valid'] = False
         tod_validation['errorMessage'] = 'Missing TOD'
         return tod_validation
