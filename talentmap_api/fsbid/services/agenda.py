@@ -204,6 +204,34 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         agenda_item_leg = create_agenda_item_leg(leg, query, jwt_token)
                         if not pydash.get(agenda_item_leg, "[0].ail_seq_num"):
                             logger.error("Error creating AIL")
+                
+                # Unpack existing AIR/AIRI
+                existing_remarks = refData.get("remarks")
+                
+                # Unpack new AIR/AIRI
+                remarks = query.get("remarks")
+                
+                # Always delete regardless of query, for empty remarks edge case
+                if existing_remarks:
+                    ai_seq_num = query.get("aiseqnum")
+                    # TO DO: update read/refData to include necessary meta data
+                    existing_airs = [{"airaiseqnum": ai_seq_num, "airseqnum": air_seq_num, "airupdatedate": x.get("air_update_date", "").replace("T", " "),} for x in existing_remarks if x.get("air_seq_num")]
+                    for air in existing_airs:
+                        delete_agenda_item_remark(air, jwt_token)
+                if remarks:
+                    for remark in remarks:
+                        remark_inserts = remark.get("remark_inserts")
+                        agenda_item_remark = create_agenda_item_remark(remark, query, jwt_token)
+                        if not pydash.get(agenda_item_remark, "[0].air_seq_num"):
+                            logger.error("Error creating AIR")
+                        elif remark_inserts:
+                            for insert in remark_inserts:
+                                agenda_item_remark_insert = create_agenda_item_remark_insert(insert, query, jwt_token)
+                                if not pydash.get(agenda_item_remark_insert, "[0].airi_seq_num"):
+                                    logger.error("Error creating AIRI")
+
+
+
 
             else:
                 logger.error("AI does not exist")
@@ -299,6 +327,17 @@ def delete_agenda_item_leg(query, ai_seq_num, jwt_token):
     url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/legs/{ail_seq_num}?ailupdatedate={ail_update_date}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
+
+def delete_agenda_item_remark(query, jwt_token):
+    '''
+    Delete AIR
+    '''
+    # Move to common function if delete pattern emerges
+    ai_seq_num = query.get("airaiseqnum")
+    air_seq_num = query.get("airseqnum")
+    air_update_date = query.get("airupdatedate")
+    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/remarks/{air_seq_num}?airupdatedate={air_update_date}"
+    return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 def create_agenda_item_leg(data, query, jwt_token):
     '''
