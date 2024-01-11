@@ -517,16 +517,16 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     panel = data.get("Panel")[0]
 
     return {
-        "id": pydash.get(data, "aiseqnum") or None,
-        "aiCombinedTodCode": pydash.get(data, "aitodcode") or "",
-        "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
-        "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
-        "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
-        "ahtCode": pydash.get(data, "ahtcode") or None,
-        "ahtDescText": pydash.get(data, "ahtdesctext") or None,
-        "aihHoldNum": pydash.get(data, "aihholdnum") or None,
-        "aihHoldComment": pydash.get(data, "aihholdcommenttext") or None,
-        "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
+        "id": data.get("aiseqnum") or None,
+        "aiCombinedTodCode": data.get("aitodcode") or "",
+        "aiCombinedTodDescText": data.get("aitoddesctext") or None,
+        "aiCombinedTodMonthsNum": data.get("aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "aiCombinedTodOtherText": data.get("aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "ahtCode": data.get("ahtcode") or None,
+        "ahtDescText": data.get("ahtdesctext") or None,
+        "aihHoldNum": data.get("aihholdnum") or None,
+        "aihHoldComment": data.get("aihholdcommenttext") or None,
+        "remarks": services.parse_agenda_remarks(data.get("remarks") or []),
         "pmd_dttm": ensure_date(panel.get("pmddttm"), utc_offset=-5),
         "pmt_code": panel.get("pmtcode") or None,
         "pmi_pm_seq_num": panel.get("pmipmseqnum"),
@@ -543,14 +543,14 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
         "report_category": reportCategory,
-        "perdet": str(int(pydash.get(data, "aiperdetseqnum"))) or None,
+        "perdet": str(int(data.get("aiperdetseqnum"))) or None,
         "assignment": assignment,
         "legs": legsToReturn,
-        "update_date": ensure_date(pydash.get(data, "update_date"), utc_offset=-5),  # TODO - find this date
-        "modifier_name": pydash.get(data, "aiupdateid") or None,  # TODO - this is only the id
-        "modifier_date": ensure_date(pydash.get(data, "aiupdatedate"), utc_offset=-5) or None,
-        "creator_name": pydash.get(data, "aiitemcreatorid") or None,  # TODO - this is only the id
-        "creator_date": ensure_date(pydash.get(data, "aicreatedate"), utc_offset=-5) or None,
+        "update_date": data.get("update_date"),  # TODO - find this date
+        "modifier_name": data.get("aiupdateid") or None,  # TODO - this is only the id
+        "modifier_date": data.get("aiupdatedate") or None, 
+        "creator_name": data.get("aiitemcreatorid") or None,  # TODO - this is only the id
+        "creator_date": data.get("aicreatedate") or None,
         "creators": creators,
         "updaters": updaters,
         "user": {},
@@ -799,7 +799,7 @@ def convert_create_agenda_item_query(query):
 
     q = {
         "aipmiseqnum": query.get("pmiseqnum", ""),
-        "aiempseqnbr": query.get("personId", ""),
+        "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
         "aiaiscode": query.get("agendaStatusCode", ""),
         "aitodcode": query.get("combinedTod", ""),
@@ -831,11 +831,12 @@ def convert_edit_agenda_item_query(query):
     refData = query.get("refData", {})
     logger.info('editing AI query mapping')
     logger.info(query)
-
+    create_date = refData.get("creator_date", "").replace("T", " ")
+    update_date = refData.get("modifier_date", "").replace("T", " ")
     q = {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
-        "aiempseqnbr": query.get("personId", ""),
+        "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
         "aiaiscode": query.get("agendaStatusCode", ""),
         "aitodcode": query.get("combinedTod", ""),
@@ -848,9 +849,9 @@ def convert_edit_agenda_item_query(query):
         "ailabeltext": None,
         "aisorttext": None,
         "aicreateid": refData.get("creator_name"),
-        "aicreatedate": refData.get("creator_date", "").replace("T", " "),
+        "aicreatedate": create_date,
         "aiupdateid": query.get("hru_id"),
-        "aiupdatedate": refData.get("modifier_date", "").replace("T", " "),
+        "aiupdatedate": update_date,
         "aiseqnumref": None,
         "aiitemcreatorid": refData.get("creator_name")
     }
