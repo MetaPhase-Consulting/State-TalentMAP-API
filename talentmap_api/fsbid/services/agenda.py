@@ -204,7 +204,30 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         agenda_item_leg = create_agenda_item_leg(leg, query, jwt_token)
                         if not pydash.get(agenda_item_leg, "[0].ail_seq_num"):
                             logger.error("Error creating AIL")
-
+                
+                # Unpack existing AIR/AIRI
+                existing_remarks = refData.get("remarks")
+                
+                # Unpack new AIR/AIRI
+                remarks = query.get("remarks")
+                
+                # Always delete regardless of query, for empty remarks edge case
+                if existing_remarks:
+                    ai_seq_num = query.get("aiseqnum")
+                    existing_airs = [{"airaiseqnum": ai_seq_num, "airrmrkseqnum": x.get("air_rmrk_seq_num"), "airupdatedate": x.get("air_update_date", "").replace("T", " "),} for x in existing_remarks]
+                    for air in existing_airs:
+                        delete_agenda_item_remark(air, jwt_token)
+                if remarks:
+                    for remark in remarks:
+                        remark_inserts = remark.get("user_remark_inserts")
+                        agenda_item_remark = create_agenda_item_remark(remark, query, jwt_token)
+                        if not pydash.get(agenda_item_remark, "[0].rmrk_seq_num"):
+                            logger.error("Error creating AIR")
+                        elif remark_inserts:
+                            for insert in remark_inserts:
+                                agenda_item_remark_insert = create_agenda_item_remark_insert(insert, query, jwt_token)
+                                if not pydash.get(agenda_item_remark_insert, "[0].ri_seq_num"):
+                                    logger.error("Error creating AIRI")
             else:
                 logger.error("AI does not exist")
         except Exception as e:
@@ -300,6 +323,17 @@ def delete_agenda_item_leg(query, ai_seq_num, jwt_token):
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 
+def delete_agenda_item_remark(query, jwt_token):
+    '''
+    Delete AIR
+    '''
+    # Move to common function if delete pattern emerges
+    ai_seq_num = query.get("airaiseqnum")
+    air_rmrk_seq_num = query.get("airrmrkseqnum")
+    air_update_date = query.get("airupdatedate")
+    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/remarks/{air_rmrk_seq_num}?airupdatedate={air_update_date}"
+    return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+
 def create_agenda_item_leg(data, query, jwt_token):
     '''
     Create AIL
@@ -316,6 +350,65 @@ def create_agenda_item_leg(data, query, jwt_token):
     return services.send_post_request(
         **args
     )
+
+
+def create_agenda_item_remark(data, query, jwt_token):
+    '''
+    Create AIR
+    '''
+    aiseqnum = query.get("aiseqnum")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}/remarks",
+        "query": query,
+        "query_mapping_function": partial(convert_create_agenda_item_remark_query, remark=data),
+        "jwt_token": jwt_token,
+        "mapping_function": ""
+    }
+
+    return services.send_post_request(
+        **args
+    )
+
+def create_agenda_item_remark_insert(data, query, jwt_token):
+    '''
+    Create AIRI
+    '''
+    aiseqnum = query.get("aiseqnum")
+    airrmrkseqnum = data.get("airirmrkseqnum")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}/inserts",
+        "query": query,
+        "query_mapping_function": partial(convert_create_agenda_item_remark_insert_query, insert=data),
+        "jwt_token": jwt_token,
+        "mapping_function": ""
+    }
+
+    return services.send_post_request(
+        **args
+    )
+
+
+def convert_create_agenda_item_remark_insert_query(query, insert={}):
+    return {
+        "airiaiseqnum": query.get("aiseqnum"),
+        "airirmrkseqnum": insert.get("airirmrkseqnum"),
+        "aiririseqnum": insert.get("aiririseqnum"),
+        "airiinsertiontext": insert.get("airiinsertiontext"),
+        "airicreateid": query.get("hru_id"),
+        "airiupdateid": query.get("hru_id"),
+    }
+
+
+
+def convert_create_agenda_item_remark_query(query, remark={}):
+    return {
+        "airaiseqnum": query.get("aiseqnum"),
+        "airrmrkseqnum": remark.get("seq_num"),
+        "airremarktext": remark.get("text"),
+        "aircompleteind": "Y",
+        "aircreateid": query.get("hru_id"),
+        "airupdateid": query.get("hru_id"),
+    }
 
 
 def get_agenda_item_history_csv(query, jwt_token, host, limit=None):
@@ -737,7 +830,7 @@ def convert_edit_agenda_item_query(query):
     '''
     refData = query.get("refData", {})
     logger.info('editing AI query mapping')
-    logger.info(refData)
+    logger.info(query)
 
     q = {
         "aiseqnum": refData.get("id"),
@@ -849,29 +942,28 @@ def get_agenda_ref_remarks(query, jwt_token):
 
 
 def fsbid_to_talentmap_agenda_remarks(data):
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-
-    hard_coded = ['seq_num', 'rc_code', 'order_num', 'short_desc_text', 'mutually_exclusive_ind', 'text', 'active_ind', 'remark_inserts', 'ref_text', 'user_remark_inserts']
-
-    add_these = []
-
-    cols_mapping = {
-        'seq_num': 'rmrkseqnum',
-        'rc_code': 'rmrkrccode',
-        'order_num': 'rmrkordernum',
-        'short_desc_text': 'rmrkshortdesctext',
-        'mutually_exclusive_ind': 'rmrkmutuallyexclusiveind',
-        'text': 'rmrktext',
-        'ref_text': 'refrmrktext',
-        'active_ind': 'rmrkactiveind',
-        'remark_inserts': 'RemarkInserts',
-        'user_remark_inserts': 'refrmrkinsertions'
+    return {
+        "seq_num": data.get("rmrkseqnum"),
+        "rc_code": data.get("rmrkrccode"),
+        "order_num": data.get("rmrkordernum"),
+        "short_desc_text": data.get("rmrkshortdesctext"),
+        "mutually_exclusive_ind": data.get( "rmrkmutuallyexclusiveind"),
+        "text": data.get("rmrktext"),
+        "ref_text": data.get("refrmrktext"),
+        "active_ind": data.get("rmrkactiveind"),
+        "remark_inserts": data.get("RemarkInserts"),
+        "user_remark_inserts": data.get("refrmrkinsertions"),
+        "air_ai_seq_num": data.get("airaiseqnum"),
+        "air_rmrk_seq_num": data.get("airrmrkseqnum"),
+        "air_remark_text": data.get("airremarktext"),
+        "air_complete_ind": data.get("aircompleteind"),
+        "air_create_id": data.get("aircreateid"),
+        "air_create_date": data.get("aircreatedate"),
+        "air_update_id": data.get("airupdateid"),
+        "air_update_date": data.get("airupdatedate"),
     }
 
-    add_these.extend(hard_coded)
 
-    return services.map_return_template_cols(add_these, cols_mapping, data)
 
 def fsbid_to_talentmap_agenda_remarks_ref(data):
     # hard_coded are the default data points (opinionated EP)
