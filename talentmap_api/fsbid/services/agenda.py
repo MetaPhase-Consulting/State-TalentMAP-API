@@ -704,10 +704,6 @@ def convert_create_agenda_item_query(query):
     '''
     user_id = pydash.get(query, "hru_id")
 
-    print('🦄🦄🦄🦄🦄🦄🦄🦄🦄🦄')
-    print(query)
-    print('🦄🦄🦄🦄🦄🦄🦄🦄🦄🦄')
-
     q = {
         "aipmiseqnum": query.get("pmiseqnum", ""),
         "aiempseqnbr": query.get("personId", ""),
