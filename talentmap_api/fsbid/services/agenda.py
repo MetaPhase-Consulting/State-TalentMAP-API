@@ -849,9 +849,9 @@ def convert_edit_agenda_item_query(query):
         "ailabeltext": None,
         "aisorttext": None,
         "aicreateid": refData.get("creator_name"),
-        "aicreatedate": create_date[:create_date.rfind("Z")],
+        "aicreatedate": create_date,
         "aiupdateid": query.get("hru_id"),
-        "aiupdatedate": update_date[:update_date.rfind("Z")],
+        "aiupdatedate": update_date,
         "aiseqnumref": None,
         "aiitemcreatorid": refData.get("creator_name")
     }
