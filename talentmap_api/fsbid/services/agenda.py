@@ -799,7 +799,7 @@ def convert_create_agenda_item_query(query):
 
     q = {
         "aipmiseqnum": query.get("pmiseqnum", ""),
-        "aiempseqnbr": query.get("personId", ""),
+        "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
         "aiaiscode": query.get("agendaStatusCode", ""),
         "aitodcode": query.get("combinedTod", ""),
@@ -835,7 +835,7 @@ def convert_edit_agenda_item_query(query):
     q = {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
-        "aiempseqnbr": query.get("personId", ""),
+        "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
         "aiaiscode": query.get("agendaStatusCode", ""),
         "aitodcode": query.get("combinedTod", ""),
