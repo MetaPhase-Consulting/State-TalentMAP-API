@@ -220,7 +220,7 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         delete_agenda_item_remark(air, jwt_token)
                 if remarks:
                     for remark in remarks:
-                        remark_inserts = remark.get("remark_inserts")
+                        remark_inserts = remark.get("user_remark_inserts")
                         agenda_item_remark = create_agenda_item_remark(remark, query, jwt_token)
                         if not pydash.get(agenda_item_remark, "[0].air_seq_num"):
                             logger.error("Error creating AIR")
@@ -355,6 +355,67 @@ def create_agenda_item_leg(data, query, jwt_token):
     return services.send_post_request(
         **args
     )
+
+
+def create_agenda_item_remark(data, query, jwt_token):
+    '''
+    Create AIR
+    '''
+    aiseqnum = query.get("aiseqnum")
+    airrmrkseqnum = data.get("seq_num")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}",
+        "query": query,
+        "query_mapping_function": partial(convert_create_agenda_item_remark_query, remark=data),
+        "jwt_token": jwt_token,
+        "mapping_function": ""
+    }
+
+    return services.send_post_request(
+        **args
+    )
+
+def create_agenda_item_remark_insert(data, query, jwt_token):
+    '''
+    Create AIRI
+    '''
+    aiseqnum = query.get("aiseqnum")
+    airrmrkseqnum = data.get("airirmrkseqnum")
+    aiririseqnum = data.get("aiririseqnum")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}/inserts/{aiririseqnum}",
+        "query": query,
+        "query_mapping_function": partial(convert_create_agenda_item_remark_insert_query, insert=data),
+        "jwt_token": jwt_token,
+        "mapping_function": ""
+    }
+
+    return services.send_post_request(
+        **args
+    )
+
+
+def convert_create_agenda_item_remark_insert_query(query, insert={}):
+    return {
+        "airiaiseqnum": query.get("aiseqnum"),
+        "airirmrkseqnum": insert.get("airirmrkseqnum"),
+        "aiririseqnum": insert.get("aiririseqnum"),
+        "airiinsertiontext": insert.get("airiinsertiontext"),
+        "airicreateid": query.get("hru_id"),
+        "airiupdateid": query.get("hru_id"),
+    }
+
+
+
+def convert_create_agenda_item_remark_query(query, remark={}):
+    return {
+        "airaiseqnum": query.get("aiseqnum"),
+        "airrmrkseqnum": remark.get("seq_num"),
+        "airremarktext": remark.get("text"),
+        "aircompleteind": "Y",
+        "aircreateid": query.get("hru_id"),
+        "airupdateid": query.get("hru_id"),
+    }
 
 
 def get_agenda_item_history_csv(query, jwt_token, host, limit=None):
