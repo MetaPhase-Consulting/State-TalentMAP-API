@@ -221,7 +221,7 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                     for remark in remarks:
                         remark_inserts = remark.get("user_remark_inserts")
                         agenda_item_remark = create_agenda_item_remark(remark, query, jwt_token)
-                        if not pydash.get(agenda_item_remark, "[0].air_seq_num"):
+                        if not pydash.get(agenda_item_remark, "[0].rmrk_seq_num"):
                             logger.error("Error creating AIR")
                         elif remark_inserts:
                             for insert in remark_inserts:
@@ -361,9 +361,8 @@ def create_agenda_item_remark(data, query, jwt_token):
     Create AIR
     '''
     aiseqnum = query.get("aiseqnum")
-    airrmrkseqnum = data.get("seq_num")
     args = {
-        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}",
+        "uri": f"v1/agendas/{aiseqnum}/remarks",
         "query": query,
         "query_mapping_function": partial(convert_create_agenda_item_remark_query, remark=data),
         "jwt_token": jwt_token,
