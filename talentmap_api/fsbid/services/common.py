@@ -903,6 +903,14 @@ def parse_agenda_remarks(remarks=[]):
     remarks_values = []
     if remarks:
         for remark in remarks:
+            remark['remarkRefData'][0]['airaiseqnum'] = remark.get('airaiseqnum')
+            remark['remarkRefData'][0]['airrmrkseqnum'] = remark.get('airrmrkseqnum')
+            remark['remarkRefData'][0]['airremarktext'] = remark.get('airremarktext')
+            remark['remarkRefData'][0]['aircompleteind'] = remark.get('aircompleteind')
+            remark['remarkRefData'][0]['aircreateid'] = remark.get('aircreateid')
+            remark['remarkRefData'][0]['aircreatedate'] = remark.get('aircreatedate')
+            remark['remarkRefData'][0]['airupdateid'] = remark.get('airupdateid')
+            remark['remarkRefData'][0]['airupdatedate'] = remark.get('airupdatedate')
             if pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']:
                 if not pydash.get(remark, 'remarkInserts'):
                     continue
