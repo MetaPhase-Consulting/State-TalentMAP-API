@@ -306,7 +306,7 @@ def edit_agenda_item(query, jwt_token):
     args = {
         "uri": f"v1/agendas/{aiseqnum}",
         "query": query,
-        "query_mapping_function": convert_create_agenda_item_query,
+        "query_mapping_function": convert_edit_agenda_item_query,
         "jwt_token": jwt_token,
         "mapping_function": "",
     }
@@ -502,12 +502,12 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     legsToReturn.extend([assignment])
     legsToReturn.extend(sortedLegs)
     statusFull = pydash.get(data, "aisdesctext") or None
-    updaters = pydash.get(data, "updaters") or None
     reportCategory = {
         "code": pydash.get(data, "Panel[0].pmimiccode") or None,
         "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
     }
 
+    updaters = pydash.get(data, "updaters") or None
     if updaters:
         updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
 
@@ -802,16 +802,17 @@ def convert_create_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     user_id = pydash.get(query, "hru_id")
+
     q = {
-        "aipmiseqnum": pydash.get(query, "pmiseqnum", ""),
-        "aiempseqnbr": pydash.get(query, "personId", ""),
-        "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
-        "aiaiscode": pydash.get(query, "agendaStatusCode", ""),
-        "aitodcode": pydash.get(query, "combinedTod", ""),
-        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
-        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
-        "aiasgseqnum": pydash.get(query, "assignmentId", ""),
-        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion") or 1,
+        "aipmiseqnum": query.get("pmiseqnum", ""),
+        "aiempseqnbr": query.get("personId", ""),
+        "aiperdetseqnum": query.get("personDetailId", ""),
+        "aiaiscode": query.get("agendaStatusCode", ""),
+        "aitodcode": query.get("combinedTod", ""),
+        "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
+        "aiasgseqnum": query.get("assignmentId", ""),
+        "aiasgdrevisionnum": query.get("assignmentVersion"),
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
@@ -819,13 +820,51 @@ def convert_create_agenda_item_query(query):
         "aicreateid": user_id,
         "aicreatedate": None,
         "aiupdateid": user_id,
+        "aiupdatedate": None,
         "aiseqnumref": None,
         "aiitemcreatorid": user_id,
     }
+
     logger.info('creating AI query mapping')
     logger.info(q)
     print(q)
     return q
+
+def convert_edit_agenda_item_query(query):
+    '''
+    Converts TalentMap query into FSBid query
+    '''
+    refData = query.get("refData", {})
+    logger.info('editing AI query mapping')
+    logger.info(refData)
+
+    q = {
+        "aiseqnum": refData.get("id"),
+        "aipmiseqnum": refData.get("pmi_seq_num"),
+        "aiempseqnbr": query.get("personId", ""),
+        "aiperdetseqnum": query.get("personDetailId", ""),
+        "aiaiscode": query.get("agendaStatusCode", ""),
+        "aitodcode": query.get("combinedTod", ""),
+        "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
+        "aiasgseqnum": query.get("assignmentId", ""),
+        "aiasgdrevisionnum": query.get("assignmentVersion"),
+        "aicombinedremarktext": None,
+        "aicorrectiontext": None,
+        "ailabeltext": None,
+        "aisorttext": None,
+        "aicreateid": refData.get("creator_name"),
+        "aicreatedate": refData.get("creator_date", "").replace("T", " "),
+        "aiupdateid": query.get("hru_id"),
+        "aiupdatedate": refData.get("modifier_date", "").replace("T", " "),
+        "aiseqnumref": None,
+        "aiitemcreatorid": refData.get("creator_name")
+    }
+
+    logger.info(q)
+    print(q)
+    return q
+
 
 def convert_agenda_item_leg_query(query, leg={}):
     '''
