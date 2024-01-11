@@ -831,7 +831,8 @@ def convert_edit_agenda_item_query(query):
     refData = query.get("refData", {})
     logger.info('editing AI query mapping')
     logger.info(query)
-
+    create_date = refData.get("creator_date", "").replace("T", " ")
+    update_date = refData.get("modifier_date", "").replace("T", " ")
     q = {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
@@ -848,9 +849,9 @@ def convert_edit_agenda_item_query(query):
         "ailabeltext": None,
         "aisorttext": None,
         "aicreateid": refData.get("creator_name"),
-        "aicreatedate": refData.get("creator_date", "").replace("T", " "),
+        "aicreatedate": create_date[:create_date.rfind("Z")],
         "aiupdateid": query.get("hru_id"),
-        "aiupdatedate": refData.get("modifier_date", "").replace("T", " "),
+        "aiupdatedate": update_date[:update_date.rfind("Z")],
         "aiseqnumref": None,
         "aiitemcreatorid": refData.get("creator_name")
     }
