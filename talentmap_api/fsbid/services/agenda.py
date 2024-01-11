@@ -830,7 +830,7 @@ def convert_edit_agenda_item_query(query):
     '''
     refData = query.get("refData", {})
     logger.info('editing AI query mapping')
-    logger.info(refData)
+    logger.info(query)
 
     q = {
         "aiseqnum": refData.get("id"),
