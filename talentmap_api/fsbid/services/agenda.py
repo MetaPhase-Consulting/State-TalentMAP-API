@@ -213,9 +213,7 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                 
                 # Always delete regardless of query, for empty remarks edge case
                 if existing_remarks:
-                    ai_seq_num = query.get("aiseqnum")
-                    existing_airs = [{"airaiseqnum": ai_seq_num, "airrmrkseqnum": x.get("air_rmrk_seq_num"), "airupdatedate": x.get("air_update_date", "").replace("T", " "),} for x in existing_remarks]
-                    for air in existing_airs:
+                    for air in existing_remarks:
                         delete_agenda_item_remark(air, jwt_token)
                 if remarks:
                     for remark in remarks:
@@ -328,10 +326,10 @@ def delete_agenda_item_remark(query, jwt_token):
     Delete AIR
     '''
     # Move to common function if delete pattern emerges
-    ai_seq_num = query.get("airaiseqnum")
-    air_rmrk_seq_num = query.get("airrmrkseqnum")
-    air_update_date = query.get("airupdatedate")
-    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/remarks/{air_rmrk_seq_num}?airupdatedate={air_update_date}"
+    aiseqnum = query.get("air_ai_seq_num")
+    airrmrkseqnum = query.get("air_rmrk_seq_num")
+    airupdatedate = query.get("air_update_date")
+    url = f"{API_ROOT}/v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}?airupdatedate={airupdatedate}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 def create_agenda_item_leg(data, query, jwt_token):
