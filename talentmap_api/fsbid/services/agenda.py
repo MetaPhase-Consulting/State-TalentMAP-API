@@ -703,18 +703,21 @@ def convert_create_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     user_id = pydash.get(query, "hru_id")
-    aiseqnum = query.get("refData", {}).get("id")
+
+    print('🦄🦄🦄🦄🦄🦄🦄🦄🦄🦄')
+    print(query)
+    print('🦄🦄🦄🦄🦄🦄🦄🦄🦄🦄')
 
     q = {
-        "aipmiseqnum": pydash.get(query, "pmiseqnum", ""),
-        "aiempseqnbr": pydash.get(query, "personId", ""),
-        "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
-        "aiaiscode": pydash.get(query, "agendaStatusCode", ""),
-        "aitodcode": pydash.get(query, "combinedTod", ""),
-        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
-        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
-        "aiasgseqnum": pydash.get(query, "assignmentId", ""),
-        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion") or 1,
+        "aipmiseqnum": query.get("pmiseqnum", ""),
+        "aiempseqnbr": query.get("personId", ""),
+        "aiperdetseqnum": query.get("personDetailId", ""),
+        "aiaiscode": query.get("agendaStatusCode", ""),
+        "aitodcode": query.get("combinedTod", ""),
+        "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
+        "aiasgseqnum": query.get("assignmentId", ""),
+        "aiasgdrevisionnum": query.get("assignmentVersion"),
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
@@ -722,6 +725,7 @@ def convert_create_agenda_item_query(query):
         "aicreateid": user_id,
         "aicreatedate": None,
         "aiupdateid": user_id,
+        "aiupdatedate": None,
         "aiseqnumref": None,
         "aiitemcreatorid": user_id,
     }
@@ -736,6 +740,9 @@ def convert_edit_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     refData = query.get("refData", {})
+    logger.info('editing AI query mapping')
+    logger.info(refData)
+
     q = {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
@@ -746,7 +753,7 @@ def convert_edit_agenda_item_query(query):
         "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
         "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
         "aiasgseqnum": query.get("assignmentId", ""),
-        "aiasgdrevisionnum": query.get("assignmentVersion") or 1,
+        "aiasgdrevisionnum": query.get("assignmentVersion"),
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
@@ -756,10 +763,9 @@ def convert_edit_agenda_item_query(query):
         "aiupdateid": query.get("hru_id"),
         "aiupdatedate": refData.get("modifier_date", "").replace("T", " "),
         "aiseqnumref": None,
-        "aiitemcreatorid": query.get("refData", {}).get("creator_name")
+        "aiitemcreatorid": refData.get("creator_name")
     }
 
-    logger.info('editing AI query mapping')
     logger.info(q)
     print(q)
     return q
