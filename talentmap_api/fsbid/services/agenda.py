@@ -226,12 +226,8 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         elif remark_inserts:
                             for insert in remark_inserts:
                                 agenda_item_remark_insert = create_agenda_item_remark_insert(insert, query, jwt_token)
-                                if not pydash.get(agenda_item_remark_insert, "[0].airi_seq_num"):
+                                if not pydash.get(agenda_item_remark_insert, "[0].ri_seq_num"):
                                     logger.error("Error creating AIRI")
-
-
-
-
             else:
                 logger.error("AI does not exist")
         except Exception as e:
@@ -379,9 +375,8 @@ def create_agenda_item_remark_insert(data, query, jwt_token):
     '''
     aiseqnum = query.get("aiseqnum")
     airrmrkseqnum = data.get("airirmrkseqnum")
-    aiririseqnum = data.get("aiririseqnum")
     args = {
-        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}/inserts/{aiririseqnum}",
+        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}/inserts",
         "query": query,
         "query_mapping_function": partial(convert_create_agenda_item_remark_insert_query, insert=data),
         "jwt_token": jwt_token,
