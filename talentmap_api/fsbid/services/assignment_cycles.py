@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime as dt
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
 from rest_framework.response import Response
@@ -66,6 +67,12 @@ def create_assignment_cycle(jwt_token, request):
     )
 
 
+def format_date_string(input_date):
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # Format the date as MM/dd/yyyy
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
 def create_assignment_cycles_req_mapping(req):
     name = req['data']['assignmentCycle']
     cycle_category = req['data']['cycleCategory']
@@ -73,23 +80,23 @@ def create_assignment_cycles_req_mapping(req):
     exclusive_positions = "Y" if req['data']['exclusivePositions'] else "N"
     post_viewable = "Y" if req['data']['postViewable'] else "N"
 
-    cycle_boundries = req['data']['cycleBoundries'][0][:10]
-    six_month_language = req['data']['sixMonthLanguage'][0][:10]
-    twelve_month_language = req['data']['twelveMonthLanguage'][0][:10]
-    twenty_four_month_language = req['data']['twentyFourMonthLanguage'][0][:10]
-    bureau_position_review = req['data']['bureauPositionReview'][:10]
-    bidding_start = req['data']['biddingStart'][:10]
-    bid_due = req['data']['bidDue'][:10]
-    bureau_pre_season_bid_review = req['data']['bureauPreSeasonBidReview'][:10]
-    bureau_early_season_bid_review = req['data']['bureauEarlySeasonBidReview'][:10]
-    bureau_bid_review = req['data']['bureauBidReview'][:10]
-    bid_audit = req['data']['bidAudit'][:10]
-    bid_book_review = req['data']['bidBookReview'][:10]
-    bid_count_review = req['data']['bidCountReview'][:10]
-    htf_review = req['data']['htfReview'][:10]
-    organization_count_review = req['data']['organizationCountReview'][:10]
-    mds_review = req['data']['mdsReview'][:10]
-    assigned_bidder = req['data']['assignedBidder'][:10]
+    cycle_boundries = format_date_string(req['data']['cycleBoundries'][0])
+    six_month_language = format_date_string(req['data']['sixMonthLanguage'][0])
+    twelve_month_language = format_date_string(req['data']['twelveMonthLanguage'][0])
+    twenty_four_month_language = format_date_string(req['data']['twentyFourMonthLanguage'][0])
+    bureau_position_review = format_date_string(req['data']['bureauPositionReview'])
+    bidding_start = format_date_string(req['data']['biddingStart'])
+    bid_due = format_date_string(req['data']['bidDue'])
+    bureau_pre_season_bid_review = format_date_string(req['data']['bureauPreSeasonBidReview'])
+    bureau_early_season_bid_review = format_date_string(req['data']['bureauEarlySeasonBidReview'])
+    bureau_bid_review = format_date_string(req['data']['bureauBidReview'])
+    bid_audit = format_date_string(req['data']['bidAudit'])
+    bid_book_review = format_date_string(req['data']['bidBookReview'])
+    bid_count_review = format_date_string(req['data']['bidCountReview'])
+    htf_review = format_date_string(req['data']['htfReview'])
+    organization_count_review = format_date_string(req['data']['organizationCountReview'])
+    mds_review = format_date_string(req['data']['mdsReview'])
+    assigned_bidder = format_date_string(req['data']['assignedBidder'])
     start_dates_string = ",".join(
         [
             cycle_boundries,
@@ -111,10 +118,10 @@ def create_assignment_cycles_req_mapping(req):
             assigned_bidder,
         ]
     )
-    cycle_boundries_end = req['data']['cycleBoundries'][1][:10]
-    six_month_language_end = req['data']['sixMonthLanguage'][1][:10]
-    twelve_month_language_end = req['data']['twelveMonthLanguage'][1][:10]
-    twenty_four_month_language_end = req['data']['twentyFourMonthLanguage'][1][:10]
+    cycle_boundries_end = format_date_string(req['data']['cycleBoundries'][1])
+    six_month_language_end = format_date_string(req['data']['sixMonthLanguage'][1])
+    twelve_month_language_end = format_date_string(req['data']['twelveMonthLanguage'][1])
+    twenty_four_month_language_end = format_date_string(req['data']['twentyFourMonthLanguage'][1])
     end_dates_string = ",".join([cycle_boundries_end, six_month_language_end, twelve_month_language_end, twenty_four_month_language_end])
 
     mapped_request = {
