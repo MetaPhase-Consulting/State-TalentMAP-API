@@ -214,8 +214,7 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                 # Always delete regardless of query, for empty remarks edge case
                 if existing_remarks:
                     ai_seq_num = query.get("aiseqnum")
-                    # TO DO: update read/refData to include necessary meta data
-                    existing_airs = [{"airaiseqnum": ai_seq_num, "airseqnum": air_seq_num, "airupdatedate": x.get("air_update_date", "").replace("T", " "),} for x in existing_remarks if x.get("air_seq_num")]
+                    existing_airs = [{"airaiseqnum": ai_seq_num, "airrmrkseqnum": x.get("air_rmrk_seq_num"), "airupdatedate": x.get("air_update_date", "").replace("T", " "),} for x in existing_remarks]
                     for air in existing_airs:
                         delete_agenda_item_remark(air, jwt_token)
                 if remarks:
@@ -334,9 +333,9 @@ def delete_agenda_item_remark(query, jwt_token):
     '''
     # Move to common function if delete pattern emerges
     ai_seq_num = query.get("airaiseqnum")
-    air_seq_num = query.get("airseqnum")
+    air_rmrk_seq_num = query.get("airseqnum")
     air_update_date = query.get("airupdatedate")
-    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/remarks/{air_seq_num}?airupdatedate={air_update_date}"
+    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/remarks/{air_rmrk_seq_num}?airupdatedate={air_update_date}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 def create_agenda_item_leg(data, query, jwt_token):
@@ -921,14 +920,14 @@ def fsbid_to_talentmap_agenda_remarks(data):
         "active_ind": data.get("rmrkactiveind"),
         "remark_inserts": data.get("RemarkInserts"),
         "user_remark_inserts": data.get("refrmrkinsertions"),
-        "airaiseqnum": data.get("airaiseqnum"),
-        "airrmrkseqnum": data.get("airrmrkseqnum"),
-        "airremarktext": data.get("airremarktext"),
-        "aircompleteind": data.get("aircompleteind"),
-        "aircreateid": data.get("aircreateid"),
-        "aircreatedate": data.get("aircreatedate"),
-        "airupdateid": data.get("airupdateid"),
-        "airupdatedate": data.get("airupdatedate"),
+        "air_ai_seq_num": data.get("airaiseqnum"),
+        "air_rmrk_seq_num": data.get("airrmrkseqnum"),
+        "air_remark_text": data.get("airremarktext"),
+        "air_complete_ind": data.get("aircompleteind"),
+        "air_create_id": data.get("aircreateid"),
+        "air_create_date": data.get("aircreatedate"),
+        "air_update_id": data.get("airupdateid"),
+        "air_update_date": data.get("airupdatedate"),
     }
 
 
