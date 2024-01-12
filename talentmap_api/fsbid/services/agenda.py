@@ -172,7 +172,7 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         (asg_seq_num != existing_asg_seq_num) or
                         (asg_revision_num != existing_asg_revision_num)
                     ):
-                        agenda_item = edit_agenda_item(query, jwt_token)
+                        edit_agenda_item(query, jwt_token)
                 else:
                     agenda_item = create_agenda_item(query, jwt_token)
                     newly_created_ai_seq_num = pydash.get(agenda_item, '[0].ai_seq_num')
@@ -870,8 +870,9 @@ def convert_agenda_item_leg_query(query, leg={}):
     tod_long_desc = pydash.get(leg, "tod_long_desc")
     is_other_tod = True if (tod_code == 'X') and (tod_long_desc) else False
     tod_months = pydash.get(leg, "tod_months")
-    ted = leg.get("ted", "").replace("T", " ")
-    eta = leg.get("eta", "").replace("T", " ")
+    ted = (leg.get("ted") or '').replace("T", " ")
+    eta = (leg.get("eta") or '').replace("T", " ")
+
     return {
         "ailaiseqnum": pydash.get(query, "aiseqnum"),
         "aillatcode": pydash.get(leg, "action_code", ""),
@@ -883,8 +884,8 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text
-        "ailetadate": eta[:eta.rfind(".000Z")],
-        "ailetdtedsepdate": ted[:ted.rfind(".000Z")],
+        "ailetadate": eta.split(".000Z")[0],
+        "ailetdtedsepdate": ted.split(".000Z")[0],
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
         "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
