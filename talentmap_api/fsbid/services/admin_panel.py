@@ -154,7 +154,7 @@ def edit_pmd_mapping(query, date, original_data):
     mapped_query = {
         "pmdpmseqnum": query.get("pmdpmseqnum"),
         "pmdmdtcode": original_data.get("mdt_code"),
-        "pmddttm": _date[:_date.rfind(".000Z")],
+        "pmddttm": _date.split(".000Z", 1)[0],
         "pmdupdatedate": original_data.get("pmd_update_date", "").replace("T", " "),
         "pmdupdateid": query.get("hru_id"),
         "pmdcreatedate": original_data.get("pmd_create_date", "").replace("T", " "),
@@ -210,7 +210,7 @@ def create_pmd_mapping(query, date, date_type):
     mapped_query = {
         "pmdpmseqnum": query.get("pmdpmseqnum"),
         "pmdmdtcode": date_type,
-        "pmddttm": _date[:_date.rfind(".000Z")],
+        "pmddttm": _date.split(".000Z", 1)[0],
         "pmdupdateid": hru_id,
         "pmdcreateid": hru_id,
     }
