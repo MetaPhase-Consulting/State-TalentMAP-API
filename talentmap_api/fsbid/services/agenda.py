@@ -328,7 +328,7 @@ def delete_agenda_item_remark(query, jwt_token):
     # Move to common function if delete pattern emerges
     aiseqnum = query.get("air_ai_seq_num")
     airrmrkseqnum = query.get("air_rmrk_seq_num")
-    airupdatedate = query.get("air_update_date")
+    airupdatedate = query.get("air_update_date").replace("T", " ")
     url = f"{API_ROOT}/v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}?airupdatedate={airupdatedate}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
