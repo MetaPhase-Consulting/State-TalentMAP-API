@@ -150,10 +150,11 @@ def modify_panel_meeting_and_dates(query, jwt_token):
 
 
 def edit_pmd_mapping(query, date, original_data):
+    _date = date.replace("T", " ")
     mapped_query = {
         "pmdpmseqnum": query.get("pmdpmseqnum"),
         "pmdmdtcode": original_data.get("mdt_code"),
-        "pmddttm": date.replace("T", " "),
+        "pmddttm": _date.split(".000Z", 1)[0],
         "pmdupdatedate": original_data.get("pmd_update_date", "").replace("T", " "),
         "pmdupdateid": query.get("hru_id"),
         "pmdcreatedate": original_data.get("pmd_create_date", "").replace("T", " "),
@@ -205,10 +206,11 @@ def convert_panel_meeting_create_query(query):
 
 def create_pmd_mapping(query, date, date_type):
     hru_id = query.get("hru_id")
+    _date = date.replace("T", " ")
     mapped_query = {
         "pmdpmseqnum": query.get("pmdpmseqnum"),
         "pmdmdtcode": date_type,
-        "pmddttm": date.replace("T", " "),
+        "pmddttm": _date.split(".000Z", 1)[0],
         "pmdupdateid": hru_id,
         "pmdcreateid": hru_id,
     }
