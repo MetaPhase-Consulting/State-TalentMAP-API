@@ -172,7 +172,7 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         (asg_seq_num != existing_asg_seq_num) or
                         (asg_revision_num != existing_asg_revision_num)
                     ):
-                        agenda_item = edit_agenda_item(query, jwt_token)
+                        edit_agenda_item(query, jwt_token)
                 else:
                     agenda_item = create_agenda_item(query, jwt_token)
                     newly_created_ai_seq_num = pydash.get(agenda_item, '[0].ai_seq_num')
@@ -204,7 +204,28 @@ def modify_agenda(query={}, jwt_token=None, host=None):
                         agenda_item_leg = create_agenda_item_leg(leg, query, jwt_token)
                         if not pydash.get(agenda_item_leg, "[0].ail_seq_num"):
                             logger.error("Error creating AIL")
-
+                
+                # Unpack existing AIR/AIRI
+                existing_remarks = refData.get("remarks")
+                
+                # Unpack new AIR/AIRI
+                remarks = query.get("remarks")
+                
+                # Always delete regardless of query, for empty remarks edge case
+                if existing_remarks:
+                    for air in existing_remarks:
+                        delete_agenda_item_remark(air, jwt_token)
+                if remarks:
+                    for remark in remarks:
+                        remark_inserts = remark.get("user_remark_inserts")
+                        agenda_item_remark = create_agenda_item_remark(remark, query, jwt_token)
+                        if not pydash.get(agenda_item_remark, "[0].rmrk_seq_num"):
+                            logger.error("Error creating AIR")
+                        elif remark_inserts:
+                            for insert in remark_inserts:
+                                agenda_item_remark_insert = create_agenda_item_remark_insert(insert, query, jwt_token)
+                                if not pydash.get(agenda_item_remark_insert, "[0].ri_seq_num"):
+                                    logger.error("Error creating AIRI")
             else:
                 logger.error("AI does not exist")
         except Exception as e:
@@ -279,7 +300,7 @@ def edit_agenda_item(query, jwt_token):
     args = {
         "uri": f"v1/agendas/{aiseqnum}",
         "query": query,
-        "query_mapping_function": convert_create_agenda_item_query,
+        "query_mapping_function": convert_edit_agenda_item_query,
         "jwt_token": jwt_token,
         "mapping_function": "",
     }
@@ -300,6 +321,17 @@ def delete_agenda_item_leg(query, ai_seq_num, jwt_token):
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 
+def delete_agenda_item_remark(query, jwt_token):
+    '''
+    Delete AIR
+    '''
+    # Move to common function if delete pattern emerges
+    aiseqnum = query.get("air_ai_seq_num")
+    airrmrkseqnum = query.get("air_rmrk_seq_num")
+    airupdatedate = query.get("air_update_date").replace("T", " ")
+    url = f"{API_ROOT}/v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}?airupdatedate={airupdatedate}"
+    return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
+
 def create_agenda_item_leg(data, query, jwt_token):
     '''
     Create AIL
@@ -316,6 +348,65 @@ def create_agenda_item_leg(data, query, jwt_token):
     return services.send_post_request(
         **args
     )
+
+
+def create_agenda_item_remark(data, query, jwt_token):
+    '''
+    Create AIR
+    '''
+    aiseqnum = query.get("aiseqnum")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}/remarks",
+        "query": query,
+        "query_mapping_function": partial(convert_create_agenda_item_remark_query, remark=data),
+        "jwt_token": jwt_token,
+        "mapping_function": ""
+    }
+
+    return services.send_post_request(
+        **args
+    )
+
+def create_agenda_item_remark_insert(data, query, jwt_token):
+    '''
+    Create AIRI
+    '''
+    aiseqnum = query.get("aiseqnum")
+    airrmrkseqnum = data.get("airirmrkseqnum")
+    args = {
+        "uri": f"v1/agendas/{aiseqnum}/remarks/{airrmrkseqnum}/inserts",
+        "query": query,
+        "query_mapping_function": partial(convert_create_agenda_item_remark_insert_query, insert=data),
+        "jwt_token": jwt_token,
+        "mapping_function": ""
+    }
+
+    return services.send_post_request(
+        **args
+    )
+
+
+def convert_create_agenda_item_remark_insert_query(query, insert={}):
+    return {
+        "airiaiseqnum": query.get("aiseqnum"),
+        "airirmrkseqnum": insert.get("airirmrkseqnum"),
+        "aiririseqnum": insert.get("aiririseqnum"),
+        "airiinsertiontext": insert.get("airiinsertiontext"),
+        "airicreateid": query.get("hru_id"),
+        "airiupdateid": query.get("hru_id"),
+    }
+
+
+
+def convert_create_agenda_item_remark_query(query, remark={}):
+    return {
+        "airaiseqnum": query.get("aiseqnum"),
+        "airrmrkseqnum": remark.get("seq_num"),
+        "airremarktext": remark.get("text"),
+        "aircompleteind": "Y",
+        "aircreateid": query.get("hru_id"),
+        "airupdateid": query.get("hru_id"),
+    }
 
 
 def get_agenda_item_history_csv(query, jwt_token, host, limit=None):
@@ -403,12 +494,12 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     legsToReturn.extend([assignment])
     legsToReturn.extend(sortedLegs)
     statusFull = pydash.get(data, "aisdesctext") or None
-    updaters = pydash.get(data, "updaters") or None
     reportCategory = {
         "code": pydash.get(data, "Panel[0].pmimiccode") or None,
         "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
     }
 
+    updaters = pydash.get(data, "updaters") or None
     if updaters:
         updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
 
@@ -424,16 +515,16 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
     panel = data.get("Panel")[0]
 
     return {
-        "id": pydash.get(data, "aiseqnum") or None,
-        "aiCombinedTodCode": pydash.get(data, "aitodcode") or "",
-        "aiCombinedTodDescText": pydash.get(data, "aitoddesctext") or None,
-        "aiCombinedTodMonthsNum": pydash.get(data, "aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
-        "aiCombinedTodOtherText": pydash.get(data, "aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
-        "ahtCode": pydash.get(data, "ahtcode") or None,
-        "ahtDescText": pydash.get(data, "ahtdesctext") or None,
-        "aihHoldNum": pydash.get(data, "aihholdnum") or None,
-        "aihHoldComment": pydash.get(data, "aihholdcommenttext") or None,
-        "remarks": services.parse_agenda_remarks(pydash.get(data, "remarks") or []),
+        "id": data.get("aiseqnum") or None,
+        "aiCombinedTodCode": data.get("aitodcode") or "",
+        "aiCombinedTodDescText": data.get("aitoddesctext") or None,
+        "aiCombinedTodMonthsNum": data.get("aicombinedtodmonthsnum") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "aiCombinedTodOtherText": data.get("aicombinedtodothertext") if is_other_tod else "", # only custom/other TOD should have months and other_text
+        "ahtCode": data.get("ahtcode") or None,
+        "ahtDescText": data.get("ahtdesctext") or None,
+        "aihHoldNum": data.get("aihholdnum") or None,
+        "aihHoldComment": data.get("aihholdcommenttext") or None,
+        "remarks": services.parse_agenda_remarks(data.get("remarks") or []),
         "pmd_dttm": ensure_date(panel.get("pmddttm"), utc_offset=-5),
         "pmt_code": panel.get("pmtcode") or None,
         "pmi_pm_seq_num": panel.get("pmipmseqnum"),
@@ -450,14 +541,14 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
         "report_category": reportCategory,
-        "perdet": str(int(pydash.get(data, "aiperdetseqnum"))) or None,
+        "perdet": str(int(data.get("aiperdetseqnum"))) or None,
         "assignment": assignment,
         "legs": legsToReturn,
-        "update_date": ensure_date(pydash.get(data, "update_date"), utc_offset=-5),  # TODO - find this date
-        "modifier_name": pydash.get(data, "aiupdateid") or None,  # TODO - this is only the id
-        "modifier_date": ensure_date(pydash.get(data, "aiupdatedate"), utc_offset=-5) or None,
-        "creator_name": pydash.get(data, "aiitemcreatorid") or None,  # TODO - this is only the id
-        "creator_date": ensure_date(pydash.get(data, "aicreatedate"), utc_offset=-5) or None,
+        "update_date": data.get("update_date"),  # TODO - find this date
+        "modifier_name": data.get("aiupdateid") or None,  # TODO - this is only the id
+        "modifier_date": data.get("aiupdatedate") or None, 
+        "creator_name": data.get("aiitemcreatorid") or None,  # TODO - this is only the id
+        "creator_date": data.get("aicreatedate") or None,
         "creators": creators,
         "updaters": updaters,
         "user": {},
@@ -703,16 +794,17 @@ def convert_create_agenda_item_query(query):
     Converts TalentMap query into FSBid query
     '''
     user_id = pydash.get(query, "hru_id")
+
     q = {
-        "aipmiseqnum": pydash.get(query, "pmiseqnum", ""),
-        "aiempseqnbr": pydash.get(query, "personId", ""),
-        "aiperdetseqnum": pydash.get(query, "personDetailId", ""),
-        "aiaiscode": pydash.get(query, "agendaStatusCode", ""),
-        "aitodcode": pydash.get(query, "combinedTod", ""),
-        "aicombinedtodmonthsnum": pydash.get(query, "combinedTodMonthsNum", ""),
-        "aicombinedtodothertext": pydash.get(query, "combinedTodOtherText", ""),
-        "aiasgseqnum": pydash.get(query, "assignmentId", ""),
-        "aiasgdrevisionnum": pydash.get(query, "assignmentVersion") or 1,
+        "aipmiseqnum": query.get("pmiseqnum", ""),
+        "empseqnbr": query.get("personId", ""),
+        "aiperdetseqnum": query.get("personDetailId", ""),
+        "aiaiscode": query.get("agendaStatusCode", ""),
+        "aitodcode": query.get("combinedTod", ""),
+        "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
+        "aiasgseqnum": query.get("assignmentId", ""),
+        "aiasgdrevisionnum": query.get("assignmentVersion"),
         "aicombinedremarktext": None,
         "aicorrectiontext": None,
         "ailabeltext": None,
@@ -720,13 +812,52 @@ def convert_create_agenda_item_query(query):
         "aicreateid": user_id,
         "aicreatedate": None,
         "aiupdateid": user_id,
+        "aiupdatedate": None,
         "aiseqnumref": None,
         "aiitemcreatorid": user_id,
     }
+
     logger.info('creating AI query mapping')
     logger.info(q)
     print(q)
     return q
+
+def convert_edit_agenda_item_query(query):
+    '''
+    Converts TalentMap query into FSBid query
+    '''
+    refData = query.get("refData", {})
+    logger.info('editing AI query mapping')
+    logger.info(query)
+    create_date = refData.get("creator_date", "").replace("T", " ")
+    update_date = refData.get("modifier_date", "").replace("T", " ")
+    q = {
+        "aiseqnum": refData.get("id"),
+        "aipmiseqnum": refData.get("pmi_seq_num"),
+        "empseqnbr": query.get("personId", ""),
+        "aiperdetseqnum": query.get("personDetailId", ""),
+        "aiaiscode": query.get("agendaStatusCode", ""),
+        "aitodcode": query.get("combinedTod", ""),
+        "aicombinedtodmonthsnum": query.get("combinedTodMonthsNum", ""),
+        "aicombinedtodothertext": query.get("combinedTodOtherText", ""),
+        "aiasgseqnum": query.get("assignmentId", ""),
+        "aiasgdrevisionnum": query.get("assignmentVersion"),
+        "aicombinedremarktext": None,
+        "aicorrectiontext": None,
+        "ailabeltext": None,
+        "aisorttext": None,
+        "aicreateid": refData.get("creator_name"),
+        "aicreatedate": create_date,
+        "aiupdateid": query.get("hru_id"),
+        "aiupdatedate": update_date,
+        "aiseqnumref": None,
+        "aiitemcreatorid": refData.get("creator_name")
+    }
+
+    logger.info(q)
+    print(q)
+    return q
+
 
 def convert_agenda_item_leg_query(query, leg={}):
     '''
@@ -739,8 +870,9 @@ def convert_agenda_item_leg_query(query, leg={}):
     tod_long_desc = pydash.get(leg, "tod_long_desc")
     is_other_tod = True if (tod_code == 'X') and (tod_long_desc) else False
     tod_months = pydash.get(leg, "tod_months")
-    ted = leg.get("ted", "").replace("T", " ")
-    eta = leg.get("eta", "").replace("T", " ")
+    ted = (leg.get("ted") or '').replace("T", " ")
+    eta = (leg.get("eta") or '').replace("T", " ")
+
     return {
         "ailaiseqnum": pydash.get(query, "aiseqnum"),
         "aillatcode": pydash.get(leg, "action_code", ""),
@@ -752,8 +884,8 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailtodcode": pydash.get(leg, "tod", ""),
         "ailtodmonthsnum": tod_months if is_other_tod else None, # only custom/other TOD should pass back months and other_text
         "ailtodothertext": tod_long_desc if is_other_tod else None, # only custom/other TOD should pass back months and other_text
-        "ailetadate": eta[:eta.rfind(".000Z")],
-        "ailetdtedsepdate": ted[:ted.rfind(".000Z")],
+        "ailetadate": eta.split(".000Z")[0],
+        "ailetdtedsepdate": ted.split(".000Z")[0],
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
         "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
@@ -810,29 +942,28 @@ def get_agenda_ref_remarks(query, jwt_token):
 
 
 def fsbid_to_talentmap_agenda_remarks(data):
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-
-    hard_coded = ['seq_num', 'rc_code', 'order_num', 'short_desc_text', 'mutually_exclusive_ind', 'text', 'active_ind', 'remark_inserts', 'ref_text', 'user_remark_inserts']
-
-    add_these = []
-
-    cols_mapping = {
-        'seq_num': 'rmrkseqnum',
-        'rc_code': 'rmrkrccode',
-        'order_num': 'rmrkordernum',
-        'short_desc_text': 'rmrkshortdesctext',
-        'mutually_exclusive_ind': 'rmrkmutuallyexclusiveind',
-        'text': 'rmrktext',
-        'ref_text': 'refrmrktext',
-        'active_ind': 'rmrkactiveind',
-        'remark_inserts': 'RemarkInserts',
-        'user_remark_inserts': 'refrmrkinsertions'
+    return {
+        "seq_num": data.get("rmrkseqnum"),
+        "rc_code": data.get("rmrkrccode"),
+        "order_num": data.get("rmrkordernum"),
+        "short_desc_text": data.get("rmrkshortdesctext"),
+        "mutually_exclusive_ind": data.get( "rmrkmutuallyexclusiveind"),
+        "text": data.get("rmrktext"),
+        "ref_text": data.get("refrmrktext"),
+        "active_ind": data.get("rmrkactiveind"),
+        "remark_inserts": data.get("RemarkInserts"),
+        "user_remark_inserts": data.get("refrmrkinsertions"),
+        "air_ai_seq_num": data.get("airaiseqnum"),
+        "air_rmrk_seq_num": data.get("airrmrkseqnum"),
+        "air_remark_text": data.get("airremarktext"),
+        "air_complete_ind": data.get("aircompleteind"),
+        "air_create_id": data.get("aircreateid"),
+        "air_create_date": data.get("aircreatedate"),
+        "air_update_id": data.get("airupdateid"),
+        "air_update_date": data.get("airupdatedate"),
     }
 
-    add_these.extend(hard_coded)
 
-    return services.map_return_template_cols(add_these, cols_mapping, data)
 
 def fsbid_to_talentmap_agenda_remarks_ref(data):
     # hard_coded are the default data points (opinionated EP)

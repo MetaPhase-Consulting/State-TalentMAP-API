@@ -67,24 +67,15 @@ class FSBidPanelMeetingActionView(APIView):
 
     def post(self, request):
         '''
-        Create Panel Meeting
+        Modify Panel Meeting
         '''
-        result = services.modify_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            result = services.modify_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
+            return Response(result) if result else Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except Exception as e:
+            logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    def put(self, request):
-        '''
-        Edit Panel Meeting
-        '''
-        result = services.edit_panel_meeting(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
 # ======================== Post Panel Processing ========================
 
 class FSBidPostPanelView(BaseView):
