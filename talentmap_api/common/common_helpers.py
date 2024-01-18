@@ -119,7 +119,7 @@ def view_result(result):
     code = status.HTTP_200_OK
     if (result is None):
         code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    if (result.get('return_code') < 0):
+    elif (result.get('return_code') and result.get('return_code') < 0):
         code = status.HTTP_400_BAD_REQUEST
 
     return Response(result, code)
