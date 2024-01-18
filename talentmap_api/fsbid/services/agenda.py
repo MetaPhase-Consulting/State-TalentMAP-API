@@ -700,6 +700,8 @@ def fsbid_aia_to_talentmap_aia(data):
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
+        # Redundant field - TO DO: Fix backward compatibility issues and remove extra field
+        "asg_seq_num": pydash.get(data, "asgdasgseqnum", None),
         "revision_num": data.get("asgdrevisionnum"),
         "pos_title": pydash.get(data, "position[0].postitledesc", None),
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
