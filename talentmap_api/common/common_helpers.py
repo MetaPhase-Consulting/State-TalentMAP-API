@@ -495,22 +495,33 @@ def get_avatar_url(email):
         return {}
 
 def sort_legs(agendaLegs):
+    print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
+    print(agendaLegs)
     '''
     Sorts AgendaItems legs by ailetadate
     When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
     '''
     #   pull out the nulls
     nullLegs = []
+    separationLegs = []
     for idx, val in enumerate(agendaLegs):
-        if not val['eta']:
+        if val['is_separation'] is True:
+            separationLegs.append(val)
+            agendaLegs.pop(idx)
+            continue
+        if not val['eta'] or val['eta'] == '-':
             nullLegs.append(val)
             agendaLegs.pop(idx)
 
     # sort legs
     sortedLegs = sorted(agendaLegs, key=lambda d: d['eta'])
 
-    # sort nulls by ted
+    # sort nulls & separations by ted
     sortedNulls = sorted(nullLegs, key=lambda d: d['ted'])
+    sortedSeps = sorted(separationLegs, key=lambda d: d['ted'])
+
+    # place separations at the end of the list
+    sortedLegs.extend(sortedSeps)
 
     # stick sortednulls in the front of legs
     sortedNulls.extend(sortedLegs)
