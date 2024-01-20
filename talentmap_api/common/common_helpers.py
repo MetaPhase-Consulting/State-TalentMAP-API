@@ -494,9 +494,8 @@ def get_avatar_url(email):
     else:
         return {}
 
+
 def sort_legs(agendaLegs):
-    print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
-    print(agendaLegs)
     '''
     Sorts AgendaItems legs by ailetadate
     When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
