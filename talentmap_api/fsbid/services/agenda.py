@@ -378,7 +378,7 @@ def convert_agenda_item_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
-def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
+def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills=[]):
     agendaStatusAbbrev = {
         "Approved": "APR",
         "Deferred - Proposed Position": "XXX",
@@ -408,6 +408,20 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "code": pydash.get(data, "Panel[0].pmimiccode") or None,
         "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
     }
+
+    # skill code lookup against ref_skills data
+    skill_descriptions = []
+    if (len(ref_skills) > 0):
+        codes_to_lookup = []
+        skills_lookup = {}
+        codes_to_lookup.append(pydash.get(data, "person[0].perdetskillcode"))
+        codes_to_lookup.append(pydash.get(data, "person[0].perdetskill2code"))
+        codes_to_lookup.append(pydash.get(data, "person[0].perdetskill3code"))
+        for skill in ref_skills["Data"]:
+            skills_lookup[skill["skl_code"]] = skill["skill_descr"]
+        for skill_code in codes_to_lookup:
+            if skill_code is not None and skill_code in skills_lookup.keys():
+                skill_descriptions.append(f'({skill_code}) {skills_lookup[skill_code]}')
 
     if updaters:
         updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
@@ -460,6 +474,12 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "creator_date": ensure_date(pydash.get(data, "aicreatedate"), utc_offset=-5) or None,
         "creators": creators,
         "updaters": updaters,
+        "skills": skill_descriptions,
+        "cdo": pydash.get(data, "person[0].cdo[0].user[0].person[0]"),
+        "grade": pydash.get(data, "person[0].perdetgradecode"),
+        "languages": pydash.get(data, "person[0].languages"),
+        "pay_plan_code": pydash.get(data, "person[0].perdetpayplancode"),
+        "full_name": pydash.get(data, "person[0].perpiifullname"),
         "user": {},
     }
 
@@ -966,12 +986,14 @@ def get_agendas_by_panel(pk, jwt_token):
     '''
     Get agendas for panel meeting
     '''
+    skillUrl = f"{API_ROOT}/v1/references/skills"
+    skills = requests.get(skillUrl, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
     args = {
         "uri": f"{pk}/agendas",
         "query": {},
         "query_mapping_function": convert_agendas_by_panel_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, ref_skills=skills),
         "count_function": None,
         "base_url": "/api/v1/panels/",
         "api_root": PANEL_API_ROOT,
@@ -979,46 +1001,10 @@ def get_agendas_by_panel(pk, jwt_token):
     agendas_by_panel = services.send_get_request(
         **args
     )
-    perdets = list(map(lambda x: x["perdet"], agendas_by_panel["results"]))
-    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    query = {
-        "ad_id": ad_id,
-        "perdet_seq_num": perdets,
-        "currentAssignmentOnly": "true",
-        "page": 1,
-        "limit": 1000,
-    }
-    clients = services.send_get_request(
-        "",
-        query,
-        client_services.convert_client_query,
-        jwt_token,
-        client_services.fsbid_clients_to_talentmap_clients,
-        client_services.get_clients_count,
-        "/api/v2/clients/",
-        None,
-        CLIENTS_ROOT_V2,
-    )
-    clients_lookup = {}
-    for client in clients.get("results") or []:
-        logger.info('==== get_panels_by_agenda ====')
-        logger.info('==== single client from v2/clients call ====')
-        logger.info(client)
-        logger.info('================================')
-        perdet = client["perdet_seq_number"]
-        clients_lookup[perdet] = client
-    logger.info('==== get_panels_by_agenda ====')
-    logger.info('==== clients_lookup variable ====')
-    logger.info(clients_lookup)
-    logger.info('================================')
 
     # get vice data to add to agendas_by_panel
     pos_seq_nums = []
     for agenda in agendas_by_panel["results"]:
-        logger.info('==== get_panels_by_agenda ====')
-        logger.info('==== agenda ====')
-        logger.info(agenda)
-        logger.info('================================')
         legs = pydash.get(agenda, "legs")
         for leg in legs:
             if ('ail_pos_seq_num' in leg) and (leg["ail_pos_seq_num"] is not None):
@@ -1026,12 +1012,6 @@ def get_agendas_by_panel(pk, jwt_token):
     vice_lookup = get_vice_data(pos_seq_nums, jwt_token)
 
     for agenda in agendas_by_panel["results"]:
-        client = clients_lookup.get(agenda["perdet"]) or {}
-        logger.info('==== get_panels_by_agenda ====')
-        logger.info('==== client variable ====')
-        logger.info(client)
-        logger.info('================================')
-        agenda["user"] = client
         legs = pydash.get(agenda, "legs")
         # append vice data to add to agendas_by_panel
         for leg in legs:
