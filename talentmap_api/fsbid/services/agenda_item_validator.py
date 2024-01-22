@@ -124,7 +124,7 @@ def validate_individual_leg(leg):
         individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
         whole_leg_valid = False
 
-    # Leg - must have TED, if the TOD is not indefinite or N/A, or if not separation
+    # Leg - must have TED, unless the TOD is indefinite or N/A
     if not leg['ted'] and not leg['tod'] == 'Y' and not leg['tod'] == 'Z' or False:
         individual_leg_validation['ted']['valid'] = False
         individual_leg_validation['ted']['errorMessage'] = 'Missing TED'

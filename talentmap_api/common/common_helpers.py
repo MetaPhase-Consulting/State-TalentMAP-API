@@ -499,6 +499,7 @@ def sort_legs(agendaLegs):
     '''
     Sorts AgendaItems legs by ailetadate
     When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
+    Separations are placed in the back
     '''
     #   pull out the nulls
     nullLegs = []
