@@ -125,7 +125,7 @@ def validate_individual_leg(leg):
         whole_leg_valid = False
 
     # Leg - must have TED, if the TOD is not indefinite or N/A, or if not separation
-    if not leg['ted'] and not leg.get('is_separation') and not leg['tod'] == 'Y' and not leg['tod'] == 'Z' or False:
+    if not leg['ted'] and not leg['tod'] == 'Y' and not leg['tod'] == 'Z' or False:
         individual_leg_validation['ted']['valid'] = False
         individual_leg_validation['ted']['errorMessage'] = 'Missing TED'
         whole_leg_valid = False
