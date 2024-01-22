@@ -502,7 +502,7 @@ def sort_legs(agendaLegs):
     #   pull out the nulls
     nullLegs = []
     for idx, val in enumerate(agendaLegs):
-        if not val['eta']:
+        if not val['eta'] or val['eta'] == '-':
             nullLegs.append(val)
             agendaLegs.pop(idx)
 
