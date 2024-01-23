@@ -648,7 +648,7 @@ def fsbid_legs_to_talentmap_legs(data):
         res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)
         res['pos_title'] = pydash.get(data, 'latdesctext')
         res['pos_num'] = '-'
-        res['eta'] = '-'
+        res['eta'] = None
         res['tod'] = None
         res['tod_short_desc'] = '-' 
         res['tod_months'] = '-' 
