@@ -469,7 +469,7 @@ def convert_agenda_item_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
-def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills=[]):
+def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}):
     agendaStatusAbbrev = {
         "Approved": "APR",
         "Deferred - Proposed Position": "XXX",
@@ -503,15 +503,12 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills=[]
     skill_descriptions = []
     if (ref_skills):
         codes_to_lookup = []
-        skills_lookup = {}
         codes_to_lookup.append(pydash.get(data, "person[0].perdetskillcode"))
         codes_to_lookup.append(pydash.get(data, "person[0].perdetskill2code"))
         codes_to_lookup.append(pydash.get(data, "person[0].perdetskill3code"))
-        for skill in ref_skills["Data"]:
-            skills_lookup[skill["skl_code"]] = skill["skill_descr"]
         for skill_code in codes_to_lookup:
-            if skill_code is not None and skill_code in skills_lookup.keys():
-                skill_descriptions.append(f'({skill_code}) {skills_lookup[skill_code]}')
+            if skill_code is not None and skill_code in ref_skills.keys():
+                skill_descriptions.append(f'({skill_code}) {ref_skills[skill_code]}')
 
     updaters = pydash.get(data, "updaters") or None
     if updaters:
@@ -571,6 +568,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills=[]
         "languages": pydash.get(data, "person[0].languages"),
         "pay_plan_code": pydash.get(data, "person[0].perdetpayplancode"),
         "full_name": pydash.get(data, "person[0].perpiifullname"),
+        "org": pydash.get(data, "person[0].org[0]"),
     }
 
 
@@ -1123,12 +1121,15 @@ def get_agendas_by_panel(pk, jwt_token):
     '''
     skillUrl = f"{API_ROOT}/v1/references/skills"
     skills = requests.get(skillUrl, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    skills_lookup = {}
+    for skill in skills["Data"]:
+            skills_lookup[skill["skl_code"]] = skill["skill_descr"]
     args = {
         "uri": f"{pk}/agendas",
         "query": {},
         "query_mapping_function": convert_agendas_by_panel_query,
         "jwt_token": jwt_token,
-        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, ref_skills=skills),
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, ref_skills=skills_lookup),
         "count_function": None,
         "base_url": "/api/v1/panels/",
         "api_root": PANEL_API_ROOT,
