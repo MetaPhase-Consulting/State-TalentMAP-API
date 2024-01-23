@@ -631,7 +631,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
         "is_separation": False,
-        "sort_date": pydash.get(data, "ailetadate", None),
+        "sort_date": pydash.get(data, "ailetadate", None),  # AgendaItems sort legs by ailetadate
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
         "skill": skills_data.get("skill_1_representation"),
@@ -645,7 +645,7 @@ def fsbid_legs_to_talentmap_legs(data):
     separation_types = ['H', 'M', 'N', 'O', 'P']
     if lat_code in separation_types:
         res['is_separation'] = True
-        res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)
+        res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)  # Separations are sorted by ailetdtedsepdate
         res['pos_title'] = pydash.get(data, 'latdesctext')
         res['pos_num'] = '-'
         res['eta'] = None
