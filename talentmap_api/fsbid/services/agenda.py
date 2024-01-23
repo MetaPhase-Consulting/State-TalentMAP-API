@@ -525,7 +525,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "aihHoldNum": data.get("aihholdnum") or None,
         "aihHoldComment": data.get("aihholdcommenttext") or None,
         "remarks": services.parse_agenda_remarks(data.get("remarks") or []),
-        "pmd_dttm": ensure_date(panel.get("pmddttm"), utc_offset=-5),
+        "pmd_dttm": panel.get("pmddttm") or None,
         "pmt_code": panel.get("pmtcode") or None,
         "pmi_pm_seq_num": panel.get("pmipmseqnum"),
         "pmi_seq_num": panel.get("pmiseqnum"),
