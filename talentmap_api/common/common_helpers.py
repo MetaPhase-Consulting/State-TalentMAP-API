@@ -501,31 +501,10 @@ def sort_legs(agendaLegs):
     When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
     Separations are placed in the back
     '''
-    #   pull out the nulls
-    nullLegs = []
-    separationLegs = []
-    for idx, val in enumerate(agendaLegs):
-        if val['is_separation'] is True:
-            separationLegs.append(val)
-            agendaLegs.pop(idx)
-            continue
-        if not val['eta'] or val['eta'] == '-':
-            nullLegs.append(val)
-            agendaLegs.pop(idx)
-
     # sort legs
-    sortedLegs = sorted(agendaLegs, key=lambda d: d['eta'])
+    sortedLegs = sorted(agendaLegs, key=lambda d: d['sort_date'])
 
-    # sort nulls & separations by ted
-    sortedNulls = sorted(nullLegs, key=lambda d: d['ted'])
-    sortedSeps = sorted(separationLegs, key=lambda d: d['ted'])
-
-    # place separations at the end of the list
-    sortedLegs.extend(sortedSeps)
-
-    # stick sortednulls in the front of legs
-    sortedNulls.extend(sortedLegs)
-    return sortedNulls
+    return sortedLegs
 
 
 def prep_string_for_list(str_val):
