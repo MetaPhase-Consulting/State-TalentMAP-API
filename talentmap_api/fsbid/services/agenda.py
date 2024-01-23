@@ -571,7 +571,6 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills=[]
         "languages": pydash.get(data, "person[0].languages"),
         "pay_plan_code": pydash.get(data, "person[0].perdetpayplancode"),
         "full_name": pydash.get(data, "person[0].perpiifullname"),
-        "user": {},
     }
 
 
