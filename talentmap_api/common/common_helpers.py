@@ -132,15 +132,16 @@ def service_response(data, objStr, mapping=None):
         logger.error(f"Fsbid call for {objStr} failed with no return data.")
     
     return_code = data['O_RETURN_CODE']
-    if (return_code and return_code < 1):
-        if (return_code and return_code is -1):
+
+    if (return_code):
+        if (return_code is -1):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
             return {
                 'return_code': return_code,
                 'fsbid_reference': objStr,
                 'error_message': data.get('QRY_ERROR_DATA')[0].get('MSG_TXT')
             }
-        if (return_code and return_code is -2):
+        if (return_code is -2):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
             return {
                 'return_code': return_code,
