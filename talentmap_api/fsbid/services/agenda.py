@@ -647,14 +647,14 @@ def fsbid_legs_to_talentmap_legs(data):
         res['is_separation'] = True
         res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)  # Separations are sorted by ailetdtedsepdate
         res['pos_title'] = pydash.get(data, 'latdesctext')
-        res['pos_num'] = '-'
+        res['pos_num'] = None
         res['eta'] = None
         res['tod'] = None
-        res['tod_short_desc'] = '-' 
-        res['tod_months'] = '-' 
-        res['tod_long_desc'] = '-' 
-        res['grade'] = '-'
-        res['languages'] = '-'
+        res['tod_short_desc'] = None
+        res['tod_months'] = None
+        res['tod_long_desc'] = None
+        res['grade'] = None
+        res['languages'] = None
         res['org'] = location
         res['separation_location'] = {
                 "city": city,
