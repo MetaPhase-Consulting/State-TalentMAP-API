@@ -411,7 +411,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills=[]
 
     # skill code lookup against ref_skills data
     skill_descriptions = []
-    if (len(ref_skills) > 0):
+    if (ref_skills):
         codes_to_lookup = []
         skills_lookup = {}
         codes_to_lookup.append(pydash.get(data, "person[0].perdetskillcode"))
