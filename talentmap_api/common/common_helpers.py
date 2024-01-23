@@ -497,9 +497,8 @@ def get_avatar_url(email):
 
 def sort_legs(agendaLegs):
     '''
-    Sorts AgendaItems legs by ailetadate
-    When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
-    Separations are placed in the back
+    AgendaItems sort legs by ailetadate
+    Separations are sorted by ailetdtedsepdate
     '''
     # sort legs
     sortedLegs = sorted(agendaLegs, key=lambda d: d['sort_date'])
