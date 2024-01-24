@@ -512,9 +512,8 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
     
     languages = pydash.get(data, "person[0].languages") or None
     languages_return = []
-    if languages:
-        for lang in languages:
-            languages_return.append(fsbid_lang_to_talentmap_lang(lang))
+    for lang in languages:
+        languages_return.append(fsbid_lang_to_talentmap_lang(lang))
     
     cdo = pydash.get(data, "person[0].cdo[0].user[0]") or None
     if cdo:
@@ -581,7 +580,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
         "grade": pydash.get(data, "person[0].perdetgradecode"),
         "languages": languages_return,
         "pay_plan_code": pydash.get(data, "person[0].perdetpayplancode"),
-        "full_name": pydash.get(data, "person[0].perpiifullname"),
+        "full_name": services.remove_nmn(pydash.get(data, "person[0].perpiifullname")),
         "org": org,
     }
 
