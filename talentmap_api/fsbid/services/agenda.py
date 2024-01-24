@@ -758,11 +758,15 @@ def fsbid_aia_to_talentmap_aia(data):
     }
 
 def fsbid_lang_to_talentmap_lang(data):
+    lang_code = pydash.get(data, "pllangcode", None)
+    speaking_score = pydash.get(data, "pllpcodespeakcode", None)
+    reading_score = pydash.get(data, "pllpcodereadcode", None)
     return {
-        "lang_code": pydash.get(data, "pllangcode", None),
-        "speaking_score": pydash.get(data, "pllpcodespeakcode", None),
-        "reading_score": pydash.get(data, "pllpcodereadcode", None),
+        "lang_code": lang_code,
+        "speaking_score": speaking_score,
+        "reading_score": reading_score,
         "test_date": pydash.get(data, "pltestdate", None),
+        "custom_description": f"{lang_code} {speaking_score or '-'}/{reading_score or '-'} "
     }
 
 def fsbid_cdo_to_talentmap_cdo(data):
