@@ -119,7 +119,7 @@ def view_result(result):
     code = status.HTTP_200_OK
     if (result is None):
         code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    if (result.get('return_code') < 0):
+    elif (result.get('return_code') and result.get('return_code') < 0):
         code = status.HTTP_400_BAD_REQUEST
 
     return Response(result, code)
@@ -132,15 +132,16 @@ def service_response(data, objStr, mapping=None):
         logger.error(f"Fsbid call for {objStr} failed with no return data.")
     
     return_code = data['O_RETURN_CODE']
-    if (return_code and return_code < 1):
-        if (return_code and return_code is -1):
+
+    if (return_code):
+        if (return_code is -1):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
             return {
                 'return_code': return_code,
                 'fsbid_reference': objStr,
                 'error_message': data.get('QRY_ERROR_DATA')[0].get('MSG_TXT')
             }
-        if (return_code and return_code is -2):
+        if (return_code is -2):
             logger.error(f"Fsbid call for {objStr} failed with error data returned.")
             return {
                 'return_code': return_code,
@@ -494,27 +495,16 @@ def get_avatar_url(email):
     else:
         return {}
 
+
 def sort_legs(agendaLegs):
     '''
-    Sorts AgendaItems legs by ailetadate
-    When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
+    AgendaItems sort legs by ailetadate
+    Separations are sorted by ailetdtedsepdate
     '''
-    #   pull out the nulls
-    nullLegs = []
-    for idx, val in enumerate(agendaLegs):
-        if not val['eta']:
-            nullLegs.append(val)
-            agendaLegs.pop(idx)
-
     # sort legs
-    sortedLegs = sorted(agendaLegs, key=lambda d: d['eta'])
+    sortedLegs = sorted(agendaLegs, key=lambda d: d['sort_date'])
 
-    # sort nulls by ted
-    sortedNulls = sorted(nullLegs, key=lambda d: d['ted'])
-
-    # stick sortednulls in the front of legs
-    sortedNulls.extend(sortedLegs)
-    return sortedNulls
+    return sortedLegs
 
 
 def prep_string_for_list(str_val):

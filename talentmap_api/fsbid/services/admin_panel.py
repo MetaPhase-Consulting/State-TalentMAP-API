@@ -300,7 +300,7 @@ def post_panel_response_mapping(response):
             'item': x.get('PMI_OFFICIAL_ITEM_NUM'),
             'label': x.get('AI_LABEL_TEXT'),
             'employee': x.get('EMP_FULL_NAME'),
-            'status': x.get('AIS_ABBR_DESC_TEXT'),
+            'status': x.get('AI_AIS_CODE'),
             'sequence_number': x.get('AI_SEQ_NUM'),
             'update_id': x.get('AI_UPDATE_ID'),
             'update_date': x.get('AI_UPDATE_DATE'),

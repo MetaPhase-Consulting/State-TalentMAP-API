@@ -119,7 +119,7 @@ class FSBidPostPanelActionView(APIView):
     
 # ======================== Panel Run Actions ========================
 
-class FSBidRunPreliminaryActionView(BaseView):
+class FSBidRunPreliminaryActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def put(self, request, pk):
@@ -129,7 +129,7 @@ class FSBidRunPreliminaryActionView(BaseView):
         result = services.run_preliminary(pk, request.META['HTTP_JWT'])
         return view_result(result)
     
-class FSBidRunAddendumActionView(BaseView):
+class FSBidRunAddendumActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def put(self, request, pk):
@@ -139,7 +139,7 @@ class FSBidRunAddendumActionView(BaseView):
         result = services.run_addendum(pk, request.META['HTTP_JWT'])
         return view_result(result)
     
-class FSBidRunPostPanelActionView(BaseView):
+class FSBidRunPostPanelActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def put(self, request, pk):
