@@ -507,7 +507,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
         codes_to_lookup.append(pydash.get(data, "person[0].perdetskill2code"))
         codes_to_lookup.append(pydash.get(data, "person[0].perdetskill3code"))
         for skill_code in codes_to_lookup:
-            if skill_code is not None and skill_code in ref_skills.keys():
+            if skill_code is not None and ref_skills.get(skill_code):
                 skill_descriptions.append(f'({skill_code}) {ref_skills[skill_code]}')
     
     languages = pydash.get(data, "person[0].languages") or None
