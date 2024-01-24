@@ -525,7 +525,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "aihHoldNum": data.get("aihholdnum") or None,
         "aihHoldComment": data.get("aihholdcommenttext") or None,
         "remarks": services.parse_agenda_remarks(data.get("remarks") or []),
-        "pmd_dttm": ensure_date(panel.get("pmddttm"), utc_offset=-5),
+        "pmd_dttm": panel.get("pmddttm") or None,
         "pmt_code": panel.get("pmtcode") or None,
         "pmi_pm_seq_num": panel.get("pmipmseqnum"),
         "pmi_seq_num": panel.get("pmiseqnum"),
@@ -631,6 +631,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
         "is_separation": False,
+        "sort_date": pydash.get(data, "ailetadate", None),  # AgendaItems sort legs by ailetadate
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
         "skill": skills_data.get("skill_1_representation"),
@@ -644,15 +645,16 @@ def fsbid_legs_to_talentmap_legs(data):
     separation_types = ['H', 'M', 'N', 'O', 'P']
     if lat_code in separation_types:
         res['is_separation'] = True
+        res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)  # Separations are sorted by ailetdtedsepdate
         res['pos_title'] = pydash.get(data, 'latdesctext')
-        res['pos_num'] = '-'
-        res['eta'] = '-'
+        res['pos_num'] = None
+        res['eta'] = None
         res['tod'] = None
-        res['tod_short_desc'] = '-' 
-        res['tod_months'] = '-' 
-        res['tod_long_desc'] = '-' 
-        res['grade'] = '-'
-        res['languages'] = '-'
+        res['tod_short_desc'] = None
+        res['tod_months'] = None
+        res['tod_long_desc'] = None
+        res['grade'] = None
+        res['languages'] = None
         res['org'] = location
         res['separation_location'] = {
                 "city": city,
