@@ -645,7 +645,7 @@ def fsbid_legs_to_talentmap_legs(data):
     separation_types = ['H', 'M', 'N', 'O', 'P']
     if lat_code in separation_types:
         res['is_separation'] = True
-        res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)  # Separations are sorted by ailetdtedsepdate
+        res['sort_date'] = pydash.get(data, "ailetdtedsepdate")  # Separations are sorted by ailetdtedsepdate
         res['pos_title'] = pydash.get(data, 'latdesctext')
         res['pos_num'] = None
         res['eta'] = None
