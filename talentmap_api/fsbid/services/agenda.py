@@ -509,6 +509,20 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
         for skill_code in codes_to_lookup:
             if skill_code is not None and skill_code in ref_skills.keys():
                 skill_descriptions.append(f'({skill_code}) {ref_skills[skill_code]}')
+    
+    languages = pydash.get(data, "person[0].languages") or None
+    languages_return = []
+    if languages:
+        for lang in languages:
+            languages_return.append(fsbid_lang_to_talentmap_lang(lang))
+    
+    cdo = pydash.get(data, "person[0].cdo[0].user[0]") or None
+    if cdo:
+        cdo = fsbid_cdo_to_talentmap_cdo(cdo)
+
+    org = pydash.get(data, "person[0].org[0]") or None
+    if org:
+        org = fsbid_org_to_talentmap_org(org)
 
     updaters = pydash.get(data, "updaters") or None
     if updaters:
@@ -563,12 +577,12 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
         "creators": creators,
         "updaters": updaters,
         "skills": skill_descriptions,
-        "cdo": pydash.get(data, "person[0].cdo[0].user[0]"),
+        "cdo": cdo,
         "grade": pydash.get(data, "person[0].perdetgradecode"),
-        "languages": pydash.get(data, "person[0].languages"),
+        "languages": languages_return,
         "pay_plan_code": pydash.get(data, "person[0].perdetpayplancode"),
         "full_name": pydash.get(data, "person[0].perpiifullname"),
-        "org": pydash.get(data, "person[0].org[0]"),
+        "org": org,
     }
 
 
@@ -743,6 +757,24 @@ def fsbid_aia_to_talentmap_aia(data):
         "custom_skills_description": skills_data.get("combined_skills_representation"),
     }
 
+def fsbid_lang_to_talentmap_lang(data):
+    return {
+        "lang_code": pydash.get(data, "pllangcode", None),
+        "speaking_score": pydash.get(data, "pllpcodespeakcode", None),
+        "reading_score": pydash.get(data, "pllpcodereadcode", None),
+        "test_date": pydash.get(data, "pltestdate", None),
+    }
+
+def fsbid_cdo_to_talentmap_cdo(data):
+    return {
+        "first_name": pydash.get(data, "perpiifirstname", None),
+        "last_name": pydash.get(data, "perpiilastname", None),
+    }
+
+def fsbid_org_to_talentmap_org(data):
+    return {
+        "org_descr": pydash.get(data, "orgmvgmdescrshort", None),
+    }
 
 def get_agenda_statuses(query, jwt_token):
     '''
