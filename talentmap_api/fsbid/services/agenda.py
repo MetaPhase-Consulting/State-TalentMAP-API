@@ -663,7 +663,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
         "is_separation": False,
-        "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ailetadate
+        "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ETA, then by TED
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
         "skill": skills_data.get("skill_1_representation"),
