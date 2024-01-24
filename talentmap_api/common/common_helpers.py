@@ -502,21 +502,17 @@ def sort_legs(agendaLegs):
     Separations are sorted by ailetdtedsepdate
     '''
 
-    # filter out the nulls
-    # sort by ETA then by TED
+    # filter out legs without dates
     nullLegs = []
-    for idx, val in enumerate(agendaLegs):
+    goodLegs = []
+    for val in agendaLegs:
         if not val['sort_date']:
-            if val['eta']:
-                val['sort_date'] = val['eta']
-            elif val['ted']:
-                val['sort_date'] = val['ted']
-            else:
-                nullLegs.append(val)
-                agendaLegs.pop(idx)
+            nullLegs.append(val)
+        else:
+            goodLegs.append(val)
 
     # sort legs
-    sortedLegs = sorted(agendaLegs, key=lambda d: d['sort_date'])
+    sortedLegs = sorted(goodLegs, key=lambda d: d['sort_date'])
 
     # add legs with no ETA or TED dates to back of list
     sortedLegs.extend(nullLegs)
