@@ -512,8 +512,9 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
     
     languages = pydash.get(data, "person[0].languages") or None
     languages_return = []
-    for lang in languages:
-        languages_return.append(fsbid_lang_to_talentmap_lang(lang))
+    if languages:
+        for lang in languages:
+            languages_return.append(fsbid_lang_to_talentmap_lang(lang))
     
     cdo = pydash.get(data, "person[0].cdo[0].user[0]") or None
     if cdo:
@@ -635,6 +636,8 @@ def fsbid_legs_to_talentmap_legs(data):
     tod_ind = 'INDEFINITE'
     ted_na = 'N/A'
     skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
+    eta_date = data.get("ailetadate", None)
+    ted_date = data.get("ailetdtedsepdate", None)
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -661,7 +664,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
         "is_separation": False,
-        "sort_date": pydash.get(data, "ailetadate", None),  # AgendaItems sort legs by ailetadate
+        "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ETA, then by TED
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
         "skill": skills_data.get("skill_1_representation"),
@@ -675,7 +678,7 @@ def fsbid_legs_to_talentmap_legs(data):
     separation_types = ['H', 'M', 'N', 'O', 'P']
     if lat_code in separation_types:
         res['is_separation'] = True
-        res['sort_date'] = pydash.get(data, "ailetdtedsepdate", None)  # Separations are sorted by ailetdtedsepdate
+        res['sort_date'] = data.get("ailetdtedsepdate", None)  # Separations are sorted by TED
         res['pos_title'] = pydash.get(data, 'latdesctext')
         res['pos_num'] = None
         res['eta'] = None
