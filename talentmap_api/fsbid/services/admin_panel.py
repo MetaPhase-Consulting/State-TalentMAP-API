@@ -54,7 +54,7 @@ def get_panel_meeting(pk, jwt_token):
     '''
     args = {
         "proc_name": "qry_getPnlMeet",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": pk,
         "request_mapping_function": panel_meeting_request_mapping,
         "response_mapping_function": panel_meeting_response_mapping,
@@ -272,7 +272,7 @@ def get_post_panel(pk, jwt_token):
     '''
     args = {
         "proc_name": "qry_modPostPnl",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": pk,
         "request_mapping_function": post_panel_request_mapping,
         "response_mapping_function": post_panel_response_mapping,
@@ -335,7 +335,7 @@ def edit_post_panel(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modPostPnl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_post_panel_req_mapping,
         "response_mapping_function": edit_post_panel_res_mapping,
         "jwt_token": jwt_token,
@@ -378,7 +378,7 @@ def run_preliminary(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_runoffpre',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_preliminary_res_mapping,
         "jwt_token": jwt_token,
@@ -402,7 +402,7 @@ def run_addendum(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_runoffaddendum',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_addendum_res_mapping,
         "jwt_token": jwt_token,
@@ -421,7 +421,7 @@ def run_post_panel(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_runpostpnl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_post_panel_res_mapping,
         "jwt_token": jwt_token,
