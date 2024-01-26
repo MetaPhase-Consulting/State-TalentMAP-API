@@ -512,8 +512,9 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
     
     languages = pydash.get(data, "person[0].languages") or None
     languages_return = []
-    for lang in languages:
-        languages_return.append(fsbid_lang_to_talentmap_lang(lang))
+    if languages:
+        for lang in languages:
+            languages_return.append(fsbid_lang_to_talentmap_lang(lang))
     
     cdo = pydash.get(data, "person[0].cdo[0].user[0]") or None
     if cdo:
