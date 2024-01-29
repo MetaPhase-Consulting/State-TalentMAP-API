@@ -699,27 +699,19 @@ def fsbid_legs_to_talentmap_legs(data):
 
 
 def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
-    empUser = pydash.get(data, "empUser") or None
-    if empUser:
-        empUser = (list(map(lambda emp_user: {
-            "emp_user_first_name": emp_user["perpiifirstname"],
-            "emp_user_last_name": emp_user["perpiilastname"],
-            "emp_user_seq_num": emp_user["perpiiseqnum"],
-            "emp_user_middle_name": emp_user["perpiimiddlename"],
-            "emp_user_suffix_name": emp_user["perpiisuffixname"],
-            "perdet_seqnum": emp_user["perdetseqnum"],
-            "per_desc": emp_user["persdesc"],
-        }, empUser)))[0]
-
-    return {
-        "emp_seq_num": pydash.get(data, "hruempseqnbr"),
-        "neu_id": pydash.get(data, "neuid"),
-        "hru_id": pydash.get(data, "hruid"),
-        "last_name": pydash.get(data, "neulastnm"),
-        "first_name": pydash.get(data, "neufirstnm"),
-        "middle_name": pydash.get(data, "neumiddlenm"),
-        "emp_user": empUser
-    }
+    if data:
+        if isinstance(data, list):
+            data = data[0]
+        return {
+            "emp_seq_num": data.get("hruempseqnbr") or data.get("perpiiseqnum") or None,
+            "perdet_seqnum": data.get("perdetseqnum"),
+            "per_desc": data.get("persdesc"),
+            "neu_id": data.get("neuid"),
+            "hru_id": data.get("hruid"),
+            "last_name": data.get("perpiilastname") or data.get("neulastnm") or None,
+            "first_name": data.get("perpiifirstname") or data.get("neufirstnm") or None,
+            "middle_name": data.get("perpiimiddlename") or data.get("neumiddlenm") or None,
+        }
 
 # aia = agenda item assignment
 def fsbid_aia_to_talentmap_aia(data):
