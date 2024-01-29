@@ -81,7 +81,7 @@ def convert_remark_query(query, is_edit=False):
     formatted_query = {
         'rmrkrccode': query.get('rmrkCategory'),
         'rmrkordernum': 0,
-        'rmrkshortdesctext': query.get('shortDescription') or '',
+        'rmrkshortdesctext': query.get('shortDescription') or 'None',
         'rmrkmutuallyexclusiveind': 'N',
         'rmrktext': query.get('longDescription'),
         'rmrkactiveind': 'Y' if query.get('activeIndicator') else 'N',
