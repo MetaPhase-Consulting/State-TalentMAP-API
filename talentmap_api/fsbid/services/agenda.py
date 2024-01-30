@@ -698,20 +698,19 @@ def fsbid_legs_to_talentmap_legs(data):
     return res
 
 
-def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
-    if data:
-        if isinstance(data, list):
-            data = data[0]
-        return {
-            "emp_seq_num": data.get("hruempseqnbr") or data.get("perpiiseqnum") or None,
-            "perdet_seqnum": data.get("perdetseqnum"),
-            "per_desc": data.get("persdesc"),
-            "neu_id": data.get("neuid"),
-            "hru_id": data.get("hruid"),
-            "last_name": data.get("perpiilastname") or data.get("neulastnm") or None,
-            "first_name": data.get("perpiifirstname") or data.get("neufirstnm") or None,
-            "middle_name": data.get("perpiimiddlename") or data.get("neumiddlenm") or None,
-        }
+def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data={}):
+    if isinstance(data, list):
+        data = data[0]
+    return {
+        "emp_seq_num": data.get("hruempseqnbr") or data.get("perpiiseqnum") or None,
+        "perdet_seqnum": data.get("perdetseqnum"),
+        "per_desc": data.get("persdesc"),
+        "neu_id": data.get("neuid"),
+        "hru_id": data.get("hruid"),
+        "last_name": data.get("perpiilastname") or data.get("neulastnm") or None,
+        "first_name": data.get("perpiifirstname") or data.get("neufirstnm") or None,
+        "middle_name": data.get("perpiimiddlename") or data.get("neumiddlenm") or None,
+    }
 
 # aia = agenda item assignment
 def fsbid_aia_to_talentmap_aia(data):
