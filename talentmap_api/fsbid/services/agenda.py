@@ -638,6 +638,7 @@ def fsbid_legs_to_talentmap_legs(data):
     skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
     eta_date = data.get("ailetadate", None)
     ted_date = data.get("ailetdtedsepdate", None)
+    not_applicable = '-'
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -680,7 +681,7 @@ def fsbid_legs_to_talentmap_legs(data):
         res['is_separation'] = True
         res['sort_date'] = data.get("ailetdtedsepdate", None)  # Separations are sorted by TED
         res['pos_title'] = pydash.get(data, 'latdesctext')
-        res['pos_num'] = None
+        res['pos_num'] = not_applicable
         res['eta'] = None
         res['tod'] = None
         res['tod_short_desc'] = None
