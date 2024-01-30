@@ -181,7 +181,6 @@ def convert_separations_query(pk, query):
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": int(query.get("limit", 1000)),
         "rp.filter": convert_to_fsbid_ql([{'col': 'sepperdetseqnum', 'val': pk}]),
-        "rp.columns": 'sepperdetseqnum',
     }
 
 
