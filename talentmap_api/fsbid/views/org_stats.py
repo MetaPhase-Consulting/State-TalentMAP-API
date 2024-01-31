@@ -12,7 +12,6 @@ from django.core.exceptions import ValidationError
 
 
 class FSBidOrgStatsView(APIView):
-    print("APPPPPPPLEEEESSSS")
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):

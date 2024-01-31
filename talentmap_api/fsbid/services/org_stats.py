@@ -4,8 +4,6 @@ from talentmap_api.fsbid.services import common as services
 logger = logging.getLogger(__name__)
 
 def get_org_stats(query, jwt_token):
-    print('get_org_stats WE MADE IT HERRRRRREEEEEEE')
-    print(query)
     '''
     Get Org Stats
     '''
@@ -33,26 +31,47 @@ def org_stats_res_mapping(data):
         logger.error('FSBid call for Org Stat failed.')
         return None
         
-    def org_stats_map(x):
-        # to flag object with all null values and prevent .strip on it
-        if x.get('HRU_ID') is None:
-            return {}
-
-        userBureauNames = x.get('BUREAU_NAME_LIST', '').strip() or ''
-        userBureauNames = userBureauNames.split(',') if userBureauNames else []
-
-        userBureauCodes = x.get('PARM_VALUES', '').strip() or ''
-        userBureauCodes = userBureauCodes.split(',') if userBureauCodes else []
-
+    
+    def list_org_stats_map(x):
         return {
-            'pvId': x.get('PV_ID'),
-            'name': services.remove_nmn(x.get('EMP_FULL_NAME')),
-            'userBureauNames': userBureauNames,
-            'empSeqNum': x.get('EMP_SEQ_NBR'),
-            'hruId': x.get('HRU_ID'),
-            'userBureauCodes': userBureauCodes,
+            'title': x.get('CYCLE_NM_TXT'),
+            'bureau_code': x.get('BUREAU_CODE'),
+            'bureau_short_desc': x.get('BUR_SHORT_DESC'),
+            'org_code': x.get('ORG_CODE'),
+            'organization': x.get('ORGS_SHORT_DESC'),
+            'total_pos': x.get('ORG_TTL_POS_QTY'),
+            'total_filled': x.get('ORG_FILLED_POS_QTY'),
+            'total_percent': x.get('ORG_FILLED_POS_PCT'),
+            'overseas_pos': x.get('ORG_TTL_POS_OVRS_QTY'),
+            'overseas_filled': x.get('ORG_FILLED_POS_OVRS_QTY'),
+            'overseas_percent': x.get('ORG_FILLED_POS_OVRS_PCT'),
+            'domestic_pos': x.get('ORG_TTL_POS_DMSTC_QTY'),
+            'domestic_filled': x.get('ORG_FILLED_POS_DMSTC_QTY'),
+            'domestic_percent': x.get('ORG_FILLED_POS_DMSTC_PCT'),
+            'total_bids': x.get('ORG_TTL_BIDS_QTY'),
+            'total_bidders': x.get('ORG_TTL_BIDDERS_QTY'),
         }
 
-    result = map(org_stats_map, data.get('QRY_LSTORGSTATS_REF'))
-
-    return list(filter(lambda x: x != {}, result))
+    def list_bureau_stats_map(x):
+        return {
+            'bureau': f'({x.get("BUREAU_CODE")}) {x.get("BUR_SHORT_DESC")}',
+            'bureau_code': x.get('BUREAU_CODE'),
+            'bureau_short_desc': x.get('BUR_SHORT_DESC'),
+            'total_pos': x.get('BUR_TTL_POS_QTY'),
+            'total_filled': x.get('BUR_FILLED_POS_QTY'),
+            'total_percent': (x.get('BUR_FILLED_POS_QTY')/x.get('BUR_TTL_POS_QTY')) if x.get('BUR_TTL_POS_QTY') else 0,
+            'overseas_pos': x.get('BUR_TTL_POS_OVRS_QTY'),
+            'overseas_filled': x.get('BUR_FILLED_POS_OVRS_QTY'),
+            'overseas_percent': (x.get('BUR_FILLED_POS_OVRS_QTY')/x.get('BUR_TTL_POS_OVRS_QTY')) if x.get('BUR_TTL_POS_OVRS_QTY') else 0,
+            'domestic_pos': x.get('BUR_TTL_POS_DMSTC_QTY'),
+            'domestic_filled': x.get('BUR_FILLED_POS_DMSTC_QTY'),
+            'domestic_percent': (x.get('BUR_FILLED_POS_DMSTC_QTY')/x.get('BUR_TTL_POS_DMSTC_QTY')) if x.get('BUR_TTL_POS_DMSTC_QTY') else 0,
+            'org_count': x.get('ORG_COUNT'),
+            'total_bids_qty': x.get('BUR_TTL_BIDS_QTY'),
+            'total_bidders_qty': x.get('BUR_TTL_BIDDERS_QTY'),
+        }
+    
+    return {
+        'results': list(map(list_org_stats_map, data.get('QRY_LSTORGSTATS_REF'))),
+        'bureau_summary': list(map(list_bureau_stats_map, data.get('QRY_LSTBUREAUSTATS_REF'))),
+    }
