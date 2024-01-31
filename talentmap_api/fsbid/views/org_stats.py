@@ -23,3 +23,17 @@ class FSBidOrgStatsView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+class FSBidOrgStatsFiltersView(APIView):
+    # perms TBD
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
+
+    def get(self, request, *args, **kwargs):
+        '''
+        Get Org Stats Filters
+        '''
+        result = services.get_org_stats_filters(request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)

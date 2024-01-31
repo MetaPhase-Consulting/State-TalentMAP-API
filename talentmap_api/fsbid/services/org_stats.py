@@ -75,3 +75,52 @@ def org_stats_res_mapping(data):
         'results': list(map(list_org_stats_map, data.get('QRY_LSTORGSTATS_REF'))),
         'bureau_summary': list(map(list_bureau_stats_map, data.get('QRY_LSTBUREAUSTATS_REF'))),
     }
+
+def get_org_stats_filters(jwt_token):
+    '''
+    Gets Filters for Org Stats Page
+    '''
+    args = {
+        'proc_name': 'qry_lstfsbidSearch1',
+        'package_name': 'PKG_WEBAPI_WRAP',
+        'request_body': {},
+        'request_mapping_function': org_stats_filter_req_mapping,
+        'response_mapping_function': org_stats_filter_res_mapping,
+        'jwt_token': jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def org_stats_filter_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+def org_stats_filter_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Org Stats filters failed.")
+        return None
+
+    def cycle_map(x):
+        return {
+            'code': x.get('CYCLE_ID'),
+            'description': x.get('CYCLE_NM_TXT'),
+        }
+    def bureau_map(x):
+        return {
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def org_map(x):
+        return {
+            'code': x.get('ORG_CODE'),
+            'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
+        }
+
+
+    return {
+        'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
+        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
+    }
