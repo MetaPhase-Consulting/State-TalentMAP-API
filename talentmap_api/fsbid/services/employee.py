@@ -181,7 +181,6 @@ def convert_separations_query(pk, query):
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": int(query.get("limit", 1000)),
         "rp.filter": convert_to_fsbid_ql([{'col': 'sepperdetseqnum', 'val': pk}]),
-        "rp.columns": 'sepperdetseqnum',
     }
 
 
@@ -294,6 +293,12 @@ def map_assignments_separations_bids(data):
             "pay_plan": pydash.get(pos, 'pospayplancode'),
         }
     if is_assignment:
+        tod_long_desc = data.get('tod_desc_text')
+        tod_short_desc = data.get('tod_short_desc')
+        if data.get('tod_code') == 'X':
+            tod_long_desc = data.get('asgd_tod_other_text')
+            tod_short_desc = data.get('asgd_tod_other_text')
+
         return {
             "status": pydash.get(data, 'status'),
             "org": pydash.get(pos, 'posorgshortdesc'),
@@ -309,7 +314,8 @@ def map_assignments_separations_bids(data):
             "languages": pydash.get(pos, 'languages'),
             "eta": data.get('start_date'),
             "ted": data.get('end_date'),
-            "tod_long_desc": data.get('tod_short_desc'),
+            "tod_long_desc": tod_long_desc,
+            "tod_short_desc": tod_short_desc,
             "separation_location": {},
             "is_bid": is_bid,
             "is_assignment": is_assignment,

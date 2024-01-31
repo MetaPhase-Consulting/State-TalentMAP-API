@@ -103,7 +103,7 @@ def validate_individual_leg(leg):
             'valid': True,
             'errorMessage': ''
         },
-        'tod': validate_tod(leg['tod'], leg['tod_months'], leg['tod_long_desc']),
+        'tod': validate_tod(leg),
         'action_code': {
             'valid': True,
             'errorMessage': ''
@@ -118,14 +118,14 @@ def validate_individual_leg(leg):
         }
     }
 
-    # Leg - must have ETA
-    if not leg['eta']:
+    # Leg - must have ETA, if not separation
+    if not leg['eta'] and not leg.get('is_separation') or False:
         individual_leg_validation['eta']['valid'] = False
         individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
         whole_leg_valid = False
 
-    # Leg - must have TED
-    if not leg['ted']:
+    # Leg - must have TED, unless the TOD is indefinite or N/A
+    if not leg['ted'] and not leg['tod'] == 'Y' and not leg['tod'] == 'Z':
         individual_leg_validation['ted']['valid'] = False
         individual_leg_validation['ted']['errorMessage'] = 'Missing TED'
         whole_leg_valid = False
@@ -136,12 +136,8 @@ def validate_individual_leg(leg):
         individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
         whole_leg_valid = False
 
-    # Leg - must have Travel - NEED TO CONFIRM THIS
-    if not leg.get('travel_code'):
-        individual_leg_validation['travel_code']['valid'] = True
-        individual_leg_validation['travel_code']['errorMessage'] = 'Missing Travel'
-        # Can be nullable according to DB - need to follow up in FSBID
-        whole_leg_valid = True
+    # Leg - Travel is be nullable according to DB, so validation removed. 
+    # FE not equipped to handle not having validation, so left travel_code in individual_leg_validation above
 
     # Leg - must have duty station for separation
     if leg.get('is_separation', False) and not leg.get('separation_location', False):
@@ -151,14 +147,20 @@ def validate_individual_leg(leg):
 
     return (individual_leg_validation, whole_leg_valid)
 
-def validate_tod(tod, tod_months, tod_long_desc):
+
+def validate_tod(leg):
+    tod = leg.get('tod') or None
+    tod_months = leg.get('tod_months') or None
+    tod_long_desc = leg.get('tod_long_desc') or None
+    is_separation = leg.get('is_separation') or False
+
     tod_validation = {
         'valid': True,
         'errorMessage': ''
     }
 
-    # Leg - must have TOD
-    if not tod:
+    # Leg - must have TOD, if not separation
+    if not tod and not is_separation:
         tod_validation['valid'] = False
         tod_validation['errorMessage'] = 'Missing TOD'
         return tod_validation
