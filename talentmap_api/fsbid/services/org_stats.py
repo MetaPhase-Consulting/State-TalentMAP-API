@@ -8,8 +8,8 @@ def get_org_stats(query, jwt_token):
     Get Org Stats
     '''
     args = {
-        "proc_name": 'qry_lstfsbidSearch',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "proc_name": 'qry_lstorgstats',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
         "request_mapping_function": org_stats_req_mapping,
         "response_mapping_function": org_stats_res_mapping,
         "jwt_token": jwt_token,
@@ -81,7 +81,7 @@ def get_org_stats_filters(jwt_token):
     Gets Filters for Org Stats Page
     '''
     args = {
-        'proc_name': 'qry_lstfsbidSearch1',
+        'proc_name': 'qry_lstfsbidSearch',
         'package_name': 'PKG_WEBAPI_WRAP',
         'request_body': {},
         'request_mapping_function': org_stats_filter_req_mapping,

@@ -174,7 +174,7 @@ def get_publishable_positions_filters(jwt_token):
     Gets Filters for Publishable Positions Page
     '''
     args = {
-        'proc_name': 'qry_lstfsbidSearch1',
+        'proc_name': 'qry_lstfsbidSearch',
         'package_name': 'PKG_WEBAPI_WRAP',
         'request_body': {},
         'request_mapping_function': publishable_positions_filter_req_mapping,
