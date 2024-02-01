@@ -844,7 +844,7 @@ def convert_create_agenda_item_query(query):
     '''
     user_id = pydash.get(query, "hru_id")
 
-    q = {
+    return {
         "aipmiseqnum": query.get("pmiseqnum", ""),
         "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
@@ -866,21 +866,15 @@ def convert_create_agenda_item_query(query):
         "aiitemcreatorid": user_id,
     }
 
-    logger.info('creating AI query mapping')
-    logger.info(q)
-    print(q)
-    return q
 
 def convert_edit_agenda_item_query(query):
     '''
     Converts TalentMap query into FSBid query
     '''
     refData = query.get("refData", {})
-    logger.info('editing AI query mapping')
-    logger.info(query)
     create_date = refData.get("creator_date", "").replace("T", " ")
     update_date = refData.get("modifier_date", "").replace("T", " ")
-    q = {
+    return {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
         "empseqnbr": query.get("personId", ""),
@@ -902,10 +896,6 @@ def convert_edit_agenda_item_query(query):
         "aiseqnumref": None,
         "aiitemcreatorid": refData.get("creator_name")
     }
-
-    logger.info(q)
-    print(q)
-    return q
 
 
 def convert_agenda_item_leg_query(query, leg={}):
