@@ -633,11 +633,10 @@ def fsbid_legs_to_talentmap_legs(data):
     country_state = pydash.get(data, 'ailcountrystatetext') or ''
     location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
     lat_code = pydash.get(data, 'aillatcode')
-    tod_ind = 'INDEFINITE'
-    ted_na = 'N/A'
     skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
     eta_date = data.get("ailetadate", None)
     ted_date = data.get("ailetdtedsepdate", None)
+    not_applicable = '-'
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -651,7 +650,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
         "eta": pydash.get(data, "ailetadate", None),
-        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "ailetdtedsepdate", None),
+        "ted": not_applicable if tod_long_desc == 'INDEFINITE' else pydash.get(data, "ailetdtedsepdate", None),
         "tod": tod_code,
         "tod_is_dropdown": tod_is_dropdown,
         "tod_months": tod_months if is_other_tod else None, # only a custom/other TOD should have months
@@ -680,15 +679,16 @@ def fsbid_legs_to_talentmap_legs(data):
         res['is_separation'] = True
         res['sort_date'] = data.get("ailetdtedsepdate", None)  # Separations are sorted by TED
         res['pos_title'] = pydash.get(data, 'latdesctext')
-        res['pos_num'] = None
-        res['eta'] = None
-        res['tod'] = None
-        res['tod_short_desc'] = None
+        res['pos_num'] = not_applicable
+        res['eta'] = not_applicable
+        res['tod'] = not_applicable
+        res['tod_short_desc'] = not_applicable
         res['tod_months'] = None
-        res['tod_long_desc'] = None
-        res['grade'] = None
-        res['languages'] = None
+        res['tod_long_desc'] = not_applicable
+        res['grade'] = not_applicable
+        res['languages'] = not_applicable
         res['org'] = location
+        res['custom_skills_description'] = not_applicable
         res['separation_location'] = {
                 "city": city,
                 "country": country_state,
@@ -720,9 +720,8 @@ def fsbid_aia_to_talentmap_aia(data):
     tod_short_desc = pydash.get(data, "todshortdesc")
     tod_long_desc = pydash.get(data, "toddesctext")
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
-    tod_ind = 'INDEFINITE'
-    ted_na = 'N/A'
     skills_data = services.get_skills(pydash.get(data, 'position[0]', {}))
+    not_applicable = '-'
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
@@ -733,15 +732,15 @@ def fsbid_aia_to_talentmap_aia(data):
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
-        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "asgdetdteddate", None),
+        "ted": not_applicable if tod_long_desc == 'INDEFINITE' else pydash.get(data, "asgdetdteddate", None),
         "tod": tod_code,
         "tod_months": tod_months if is_other_tod else None, # only custom/other TOD should have months and other_text
         "tod_short_desc": tod_other_text if is_other_tod else tod_short_desc,
         "tod_long_desc": tod_other_text if is_other_tod else tod_long_desc,
         "grade": pydash.get(data, "position[0].posgradecode", None),
         "languages": services.parseLanguagesToArr(pydash.get(data, "position[0]", None)),
-        "travel": "-",
-        "action": "-",
+        "travel": not_applicable,
+        "action": not_applicable,
         "is_separation": False,
         "pay_plan": pydash.get(data, "position[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "position[0].pospayplandesc", None),
