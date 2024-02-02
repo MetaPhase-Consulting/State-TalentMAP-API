@@ -631,7 +631,8 @@ def fsbid_legs_to_talentmap_legs(data):
     tod_is_dropdown = (tod_code != "X") and (tod_is_active is True)
     city = pydash.get(data, 'ailcitytext') or ''
     country_state = pydash.get(data, 'ailcountrystatetext') or ''
-    location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
+    code = pydash.get(data, 'aildsccd')
+    location = f"{city}{', ' if (city and country_state) else ''}{country_state}" or code
     lat_code = pydash.get(data, 'aillatcode')
     skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
     eta_date = data.get("ailetadate", None)
@@ -692,7 +693,7 @@ def fsbid_legs_to_talentmap_legs(data):
         res['separation_location'] = {
                 "city": city,
                 "country": country_state,
-                "code": pydash.get(data, 'aildsccd'),
+                "code": code,
             }
 
     return res
@@ -927,7 +928,7 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailetdtedsepdate": ted.split(".000Z")[0],
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
-        "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
+        "ailcountrystatetext": pydash.get(leg, "separation_location.country") or None,
         "ailusind": None,
         "ailemprequestedsepind": None,
         "ailcreateid": user_id,
