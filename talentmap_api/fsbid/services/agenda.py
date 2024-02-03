@@ -631,7 +631,8 @@ def fsbid_legs_to_talentmap_legs(data):
     tod_is_dropdown = (tod_code != "X") and (tod_is_active is True)
     city = pydash.get(data, 'ailcitytext') or ''
     country_state = pydash.get(data, 'ailcountrystatetext') or ''
-    location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
+    code = pydash.get(data, 'aildsccd')
+    location = f"{city}{', ' if (city and country_state) else ''}{country_state}" or code
     lat_code = pydash.get(data, 'aillatcode')
     skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
     eta_date = data.get("ailetadate", None)
@@ -692,7 +693,7 @@ def fsbid_legs_to_talentmap_legs(data):
         res['separation_location'] = {
                 "city": city,
                 "country": country_state,
-                "code": pydash.get(data, 'aildsccd'),
+                "code": code,
             }
 
     return res
@@ -844,7 +845,7 @@ def convert_create_agenda_item_query(query):
     '''
     user_id = pydash.get(query, "hru_id")
 
-    q = {
+    return {
         "aipmiseqnum": query.get("pmiseqnum", ""),
         "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
@@ -866,21 +867,15 @@ def convert_create_agenda_item_query(query):
         "aiitemcreatorid": user_id,
     }
 
-    logger.info('creating AI query mapping')
-    logger.info(q)
-    print(q)
-    return q
 
 def convert_edit_agenda_item_query(query):
     '''
     Converts TalentMap query into FSBid query
     '''
     refData = query.get("refData", {})
-    logger.info('editing AI query mapping')
-    logger.info(query)
     create_date = refData.get("creator_date", "").replace("T", " ")
     update_date = refData.get("modifier_date", "").replace("T", " ")
-    q = {
+    return {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
         "empseqnbr": query.get("personId", ""),
@@ -902,10 +897,6 @@ def convert_edit_agenda_item_query(query):
         "aiseqnumref": None,
         "aiitemcreatorid": refData.get("creator_name")
     }
-
-    logger.info(q)
-    print(q)
-    return q
 
 
 def convert_agenda_item_leg_query(query, leg={}):
@@ -937,7 +928,7 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailetdtedsepdate": ted.split(".000Z")[0],
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
-        "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
+        "ailcountrystatetext": pydash.get(leg, "separation_location.country") or None,
         "ailusind": None,
         "ailemprequestedsepind": None,
         "ailcreateid": user_id,
