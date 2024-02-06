@@ -9,7 +9,7 @@ def get_org_stats(query, jwt_token):
     '''
     args = {
         "proc_name": 'qry_lstorgstats',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": org_stats_req_mapping,
         "response_mapping_function": org_stats_res_mapping,
         "jwt_token": jwt_token,
