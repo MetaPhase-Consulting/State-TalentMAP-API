@@ -611,7 +611,7 @@ def get_bids_csv(data, filename, jwt_token):
         "closed": "Closed",
         "draft": "Draft",
         "handshake_accepted": "Handshake Accepted",
-        "handshake_needs_registered": "Handshake Needs Registered",
+        "handshake_needs_registered": "Active",
         "handshake_with_another_bidder": "Handshake Registered With Another Bidder",
         "in_panel": "In Panel",
         "submitted": "Submitted",

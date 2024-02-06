@@ -469,7 +469,7 @@ def convert_agenda_item_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
-def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
+def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}):
     agendaStatusAbbrev = {
         "Approved": "APR",
         "Deferred - Proposed Position": "XXX",
@@ -499,6 +499,31 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "desc_text": pydash.get(data, "Panel[0].micdesctext") or None,
     }
 
+    # skill code lookup against ref_skills data
+    skill_descriptions = []
+    if (ref_skills):
+        codes_to_lookup = []
+        codes_to_lookup.append(pydash.get(data, "person[0].perdetskillcode"))
+        codes_to_lookup.append(pydash.get(data, "person[0].perdetskill2code"))
+        codes_to_lookup.append(pydash.get(data, "person[0].perdetskill3code"))
+        for skill_code in codes_to_lookup:
+            if skill_code is not None and ref_skills.get(skill_code):
+                skill_descriptions.append(f'({skill_code}) {ref_skills[skill_code]}')
+    
+    languages = pydash.get(data, "person[0].languages") or None
+    languages_return = []
+    if languages:
+        for lang in languages:
+            languages_return.append(fsbid_lang_to_talentmap_lang(lang))
+    
+    cdo = pydash.get(data, "person[0].cdo[0].user[0]") or None
+    if cdo:
+        cdo = fsbid_cdo_to_talentmap_cdo(cdo)
+
+    org = pydash.get(data, "person[0].org[0]") or None
+    if org:
+        org = fsbid_org_to_talentmap_org(org)
+
     updaters = pydash.get(data, "updaters") or None
     if updaters:
         updaters = fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(updaters[0])
@@ -525,7 +550,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "aihHoldNum": data.get("aihholdnum") or None,
         "aihHoldComment": data.get("aihholdcommenttext") or None,
         "remarks": services.parse_agenda_remarks(data.get("remarks") or []),
-        "pmd_dttm": ensure_date(panel.get("pmddttm"), utc_offset=-5),
+        "pmd_dttm": panel.get("pmddttm") or None,
         "pmt_code": panel.get("pmtcode") or None,
         "pmi_pm_seq_num": panel.get("pmipmseqnum"),
         "pmi_seq_num": panel.get("pmiseqnum"),
@@ -551,7 +576,13 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data):
         "creator_date": data.get("aicreatedate") or None,
         "creators": creators,
         "updaters": updaters,
-        "user": {},
+        "skills": skill_descriptions,
+        "cdo": cdo,
+        "grade": pydash.get(data, "person[0].perdetgradecode"),
+        "languages": languages_return,
+        "pay_plan_code": pydash.get(data, "person[0].perdetpayplancode"),
+        "full_name": services.remove_nmn(pydash.get(data, "person[0].perpiifullname")),
+        "org": org,
     }
 
 
@@ -600,11 +631,13 @@ def fsbid_legs_to_talentmap_legs(data):
     tod_is_dropdown = (tod_code != "X") and (tod_is_active is True)
     city = pydash.get(data, 'ailcitytext') or ''
     country_state = pydash.get(data, 'ailcountrystatetext') or ''
-    location = f"{city}{', ' if (city and country_state) else ''}{country_state}"
+    code = pydash.get(data, 'aildsccd')
+    location = f"{city}{', ' if (city and country_state) else ''}{country_state}" or code
     lat_code = pydash.get(data, 'aillatcode')
-    tod_ind = 'INDEFINITE'
-    ted_na = 'N/A'
     skills_data = services.get_skills(pydash.get(data, 'agendaLegPosition[0]', {}))
+    eta_date = data.get("ailetadate", None)
+    ted_date = data.get("ailetdtedsepdate", None)
+    not_applicable = '-'
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -618,7 +651,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "pos_num": pydash.get(data, "agendaLegPosition[0].posnumtext", None),
         "org": pydash.get(data, "agendaLegPosition[0].posorgshortdesc", None),
         "eta": pydash.get(data, "ailetadate", None),
-        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "ailetdtedsepdate", None),
+        "ted": not_applicable if tod_long_desc == 'INDEFINITE' else pydash.get(data, "ailetdtedsepdate", None),
         "tod": tod_code,
         "tod_is_dropdown": tod_is_dropdown,
         "tod_months": tod_months if is_other_tod else None, # only a custom/other TOD should have months
@@ -631,6 +664,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
         "is_separation": False,
+        "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ETA, then by TED
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "agendaLegPosition[0].pospayplandesc", None),
         "skill": skills_data.get("skill_1_representation"),
@@ -644,46 +678,39 @@ def fsbid_legs_to_talentmap_legs(data):
     separation_types = ['H', 'M', 'N', 'O', 'P']
     if lat_code in separation_types:
         res['is_separation'] = True
+        res['sort_date'] = data.get("ailetdtedsepdate", None)  # Separations are sorted by TED
         res['pos_title'] = pydash.get(data, 'latdesctext')
-        res['pos_num'] = '-'
-        res['eta'] = '-'
-        res['tod'] = None
-        res['tod_short_desc'] = '-' 
-        res['tod_months'] = '-' 
-        res['tod_long_desc'] = '-' 
-        res['grade'] = '-'
-        res['languages'] = '-'
+        res['pos_num'] = not_applicable
+        res['eta'] = not_applicable
+        res['tod'] = not_applicable
+        res['tod_short_desc'] = not_applicable
+        res['tod_months'] = None
+        res['tod_long_desc'] = not_applicable
+        res['grade'] = not_applicable
+        res['languages'] = not_applicable
         res['org'] = location
+        res['custom_skills_description'] = not_applicable
         res['separation_location'] = {
                 "city": city,
                 "country": country_state,
-                "code": pydash.get(data, 'aildsccd'),
+                "code": code,
             }
 
     return res
 
 
-def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data):
-    empUser = pydash.get(data, "empUser") or None
-    if empUser:
-        empUser = (list(map(lambda emp_user: {
-            "emp_user_first_name": emp_user["perpiifirstname"],
-            "emp_user_last_name": emp_user["perpiilastname"],
-            "emp_user_seq_num": emp_user["perpiiseqnum"],
-            "emp_user_middle_name": emp_user["perpiimiddlename"],
-            "emp_user_suffix_name": emp_user["perpiisuffixname"],
-            "perdet_seqnum": emp_user["perdetseqnum"],
-            "per_desc": emp_user["persdesc"],
-        }, empUser)))[0]
-
+def fsbid_ai_creators_updaters_to_talentmap_ai_creators_updaters(data={}):
+    if isinstance(data, list):
+        data = data[0]
     return {
-        "emp_seq_num": pydash.get(data, "hruempseqnbr"),
-        "neu_id": pydash.get(data, "neuid"),
-        "hru_id": pydash.get(data, "hruid"),
-        "last_name": pydash.get(data, "neulastnm"),
-        "first_name": pydash.get(data, "neufirstnm"),
-        "middle_name": pydash.get(data, "neumiddlenm"),
-        "emp_user": empUser
+        "emp_seq_num": data.get("hruempseqnbr") or data.get("perpiiseqnum") or None,
+        "perdet_seqnum": data.get("perdetseqnum"),
+        "per_desc": data.get("persdesc"),
+        "neu_id": data.get("neuid"),
+        "hru_id": data.get("hruid"),
+        "last_name": data.get("perpiilastname") or data.get("neulastnm") or None,
+        "first_name": data.get("perpiifirstname") or data.get("neufirstnm") or None,
+        "middle_name": data.get("perpiimiddlename") or data.get("neumiddlenm") or None,
     }
 
 # aia = agenda item assignment
@@ -694,26 +721,27 @@ def fsbid_aia_to_talentmap_aia(data):
     tod_short_desc = pydash.get(data, "todshortdesc")
     tod_long_desc = pydash.get(data, "toddesctext")
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
-    tod_ind = 'INDEFINITE'
-    ted_na = 'N/A'
     skills_data = services.get_skills(pydash.get(data, 'position[0]', {}))
+    not_applicable = '-'
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
+        # Redundant field - TO DO: Fix backward compatibility issues and remove extra field
+        "asg_seq_num": pydash.get(data, "asgdasgseqnum", None),
         "revision_num": data.get("asgdrevisionnum"),
         "pos_title": pydash.get(data, "position[0].postitledesc", None),
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
-        "ted": ted_na if tod_long_desc == tod_ind else pydash.get(data, "asgdetdteddate", None),
+        "ted": not_applicable if tod_long_desc == 'INDEFINITE' else pydash.get(data, "asgdetdteddate", None),
         "tod": tod_code,
         "tod_months": tod_months if is_other_tod else None, # only custom/other TOD should have months and other_text
         "tod_short_desc": tod_other_text if is_other_tod else tod_short_desc,
         "tod_long_desc": tod_other_text if is_other_tod else tod_long_desc,
         "grade": pydash.get(data, "position[0].posgradecode", None),
         "languages": services.parseLanguagesToArr(pydash.get(data, "position[0]", None)),
-        "travel": "-",
-        "action": "-",
+        "travel": not_applicable,
+        "action": not_applicable,
         "is_separation": False,
         "pay_plan": pydash.get(data, "position[0].pospayplancode", None),
         "pay_plan_desc": pydash.get(data, "position[0].pospayplandesc", None),
@@ -724,6 +752,28 @@ def fsbid_aia_to_talentmap_aia(data):
         "custom_skills_description": skills_data.get("combined_skills_representation"),
     }
 
+def fsbid_lang_to_talentmap_lang(data):
+    lang_code = pydash.get(data, "pllangcode", None)
+    speaking_score = pydash.get(data, "pllpcodespeakcode", None)
+    reading_score = pydash.get(data, "pllpcodereadcode", None)
+    return {
+        "lang_code": lang_code,
+        "speaking_score": speaking_score,
+        "reading_score": reading_score,
+        "test_date": pydash.get(data, "pltestdate", None),
+        "custom_description": f"{lang_code} {speaking_score or '-'}/{reading_score or '-'} "
+    }
+
+def fsbid_cdo_to_talentmap_cdo(data):
+    return {
+        "first_name": pydash.get(data, "perpiifirstname", None),
+        "last_name": pydash.get(data, "perpiilastname", None),
+    }
+
+def fsbid_org_to_talentmap_org(data):
+    return {
+        "org_descr": pydash.get(data, "orgmvgmdescrshort", None),
+    }
 
 def get_agenda_statuses(query, jwt_token):
     '''
@@ -795,7 +845,7 @@ def convert_create_agenda_item_query(query):
     '''
     user_id = pydash.get(query, "hru_id")
 
-    q = {
+    return {
         "aipmiseqnum": query.get("pmiseqnum", ""),
         "empseqnbr": query.get("personId", ""),
         "aiperdetseqnum": query.get("personDetailId", ""),
@@ -817,21 +867,15 @@ def convert_create_agenda_item_query(query):
         "aiitemcreatorid": user_id,
     }
 
-    logger.info('creating AI query mapping')
-    logger.info(q)
-    print(q)
-    return q
 
 def convert_edit_agenda_item_query(query):
     '''
     Converts TalentMap query into FSBid query
     '''
     refData = query.get("refData", {})
-    logger.info('editing AI query mapping')
-    logger.info(query)
     create_date = refData.get("creator_date", "").replace("T", " ")
     update_date = refData.get("modifier_date", "").replace("T", " ")
-    q = {
+    return {
         "aiseqnum": refData.get("id"),
         "aipmiseqnum": refData.get("pmi_seq_num"),
         "empseqnbr": query.get("personId", ""),
@@ -853,10 +897,6 @@ def convert_edit_agenda_item_query(query):
         "aiseqnumref": None,
         "aiitemcreatorid": refData.get("creator_name")
     }
-
-    logger.info(q)
-    print(q)
-    return q
 
 
 def convert_agenda_item_leg_query(query, leg={}):
@@ -888,7 +928,7 @@ def convert_agenda_item_leg_query(query, leg={}):
         "ailetdtedsepdate": ted.split(".000Z")[0],
         "aildsccd": pydash.get(leg, "separation_location.code") or None,
         "ailcitytext": pydash.get(leg, "separation_location.city") or None,
-        "ailcountrystatetext": pydash.get(leg, "separation_location.description") or None,
+        "ailcountrystatetext": pydash.get(leg, "separation_location.country") or None,
         "ailusind": None,
         "ailemprequestedsepind": None,
         "ailcreateid": user_id,
@@ -1100,12 +1140,17 @@ def get_agendas_by_panel(pk, jwt_token):
     '''
     Get agendas for panel meeting
     '''
+    skillUrl = f"{API_ROOT}/v1/references/skills"
+    skills = requests.get(skillUrl, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    skills_lookup = {}
+    for skill in skills["Data"]:
+            skills_lookup[skill["skl_code"]] = skill["skill_descr"]
     args = {
         "uri": f"{pk}/agendas",
         "query": {},
         "query_mapping_function": convert_agendas_by_panel_query,
         "jwt_token": jwt_token,
-        "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
+        "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, ref_skills=skills_lookup),
         "count_function": None,
         "base_url": "/api/v1/panels/",
         "api_root": PANEL_API_ROOT,
@@ -1113,46 +1158,10 @@ def get_agendas_by_panel(pk, jwt_token):
     agendas_by_panel = services.send_get_request(
         **args
     )
-    perdets = list(map(lambda x: x["perdet"], agendas_by_panel["results"]))
-    ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    query = {
-        "ad_id": ad_id,
-        "perdet_seq_num": perdets,
-        "currentAssignmentOnly": "true",
-        "page": 1,
-        "limit": 1000,
-    }
-    clients = services.send_get_request(
-        "",
-        query,
-        client_services.convert_client_query,
-        jwt_token,
-        client_services.fsbid_clients_to_talentmap_clients,
-        client_services.get_clients_count,
-        "/api/v2/clients/",
-        None,
-        CLIENTS_ROOT_V2,
-    )
-    clients_lookup = {}
-    for client in clients.get("results") or []:
-        logger.info('==== get_panels_by_agenda ====')
-        logger.info('==== single client from v2/clients call ====')
-        logger.info(client)
-        logger.info('================================')
-        perdet = client["perdet_seq_number"]
-        clients_lookup[perdet] = client
-    logger.info('==== get_panels_by_agenda ====')
-    logger.info('==== clients_lookup variable ====')
-    logger.info(clients_lookup)
-    logger.info('================================')
 
     # get vice data to add to agendas_by_panel
     pos_seq_nums = []
     for agenda in agendas_by_panel["results"]:
-        logger.info('==== get_panels_by_agenda ====')
-        logger.info('==== agenda ====')
-        logger.info(agenda)
-        logger.info('================================')
         legs = pydash.get(agenda, "legs")
         for leg in legs:
             if ('ail_pos_seq_num' in leg) and (leg["ail_pos_seq_num"] is not None):
@@ -1160,12 +1169,6 @@ def get_agendas_by_panel(pk, jwt_token):
     vice_lookup = get_vice_data(pos_seq_nums, jwt_token)
 
     for agenda in agendas_by_panel["results"]:
-        client = clients_lookup.get(agenda["perdet"]) or {}
-        logger.info('==== get_panels_by_agenda ====')
-        logger.info('==== client variable ====')
-        logger.info(client)
-        logger.info('================================')
-        agenda["user"] = client
         legs = pydash.get(agenda, "legs")
         # append vice data to add to agendas_by_panel
         for leg in legs:
