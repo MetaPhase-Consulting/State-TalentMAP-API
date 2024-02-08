@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^api/v1/fsbid/bureau/positions/', include('talentmap_api.fsbid.urls.bureau')),
     url(r'^api/v1/bureau/', include('talentmap_api.bureau.urls.bureau')),
     url(r'^api/v1/fsbid/bureau_exceptions/', include('talentmap_api.fsbid.urls.bureau_exceptions')),
+    url(r'^api/v1/fsbid/assignment_cycles/', include('talentmap_api.fsbid.urls.assignment_cycles')),
 
     # Available Positions
     url(r'^api/v1/fsbid/available_positions/', include('talentmap_api.fsbid.urls.available_positions')),
