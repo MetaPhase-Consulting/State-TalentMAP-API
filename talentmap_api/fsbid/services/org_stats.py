@@ -22,7 +22,7 @@ def org_stats_req_mapping(request):
     return {
         'pv_api_version_i': '',
         'pv_ad_id_i': '',
-        'i_cycle_id': request.get('cycles') or '',
+        'i_cycle_id': request.get('cycles') or 0,
         'i_bureau_id': request.get('bureaus') or '',
         'i_org_code': request.get('orgs') or '',
     }
