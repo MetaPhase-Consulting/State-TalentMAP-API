@@ -16,7 +16,6 @@ def validate_agenda_item(query):
         'reportCategory': validate_report_category(query['panelMeetingCategory']),
         'panelDate': validate_panel_date(query['panelMeetingId']),
         'legs': validate_legs(query['agendaLegs']),
-        'allValid': False,
     }
 
     all_valid = True
@@ -100,12 +99,16 @@ def validate_individual_leg(leg):
             'valid': True,
             'errorMessage': ''
         },
-        'tod': validate_tod(leg['tod'], leg['tod_months'], leg['tod_long_desc']),
-        'legActionType': {
+        'eta': {
             'valid': True,
             'errorMessage': ''
         },
-        'travelFunctionCode': {
+        'tod': validate_tod(leg),
+        'action_code': {
+            'valid': True,
+            'errorMessage': ''
+        },
+        'travel_code': {
             'valid': True,
             'errorMessage': ''
         },
@@ -115,23 +118,26 @@ def validate_individual_leg(leg):
         }
     }
 
-    # Leg - must have TED
-    if not leg['ted']:
+    # Leg - must have ETA, if not separation
+    if not leg['eta'] and not leg.get('is_separation') or False:
+        individual_leg_validation['eta']['valid'] = False
+        individual_leg_validation['eta']['errorMessage'] = 'Missing ETA'
+        whole_leg_valid = False
+
+    # Leg - must have TED, unless the TOD is indefinite or N/A
+    if not leg['ted'] and not leg['tod'] == 'Y' and not leg['tod'] == 'Z':
         individual_leg_validation['ted']['valid'] = False
         individual_leg_validation['ted']['errorMessage'] = 'Missing TED'
         whole_leg_valid = False
 
     # Leg - must have Action
-    if not leg['legActionType']:
-        individual_leg_validation['legActionType']['valid'] = False
-        individual_leg_validation['legActionType']['errorMessage'] = 'Missing Action'
+    if not leg.get('action_code'):
+        individual_leg_validation['action_code']['valid'] = False
+        individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
         whole_leg_valid = False
 
-    # Leg - must have Travel
-    if not leg['travelFunctionCode']:
-        individual_leg_validation['travelFunctionCode']['valid'] = False
-        individual_leg_validation['travelFunctionCode']['errorMessage'] = 'Missing Travel'
-        whole_leg_valid = False
+    # Leg - Travel is be nullable according to DB, so validation removed. 
+    # FE not equipped to handle not having validation, so left travel_code in individual_leg_validation above
 
     # Leg - must have duty station for separation
     if leg.get('is_separation', False) and not leg.get('separation_location', False):
@@ -141,14 +147,20 @@ def validate_individual_leg(leg):
 
     return (individual_leg_validation, whole_leg_valid)
 
-def validate_tod(tod, tod_months, tod_long_desc):
+
+def validate_tod(leg):
+    tod = leg.get('tod') or None
+    tod_months = leg.get('tod_months') or None
+    tod_long_desc = leg.get('tod_long_desc') or None
+    is_separation = leg.get('is_separation') or False
+
     tod_validation = {
         'valid': True,
         'errorMessage': ''
     }
 
-    # Leg - must have TOD
-    if not tod:
+    # Leg - must have TOD, if not separation
+    if not tod and not is_separation:
         tod_validation['valid'] = False
         tod_validation['errorMessage'] = 'Missing TOD'
         return tod_validation

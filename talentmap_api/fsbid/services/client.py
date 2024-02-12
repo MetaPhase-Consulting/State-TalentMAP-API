@@ -14,7 +14,6 @@ import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import ensure_date
 from talentmap_api.fsbid.requests import requests
 
-HRDATA_URL = settings.HRDATA_URL
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
@@ -154,8 +153,6 @@ def single_client(jwt_token, perdet_seq_num, host=None):
         CLIENTS_ROOT_V2,
     )
     cdo = cdo_services.single_cdo(jwt_token, perdet_seq_num)
-    # TO-DO: Use v2/clients here to fill out this payload
-    # WS Request: Add current and historical assignments to one endpoint
     user_info = get_user_information(jwt_token, perdet_seq_num)
     try:
         CLIENT = list(responseAllAssignments['results'])[0]
@@ -280,6 +277,7 @@ def fsbid_clients_to_talentmap_clients(data):
         "initials": initials,
         "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "grade": employee.get("per_grade_code", None),
+        "pay_plan": employee.get("per_pay_plan_code"),
         "skills": map_skill_codes(employee),
         "employee_id": str(employee.get("pert_external_id", None)),
         "role_code": data.get("rl_cd", None),
@@ -508,6 +506,7 @@ def fsbid_assignments_to_tmap(assignments):
             tmap_assignments.append(
                 {
                     "id": x.get('asg_seq_num', None),
+                    "asg_seq_num": x.get('asg_seq_num', None),
                     "position_id": x.get('pos_seq_num', None),
                     "start_date": ensure_date(x.get('asgd_eta_date', None)),
                     "end_date": ensure_date(x.get('asgd_etd_ted_date', None)),
@@ -554,7 +553,7 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": s or empty_score,
             "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language')).strip()} {s or empty_score}/{r or empty_score}"
+            "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
         })
     return tmap_languages
 

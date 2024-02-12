@@ -43,6 +43,8 @@ urlpatterns = [
     # Bureau
     url(r'^api/v1/fsbid/bureau/positions/', include('talentmap_api.fsbid.urls.bureau')),
     url(r'^api/v1/bureau/', include('talentmap_api.bureau.urls.bureau')),
+    url(r'^api/v1/fsbid/bureau_exceptions/', include('talentmap_api.fsbid.urls.bureau_exceptions')),
+    url(r'^api/v1/fsbid/assignment_cycles/', include('talentmap_api.fsbid.urls.assignment_cycles')),
 
     # Available Positions
     url(r'^api/v1/fsbid/available_positions/', include('talentmap_api.fsbid.urls.available_positions')),
@@ -57,10 +59,18 @@ urlpatterns = [
 
     # Projected Vacancies Management
     url(r'^api/v1/fsbid/admin/projected_vacancies/', include('talentmap_api.fsbid.urls.admin_projected_vacancies')),
+    
+    # Job Categories
+    url(r'^api/v1/fsbid/job_categories/', include('talentmap_api.fsbid.urls.job_categories')),
 
     # Position Management
     url(r'^api/v1/fsbid/post_access/', include('talentmap_api.fsbid.urls.post_access')),
+    url(r'^api/v1/fsbid/manage_bid_seasons/', include('talentmap_api.fsbid.urls.manage_bid_seasons')),
     url(r'^api/v1/fsbid/capsule_descriptions/', include('talentmap_api.fsbid.urls.capsule_descriptions')),
+    url(r'^api/v1/fsbid/publishable_positions/', include('talentmap_api.fsbid.urls.publishable_positions')),
+
+    # Position Classifications
+    url(r'^api/v1/fsbid/position_classifications/', include('talentmap_api.fsbid.urls.position_classifications')),
 
     # CDO
     url(r'^api/v1/fsbid/cdo/', include('talentmap_api.fsbid.urls.cdo')),
@@ -87,6 +97,9 @@ urlpatterns = [
     # Bidding
     url(r'^api/v1/bidding/', include('talentmap_api.bidding.urls.bidding')),
     url(r'^api/v1/bidhandshakecycle/', include('talentmap_api.bidding.urls.bidhandshakecycle')),
+
+    # Bidding Tool
+    url(r'^api/v1/fsbid/bidding_tool/', include('talentmap_api.fsbid.urls.bidding_tool')),
 
     # Permission resources
     url(r'^api/v1/permission/user/', include('talentmap_api.permission.urls.user')),

@@ -5,6 +5,8 @@ from urllib.parse import urlencode, quote
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.http import FileResponse, HttpResponse
+from django.core.exceptions import ValidationError
+
 import jwt
 import pydash
 
@@ -18,7 +20,6 @@ import talentmap_api.fsbid.services.bid as bid_services
 API_ROOT = settings.EMPLOYEES_API_URL
 ORG_ROOT = settings.ORG_API_URL
 WS_ROOT = settings.WS_ROOT_API_URL
-HR_DATA_ROOT = settings.HRDATA_URL
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +181,6 @@ def convert_separations_query(pk, query):
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": int(query.get("limit", 1000)),
         "rp.filter": convert_to_fsbid_ql([{'col': 'sepperdetseqnum', 'val': pk}]),
-        "rp.columns": 'sepperdetseqnum',
     }
 
 
@@ -283,7 +283,9 @@ def map_assignments_separations_bids(data):
             "asg_seq_num": pydash.get(data, 'id'),
             "revision_num": pydash.get(pos, 'asgd_revision_num'),
             "languages": pydash.get(pos, 'languages'),
-            "start_date": pydash.get(data, 'start_date'),
+            "eta": pydash.get(data, 'start_date'),
+            "ted": pydash.get(data, 'end_date'),
+            # TO DO: Add TOD field
             "separation_location": {},
             "is_bid": is_bid,
             "is_assignment": is_assignment,
@@ -291,6 +293,12 @@ def map_assignments_separations_bids(data):
             "pay_plan": pydash.get(pos, 'pospayplancode'),
         }
     if is_assignment:
+        tod_long_desc = data.get('tod_desc_text')
+        tod_short_desc = data.get('tod_short_desc')
+        if data.get('tod_code') == 'X':
+            tod_long_desc = data.get('asgd_tod_other_text')
+            tod_short_desc = data.get('asgd_tod_other_text')
+
         return {
             "status": pydash.get(data, 'status'),
             "org": pydash.get(pos, 'posorgshortdesc'),
@@ -299,10 +307,15 @@ def map_assignments_separations_bids(data):
             "pos_title": pydash.get(pos, 'postitledesc'),
             "pos_seq_num": pydash.get(pos, 'posseqnum'),
             "cp_id": pydash.get(data, 'cp_id'),
+            # TO DO: Standardize skill desc for multi
+            "custom_skills_description": data.get("position", {}).get("skill"),
             "asg_seq_num": pydash.get(data, 'id'),
-            "revision_num": pydash.get(pos, 'asgd_revision_num'),
+            "revision_num": pydash.get(data, 'asgd_revision_num'),
             "languages": pydash.get(pos, 'languages'),
-            "start_date": pydash.get(data, 'start_date'),
+            "eta": data.get('start_date'),
+            "ted": data.get('end_date'),
+            "tod_long_desc": tod_long_desc,
+            "tod_short_desc": tod_short_desc,
             "separation_location": {},
             "is_bid": is_bid,
             "is_assignment": is_assignment,
@@ -321,7 +334,7 @@ def map_assignments_separations_bids(data):
             "asg_seq_num": pydash.get(data, 'seq_num'),
             "revision_num": pydash.get(pos, 'asgd_revision_num'),
             "languages": None,
-            "start_date": pydash.get(data, 'sepd_separation_date'),
+            "eta": pydash.get(data, 'sepd_separation_date'),
             "separation_location": {
                 "city": pydash.get(data, 'sepd_city'),
                 "country": pydash.get(data, 'sepd_country_state'),
@@ -339,14 +352,17 @@ def get_employee_profile_report(query, pk, jwt_token=None):
     Get Employee Profile Report
     '''
 
-    url = f"{HR_DATA_ROOT}/Employees/{pk}/EmployeeProfileReportByCDO/"
 
     if query.get("redacted_report") == "true":
-        url = f"{HR_DATA_ROOT}/Employees/{pk}/PrintEmployeeProfileReport/"
+        url = f"{WS_ROOT}/v1/Employees/{pk}/PrintEmployeeProfileReport"
+
+    if query.get("redacted_report") == "false":
+        url = f"{WS_ROOT}/v1/Employees/{pk}/EmployeeProfileReportByCDO"
+
     response_pdf = requests.get(url, headers={'JWTAuthorization': jwt_token})
 
     if response_pdf.ok:
         return HttpResponse(response_pdf, content_type='arrayBuffer')
     else:
         logger.error(f"Fsbid call to '{url}' failed.")
-        return HttpResponse()
+        raise ValidationError(f"Fsbid call to '{url}' failed.")

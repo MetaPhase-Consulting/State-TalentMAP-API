@@ -85,9 +85,10 @@ def parseLanguage(lang):
         match = LANG_PATTERN.search(lang)
         if match:
             language = {}
+            # lang comes in as 'Spanish(SP) 1/2', with  1 being the speaking score and 2 being the reading score
             language["language"] = match.group(1).strip()
-            language["reading_proficiency"] = match.group(3).replace(' ', '')
-            language["spoken_proficiency"] = match.group(4).replace(' ', '')
+            language["spoken_proficiency"] = match.group(3).replace(' ', '')
+            language["reading_proficiency"] = match.group(4).replace(' ', '')
             language["representation"] = f"{match.group(1).strip()} {match.group(2).replace(' ', '')} {match.group(3).replace(' ', '')}/{match.group(4).replace(' ', '')}"
             return language
 
@@ -305,15 +306,13 @@ def get_individual(uri, query, query_mapping_function, jwt_token, mapping_functi
 def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
     url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
     json_body = request_mapping_function(request_body)
-    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
-    if response is None or (response['PV_RETURN_CODE_O'] and response['PV_RETURN_CODE_O'] is not 0):
-        logger.error(f"Fsbid call to '{url}' failed.")
-        return None
-    if response_mapping_function:
-        return response_mapping_function(response)
-    return response
+    try:
+        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
+    except:
+        logger.error(f"FSBid backoffice call for procedure {proc_name} failed.")
+        raise Exception('Error at FSBid call')
 
-
+    return response_mapping_function(response)
 
 def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_function, count_function, base_url, host=None, api_root=API_ROOT, use_post=False):
     '''
@@ -329,7 +328,7 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
 def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
     url = f"{api_root}/{uri}"
-    response = requests.put(url, data=mappedQuery, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+    response = requests.put(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
@@ -337,6 +336,25 @@ def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_func
         return list(map(mapping_function, response.get("Data", {})))
     else:
         return response.get("Data", {})
+
+
+# Copy of get_results_with_post. TO-DO: Need to either consolidate or differentiate why get_with_post vs a normal post
+def send_post_request(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
+    mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
+    url = f"{api_root}/{uri}"
+    response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mappedQuery).json()
+    if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
+        logger.error(f"Fsbid call to '{url}' failed.")
+        return None
+    if mapping_function:
+        return list(map(mapping_function, response.get("Data", {})))
+    else:
+        return response.get("Data", {})
+
+def send_delete_request(uri, query, query_mapping_function, jwt_token, api_root=API_ROOT):
+    url = f"{api_root}/{uri}"
+    mapped_query = query_mapping_function(query) if query_mapping_function else query
+    response = requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mapped_query)
 
 
 def send_count_request(uri, query, query_mapping_function, jwt_token, host=None, api_root=API_ROOT, use_post=False, is_template=False):
@@ -593,7 +611,7 @@ def get_bids_csv(data, filename, jwt_token):
         "closed": "Closed",
         "draft": "Draft",
         "handshake_accepted": "Handshake Accepted",
-        "handshake_needs_registered": "Handshake Needs Registered",
+        "handshake_needs_registered": "Active",
         "handshake_with_another_bidder": "Handshake Registered With Another Bidder",
         "in_panel": "In Panel",
         "submitted": "Submitted",
@@ -756,6 +774,7 @@ def get_bidders_csv(self, pk, data, filename, jwt_token):
 def get_secondary_skill(pos={}):
     skillSecondary = f"{pos.get('pos_staff_ptrn_skill_desc', None)} ({pos.get('pos_staff_ptrn_skill_code')})"
     skillSecondaryCode = pos.get("pos_staff_ptrn_skill_code", None)
+
     if pos.get("pos_skill_code", None) == pos.get("pos_staff_ptrn_skill_code", None):
         skillSecondary = None
         skillSecondaryCode = None
@@ -767,6 +786,34 @@ def get_secondary_skill(pos={}):
         "skill_secondary_code": skillSecondaryCode,
     }
 
+def get_skills(data={}):
+    skill_1_code = data.get('posskillcode')
+    skill_1_description = data.get('posskilldesc')
+    skill_1_representation = ''
+    skill_2_code = data.get('posstaffptrnskillcode')
+    skill_2_description = data.get('posstaffptrnskilldesc')
+    skill_2_representation = ''
+    combined_skills_representation = '-' 
+
+    # assumes code and description exist together
+    if skill_1_code:
+        skill_1_representation = f'({skill_1_code}) {skill_1_description}'
+        combined_skills_representation = skill_1_representation
+        if (skill_1_code != skill_2_code) and skill_2_code:
+            skill_2_representation = f'({skill_2_code}) {skill_2_description}'
+            combined_skills_representation = f'{skill_1_representation}, {skill_2_representation}'
+
+    # return custom skill if it exists, combined string of skill and grade if not 
+
+    return {
+        "skill_1_code": skill_1_code,
+        "skill_1_description": skill_1_description,
+        "skill_1_representation": skill_1_representation,
+        "skill_2_code": skill_2_code,
+        "skill_2_description": skill_2_description,
+        "skill_2_representation": skill_2_representation,
+        "combined_skills_representation": combined_skills_representation,
+    }
 
 APPROVED_PROP = 'approved'
 CLOSED_PROP = 'closed'
@@ -856,6 +903,14 @@ def parse_agenda_remarks(remarks=[]):
     remarks_values = []
     if remarks:
         for remark in remarks:
+            remark['remarkRefData'][0]['airaiseqnum'] = remark.get('airaiseqnum')
+            remark['remarkRefData'][0]['airrmrkseqnum'] = remark.get('airrmrkseqnum')
+            remark['remarkRefData'][0]['airremarktext'] = remark.get('airremarktext')
+            remark['remarkRefData'][0]['aircompleteind'] = remark.get('aircompleteind')
+            remark['remarkRefData'][0]['aircreateid'] = remark.get('aircreateid')
+            remark['remarkRefData'][0]['aircreatedate'] = remark.get('aircreatedate')
+            remark['remarkRefData'][0]['airupdateid'] = remark.get('airupdateid')
+            remark['remarkRefData'][0]['airupdatedate'] = remark.get('airupdatedate')
             if pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']:
                 if not pydash.get(remark, 'remarkInserts'):
                     continue
@@ -1052,7 +1107,6 @@ def panel_process_dates_csv(dates):
 
     return list(columnOrdering.values())
 
-
 def format_request_data_to_string(request_values, table_key):
     data_entries = []
     for item in request_values.split(","):
@@ -1062,3 +1116,22 @@ def format_request_data_to_string(request_values, table_key):
     result_string = "{" + ",".join(data_entries) + "}"
     return result_string
 
+def format_desc_code(desc, code):
+    # Desc (123)
+    # (123)
+    # Desc
+    display_text = f'{desc} ' if desc else ''
+    display_text += f'({code})' if code else ''
+
+    return display_text
+
+def remove_nmn(name):
+    # "Fernandez, Ahmad Nmn "        -> Fernandez, Ahmad
+    # "Townsend-Babi, Sal-Tore nmN " -> Townsend-Babi, Sal-Tore
+    # "Dickerson, Thelma Jones NMN"  -> Dickerson, Thelma Jones
+    # "Payne,    nmn Nathanial "     -> Payne, Nathanial
+    # "nmnCraig, nmnMolNmnlie Nmn"   -> nmnCraig, nmnMolNmnlie
+
+    nmn_pattern = "\s+nmn(?!\w)"
+
+    return re.sub(nmn_pattern, "", name, flags=re.I)

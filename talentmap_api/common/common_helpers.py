@@ -6,6 +6,8 @@ import threading
 from pydoc import locate
 import pydash
 
+from rest_framework import status
+from rest_framework.response import Response
 
 from dateutil.relativedelta import relativedelta
 from dateutil import parser
@@ -110,6 +112,44 @@ LANGUAGE_FORMAL_NAMES = {
     "Vietnamese": "Vietnamese",
 }
 
+def view_result(result):
+    '''
+    Returns view result with correct error code
+    '''
+    code = status.HTTP_200_OK
+    if (result is None):
+        code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    elif (result.get('return_code') and result.get('return_code') < 0):
+        code = status.HTTP_400_BAD_REQUEST
+
+    return Response(result, code)
+
+def service_response(data, objStr, mapping=None):
+    '''
+    Returns data with additional logger and error handling depending on type
+    '''
+    if data is None:
+        logger.error(f"Fsbid call for {objStr} failed with no return data.")
+    
+    return_code = data['O_RETURN_CODE']
+
+    if (return_code):
+        if (return_code is -1):
+            logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+            return {
+                'return_code': return_code,
+                'fsbid_reference': objStr,
+                'error_message': data.get('QRY_ERROR_DATA')[0].get('MSG_TXT')
+            }
+        if (return_code is -2):
+            logger.error(f"Fsbid call for {objStr} failed with error data returned.")
+            return {
+                'return_code': return_code,
+                'fsbid_reference': objStr,
+                'error_message': 'There was an error attempting to call this FSBID endpoint.'
+            }
+
+    return mapping(data) if mapping else data
 
 def resolve_path_to_view(request_path):
     '''
@@ -364,6 +404,35 @@ def has_permission_or_403(user, permission):
     if not user.has_perm(permission):
         raise PermissionDenied
 
+def user_in_any_group(user, groups):
+    '''
+    The function accepts a user and a list of group names
+    Args:
+        - user (Object) - The user instance
+        - groups (list) - A list of the permission groups
+    '''
+    for g in groups:
+        group = get_group_by_name(g)
+        if group in user.groups.all():
+            return True
+
+    return False
+
+
+def user_in_all_groups(user, groups):
+    '''
+    The function accepts a user and a list of group names
+    Args:
+        - user (Object) - The user instance
+        - groups (list) - A list of the permission groups
+    '''
+    for g in groups:
+        group = get_group_by_name(g)
+        if group not in user.groups.all():
+            return False
+
+    return True
+
 
 def in_superuser_group(user):
     '''
@@ -426,27 +495,29 @@ def get_avatar_url(email):
     else:
         return {}
 
+
 def sort_legs(agendaLegs):
     '''
-    Sorts AgendaItems legs by ailetadate
-    When eta date is null, they are sorted by ailetdtedsepdate and pulled to front of sort
+    AgendaItems sort legs by ailetadate
+    Separations are sorted by ailetdtedsepdate
     '''
-    #   pull out the nulls
+
+    # filter out legs without dates
     nullLegs = []
-    for idx, val in enumerate(agendaLegs):
-        if not val['eta']:
+    goodLegs = []
+    for val in agendaLegs:
+        if not val['sort_date']:
             nullLegs.append(val)
-            agendaLegs.pop(idx)
+        else:
+            goodLegs.append(val)
 
     # sort legs
-    sortedLegs = sorted(agendaLegs, key=lambda d: d['eta'])
+    sortedLegs = sorted(goodLegs, key=lambda d: d['sort_date'])
 
-    # sort nulls by ted
-    sortedNulls = sorted(nullLegs, key=lambda d: d['ted'])
+    # add legs with no ETA or TED dates to back of list
+    sortedLegs.extend(nullLegs)
 
-    # stick sortednulls in the front of legs
-    sortedNulls.extend(sortedLegs)
-    return sortedNulls
+    return sortedLegs
 
 
 def prep_string_for_list(str_val):
