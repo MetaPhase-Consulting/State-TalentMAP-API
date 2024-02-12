@@ -1,4 +1,6 @@
 import logging
+from functools import partial
+import jwt
 from urllib.parse import urlencode, quote
 from django.conf import settings
 
@@ -185,3 +187,158 @@ def fsbid_assignments_to_talentmap_assignments(data):
     add_these.extend(hard_coded)
 
     return services.map_return_template_cols(add_these, cols_mapping, data)
+
+def get_assignment_ref_data(data, jwt_token):
+    '''
+    Get maintain assignment reference data
+    '''
+    args = {
+        "proc_name": 'qry_getAsgDtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": asg_ref_data_req_mapping,
+        "response_mapping_function": asg_ref_data_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def asg_ref_data_req_mapping(request):
+    return {
+        "i_asg_seq_num": request.get("asg_id"),
+        "i_asgd_revision_num": request.get("revision_num"),
+        "pv_api_version_i": "",
+        "pv_ad_id_i": "",
+    }
+
+def asg_ref_data_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for fetching assignment reference data failed.')
+        return None
+    return data
+
+
+def alt_get_assignments(id, jwt_token):
+    '''
+    Get assignments and separations by perdet from fsbid proc 
+    '''
+    args = {
+        "proc_name": 'qry_lstAsgsSeps',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": alt_asg_req_mapping,
+        "response_mapping_function": alt_asg_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": { "perdet_seq_num": id },
+    }
+    return services.send_post_back_office(
+        **args
+    )
+    
+def alt_asg_req_mapping(request):
+    return {
+        "i_pedet_seq_num": request.get("perdet_seq_num"),
+        "pv_api_version_i": "",
+        "pv_ad_id_i": "",
+    }
+
+def alt_asg_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for fetching assignments/separations failed.')
+        return None
+    return data
+
+
+def alt_update_assignment(query, jwt_token):
+    '''
+    Get assignments and separations by perdet from fsbid proc 
+    '''
+    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
+    args = {
+        "proc_name": 'act_modasgdtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": partial(alt_update_asg_req_mapping, hru_id=hru_id),
+        "response_mapping_function": alt_update_asg_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+    
+def alt_update_asg_req_mapping(request, hru_id):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_ASG_SEQ_NUM": request.get("asg_seq_num"),
+        "I_ASGD_REVISION_NUM": request.get("asgd_revision_num"),
+        "I_ASGD_ETA_DATE": request.get("eta"),
+        "I_ASGD_ETD_TED_DATE": request.get("etd"),
+        "I_ASGD_TOD_CODE": request.get("tod"),
+        "I_ASGD_TOD_MONTHS_NUM": None,
+        "I_ASGD_TOD_OTHER_TEXT": "",
+        "I_ASGD_ADJUST_MONTHS_NUM": None,
+        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
+        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
+        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
+        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
+        "I_ASGD_ORG_CODE": request.get("org_code"),
+        "I_ASGD_ASGS_CODE": request.get("status_code"),
+        "I_ASGD_LAT_CODE": request.get("lat_code"),
+        "I_ASGD_TF_CD": request.get("travel_code"),
+        "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
+        "I_ASGD_NOTE_COMMENT_TEXT": "",
+        "I_ASGD_UPDATE_ID": hru_id,
+        "I_ASGD_UPDATE_DATE": request.get("update_date")
+    }
+
+def alt_update_asg_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for fetching assignments/separations failed.')
+        return None
+    return data
+
+
+def alt_create_assignment(query, jwt_token):
+    '''
+    Create assignments and separations via fsbid 
+    '''
+    # TO DO: This does not work until there is more documentation 
+    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
+    args = {
+        "proc_name": 'qry_addasg',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": partial(alt_update_asg_req_mapping, hru_id=hru_id),
+        "response_mapping_function": alt_update_asg_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+    
+def alt_create_asg_req_mapping(request, hru_id):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_EMP_SEQ_NBR": "",
+        "O_SECREF_ROLE_IND": "",
+        "QRY_LSTASGS_REF": "",
+        "QRY_LSTLAT_REF": "",
+        "QRY_LSTTF_REF": "",
+        "QRY_LSTTOD_REF": "",
+        "QRY_LSTWRT_REF": "",
+        "QRY_LSTBUREAUS_REF": "",
+        "QRY_ADDASG_REF": "",
+        "O_RETURN_CODE": "",
+        "QRY_ACTION_DATA": "",
+        "QRY_ERROR_DATA": ""
+    }
+
+def alt_create_asg_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for fetching assignments/separations failed.')
+        return None
+    return data
+
+
