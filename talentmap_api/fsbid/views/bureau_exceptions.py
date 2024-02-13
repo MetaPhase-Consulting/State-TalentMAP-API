@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 
 
 class FSBidBureauExceptionsView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
@@ -25,7 +25,7 @@ class FSBidBureauExceptionsView(APIView):
         return Response(result)
 
 class FSBidBureauExceptionsRefDataBureausView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
@@ -38,7 +38,7 @@ class FSBidBureauExceptionsRefDataBureausView(APIView):
         return Response(result)
 
 class FSBidBureauExceptionsUserMetaDataView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
@@ -51,13 +51,13 @@ class FSBidBureauExceptionsUserMetaDataView(APIView):
         return Response(result)
 
 class FSBidBureauExceptionsUserAddActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
-            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodeList'),
+            'bureauCodes': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
         }
     ))
 
@@ -76,14 +76,14 @@ class FSBidBureauExceptionsUserAddActionView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FSBidBureauExceptionsUserUpdateActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
             'pvId': openapi.Schema(type=openapi.TYPE_STRING, description='pvId'),
-            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
+            'bureauCodes': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
             'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
             'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
         }
@@ -103,14 +103,13 @@ class FSBidBureauExceptionsUserUpdateActionView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FSBidBureauExceptionsUserDeleteActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
             'id': openapi.Schema(type=openapi.TYPE_STRING, description='id'),
             'pvId': openapi.Schema(type=openapi.TYPE_STRING, description='pvId'),
-            'bureauCodeList': openapi.Schema(type=openapi.TYPE_STRING, description='bureauCodes'),
             'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdatedUserID'),
             'lastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='lastUpdated'),
         }

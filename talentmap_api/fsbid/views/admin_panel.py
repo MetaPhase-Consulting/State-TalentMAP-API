@@ -67,24 +67,15 @@ class FSBidPanelMeetingActionView(APIView):
 
     def post(self, request):
         '''
-        Create Panel Meeting
+        Modify Panel Meeting
         '''
-        result = services.modify_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            result = services.modify_panel_meeting_and_dates(request.data, request.META['HTTP_JWT'])
+            return Response(result) if result else Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except Exception as e:
+            logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    def put(self, request):
-        '''
-        Edit Panel Meeting
-        '''
-        result = services.edit_panel_meeting(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
 # ======================== Post Panel Processing ========================
 
 class FSBidPostPanelView(BaseView):
@@ -128,7 +119,7 @@ class FSBidPostPanelActionView(APIView):
     
 # ======================== Panel Run Actions ========================
 
-class FSBidRunPreliminaryActionView(BaseView):
+class FSBidRunPreliminaryActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def put(self, request, pk):
@@ -138,7 +129,7 @@ class FSBidRunPreliminaryActionView(BaseView):
         result = services.run_preliminary(pk, request.META['HTTP_JWT'])
         return view_result(result)
     
-class FSBidRunAddendumActionView(BaseView):
+class FSBidRunAddendumActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def put(self, request, pk):
@@ -148,7 +139,7 @@ class FSBidRunAddendumActionView(BaseView):
         result = services.run_addendum(pk, request.META['HTTP_JWT'])
         return view_result(result)
     
-class FSBidRunPostPanelActionView(BaseView):
+class FSBidRunPostPanelActionView(APIView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def put(self, request, pk):

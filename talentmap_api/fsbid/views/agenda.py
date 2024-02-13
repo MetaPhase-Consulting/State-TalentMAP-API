@@ -58,26 +58,26 @@ class AgendaItemActionView(BaseView):
             'agendaLegs': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(
                 type=openapi.TYPE_OBJECT,
                 properties={
-                    'legAssignmentId': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Assignment ID'),
-                    'legAssignmentVersion': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Assignment Version'),
-                    'legActionType': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Action Type'),
+                    'ail_asg_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Assignment ID'),
+                    'ail_asgd_revision_num': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Assignment Version'),
+                    'action_code': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Action Type'),
                     'tourOfDutyCode': openapi.Schema(type=openapi.TYPE_STRING, description='Tour Of Duty Code'),
                     'legStartDate': openapi.Schema(type=openapi.TYPE_STRING, description='Leg Start Date'),
                     'ted': openapi.Schema(type=openapi.TYPE_STRING, description='Leg End Date'),
-                    'travelFunctionCode': openapi.Schema(type=openapi.TYPE_STRING, description='Travel Function Code'),
-                    'posSeqNum': openapi.Schema(type=openapi.TYPE_INTEGER, description='Position ID'),
-                    'cpId': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Position ID'), }
+                    'travel_code': openapi.Schema(type=openapi.TYPE_STRING, description='Travel Function Code'),
+                    'ail_pos_seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Position ID'),
+                    'ail_cp_id': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Position ID'), }
             ), description='Legs'),
         }
     ))
 
     def post(self, request):
         '''
-        Create single agenda
+        Create or Edit Agenda
         '''
         try:
-            services.create_agenda(request.data, request.META['HTTP_JWT'])
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            res = services.modify_agenda(request.data, request.META['HTTP_JWT'])
+            return Response(res) if res else Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         except Exception as e:
             logger.info(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)

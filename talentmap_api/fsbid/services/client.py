@@ -277,6 +277,7 @@ def fsbid_clients_to_talentmap_clients(data):
         "initials": initials,
         "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "grade": employee.get("per_grade_code", None),
+        "pay_plan": employee.get("per_pay_plan_code"),
         "skills": map_skill_codes(employee),
         "employee_id": str(employee.get("pert_external_id", None)),
         "role_code": data.get("rl_cd", None),
@@ -505,6 +506,7 @@ def fsbid_assignments_to_tmap(assignments):
             tmap_assignments.append(
                 {
                     "id": x.get('asg_seq_num', None),
+                    "asg_seq_num": x.get('asg_seq_num', None),
                     "position_id": x.get('pos_seq_num', None),
                     "start_date": ensure_date(x.get('asgd_eta_date', None)),
                     "end_date": ensure_date(x.get('asgd_etd_ted_date', None)),
