@@ -337,47 +337,50 @@ def el_positions_filter_res_mapping(data):
 
     def TP_map(x):
         return {
-            'code': x.get('PUBS_CD'),
-            'description': x.get('PUBS_DESCR_TXT'),
+            'code': x.get('TP_CODE'),
+            'description': x.get('TP_DESCR_TXT'),
         }
     def bureau_map(x):
         return {
-            'description': x.get('ORGS_SHORT_DESC'),
+            'code': x.get('BUREAU_ORG_CODE'),
+            'description': x.get('BUREAU_SHORT_DESC'),
         }
     def org_map(x):
         return {
-            'code': x.get('ORG_CODE'),
-            'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
+            'short_desc': x.get('ORG_SHORT_DESC'),
         }
     def grade_map(x):
         return {
-            'code': x.get('GRD_CD'),
-            'description': x.get('GRD_DESCR_TXT'),
+            'code': x.get('GRD_GRADE_CODE'),
         }
     def skills_map(x):
         return {
             'code': x.get('SKL_CODE'),
             'description': x.get('SKL_DESC'),
+            'custom_description': f"{x.get('SKL_CODE')} {x.get('SKL_DESC')}",
         }
     def jc_map(x):
         return {
-            'code': x.get('SKL_CODE'),
-            'description': x.get('SKL_DESC'),
+            'code': x.get('JC_ID'),
+            'description': x.get('JC_NM_TXT'),
         }
     def languages_map(x):
         return {
-            'code': x.get('SKL_CODE'),
-            'description': x.get('SKL_DESC'),
+            'code': x.get('LANG_CODE'),
+            'description': x.get('LANG_LONG_DESC'),
+            # TODO: upon response from WS concerning language scores
+            # 'custom_description': f"{x.get('LANG_LONG_DESC')} ({x.get('LANG_CODE')}) {speaking score}/{reading score}"
         }
 
 
     return {
-        'statusFilters': list(map(status_map, data.get('QRY_LSTPUBSTATUS_DD_REF'))),
-        'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
-        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
-        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
-        'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
-        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
+        'tpFilters': list(map(TP_map, data.get('PTYP_TP_TAB_O'))),
+        'bureauFilters': list(map(bureau_map, data.get('PTYP_BUREAU_TAB_O'))),
+        'orgFilters': list(map(org_map, data.get('PTYP_ORG_TAB_O'))),
+        'gradeFilters': list(map(grade_map, data.get('PTYP_GRADE_TAB_O'))),
+        'skillsFilters': list(map(skills_map, data.get('PTYP_SKILL_TAB_O'))),
+        'jcFilters': list(map(jc_map, data.get('PTYP_JC_TAB_O'))),
+        'languageFilters': list(map(languages_map, data.get('PTYP_LANGUAGE_TAB_O'))),
     }
 
 def edit_el_positions(request, jwt_token):
