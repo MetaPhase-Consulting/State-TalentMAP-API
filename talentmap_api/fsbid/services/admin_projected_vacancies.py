@@ -1,6 +1,7 @@
 import logging
 import requests  # pylint: disable=unused-import
 from talentmap_api.fsbid.services import common as services
+from talentmap_api.common.common_helpers import service_response
 
 
 logger = logging.getLogger(__name__)
@@ -219,3 +220,53 @@ def admin_projected_vacancy_response_mapping(response):
             "cycle_position_id": x.get("CP_ID"),
         }
     return list(map(projected_vacancy_mapping, response.get("PQRY_FV_ADMIN_O")))
+
+# ======================== Edit PV ========================
+
+def edit_admin_projected_vacancy(data, jwt_token):
+    '''
+    Edit Admin Projected Vacancy
+    '''
+    args = {
+        "proc_name": 'PRC_IUD_FUTURE_VACANCY',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": edit_admin_projected_vacancy_request_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_response_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_admin_projected_vacancy_request_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'pv_action_i': 'U',
+        'pjson_fv_i': {
+            'Data': [{
+                'FV_SEQ_NUM': request.get('future_vacancy_seq_num'),
+                'FV_SEQ_NUM_REF': request.get('future_vacancy_seq_num_ref'),
+                'POS_SEQ_NUM': request.get('positon_seq_num'),
+                'BSN_ID': request.get('bid_season_code'),
+                'ASG_SEQ_NUM_EF': request.get('assignment_seq_num_effective'),
+                'ASG_SEQ_NUM': request.get('assignment_seq_num'),
+                'CDT_CD': request.get('cycle_date_type_code'),
+                'FVS_CODE': request.get('future_vacancy_status_code'),
+                'FVO_CODE': request.get('future_vacancy_override_code'),
+                'FV_OVERRIDE_TED_DATE': request.get('future_vacancy_override_tour_end_date'),
+                'FV_SYSTEM_IND': request.get('future_vacancy_system_indicator'),
+                'FV_COMMENT_TXT': request.get('future_vacancy_comment'),
+                'FV_CREATE_ID': request.get('created_date'),
+                'FV_CREATE_DATE': request.get('creator_id'),
+                'FV_UPDATE_ID': request.get('updater_id'),
+                'FV_UPDATE_DATE': request.get('updated_date'),
+                'FV_MC_IND': request.get('future_vacancy_mc_indicator'),
+                'FV_EXCL_IMPORT_IND': request.get('future_vacancy_exclude_import_indicator'),
+            }]
+        }
+    }
+
+def edit_admin_projected_vacancy_response_mapping(data):
+    return service_response(data, 'Projected Vacancy Edit')
