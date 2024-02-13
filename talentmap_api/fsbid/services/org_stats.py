@@ -24,7 +24,7 @@ def org_stats_req_mapping(request):
         'pv_ad_id_i': '',
         'i_cycle_id': request.get('cycles') or 0,
         'i_bureau_id': request.get('bureaus') or '',
-        # 'i_org_code': request.get('orgs') or '',
+        'i_org_code': request.get('orgs') or '',
     }
 def org_stats_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
