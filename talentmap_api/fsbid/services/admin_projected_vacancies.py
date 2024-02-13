@@ -82,11 +82,11 @@ def admin_projected_vacancy_filter_response_mapping(response):
         'futureVacancyStatusFilters': list(map(status_map, response.get('PCUR_FVS_TAB_O'))),
     }
 
-# ======================== Get Language Offsets Dropdowns ========================
+# ======================== Get PV Dropdowns ========================
 
 def get_admin_projected_vacancy_language_offsets(jwt_token):
     '''
-    Gets Filters for Admin Projected Vacancies
+    Gets Language Offsets for Admin Projected Vacancies
     '''
     args = {
         "proc_name": "PRC_LST_POS_PLO_CRITERIA",
@@ -115,7 +115,7 @@ def admin_projected_vacancy_language_offsets_response_mapping(response):
 
 def get_admin_projected_vacancies(query, jwt_token):
     '''
-    Gets list data for admin projected_vacancies 
+    Gets List Data for Admin Projected Vacancies 
     '''
     args = {
         "proc_name": "prc_lst_fv_admin",
@@ -219,5 +219,3 @@ def admin_projected_vacancy_response_mapping(response):
             "cycle_position_id": x.get("CP_ID"),
         }
     return list(map(projected_vacancy_mapping, response.get("PQRY_FV_ADMIN_O")))
-
-
