@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -16,7 +15,6 @@ from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.projected_vacancies as services
 
 from talentmap_api.common.common_helpers import in_superuser_group
-from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
 
