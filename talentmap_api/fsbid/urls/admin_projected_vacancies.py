@@ -6,8 +6,8 @@ from talentmap_api.fsbid.views import admin_projected_vacancies as views
 router = routers.SimpleRouter()
 
 urlpatterns = [
-    url(r'^filters/$', views.FSBidAdminProjectedVacancyFiltersView.as_view(), name="admin-filters-projected-vacancies"),
-    url(r'^language-offsets/$', views.FSBidAdminProjectedVacancyLanguageOffsetsView.as_view(), name="admin-lang-offsets-projected-vacancies"),
+    url(r'^filters/$', views.FSBidAdminProjectedVacancyFiltersView.as_view(), name="admin-projected-vacancies-filters"),
+    url(r'^language_offsets/$', views.FSBidAdminProjectedVacancyLanguageOffsetsView.as_view(), name="admin-projected-vacancies-lang-offsets"),
     url(r'^$', views.FSBidAdminProjectedVacancyListView.as_view(), name="admin-projected-vacancies"),
 ]
 
