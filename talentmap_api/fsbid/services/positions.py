@@ -308,7 +308,7 @@ def get_el_positions(request, jwt_token):
         **args
     )
 
-def get_el_positions_filters(jwt_token):
+def get_el_positions_filters(request, jwt_token):
     '''
     Gets Filters for Publishable Positions Page
     '''
@@ -331,7 +331,7 @@ def el_positions_filter_req_mapping(request):
     }
 
 def el_positions_filter_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error(f"Fsbid call for Entry Level filters failed.")
         return None
 
