@@ -354,6 +354,7 @@ def el_positions_filter_res_mapping(data):
     def grade_map(x):
         return {
             'code': x.get('GRD_GRADE_CODE'),
+            'description': x.get('GRD_GRADE_CODE'),
         }
     def skills_map(x):
         return {
@@ -370,8 +371,6 @@ def el_positions_filter_res_mapping(data):
         return {
             'code': x.get('LANG_CODE'),
             'description': x.get('LANG_LONG_DESC'),
-            # TODO: upon response from WS concerning language scores
-            # 'custom_description': f"{x.get('LANG_LONG_DESC')} ({x.get('LANG_CODE')}) {speaking score}/{reading score}"
         }
 
 
