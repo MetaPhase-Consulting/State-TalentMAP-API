@@ -19,6 +19,7 @@ class FSBidOrgStatsView(APIView):
         Get All 
         '''
         result = services.get_org_stats(request.query_params, request.META['HTTP_JWT'])
+        print("RESSUSULTTWS", result)
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
