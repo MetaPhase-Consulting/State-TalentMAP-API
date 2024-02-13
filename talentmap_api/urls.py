@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^api/v1/fsbid/bureau/positions/', include('talentmap_api.fsbid.urls.bureau')),
     url(r'^api/v1/bureau/', include('talentmap_api.bureau.urls.bureau')),
     url(r'^api/v1/fsbid/bureau_exceptions/', include('talentmap_api.fsbid.urls.bureau_exceptions')),
+    url(r'^api/v1/fsbid/assignment_cycles/', include('talentmap_api.fsbid.urls.assignment_cycles')),
 
     # Available Positions
     url(r'^api/v1/fsbid/available_positions/', include('talentmap_api.fsbid.urls.available_positions')),
@@ -93,6 +94,9 @@ urlpatterns = [
     # Bidding
     url(r'^api/v1/bidding/', include('talentmap_api.bidding.urls.bidding')),
     url(r'^api/v1/bidhandshakecycle/', include('talentmap_api.bidding.urls.bidhandshakecycle')),
+
+    # Bidding Tool
+    url(r'^api/v1/fsbid/bidding_tool/', include('talentmap_api.fsbid.urls.bidding_tool')),
 
     # Permission resources
     url(r'^api/v1/permission/user/', include('talentmap_api.permission.urls.user')),

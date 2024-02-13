@@ -85,9 +85,10 @@ def parseLanguage(lang):
         match = LANG_PATTERN.search(lang)
         if match:
             language = {}
+            # lang comes in as 'Spanish(SP) 1/2', with  1 being the speaking score and 2 being the reading score
             language["language"] = match.group(1).strip()
-            language["reading_proficiency"] = match.group(3).replace(' ', '')
-            language["spoken_proficiency"] = match.group(4).replace(' ', '')
+            language["spoken_proficiency"] = match.group(3).replace(' ', '')
+            language["reading_proficiency"] = match.group(4).replace(' ', '')
             language["representation"] = f"{match.group(1).strip()} {match.group(2).replace(' ', '')} {match.group(3).replace(' ', '')}/{match.group(4).replace(' ', '')}"
             return language
 
@@ -350,6 +351,11 @@ def send_post_request(uri, query, query_mapping_function, jwt_token, mapping_fun
     else:
         return response.get("Data", {})
 
+def send_delete_request(uri, query, query_mapping_function, jwt_token, api_root=API_ROOT):
+    url = f"{api_root}/{uri}"
+    mapped_query = query_mapping_function(query) if query_mapping_function else query
+    response = requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=mapped_query)
+
 
 def send_count_request(uri, query, query_mapping_function, jwt_token, host=None, api_root=API_ROOT, use_post=False, is_template=False):
     '''
@@ -605,7 +611,7 @@ def get_bids_csv(data, filename, jwt_token):
         "closed": "Closed",
         "draft": "Draft",
         "handshake_accepted": "Handshake Accepted",
-        "handshake_needs_registered": "Handshake Needs Registered",
+        "handshake_needs_registered": "Active",
         "handshake_with_another_bidder": "Handshake Registered With Another Bidder",
         "in_panel": "In Panel",
         "submitted": "Submitted",
@@ -768,6 +774,7 @@ def get_bidders_csv(self, pk, data, filename, jwt_token):
 def get_secondary_skill(pos={}):
     skillSecondary = f"{pos.get('pos_staff_ptrn_skill_desc', None)} ({pos.get('pos_staff_ptrn_skill_code')})"
     skillSecondaryCode = pos.get("pos_staff_ptrn_skill_code", None)
+
     if pos.get("pos_skill_code", None) == pos.get("pos_staff_ptrn_skill_code", None):
         skillSecondary = None
         skillSecondaryCode = None
@@ -779,6 +786,34 @@ def get_secondary_skill(pos={}):
         "skill_secondary_code": skillSecondaryCode,
     }
 
+def get_skills(data={}):
+    skill_1_code = data.get('posskillcode')
+    skill_1_description = data.get('posskilldesc')
+    skill_1_representation = ''
+    skill_2_code = data.get('posstaffptrnskillcode')
+    skill_2_description = data.get('posstaffptrnskilldesc')
+    skill_2_representation = ''
+    combined_skills_representation = '-' 
+
+    # assumes code and description exist together
+    if skill_1_code:
+        skill_1_representation = f'({skill_1_code}) {skill_1_description}'
+        combined_skills_representation = skill_1_representation
+        if (skill_1_code != skill_2_code) and skill_2_code:
+            skill_2_representation = f'({skill_2_code}) {skill_2_description}'
+            combined_skills_representation = f'{skill_1_representation}, {skill_2_representation}'
+
+    # return custom skill if it exists, combined string of skill and grade if not 
+
+    return {
+        "skill_1_code": skill_1_code,
+        "skill_1_description": skill_1_description,
+        "skill_1_representation": skill_1_representation,
+        "skill_2_code": skill_2_code,
+        "skill_2_description": skill_2_description,
+        "skill_2_representation": skill_2_representation,
+        "combined_skills_representation": combined_skills_representation,
+    }
 
 APPROVED_PROP = 'approved'
 CLOSED_PROP = 'closed'
@@ -868,6 +903,14 @@ def parse_agenda_remarks(remarks=[]):
     remarks_values = []
     if remarks:
         for remark in remarks:
+            remark['remarkRefData'][0]['airaiseqnum'] = remark.get('airaiseqnum')
+            remark['remarkRefData'][0]['airrmrkseqnum'] = remark.get('airrmrkseqnum')
+            remark['remarkRefData'][0]['airremarktext'] = remark.get('airremarktext')
+            remark['remarkRefData'][0]['aircompleteind'] = remark.get('aircompleteind')
+            remark['remarkRefData'][0]['aircreateid'] = remark.get('aircreateid')
+            remark['remarkRefData'][0]['aircreatedate'] = remark.get('aircreatedate')
+            remark['remarkRefData'][0]['airupdateid'] = remark.get('airupdateid')
+            remark['remarkRefData'][0]['airupdatedate'] = remark.get('airupdatedate')
             if pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']:
                 if not pydash.get(remark, 'remarkInserts'):
                     continue
@@ -1072,3 +1115,14 @@ def format_desc_code(desc, code):
     display_text += f'({code})' if code else ''
 
     return display_text
+
+def remove_nmn(name):
+    # "Fernandez, Ahmad Nmn "        -> Fernandez, Ahmad
+    # "Townsend-Babi, Sal-Tore nmN " -> Townsend-Babi, Sal-Tore
+    # "Dickerson, Thelma Jones NMN"  -> Dickerson, Thelma Jones
+    # "Payne,    nmn Nathanial "     -> Payne, Nathanial
+    # "nmnCraig, nmnMolNmnlie Nmn"   -> nmnCraig, nmnMolNmnlie
+
+    nmn_pattern = "\s+nmn(?!\w)"
+
+    return re.sub(nmn_pattern, "", name, flags=re.I)
