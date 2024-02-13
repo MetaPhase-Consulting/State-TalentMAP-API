@@ -135,10 +135,17 @@ def create_assignment_cycles_req_mapping(req):
     mapped_request['i_cd_bgn_dt'] = ','.join(cd_bgn)
     mapped_request['i_cd_end_dt'] = ','.join(cd_end)
 
+    logger.info('-------- create_assignment_cycles_req_mapping --------')
+    logger.info(mapped_request)
+    logger.info('-----------------------')
+
     return mapped_request
 
 
 def create_assignment_cycles_res_mapping(data):
+    logger.info('-------- create_assignment_cycles_res_mapping --------')
+    logger.info(data)
+    logger.info('-----------------------')
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to create this Assignment Cycle. Please try again.')
     return Response(data)
