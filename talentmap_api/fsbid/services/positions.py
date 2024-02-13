@@ -290,3 +290,108 @@ def fsbid_to_talentmap_frequent_positions(data):
     add_these.extend(hard_coded)
 
     return services.map_return_template_cols(add_these, cols_mapping, position)
+
+
+def get_el_positions(request, jwt_token):
+    '''
+    Gets Entry Level Positions
+    '''
+    args = {
+        "proc_name": "prc_lst_tracking_details_grid",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "request_body": {},
+        "request_mapping_function": panel_meeting_request_mapping,
+        "response_mapping_function": panel_meeting_response_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def get_publishable_positions_filters(jwt_token):
+    '''
+    Gets Filters for Publishable Positions Page
+    '''
+    args = {
+        'proc_name': 'prc_tracking_detail_pos_search',
+        'package_name': 'PKG_WEBAPI_WRAP_SPRINT101',
+        'request_body': {},
+        'request_mapping_function': el_positions_filter_req_mapping,
+        'response_mapping_function': el_positions_filter_res_mapping,
+        'jwt_token': jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def publishable_positions_filter_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+def publishable_positions_filter_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Entry Level filters failed.")
+        return None
+
+    def TP_map(x):
+        return {
+            'code': x.get('PUBS_CD'),
+            'description': x.get('PUBS_DESCR_TXT'),
+        }
+    def bureau_map(x):
+        return {
+            'description': x.get('ORGS_SHORT_DESC'),
+        }
+    def org_map(x):
+        return {
+            'code': x.get('ORG_CODE'),
+            'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
+        }
+    def grade_map(x):
+        return {
+            'code': x.get('GRD_CD'),
+            'description': x.get('GRD_DESCR_TXT'),
+        }
+    def skills_map(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
+        }
+    def jc_map(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
+        }
+    def languages_map(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
+        }
+
+
+    return {
+        'statusFilters': list(map(status_map, data.get('QRY_LSTPUBSTATUS_DD_REF'))),
+        'cycleFilters': list(map(cycle_map, data.get('QRY_LSTASSIGNCYCLE_DD_REF'))),
+        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
+        'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
+        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
+    }
+
+def edit_el_positions(request, jwt_token):
+    '''
+    Edit and save an Entry Level Position
+    '''
+    args = {
+        "proc_name": "prc_iud_tracking_details_grid",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "request_body": {},
+        "request_mapping_function": edit_el_positions_req_mapping,
+        "response_mapping_function": edit_el_positions_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
