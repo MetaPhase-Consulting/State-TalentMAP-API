@@ -246,7 +246,7 @@ def alt_asg_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error('FSBid call for fetching assignments/separations failed.')
         return None
-    return data
+    return data.get('QRY_LSTASGS_REF')
 
 
 def alt_update_assignment(query, jwt_token):
