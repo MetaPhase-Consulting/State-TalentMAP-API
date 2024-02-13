@@ -110,7 +110,7 @@ def post_access_res_mapping(data):
     return list(map(spa_results_mapping, data.get('PQRY_ORG_ACCESS_O')))
 
 
-def map_search_post_access_query(req):
+def post_access_req_mapping(req):
     mapped_request = {
       "PV_API_VERSION_I": "2",  
     }
