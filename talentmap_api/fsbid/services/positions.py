@@ -346,8 +346,10 @@ def el_positions_filter_res_mapping(data):
             'description': x.get('BUREAU_SHORT_DESC'),
         }
     def org_map(x):
+        # WS payload does not include ORG_CODE, only ORG_SHORT_DESC
         return {
-            'short_desc': x.get('ORG_SHORT_DESC'),
+            'code': x.get('ORG_SHORT_DESC'),
+            'description': x.get('ORG_SHORT_DESC'),
         }
     def grade_map(x):
         return {
