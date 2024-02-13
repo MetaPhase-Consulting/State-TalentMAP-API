@@ -1,24 +1,22 @@
 import logging
 import coreapi
 
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-
-from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.admin_projected_vacancies as services
 
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
 
-class FSBidAdminProjectedVacancyFiltersView(BaseView):
+class FSBidAdminProjectedVacancyFiltersView(APIView):
 
     # ======================== Get PV Filters ========================
 
@@ -26,14 +24,14 @@ class FSBidAdminProjectedVacancyFiltersView(BaseView):
 
     def get(self, request):
         '''
-        Gets admin projected vacancy filters
+        Gets Filters for Admin Projected Vacancies
         '''
         result = services.get_admin_projected_vacancy_filters(request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
-class FSBidAdminProjectedVacancyListView(BaseView):
+class FSBidAdminProjectedVacancyListView(APIView):
 
     # ======================== Get PV List ========================
 
@@ -53,14 +51,14 @@ class FSBidAdminProjectedVacancyListView(BaseView):
 
     def get(self, request):
         '''
-        Gets admin projected vacancies
+        Gets List Data for Admin Projected Vacancies 
         '''
         result = services.get_admin_projected_vacancies(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
-class FSBidAdminProjectedVacancyLanguageOffsetsView(BaseView):
+class FSBidAdminProjectedVacancyLanguageOffsetsView(APIView):
 
     # ======================== Get Language Offsets Dropdowns ========================
 
@@ -68,7 +66,7 @@ class FSBidAdminProjectedVacancyLanguageOffsetsView(BaseView):
 
     def get(self, request):
         '''
-        Gets admin projected vacancy language offsets
+        Gets Language Offsets for Admin Projected Vacancies
         '''
         result = services.get_admin_projected_vacancy_language_offsets(request.META['HTTP_JWT'])
         if result is None:
