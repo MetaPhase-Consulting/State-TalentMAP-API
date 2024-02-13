@@ -1,4 +1,5 @@
 import logging
+import pydash
 from datetime import datetime as dt
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
@@ -68,78 +69,83 @@ def create_assignment_cycle(jwt_token, request):
 
 
 def format_date_string(input_date):
+    if input_date == '':
+        return input_date
     date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
     # Format the date as MM/dd/yyyy
     formatted_date = date_object.strftime("%m/%d/%Y")
     return formatted_date
 
 def create_assignment_cycles_req_mapping(req):
-    name = req['data']['assignmentCycle']
-    cycle_category = req['data']['cycleCategory']
-    cycle_status = req['data']['cycleStatus']
-    exclusive_positions = "Y" if req['data']['exclusivePositions'] else "N"
-    post_viewable = "Y" if req['data']['postViewable'] else "N"
+    data = req['data']
+    name = data['assignmentCycle']
+    cycle_category = data['cycleCategory']
+    cycle_status = data['cycleStatus']
+    exclusive_positions = 'Y' if data['exclusivePositions'] else 'N'
+    post_viewable = 'Y' if data['postViewable'] else 'N'
 
-    cycle_boundries = format_date_string(req['data']['cycleBoundries'][0])
-    six_month_language = format_date_string(req['data']['sixMonthLanguage'][0])
-    twelve_month_language = format_date_string(req['data']['twelveMonthLanguage'][0])
-    twenty_four_month_language = format_date_string(req['data']['twentyFourMonthLanguage'][0])
-    bureau_position_review = format_date_string(req['data']['bureauPositionReview'])
-    bidding_start = format_date_string(req['data']['biddingStart'])
-    bid_due = format_date_string(req['data']['bidDue'])
-    bureau_pre_season_bid_review = format_date_string(req['data']['bureauPreSeasonBidReview'])
-    bureau_early_season_bid_review = format_date_string(req['data']['bureauEarlySeasonBidReview'])
-    bureau_bid_review = format_date_string(req['data']['bureauBidReview'])
-    bid_audit = format_date_string(req['data']['bidAudit'])
-    bid_book_review = format_date_string(req['data']['bidBookReview'])
-    bid_count_review = format_date_string(req['data']['bidCountReview'])
-    htf_review = format_date_string(req['data']['htfReview'])
-    organization_count_review = format_date_string(req['data']['organizationCountReview'])
-    mds_review = format_date_string(req['data']['mdsReview'])
-    assigned_bidder = format_date_string(req['data']['assignedBidder'])
-    start_dates_string = ",".join(
-        [
-            cycle_boundries,
-            six_month_language,
-            twelve_month_language,
-            twenty_four_month_language,
-            bureau_position_review,
-            bidding_start,
-            bid_due,
-            bureau_pre_season_bid_review,
-            bureau_early_season_bid_review,
-            bureau_bid_review,
-            bid_audit,
-            bid_book_review,
-            bid_count_review,
-            htf_review,
-            organization_count_review,
-            mds_review,
-            assigned_bidder,
-        ]
-    )
-    cycle_boundries_end = format_date_string(req['data']['cycleBoundries'][1])
-    six_month_language_end = format_date_string(req['data']['sixMonthLanguage'][1])
-    twelve_month_language_end = format_date_string(req['data']['twelveMonthLanguage'][1])
-    twenty_four_month_language_end = format_date_string(req['data']['twentyFourMonthLanguage'][1])
-    end_dates_string = ",".join([cycle_boundries_end, six_month_language_end, twelve_month_language_end, twenty_four_month_language_end])
 
     mapped_request = {
-        "PV_API_VERSION_I": "",
+        'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        "i_cycle_nm_txt": name,
-        "i_cc_cd": cycle_category,
-        "i_cs_cd": cycle_status,
-        "i_cycle_exclusive_pos_flg": exclusive_positions,
-        "i_cycle_post_viewable_ind": post_viewable,
-        "i_cdt_cd": "CYCLE,6MOLANG,12MOLANG,24MOLANG,BURPOS,BIDSTART,BIDDUE,BURPREBD,BUREARLY,BURBID,BIDAUDIT,BIDBOOK,BIDCOUNT,BIDHTF,BIDORG,BIDMDS,PANLASG",
+        'i_cycle_nm_txt': name,
+        'i_cc_cd': cycle_category,
+        'i_cs_cd': cycle_status,
+        'i_cycle_exclusive_pos_flg': exclusive_positions,
+        'i_cycle_post_viewable_ind': post_viewable,
     }
-    mapped_request['i_cd_bgn_dt'] = start_dates_string
-    mapped_request['i_cd_end_dt'] = end_dates_string + ",,,,,,,,,,,,,"
+
+    cdt_bgn_end_dict = {
+        'CYCLE': [format_date_string(pydash.get(req, 'data.cycleBoundries[0]') or ''), format_date_string(pydash.get(req, 'data.cycleBoundries[1]') or '')],
+        '6MOLANG': [format_date_string(pydash.get(req, 'data.sixMonthLanguage[0]') or ''), format_date_string(pydash.get(req, 'data.sixMonthLanguage[1]') or '')],
+        '12MOLANG': [format_date_string(pydash.get(req, 'data.twelveMonthLanguage[0]') or ''), format_date_string(pydash.get(req, 'data.twelveMonthLanguage[1]') or '')],
+        '24MOLANG': [format_date_string(pydash.get(req, 'data.twentyFourMonthLanguage[0]') or ''), format_date_string(pydash.get(req, 'data.twentyFourMonthLanguage[1]') or '')],
+        'BURPOS': format_date_string(req['data']['bureauPositionReview']),
+        'BIDSTART': format_date_string(req['data']['biddingStart']),
+        'BIDDUE': format_date_string(req['data']['bidDue']),
+        'BURPREBD': format_date_string(req['data']['bureauPreSeasonBidReview']),
+        'BUREARLY': format_date_string(req['data']['bureauEarlySeasonBidReview']),
+        'BURBID': format_date_string(req['data']['bureauBidReview']),
+        'BIDAUDIT': format_date_string(req['data']['bidAudit']),
+        'BIDBOOK': format_date_string(req['data']['bidBookReview']),
+        'BIDCOUNT': format_date_string(req['data']['bidCountReview']),
+        'BIDHTF': format_date_string(req['data']['htfReview']),
+        'BIDORG': format_date_string(req['data']['organizationCountReview']),
+        'BIDMDS': format_date_string(req['data']['mdsReview']),
+        'PANLASG': format_date_string(req['data']['assignedBidder']),
+    }
+
+
+    cdt = []
+    cd_bgn = []
+    cd_end = []
+
+    for x in cdt_bgn_end_dict:
+        if isinstance(cdt_bgn_end_dict[x], list):
+            if cdt_bgn_end_dict[x].count('') < 2:
+                cdt.append(x)
+                cd_bgn.append(cdt_bgn_end_dict[x][0])
+                cd_end.append(cdt_bgn_end_dict[x][1])
+        elif (cdt_bgn_end_dict[x] != ''):
+            cdt.append(x)
+            cd_bgn.append(cdt_bgn_end_dict[x])
+            cd_end.append('')
+
+    mapped_request['i_cdt_cd'] = ','.join(cdt)
+    mapped_request['i_cd_bgn_dt'] = ','.join(cd_bgn)
+    mapped_request['i_cd_end_dt'] = ','.join(cd_end)
+
+    logger.info('-------- create_assignment_cycles_req_mapping --------')
+    logger.info(mapped_request)
+    logger.info('-----------------------')
+
     return mapped_request
 
 
 def create_assignment_cycles_res_mapping(data):
+    logger.info('-------- create_assignment_cycles_res_mapping --------')
+    logger.info(data)
+    logger.info('-----------------------')
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to create this Assignment Cycle. Please try again.')
     return Response(data)
