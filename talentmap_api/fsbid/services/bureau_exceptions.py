@@ -41,7 +41,7 @@ def bureau_exceptions_res_mapping(data):
 
         return {
             'pvId': x.get('PV_ID'),
-            'name': x.get('EMP_FULL_NAME'),
+            'name': services.remove_nmn(x.get('EMP_FULL_NAME')),
             'userBureauNames': userBureauNames,
             'empSeqNum': x.get('EMP_SEQ_NBR'),
             'hruId': x.get('HRU_ID'),
@@ -120,7 +120,7 @@ def user_bureau_exceptions_and_metadata_res_mapping(data):
             
     return {
         "hruId": data.get('O_EMP_HRU_ID'),
-        "name": data.get('O_EMP_FULL_NAME'),
+        "name": services.remove_nmn(data.get('O_EMP_FULL_NAME')),
         "pvId": data.get('O_PV_ID'),
         "userBureauCodes": userBureauCodes,
         "lastUpdatedDate": data.get('O_LAST_UPDATE_DATE'),
@@ -150,7 +150,7 @@ def add_user_bureau_exceptions_req_mapping(request):
         'pv_ad_id_i': '',
         'i_pv_id': '',
         'i_emp_hru_id': request.get('hruId'),
-        'i_pv_value_txt': request.get('bureauCodeList'),
+        'i_pv_value_txt': ','.join(request.get('bureauCodes')),
     }
 def add_user_bureau_exceptions_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -181,7 +181,7 @@ def update_user_bureau_exceptions_req_mapping(request):
         'pv_ad_id_i': '',
         'i_pv_id': request.get('pvId'),
         'i_emp_hru_id': request.get('hruId'),
-        'i_pv_value_txt': request.get('bureauCodeList'),
+        'i_pv_value_txt': ','.join(request.get('bureauCodes')),
         'i_last_update_id': request.get('lastUpdatedUserId'),
         'i_last_update_date': request.get('lastUpdatedDate'),
     }
