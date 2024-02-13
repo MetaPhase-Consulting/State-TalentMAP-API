@@ -54,7 +54,7 @@ def get_panel_meeting(pk, jwt_token):
     '''
     args = {
         "proc_name": "qry_getPnlMeet",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": pk,
         "request_mapping_function": panel_meeting_request_mapping,
         "response_mapping_function": panel_meeting_response_mapping,
@@ -146,14 +146,15 @@ def modify_panel_meeting_and_dates(query, jwt_token):
         logger.error("PM create failed")
         return None
 
-    return {}
+    return existing_pm_seq_num or newly_created_pm_seq_num
 
 
 def edit_pmd_mapping(query, date, original_data):
+    _date = date.replace("T", " ")
     mapped_query = {
         "pmdpmseqnum": query.get("pmdpmseqnum"),
         "pmdmdtcode": original_data.get("mdt_code"),
-        "pmddttm": date.replace("T", " "),
+        "pmddttm": _date.split(".000Z", 1)[0],
         "pmdupdatedate": original_data.get("pmd_update_date", "").replace("T", " "),
         "pmdupdateid": query.get("hru_id"),
         "pmdcreatedate": original_data.get("pmd_create_date", "").replace("T", " "),
@@ -205,10 +206,11 @@ def convert_panel_meeting_create_query(query):
 
 def create_pmd_mapping(query, date, date_type):
     hru_id = query.get("hru_id")
+    _date = date.replace("T", " ")
     mapped_query = {
         "pmdpmseqnum": query.get("pmdpmseqnum"),
         "pmdmdtcode": date_type,
-        "pmddttm": date.replace("T", " "),
+        "pmddttm": _date.split(".000Z", 1)[0],
         "pmdupdateid": hru_id,
         "pmdcreateid": hru_id,
     }
@@ -270,7 +272,7 @@ def get_post_panel(pk, jwt_token):
     '''
     args = {
         "proc_name": "qry_modPostPnl",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": pk,
         "request_mapping_function": post_panel_request_mapping,
         "response_mapping_function": post_panel_response_mapping,
@@ -298,7 +300,7 @@ def post_panel_response_mapping(response):
             'item': x.get('PMI_OFFICIAL_ITEM_NUM'),
             'label': x.get('AI_LABEL_TEXT'),
             'employee': x.get('EMP_FULL_NAME'),
-            'status': x.get('AIS_ABBR_DESC_TEXT'),
+            'status': x.get('AI_AIS_CODE'),
             'sequence_number': x.get('AI_SEQ_NUM'),
             'update_id': x.get('AI_UPDATE_ID'),
             'update_date': x.get('AI_UPDATE_DATE'),
@@ -333,7 +335,7 @@ def edit_post_panel(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modPostPnl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_post_panel_req_mapping,
         "response_mapping_function": edit_post_panel_res_mapping,
         "jwt_token": jwt_token,
@@ -376,7 +378,7 @@ def run_preliminary(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_runoffpre',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_preliminary_res_mapping,
         "jwt_token": jwt_token,
@@ -400,7 +402,7 @@ def run_addendum(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_runoffaddendum',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_addendum_res_mapping,
         "jwt_token": jwt_token,
@@ -419,7 +421,7 @@ def run_post_panel(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_runpostpnl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": run_panel_req_mapping,
         "response_mapping_function": run_post_panel_res_mapping,
         "jwt_token": jwt_token,

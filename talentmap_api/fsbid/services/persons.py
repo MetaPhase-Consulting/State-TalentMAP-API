@@ -48,9 +48,9 @@ def convert_persons_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 def persons_to_tm(data):
-    firstN = data.get('perpiifirstname', '')
-    lastN = data.get('perpiilastname', '')
-    suffix = data.get('perpiisuffixname', '')
+    firstN = data.get('perpiifirstname') or ''
+    lastN = data.get('perpiilastname') or ''
+    suffix = data.get('perpiisuffixname') or ''
     hasSuffix = len(suffix.strip()) > 0
     name = firstN +' '+ lastN + f"{', '+suffix if hasSuffix else ''}"
 
