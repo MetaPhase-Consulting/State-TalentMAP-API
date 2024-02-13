@@ -5,13 +5,15 @@ from talentmap_api.fsbid.services import common as services
 
 logger = logging.getLogger(__name__)
 
+# ======================== Get PV Filters ========================
+
 def get_admin_projected_vacancy_filters(jwt_token):
     '''
-    Gets Filters for admin projected_vacancies 
+    Gets Filters for Admin Projected Vacancies
     '''
     args = {
         "proc_name": "PRC_FV_ADMIN_SEARCH",
-        "package_name": "PKG_WEBAPI_WRAP",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
         "request_body": {},
         "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
         "response_mapping_function": admin_projected_vacancy_filter_response_mapping,
@@ -21,41 +23,11 @@ def get_admin_projected_vacancy_filters(jwt_token):
         **args
     )
 
-def get_admin_projected_vacancy_language_offsets(jwt_token):
-    '''
-    Gets Filters for admin projected_vacancies 
-    '''
-    args = {
-        "proc_name": "PRC_LST_POS_PLO_CRITERIA",
-        "package_name": "PKG_WEBAPI_WRAP",
-        "request_body": {},
-        "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
-        "response_mapping_function": admin_projected_vacancy_language_offsets_response_mapping,
-        "jwt_token": jwt_token,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-
 def admin_projected_vacancy_filter_request_mapping(request):
     return {
         "PV_API_VERSION_I": '',
         "PV_AD_ID_I": '',
     }
-
-def admin_projected_vacancy_language_offsets_response_mapping(response):
-    def language_offsets_map(x):
-        return {
-            'code': x.get("LOT_SEQ_NUM"),
-            'description': x.get("LO_DESCR_TEXT"),
-        }
-
-    return {
-        'summerLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_S_O"))),
-        'winterLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_W_O"))),
-    }
-
 
 def admin_projected_vacancy_filter_response_mapping(response):
     def bureau_map(x):
@@ -100,7 +72,6 @@ def admin_projected_vacancy_filter_response_mapping(response):
             'code': x.get('FVS_CODE'),
             'description': x.get('FVS_DESCR_TXT'),
         }
-
     return {
         'bureauFilters': list(map(bureau_map, response.get('PCUR_BUREAU_TAB_O'))),
         'organizationFilters': list(map(organization_map, response.get('PCUR_ORG_TAB_O'))),
@@ -111,14 +82,44 @@ def admin_projected_vacancy_filter_response_mapping(response):
         'futureVacancyStatusFilters': list(map(status_map, response.get('PCUR_FVS_TAB_O'))),
     }
 
+# ======================== Get Language Offsets Dropdowns ========================
+
+def get_admin_projected_vacancy_language_offsets(jwt_token):
+    '''
+    Gets Filters for Admin Projected Vacancies
+    '''
+    args = {
+        "proc_name": "PRC_LST_POS_PLO_CRITERIA",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
+        "request_body": {},
+        "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
+        "response_mapping_function": admin_projected_vacancy_language_offsets_response_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def admin_projected_vacancy_language_offsets_response_mapping(response):
+    def language_offsets_map(x):
+        return {
+            'code': x.get("LOT_SEQ_NUM"),
+            'description': x.get("LO_DESCR_TEXT"),
+        }
+    return {
+        'summerLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_S_O"))),
+        'winterLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_W_O"))),
+    }
+
+# ======================== Get PV List ========================
 
 def get_admin_projected_vacancies(query, jwt_token):
     '''
-    Gets Filters for admin projected_vacancies 
+    Gets list data for admin projected_vacancies 
     '''
     args = {
-        "proc_name": "prc_lst_future_vacancies",
-        "package_name": "PKG_WEBAPI_WRAP",
+        "proc_name": "prc_lst_fv_admin",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
         "request_body": query,
         "request_mapping_function": admin_projected_vacancy_request_mapping,
         "response_mapping_function": admin_projected_vacancy_response_mapping,
@@ -128,7 +129,6 @@ def get_admin_projected_vacancies(query, jwt_token):
         **args
     )
 
-
 def admin_projected_vacancy_request_mapping(request):
     mapped_request = {
         "PV_API_VERSION_I": "",
@@ -137,17 +137,16 @@ def admin_projected_vacancy_request_mapping(request):
     if request.get('bureaus'):
         mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
     if request.get('organizations'):
-        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('organizations'), 'ORG_SHORT_DESC')
+        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('organizations'), 'ORG_CODE')
     if request.get('bidSeasons'):
         mapped_request['PJSON_BSN_TAB_I'] = services.format_request_data_to_string(request.get('bidSeasons'), 'BSN_ID')
     if request.get('grades'):
         mapped_request['PJSON_GRADE_TAB_I'] = services.format_request_data_to_string(request.get('grades'), 'GRD_GRADE_CODE')
-    # if request.get('skills'):
-    #    mapped_request['PXML_JOBCAT_I'] = services.format_request_data_to_string(request.get('skills'), 'ORG_SHORT_DESC')
+    if request.get('skills'):
+       mapped_request['PJSON_SKILL_TAB_I'] = services.format_request_data_to_string(request.get('skills'), 'SKL_CODE')
     if request.get('languages'):
         mapped_request['PJSON_LANGUAGE_TAB_I'] = services.format_request_data_to_string(request.get('languages'), 'LANG_CODE')
     return mapped_request
-
 
 def admin_projected_vacancy_response_mapping(response):
     def projected_vacancy_mapping(x):
@@ -188,7 +187,7 @@ def admin_projected_vacancy_response_mapping(response):
             "assignment_seq_num_effective": x.get("ASG_SEQ_NUM_EF"),
             "assignee_tour_end_date": x.get("ASSIGNEE_TED"),
             "assignee": x.get("ASSIGNEE"),
-            "incumbent": x.get("incumbent"),
+            "incumbent": x.get("INCUMBENT"),
             "cycle_date_type_code": x.get("CDT_CD"),
             "assignment_status_code": x.get("ASGS_CODE"),
             "bidding_tool_differential_rate_number": x.get("BT_DIFFERENTIAL_RATE_NUM"),
@@ -219,6 +218,6 @@ def admin_projected_vacancy_response_mapping(response):
             "bid_season_future_vacancy_indicator": x.get("BSN_FUTURE_VACANCY_IND"),
             "cycle_position_id": x.get("CP_ID"),
         }
-    return list(map(projected_vacancy_mapping, response.get("PQRY_FUTURE_VACANCIES_O")))
+    return list(map(projected_vacancy_mapping, response.get("PQRY_FV_ADMIN_O")))
 
 
