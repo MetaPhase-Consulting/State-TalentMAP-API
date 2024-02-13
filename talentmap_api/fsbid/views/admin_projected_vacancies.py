@@ -72,3 +72,43 @@ class FSBidAdminProjectedVacancyLanguageOffsetsView(APIView):
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
+
+class FSBidAdminProjectedVacancyActionsView(APIView):
+    
+    # ======================== Edit PV ========================
+
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'future_vacancy_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_seq_num_ref': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'bid_season_code': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'assignment_seq_num_effective': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'assignment_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'cycle_date_type_code': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_status_code': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_override_code': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_override_tour_end_date': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_system_indicator': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_comment': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'created_date': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'creator_id': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'updater_id': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'updated_date': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_mc_indicator': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+            'future_vacancy_exclude_import_indicator': openapi.Schema(type=openapi.TYPE_STRING, description=''),
+        }
+    ))
+
+    def put(self, request):
+        '''
+        Edit Admin Projected Vacancy
+        '''
+        result = services.edit_admin_projected_vacancy(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
