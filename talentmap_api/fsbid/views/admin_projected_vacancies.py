@@ -110,3 +110,54 @@ class FSBidAdminProjectedVacancyActionsView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class FSBidAdminProjectedVacancyEditLangOffsetsView(APIView):
+    
+    # ======================== Edit PV Language Offsets ========================
+
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
+            'language_offset_summer': openapi.Schema(type=openapi.TYPE_STRING, description='Language Offset Summer'),
+            'language_offset_winter': openapi.Schema(type=openapi.TYPE_STRING, description='Language Offset Winter'),
+        }
+    ))
+
+    def put(self, request):
+        '''
+        Edit Admin Projected Vacancy Language Offsets
+        '''
+        result = services.edit_admin_projected_vacancy_lang_offsets(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class FSBidAdminProjectedVacancyEditCapsuleDescView(APIView):
+    
+    # ======================== Edit PV Capsule Description ========================
+
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
+            'capsule_description': openapi.Schema(type=openapi.TYPE_STRING, description='Capsule Description'),
+            'updater_id': openapi.Schema(type=openapi.TYPE_STRING, description='Updater ID'),
+            'updated_date': openapi.Schema(type=openapi.TYPE_STRING, description='Updated Date'),
+        }
+    ))
+
+    def put(self, request):
+        '''
+        Edit Admin Projected Vacancy Capsule Description
+        '''
+        result = services.edit_admin_projected_vacancy_capsule_desc(request.data, request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
