@@ -14,8 +14,8 @@ def get_admin_projected_vacancy_filters(jwt_token):
     args = {
         "proc_name": "PRC_FV_ADMIN_SEARCH",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "req_mapping_function": admin_projected_vacancy_filter_req_mapping,
-        "res_mapping_function": admin_projected_vacancy_filter_res_mapping,
+        "request_mapping_function": admin_projected_vacancy_filter_req_mapping,
+        "response_mapping_function": admin_projected_vacancy_filter_res_mapping,
         "jwt_token": jwt_token,
         "request_body": {},
     }
@@ -91,8 +91,8 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
     args = {
         "proc_name": "PRC_LST_POS_PLO_CRITERIA",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "req_mapping_function": admin_projected_vacancy_filter_req_mapping,
-        "res_mapping_function": admin_projected_vacancy_language_offsets_res_mapping,
+        "request_mapping_function": admin_projected_vacancy_filter_req_mapping,
+        "response_mapping_function": admin_projected_vacancy_language_offsets_res_mapping,
         "jwt_token": jwt_token,
         "request_body": {},
     }
@@ -120,8 +120,8 @@ def get_admin_projected_vacancies(query, jwt_token):
     args = {
         "proc_name": "prc_lst_fv_admin",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "req_mapping_function": admin_projected_vacancy_req_mapping,
-        "res_mapping_function": admin_projected_vacancy_res_mapping,
+        "request_mapping_function": admin_projected_vacancy_req_mapping,
+        "response_mapping_function": admin_projected_vacancy_res_mapping,
         "jwt_token": jwt_token,
         "request_body": query,
     }
