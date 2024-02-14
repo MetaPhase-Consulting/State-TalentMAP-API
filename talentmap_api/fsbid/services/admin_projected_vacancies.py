@@ -132,8 +132,31 @@ def get_admin_projected_vacancies(query, jwt_token):
 
 def admin_projected_vacancy_request_mapping(request):
     mapped_request = {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PV_SUBTRAN_I': '',
+        'PJSON_FVS_TAB_I': { 'Data': [] },
+        'PJSON_CUST_TP_TAB_I': { 'Data': [] },
+        'PXML_POSITION_I': '''
+            <XMLSearchCriterias>
+                <SearchList>
+                    <Value>30008009</Value>
+                    <Value>30008008</Value>
+                </SearchList>
+            </XMLSearchCriterias>
+        ''',
+        'PJSON_JC_DD_TAB_I': { 'Data': [] },
+        'PXML_OVERSEAS_I': '''
+            <XMLSearchCriterias>
+                <SearchList>
+                    <Value>O</Value>
+                    <Value>D</Value>
+                </SearchList>
+            </XMLSearchCriterias>
+        ''',
+        'PQRY_FV_ADMIN_O': '',
+        'PV_RETURN_CODE_O': '',
+        'PQRY_ERROR_DATA_O': '',
     }
     if request.get('bureaus'):
         mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
@@ -270,3 +293,79 @@ def edit_admin_projected_vacancy_request_mapping(request):
 
 def edit_admin_projected_vacancy_response_mapping(data):
     return service_response(data, 'Projected Vacancy Edit')
+
+# ======================== Edit PV Language Offsets ========================
+
+def edit_admin_projected_vacancy_lang_offsets(data, jwt_token):
+    '''
+    Edit Admin Projected Vacancy Language Offsets
+    '''
+    args = {
+        "proc_name": 'PRC_IUD_POSITION_PLO',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": edit_admin_projected_vacancy_lang_offsets_request_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_lang_offsets_response_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_admin_projected_vacancy_lang_offsets_request_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PX_LANGOS_I': f'''
+            <ROWSET>
+                <ROW>
+                    <POS_SEQ_NUM>{request.get('positon_seq_num')}</POS_SEQ_NUM>
+                    <LOT_SEQ_NUM>{request.get('language_offset_summer')}</LOT_SEQ_NUM>
+                </ROW>
+            </ROWSET>
+        ''',
+        'PX_LANGOW_I': f'''
+            <ROWSET>
+                <ROW>
+                    <POS_SEQ_NUM>{request.get('positon_seq_num')}</POS_SEQ_NUM>
+                    <LOT_SEQ_NUM>{request.get('language_offset_winter')}</LOT_SEQ_NUM>
+                </ROW>
+            </ROWSET>
+        ''',
+        'PV_RETURN_CODE_O': '',
+        'PQRY_ERROR_DATA_O': ''
+    }
+
+def edit_admin_projected_vacancy_lang_offsets_response_mapping(data):
+    return service_response(data, 'Projected Vacancy Edit Language Offsets')
+
+# ======================== Edit PV Capsule Description ========================
+
+def edit_admin_projected_vacancy_capsule_desc(data, jwt_token):
+    '''
+    Edit Admin Projected Vacancy Capsule Description
+    '''
+    args = {
+        "proc_name": 'act_modCapsulePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": edit_admin_projected_vacancy_capsule_desc_request_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_capsule_desc_response_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_admin_projected_vacancy_capsule_desc_request_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_POS_SEQ_NUM': request.get('positon_seq_num'),
+        'I_PPOS_CAPSULE_DESCR_TXT': request.get('capsule_description'),
+        'I_PPOS_LAST_UPDT_USER_ID': request.get('updater_id'),
+        'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('updated_date'),
+    }
+
+def edit_admin_projected_vacancy_capsule_desc_response_mapping(data):
+    return service_response(data, 'Projected Vacancy Edit Capsule Description')
