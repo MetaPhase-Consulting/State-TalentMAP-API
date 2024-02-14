@@ -9,7 +9,7 @@ from drf_yasg import openapi
 
 from talentmap_api.fsbid.views.base import BaseView
 from talentmap_api.user_profile.models import UserProfile
-from talentmap_api.fsbid.services.assignment_history import get_assignments, assignment_history_to_client_format
+from talentmap_api.fsbid.services.assignment_history import alt_update_assignment, alt_create_assignment, alt_get_assignments, get_assignments, assignment_history_to_client_format, get_assignment_ref_data
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,6 @@ class FSBidAssignmentHistoryListView(BaseView):
         data = assignment_history_to_client_format(get_assignments(query_copy, request.META['HTTP_JWT']))
         return Response(data)
 
-
 class FSBidPrivateAssignmentHistoryListView(BaseView):
     @swagger_auto_schema(
         manual_parameters=[
@@ -58,3 +57,38 @@ class FSBidPrivateAssignmentHistoryListView(BaseView):
         except Exception as e:
             logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class FSBidAssignmentReferenceView(BaseView):
+    def get(self, request, pk, asg_id):
+        '''
+        Get ref data for maintain assignment
+        '''
+        query = { 
+            "perdet_seq_num": pk,
+            "asg_id": asg_id,
+            "revision_num": request.query_params.get("revision_num"),
+        }
+        return Response(get_assignment_ref_data(query, request.META['HTTP_JWT']))
+
+class FSBidAltAssignmentHistoryListView(BaseView):
+    def get(self, request, pk):
+        '''
+        Fetch asg sep history by perdet from fsbid proc
+        '''
+        return Response(alt_get_assignments(pk, request.META['HTTP_JWT']))
+
+    def patch(self, request, pk):
+        '''
+        Update existing asg sep by perdet from fsbid proc
+        '''
+        return Response(alt_update_assignment(request.data, request.META['HTTP_JWT']))
+
+
+    def post(self, request, pk):
+        '''
+        Create asg sep by perdet from fsbid proc
+        '''
+        return Response(alt_create_assignment(request, request.META['HTTP_JWT']))
+
+
