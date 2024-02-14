@@ -300,13 +300,48 @@ def get_el_positions(request, jwt_token):
         "proc_name": "prc_lst_tracking_details_grid",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
         "request_body": {},
-        "request_mapping_function": panel_meeting_request_mapping,
-        "response_mapping_function": panel_meeting_response_mapping,
+        "request_mapping_function": el_postions_req_mapping,
+        "response_mapping_function": el_postions_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
         **args
     )
+
+def el_postions_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+def el_postions_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call for Entry Level filters failed.")
+        return None
+
+    def el_pos_map(x):
+        return {
+            'positionNumber': x.get('POS_SEQ_NUM'),
+            'skill': x.get('POS_SKILL_CODE'),
+            'positionTitle': x.get('POS_TITLE_DESC'),
+            'bureau': x.get('BUREAU_SHORT_DESC'),
+            'org': x.get('ORG_SHORT_DESC'),
+            'grade': x.get('POS_GRADE_CODE'),
+            'jobCategory': x.get('POS_JOB_CATEGORY'),
+            'languages': x.get('POS_POSITION_LANG_PROF_CODE'),
+            'OD': x.get('POS_OVERSEAS_DESC'),
+            'incumbent': x.get('INCUMBENT'),
+            'incumbentTED': x.get('INCUMBENT_TED'),
+            'assignee': x.get('ASSIGNEE'),
+            'assigneeTED': x.get('ASSIGNEE_TED'),
+            'EL': x.get('EL'),
+            'MC': x.get('MC'),
+            'LNA': x.get('LNA'),
+            'FICA': x.get('FICA'),
+            'mcEndDate': x.get('MC_END_DATE'),
+        }
+
+    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')))
 
 def get_el_positions_filters(request, jwt_token):
     '''
