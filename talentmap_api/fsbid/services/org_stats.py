@@ -27,7 +27,7 @@ def org_stats_req_mapping(request):
         'i_org_code': request.get('orgs') or '',
     }
 def org_stats_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+    if data is None or data.get('O_RETURN_CODE') != 0:
         logger.error('FSBid call for Org Stat failed.')
         return None
         
