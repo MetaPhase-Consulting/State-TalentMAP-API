@@ -14,8 +14,8 @@ def get_admin_projected_vacancy_filters(jwt_token):
     args = {
         "proc_name": "PRC_FV_ADMIN_SEARCH",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
-        "response_mapping_function": admin_projected_vacancy_filter_response_mapping,
+        "req_mapping_function": admin_projected_vacancy_filter_req_mapping,
+        "res_mapping_function": admin_projected_vacancy_filter_res_mapping,
         "jwt_token": jwt_token,
         "request_body": {},
     }
@@ -23,13 +23,13 @@ def get_admin_projected_vacancy_filters(jwt_token):
         **args
     )
 
-def admin_projected_vacancy_filter_request_mapping(request):
+def admin_projected_vacancy_filter_req_mapping(request):
     return {
         "PV_API_VERSION_I": '',
         "PV_AD_ID_I": '',
     }
 
-def admin_projected_vacancy_filter_response_mapping(response):
+def admin_projected_vacancy_filter_res_mapping(response):
     def bureau_map(x):
         return {
             'code': x.get('BUREAU_ORG_CODE'),
@@ -91,8 +91,8 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
     args = {
         "proc_name": "PRC_LST_POS_PLO_CRITERIA",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
-        "response_mapping_function": admin_projected_vacancy_language_offsets_response_mapping,
+        "req_mapping_function": admin_projected_vacancy_filter_req_mapping,
+        "res_mapping_function": admin_projected_vacancy_language_offsets_res_mapping,
         "jwt_token": jwt_token,
         "request_body": {},
     }
@@ -100,7 +100,7 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
         **args
     )
 
-def admin_projected_vacancy_language_offsets_response_mapping(response):
+def admin_projected_vacancy_language_offsets_res_mapping(response):
     def language_offsets_map(x):
         return {
             'code': x.get("LOT_SEQ_NUM"),
@@ -120,8 +120,8 @@ def get_admin_projected_vacancies(query, jwt_token):
     args = {
         "proc_name": "prc_lst_fv_admin",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_mapping_function": admin_projected_vacancy_request_mapping,
-        "response_mapping_function": admin_projected_vacancy_response_mapping,
+        "req_mapping_function": admin_projected_vacancy_req_mapping,
+        "res_mapping_function": admin_projected_vacancy_res_mapping,
         "jwt_token": jwt_token,
         "request_body": query,
     }
@@ -129,7 +129,7 @@ def get_admin_projected_vacancies(query, jwt_token):
         **args
     )
 
-def admin_projected_vacancy_request_mapping(request):
+def admin_projected_vacancy_req_mapping(request):
     mapped_request = {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -148,7 +148,7 @@ def admin_projected_vacancy_request_mapping(request):
         mapped_request['PJSON_LANGUAGE_TAB_I'] = services.format_request_data_to_string(request.get('languages'), 'LANG_CODE')
     return mapped_request
 
-def admin_projected_vacancy_response_mapping(response):
+def admin_projected_vacancy_res_mapping(response):
     def projected_vacancy_mapping(x):
         return {
             "bid_season_code": x.get("BSN_ID"),
