@@ -82,7 +82,7 @@ class FSBidAltAssignmentHistoryListView(BaseView):
         '''
         Update existing asg sep by perdet from fsbid proc
         '''
-        return Response(alt_update_assignment(request, request.META['HTTP_JWT']))
+        return Response(alt_update_assignment(request.data, request.META['HTTP_JWT']))
 
 
     def post(self, request, pk):
