@@ -64,7 +64,7 @@ class FSBidAdminProjectedVacancyListView(APIView):
         '''
         Gets List Data for Admin Projected Vacancies 
         '''
-        result = services.get_admin_projected_vacancies(request.data, request.META['HTTP_JWT'])
+        result = services.get_admin_projected_vacancies(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
