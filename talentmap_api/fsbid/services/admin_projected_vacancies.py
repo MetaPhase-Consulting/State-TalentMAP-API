@@ -15,10 +15,10 @@ def get_admin_projected_vacancy_filters(jwt_token):
     args = {
         "proc_name": "PRC_FV_ADMIN_SEARCH",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_body": {},
         "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
         "response_mapping_function": admin_projected_vacancy_filter_response_mapping,
         "jwt_token": jwt_token,
+        "request_body": {},
     }
     return services.send_post_back_office(
         **args
@@ -92,10 +92,10 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
     args = {
         "proc_name": "PRC_LST_POS_PLO_CRITERIA",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_body": {},
         "request_mapping_function": admin_projected_vacancy_filter_request_mapping,
         "response_mapping_function": admin_projected_vacancy_language_offsets_response_mapping,
         "jwt_token": jwt_token,
+        "request_body": {},
     }
     return services.send_post_back_office(
         **args
@@ -121,10 +121,10 @@ def get_admin_projected_vacancies(query, jwt_token):
     args = {
         "proc_name": "prc_lst_fv_admin",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_body": query,
         "request_mapping_function": admin_projected_vacancy_request_mapping,
         "response_mapping_function": admin_projected_vacancy_response_mapping,
         "jwt_token": jwt_token,
+        "request_body": query,
     }
     return services.send_post_back_office(
         **args
