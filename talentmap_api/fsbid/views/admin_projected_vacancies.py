@@ -3,7 +3,6 @@ import coreapi
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 
@@ -11,8 +10,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 import talentmap_api.fsbid.services.admin_projected_vacancies as services
-
-from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +47,18 @@ class FSBidAdminProjectedVacancyListView(APIView):
 
     # ======================== Get PV List ========================
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("bureaus", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Bureaus'),
+            openapi.Parameter("organizations", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Organizations'),
+            openapi.Parameter("bid_seasons", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Bid Seasons'),
+            openapi.Parameter("grades", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Grades'),
+            openapi.Parameter("skills", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Skills'),
+            openapi.Parameter("languages", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Languages'),
+        ]
+    )
 
     def get(self, request):
         '''
