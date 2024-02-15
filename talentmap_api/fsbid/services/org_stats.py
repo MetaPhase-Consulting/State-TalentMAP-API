@@ -72,8 +72,8 @@ def org_stats_res_mapping(data):
         }
     
     return {
-        'bureau_summary': list(map(list_org_stats_map, data.get('QRY_LSTORGSTATS_REF'))),
-        'results': list(map(list_bureau_stats_map, data.get('QRY_LSTBUREAUSTATS_REF'))),
+        'results': list(map(list_org_stats_map, data.get('QRY_LSTORGSTATS_REF'))),
+        'bureau_summary': list(map(list_bureau_stats_map, data.get('QRY_LSTBUREAUSTATS_REF'))),
     }
 
 def get_org_stats_filters(jwt_token):
