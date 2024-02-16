@@ -1,5 +1,4 @@
 import logging
-import pydash
 
 from django.conf import settings
 
