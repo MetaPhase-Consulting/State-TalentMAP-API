@@ -25,7 +25,6 @@ class FSBidOrgStatsView(APIView):
         return Response(result)
 
 class FSBidOrgStatsFiltersView(APIView):
-    # perms TBD
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
 
     def get(self, request, *args, **kwargs):

@@ -18,6 +18,7 @@ def get_org_stats(query, jwt_token):
     return services.send_post_back_office(
         **args
     )
+
 def org_stats_req_mapping(request):
     return {
         'pv_api_version_i': '',
@@ -26,6 +27,7 @@ def org_stats_req_mapping(request):
         'i_bureau_cd': request.get('bureaus') or '',
         'i_org_code': request.get('orgs') or '',
     }
+
 def org_stats_res_mapping(data):
     if data is None or data.get('O_RETURN_CODE') != 0:
         logger.error('FSBid call for Org Stat failed.')
