@@ -1107,6 +1107,15 @@ def panel_process_dates_csv(dates):
 
     return list(columnOrdering.values())
 
+def format_request_data_to_string(request_values, table_key):
+    data_entries = []
+    for item in request_values.split(","):
+        data_entry = f'"Data": {{"{table_key}": "{item}"}}'
+        data_entries.append(data_entry)
+
+    result_string = "{" + ",".join(data_entries) + "}"
+    return result_string
+
 def format_desc_code(desc, code):
     # Desc (123)
     # (123)
