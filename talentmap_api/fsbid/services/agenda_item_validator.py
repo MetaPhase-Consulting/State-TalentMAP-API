@@ -86,7 +86,7 @@ def validate_legs(legs):
 
     for leg in legs:
         valid_leg_check = validate_individual_leg(leg)
-        legs_validation['individualLegs'][leg.get('gst')] = valid_leg_check[0]
+        legs_validation['individualLegs'][leg.get('ail_seq_num')] = valid_leg_check[0]
         if not valid_leg_check[1]:
             legs_validation['allLegs']['valid'] = False
             legs_validation['allLegs']['errorMessage'] = 'One of the Agenda Item\'s legs failed validation.'
