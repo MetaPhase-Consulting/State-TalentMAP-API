@@ -10,9 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 def validate_agenda_item(query):
-    print('👻👻👻👻👻👻👻👻👻👻')
-    print(query)
-    print('👻👻👻👻👻👻👻👻👻👻')
     # when adding more validation checks,
     # remember to make sure the allValid check is still properly tracking all valid states
     validation_status = {
