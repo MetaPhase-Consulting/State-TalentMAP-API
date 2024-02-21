@@ -341,7 +341,7 @@ def el_postions_res_mapping(data):
             'mcEndDate': x.get('MC_END_DATE'),
         }
 
-    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')))
+    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')))[:200]
 
 def get_el_positions_filters(request, jwt_token):
     '''
