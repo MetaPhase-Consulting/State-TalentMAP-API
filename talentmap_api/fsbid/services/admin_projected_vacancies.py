@@ -104,7 +104,7 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
     )
 
 def admin_projected_vacancy_language_offsets_res_mapping(response):
-    def language_offsets_map(x):
+    def language_offset_map(x):
         return {
             'code': x.get("LOT_SEQ_NUM"),
             'description': x.get("LO_DESCR_TEXT"),
@@ -259,8 +259,8 @@ def edit_admin_projected_vacancy(data, jwt_token):
     args = {
         "proc_name": 'PRC_IUD_FUTURE_VACANCY',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": edit_admin_projected_vacancy_request_mapping,
-        "response_mapping_function": edit_admin_projected_vacancy_response_mapping,
+        "request_mapping_function": edit_admin_projected_vacancy_req_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -268,7 +268,7 @@ def edit_admin_projected_vacancy(data, jwt_token):
         **args
     )
 
-def edit_admin_projected_vacancy_request_mapping(request):
+def edit_admin_projected_vacancy_req_mapping(request):
     pvData = []
     for pv in request:
         pvData.append({
@@ -300,7 +300,7 @@ def edit_admin_projected_vacancy_request_mapping(request):
         }
     }
 
-def edit_admin_projected_vacancy_response_mapping(data):
+def edit_admin_projected_vacancy_res_mapping(data):
     return service_response(data, 'Projected Vacancy Edit')
 
 # ======================== Edit PV Language Offsets ========================
@@ -312,8 +312,8 @@ def edit_admin_projected_vacancy_lang_offsets(data, jwt_token):
     args = {
         "proc_name": 'PRC_IUD_POSITION_PLO',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": edit_admin_projected_vacancy_lang_offsets_request_mapping,
-        "response_mapping_function": edit_admin_projected_vacancy_lang_offsets_response_mapping,
+        "request_mapping_function": edit_admin_projected_vacancy_lang_offsets_req_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_lang_offsets_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -321,7 +321,7 @@ def edit_admin_projected_vacancy_lang_offsets(data, jwt_token):
         **args
     )
 
-def edit_admin_projected_vacancy_lang_offsets_request_mapping(request):
+def edit_admin_projected_vacancy_lang_offsets_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -345,7 +345,7 @@ def edit_admin_projected_vacancy_lang_offsets_request_mapping(request):
         'PQRY_ERROR_DATA_O': ''
     }
 
-def edit_admin_projected_vacancy_lang_offsets_response_mapping(data):
+def edit_admin_projected_vacancy_lang_offsets_res_mapping(data):
     return service_response(data, 'Projected Vacancy Edit Language Offsets')
 
 # ======================== Edit PV Capsule Description ========================
@@ -357,8 +357,8 @@ def edit_admin_projected_vacancy_capsule_desc(data, jwt_token):
     args = {
         "proc_name": 'act_modCapsulePos',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": edit_admin_projected_vacancy_capsule_desc_request_mapping,
-        "response_mapping_function": edit_admin_projected_vacancy_capsule_desc_response_mapping,
+        "request_mapping_function": edit_admin_projected_vacancy_capsule_desc_req_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_capsule_desc_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -366,7 +366,7 @@ def edit_admin_projected_vacancy_capsule_desc(data, jwt_token):
         **args
     )
 
-def edit_admin_projected_vacancy_capsule_desc_request_mapping(request):
+def edit_admin_projected_vacancy_capsule_desc_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -376,7 +376,7 @@ def edit_admin_projected_vacancy_capsule_desc_request_mapping(request):
         'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('updated_date'),
     }
 
-def edit_admin_projected_vacancy_capsule_desc_response_mapping(data):
+def edit_admin_projected_vacancy_capsule_desc_res_mapping(data):
     return service_response(data, 'Projected Vacancy Edit Capsule Description')
 
 # ======================== Get PV Metadata ========================
@@ -388,8 +388,8 @@ def get_admin_projected_vacancy_metadata(data, jwt_token):
     args = {
         "proc_name": 'PRC_S_FUTURE_VACANCY',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": get_admin_projected_vacancy_metadata_request_mapping,
-        "response_mapping_function": get_admin_projected_vacancy_metadata_response_mapping,
+        "request_mapping_function": get_admin_projected_vacancy_metadata_req_mapping,
+        "response_mapping_function": get_admin_projected_vacancy_metadata_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -397,7 +397,7 @@ def get_admin_projected_vacancy_metadata(data, jwt_token):
         **args
     )
 
-def get_admin_projected_vacancy_metadata_request_mapping(request):
+def get_admin_projected_vacancy_metadata_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -411,7 +411,7 @@ def get_admin_projected_vacancy_metadata_request_mapping(request):
         'PQRY_ERROR_DATA_O': '',
     }
 
-def get_admin_projected_vacancy_metadata_response_mapping(response):
+def get_admin_projected_vacancy_metadata_res_mapping(response):
     def metadata_mapping(x):
         return {
             'creator_id': x.get('FV_CREATE_ID'),
@@ -430,8 +430,8 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
     args = {
         "proc_name": 'prc_lst_pos_lang_results',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": get_admin_projected_vacancy_lang_offsets_request_mapping,
-        "response_mapping_function": get_admin_projected_vacancy_lang_offsets_response_mapping,
+        "request_mapping_function": get_admin_projected_vacancy_lang_offsets_req_mapping,
+        "response_mapping_function": get_admin_projected_vacancy_lang_offsets_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -439,7 +439,7 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
         **args
     )
 
-def get_admin_projected_vacancy_lang_offsets_request_mapping(request):
+def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -465,7 +465,7 @@ def get_admin_projected_vacancy_lang_offsets_request_mapping(request):
         'PQRY_ERROR_DATA_O': '',
     }
 
-def get_admin_projected_vacancy_lang_offsets_response_mapping(response):
+def get_admin_projected_vacancy_lang_offsets_res_mapping(response):
     def lang_offset_mapping(x):
         return {
             "language_offset_summer": x.get("LANG_OFFSET_SUMMER"),
