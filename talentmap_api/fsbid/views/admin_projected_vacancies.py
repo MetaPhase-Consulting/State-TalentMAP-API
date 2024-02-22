@@ -177,7 +177,7 @@ class FSBidAdminProjectedVacancyMetadataView(APIView):
         }
     ))
 
-    def put(self, request):
+    def get(self, request):
         '''
         Get Admin Projected Vacancy Metadata
         '''
@@ -200,7 +200,7 @@ class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
         }
     ))
 
-    def put(self, request):
+    def get(self, request):
         '''
         Get Admin Projected Vacancy Language Offsets
         '''
