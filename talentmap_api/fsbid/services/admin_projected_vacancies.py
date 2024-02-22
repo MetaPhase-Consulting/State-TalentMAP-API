@@ -413,11 +413,12 @@ def get_admin_projected_vacancy_metadata_req_mapping(request):
 
 def get_admin_projected_vacancy_metadata_res_mapping(response):
     def metadata_mapping(x):
+        admin_data = x.get('PQRY_FV_ADMIN_O')[0]
         return {
-            'creator_id': x.get('FV_CREATE_ID'),
-            'created_date': x.get('FV_CREATE_DATE'),
-            'updater_id': x.get('FV_UPDATE_ID'),
-            'updated_date': x.get('FV_UPDATE_DATE'),
+            'creator_id': admin_data.get('FV_CREATE_ID'),
+            'created_date': admin_data.get('FV_CREATE_DATE'),
+            'updater_id': admin_data.get('FV_UPDATE_ID'),
+            'updated_date': admin_data.get('FV_UPDATE_DATE'),
         }
     return service_response(response, 'Projected Vacancy Metadata', metadata_mapping)
 
@@ -467,8 +468,9 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
 
 def get_admin_projected_vacancy_lang_offsets_res_mapping(response):
     def lang_offset_mapping(x):
+        admin_data = x.get('PQRY_FVPL_ADMIN_O')[0]
         return {
-            "language_offset_summer": x.get("LANG_OFFSET_SUMMER"),
-            "language_offset_winter": x.get("LANG_OFFSET_WINTER"),
+            'language_offset_summer': admin_data.get('LANG_OFFSET_SUMMER'),
+            'language_offset_winter': admin_data.get('LANG_OFFSET_WINTER'),
         }
     return service_response(response, 'Projected Vacancy Language Offsets', lang_offset_mapping)
