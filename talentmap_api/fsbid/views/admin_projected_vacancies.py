@@ -170,12 +170,11 @@ class FSBidAdminProjectedVacancyMetadataView(APIView):
 
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'future_vacancy_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num'),
-        }
-    ))
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("future_vacancy_seq_num", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num'),
+        ]
+    )
 
     def get(self, request):
         '''
@@ -193,12 +192,11 @@ class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
 
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
-        }
-    ))
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("positon_seq_num", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Position Seq Num'),
+        ]
+    )
 
     def get(self, request):
         '''
