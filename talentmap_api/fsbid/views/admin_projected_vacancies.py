@@ -30,7 +30,7 @@ class FSBidAdminProjectedVacancyFiltersView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
-class FSBidAdminProjectedVacancyLanguageOffsetOptionsView(APIView):
+class FSBidAdminProjectedVacancyLangOffsetOptionsView(APIView):
 
     # ======================== Get Language Offset Options ========================
 
