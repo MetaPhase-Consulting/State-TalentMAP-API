@@ -83,7 +83,7 @@ class FSBidAdminProjectedVacancyActionsView(APIView):
             properties={
                 'future_vacancy_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num'),
                 'future_vacancy_seq_num_ref': openapi.Schema(type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num Reference'),
-                'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
+                'position_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
                 'bid_season_code': openapi.Schema(type=openapi.TYPE_STRING, description='Bid Season Code'),
                 'assignment_seq_num_effective': openapi.Schema(type=openapi.TYPE_STRING, description='Assignment Seq Num Effective'),
                 'assignment_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Assignment Seq Num'),
@@ -122,7 +122,7 @@ class FSBidAdminProjectedVacancyEditLangOffsetsView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
+            'position_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
             'language_offset_summer': openapi.Schema(type=openapi.TYPE_STRING, description='Language Offset Summer'),
             'language_offset_winter': openapi.Schema(type=openapi.TYPE_STRING, description='Language Offset Winter'),
         }
@@ -147,7 +147,7 @@ class FSBidAdminProjectedVacancyEditCapsuleDescView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'positon_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
+            'position_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
             'capsule_description': openapi.Schema(type=openapi.TYPE_STRING, description='Capsule Description'),
             'updater_id': openapi.Schema(type=openapi.TYPE_STRING, description='Updater ID'),
             'updated_date': openapi.Schema(type=openapi.TYPE_STRING, description='Updated Date'),
@@ -194,7 +194,7 @@ class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter("positon_seq_num", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Position Seq Num'),
+            openapi.Parameter("position_seq_num", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Position Seq Num'),
         ]
     )
 

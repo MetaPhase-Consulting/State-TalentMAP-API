@@ -187,7 +187,7 @@ def admin_projected_vacancy_res_mapping(response):
             "organization_code": x.get("ORG_CODE"),
             "organization_short_description": x.get("ORG_SHORT_DESC"),
             "organization_description": x.get("ORG_LONG_DESC"),
-            "positon_seq_num": x.get("POS_SEQ_NUM"),
+            "position_seq_num": x.get("POS_SEQ_NUM"),
             "position_title": x.get("POS_TITLE_DESC"),
             "position_number": x.get("POS_NUM_TEXT"),
             "position_pay_plan_code": x.get("POS_PAY_PLAN_CODE"),
@@ -274,7 +274,7 @@ def edit_admin_projected_vacancy_req_mapping(request):
         pvData.append({
             'FV_SEQ_NUM': pv.get('future_vacancy_seq_num'),
             'FV_SEQ_NUM_REF': pv.get('future_vacancy_seq_num_ref'),
-            'POS_SEQ_NUM': pv.get('positon_seq_num'),
+            'POS_SEQ_NUM': pv.get('position_seq_num'),
             'BSN_ID': pv.get('bid_season_code'),
             'ASG_SEQ_NUM_EF': pv.get('assignment_seq_num_effective'),
             'ASG_SEQ_NUM': pv.get('assignment_seq_num'),
@@ -328,7 +328,7 @@ def edit_admin_projected_vacancy_lang_offsets_req_mapping(request):
         'PX_LANGOS_I': f'''
             <ROWSET>
                 <ROW>
-                    <POS_SEQ_NUM>{request.get('positon_seq_num')}</POS_SEQ_NUM>
+                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
                     <LOT_SEQ_NUM>{request.get('language_offset_summer')}</LOT_SEQ_NUM>
                 </ROW>
             </ROWSET>
@@ -336,7 +336,7 @@ def edit_admin_projected_vacancy_lang_offsets_req_mapping(request):
         'PX_LANGOW_I': f'''
             <ROWSET>
                 <ROW>
-                    <POS_SEQ_NUM>{request.get('positon_seq_num')}</POS_SEQ_NUM>
+                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
                     <LOT_SEQ_NUM>{request.get('language_offset_winter')}</LOT_SEQ_NUM>
                 </ROW>
             </ROWSET>
@@ -370,7 +370,7 @@ def edit_admin_projected_vacancy_capsule_desc_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'I_POS_SEQ_NUM': request.get('positon_seq_num'),
+        'I_POS_SEQ_NUM': request.get('position_seq_num'),
         'I_PPOS_CAPSULE_DESCR_TXT': request.get('capsule_description'),
         'I_PPOS_LAST_UPDT_USER_ID': request.get('updater_id'),
         'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('updated_date'),
