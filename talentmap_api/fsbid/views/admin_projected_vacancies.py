@@ -183,8 +183,7 @@ class FSBidAdminProjectedVacancyMetadataView(APIView):
         result = services.get_admin_projected_vacancy_metadata(request.data, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(result)
 
 class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
     
@@ -205,6 +204,4 @@ class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
         result = services.get_admin_projected_vacancy_lang_offsets(request.data, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        return Response(result)
