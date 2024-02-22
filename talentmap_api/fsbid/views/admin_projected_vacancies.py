@@ -30,17 +30,17 @@ class FSBidAdminProjectedVacancyFiltersView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
-class FSBidAdminProjectedVacancyLanguageOffsetsView(APIView):
+class FSBidAdminProjectedVacancyLanguageOffsetOptionsView(APIView):
 
-    # ======================== Get Language Offsets Dropdowns ========================
+    # ======================== Get Language Offset Options ========================
 
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
-        Gets Language Offsets for Admin Projected Vacancies
+        Gets Language Offset Options for Admin Projected Vacancies
         '''
-        result = services.get_admin_projected_vacancy_language_offsets(request.META['HTTP_JWT'])
+        result = services.get_admin_projected_vacancy_lang_offset_options(request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)

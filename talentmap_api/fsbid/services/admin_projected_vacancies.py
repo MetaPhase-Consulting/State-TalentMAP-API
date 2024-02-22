@@ -85,17 +85,17 @@ def admin_projected_vacancy_filter_res_mapping(response):
         }
     return service_response(response, 'Projected Vacancy Filters', filters_map)
 
-# ======================== Get PV Dropdowns ========================
+# ======================== Get PV Language Offset Options ========================
 
-def get_admin_projected_vacancy_language_offsets(jwt_token):
+def get_admin_projected_vacancy_lang_offset_options(jwt_token):
     '''
-    Gets Language Offsets for Admin Projected Vacancies
+    Gets Language Offset Options for Admin Projected Vacancies
     '''
     args = {
         "proc_name": "PRC_LST_POS_PLO_CRITERIA",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
         "request_mapping_function": admin_projected_vacancy_filter_req_mapping,
-        "response_mapping_function": admin_projected_vacancy_language_offsets_res_mapping,
+        "response_mapping_function": admin_projected_vacancy_lang_offset_options_res_mapping,
         "jwt_token": jwt_token,
         "request_body": {},
     }
@@ -103,7 +103,7 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
         **args
     )
 
-def admin_projected_vacancy_language_offsets_res_mapping(response):
+def admin_projected_vacancy_lang_offset_options_res_mapping(response):
     def language_offset_map(x):
         return {
             'code': x.get("LOT_SEQ_NUM"),
