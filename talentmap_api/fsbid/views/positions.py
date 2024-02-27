@@ -63,7 +63,7 @@ class FSBidFrequentPositionsView(BaseView):
         return Response(services.get_frequent_positions(request.query_params, request.META['HTTP_JWT']))
 
 class FSBidEntryLevelPositionsView(BaseView):
-    # permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
 
     def get(self, request):
         """
@@ -72,7 +72,7 @@ class FSBidEntryLevelPositionsView(BaseView):
         return Response(services.get_el_positions(request.query_params, request.META['HTTP_JWT']))
 
 class FSBidEntryLevelPositionsFiltersView(BaseView):
-    # permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
 
     def get(self, request):
         """
@@ -81,6 +81,7 @@ class FSBidEntryLevelPositionsFiltersView(BaseView):
         return Response(services.get_el_positions_filters(request.query_params, request.META['HTTP_JWT']))
 
 class FSBidEntryLevelPositionsActionView(BaseView):
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
     '''
     Edit and save an EL Position
     '''
