@@ -638,9 +638,9 @@ def fsbid_legs_to_talentmap_legs(data):
     eta_date = data.get("ailetadate", None)
     ted_date = data.get("ailetdtedsepdate", None)
     not_applicable = '-'
-    pay_plan = pydash.get(data, "agendaLegPosition[0].pospayplancode", "--")
-    grade = pydash.get(data, "agendaLegPosition[0].posgradecode", "--")
-    combined_pp_grade = f"{pay_plan} {grade}"
+    pay_plan = pydash.get(data, "agendaLegPosition[0].pospayplancode", "None Listed")
+    grade = pydash.get(data, "agendaLegPosition[0].posgradecode", "None Listed")
+    combined_pp_grade = "None Listed" if pay_plan == "None Listed" and grade == "None Listed" else f"{pay_plan} {grade}"
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -660,7 +660,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "tod_months": tod_months if is_other_tod else None, # only a custom/other TOD should have months
         "tod_short_desc": tod_other_text if is_other_tod else tod_short_desc,
         "tod_long_desc": tod_other_text if is_other_tod else tod_long_desc,
-        "grade": pydash.get(data, "agendaLegPosition[0].posgradecode", None),
+        "grade": grade,
         "languages": services.parseLanguagesToArr(pydash.get(data, "agendaLegPosition[0]", None)),
         "action": pydash.get(data, "latabbrdesctext", None),
         "action_code": lat_code,
