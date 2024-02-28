@@ -180,7 +180,7 @@ class FSBidAdminProjectedVacancyMetadataView(APIView):
         '''
         Get Admin Projected Vacancy Metadata
         '''
-        result = services.get_admin_projected_vacancy_metadata(request.data, request.META['HTTP_JWT'])
+        result = services.get_admin_projected_vacancy_metadata(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
