@@ -427,8 +427,8 @@ def edit_el_positions(request, jwt_token):
         "proc_name": "prc_iud_tracking_details_grid",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
         "request_body": {},
-        "request_mapping_function": edit_el_positions_req_mapping,
-        "response_mapping_function": edit_el_positions_res_mapping,
+        # "request_mapping_function": edit_el_positions_req_mapping,
+        # "response_mapping_function": edit_el_positions_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
