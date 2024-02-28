@@ -29,7 +29,7 @@ class FSBidAssignmentCyclesCreateView(BaseView):
     def post(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.create_assignment_cycle(jwt, request.data)
-        return result
+        return Response(result)
 
 
 class FSBidAssignmentCycleListView(BaseView):
@@ -53,7 +53,7 @@ class FSBidAssignmentCyclesUpdateView(BaseView):
     def post(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.update_assignment_cycle(jwt, request.data)
-        return result
+        return Response(result)
 
 
 class FSBidAssignmentCyclesPostPosView(BaseView):

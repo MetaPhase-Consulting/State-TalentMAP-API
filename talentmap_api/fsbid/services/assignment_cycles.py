@@ -3,7 +3,7 @@ import pydash
 from datetime import datetime as dt
 from django.conf import settings
 from talentmap_api.fsbid.services import common as services
-from rest_framework.response import Response
+from talentmap_api.common.common_helpers import service_response
 from rest_framework import status
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,11 @@ def assignment_cycles_res_mapping(data):
             'excl_position': x.get('CYCLE_EXCLUSIVE_POS_FLG') or None,
             'post_view': x.get('CYCLE_POST_VIEWABLE_IND') or None,
         }
-    return list(map(results_mapping, data.get('QRY_LSTASSIGNCYCLES_REF')))
+
+    def success_mapping(x):
+        return list(map(results_mapping, x.get('QRY_LSTASSIGNCYCLES_REF')))
+
+    return service_response(data, 'Assginment Cycles Data', success_mapping)
 
 
 def create_assignment_cycle(jwt_token, request):
@@ -59,8 +63,8 @@ def create_assignment_cycle(jwt_token, request):
         "proc_name": 'act_addassigncycle',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
-        "request_mapping_function": create_assignment_cycles_req_mapping,
-        "response_mapping_function": create_assignment_cycles_res_mapping,
+        "request_mapping_function": create_assignment_cycle_req_mapping,
+        "response_mapping_function": create_assignment_cycle_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
@@ -78,7 +82,8 @@ def format_date_string(input_date):
     formatted_date = date_object.strftime("%m/%d/%Y")
     return formatted_date
 
-def create_assignment_cycles_req_mapping(req):
+
+def create_assignment_cycle_req_mapping(req):
     data = req['data']
     name = data['assignmentCycle']
     cycle_category = data['cycleCategory']
@@ -148,10 +153,8 @@ def create_assignment_cycles_req_mapping(req):
     return mapped_request
 
 
-def create_assignment_cycles_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to create this Assignment Cycle. Please try again.')
-    return Response(data)
+def create_assignment_cycle_res_mapping(data):
+    return service_response(data, 'Assginment Cycles Data')
 
 
 def get_assignment_cycle_data(jwt_token, pk):
@@ -206,26 +209,29 @@ def assignment_cycle_res_mapping(data):
             if item['value'] == value:
                 return item
 
-    dates_mapped = {}
-    for item in data.get('QRY_LSTCYCLEDATE_REF'):
-        name = item['CDT_CD']
-        dates_mapped[name] = dates_mapping(item)
+    def success_mapping(x):
+        dates_mapped = {}
+        for item in x.get('QRY_LSTCYCLEDATE_REF'):
+            name = item['CDT_CD']
+            dates_mapped[name] = dates_mapping(item)
 
-    cycle_status_reference = list(map(cycle_status_mapping, data.get('QRY_LSTCYCLESTATUS_REF')))
-    cycle_category_reference = list(map(cycle_category_mapping, data.get('QRY_LSTCYCLECATEGORY_REF')))
+        cycle_status_reference = list(map(cycle_status_mapping, x.get('QRY_LSTCYCLESTATUS_REF')))
+        cycle_category_reference = list(map(cycle_category_mapping, x.get('QRY_LSTCYCLECATEGORY_REF')))
 
-    results = {
-        'cycle_name': data.get('O_CYCLE_NM_TXT'),
-        'last_updated': data.get('O_CYCLE_LAST_UPDT_TMSMP_DT'),
-        'exclusive_position': data.get('O_CYCLE_EXCLUSIVE_POS_FLG'),
-        'post_viewable': data.get('O_CYCLE_POST_VIEWABLE_IND'),
-        'cycle_category': get_value_from_ref(cycle_category_reference, data.get('O_CC_CD')),
-        'cycle_status': get_value_from_ref(cycle_status_reference, data.get('O_CS_CD')),
-        'dates_mapping': dates_mapped,
-        'cycle_status_reference': cycle_status_reference,
-        'cycle_category_reference': cycle_category_reference,
-    }
-    return results
+        results = {
+            'cycle_name': x.get('O_CYCLE_NM_TXT'),
+            'last_updated': x.get('O_CYCLE_LAST_UPDT_TMSMP_DT'),
+            'exclusive_position': x.get('O_CYCLE_EXCLUSIVE_POS_FLG'),
+            'post_viewable': x.get('O_CYCLE_POST_VIEWABLE_IND'),
+            'cycle_category': get_value_from_ref(cycle_category_reference, x.get('O_CC_CD')),
+            'cycle_status': get_value_from_ref(cycle_status_reference, x.get('O_CS_CD')),
+            'dates_mapping': dates_mapped,
+            'cycle_status_reference': cycle_status_reference,
+            'cycle_category_reference': cycle_category_reference,
+        }
+        return results
+
+    return service_response(data, 'Assginment Cycles Data', success_mapping)
 
 
 def post_assignment_cycle_positions(jwt_token, pk):
@@ -237,7 +243,7 @@ def post_assignment_cycle_positions(jwt_token, pk):
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": pk,
         "request_mapping_function": assignment_cycle_req_mapping,  # SHOULD work
-        "response_mapping_function": post_positions_res_mapping,  # double check in dev
+        "response_mapping_function": post_positions_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
@@ -246,10 +252,7 @@ def post_assignment_cycle_positions(jwt_token, pk):
 
 
 def post_positions_res_mapping(data):
-    # double check in dev
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to Post the Open Positions for this Assignment Cycle. Please try again.')
-    return Response(data)
+    return service_response(data, 'Assginment Cycles Data')
 
 
 def update_assignment_cycle(jwt_token, request):
@@ -260,7 +263,7 @@ def update_assignment_cycle(jwt_token, request):
         "proc_name": 'act_modAssignCycle',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
-        "request_mapping_function": create_assignment_cycles_req_mapping,  # MIGHT work
+        "request_mapping_function": create_assignment_cycle_req_mapping,  # MIGHT work
         "response_mapping_function": update_assignment_cycles_res_mapping,
         "jwt_token": jwt_token,
     }
@@ -270,6 +273,4 @@ def update_assignment_cycle(jwt_token, request):
 
 
 def update_assignment_cycles_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to update this Assignment Cycle. Please try again.')
-    return Response(data)
+    return service_response(data, 'Assginment Cycles Data')
