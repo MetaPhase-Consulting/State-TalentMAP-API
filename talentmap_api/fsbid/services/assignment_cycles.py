@@ -274,3 +274,32 @@ def update_assignment_cycle(jwt_token, request):
 
 def update_assignment_cycles_res_mapping(data):
     return service_response(data, 'Assginment Cycles Data')
+
+
+def delete_assignment_cycle(jwt_token, request):
+    '''
+    Delete an Assignment Cycle
+    '''
+    args = {
+        "proc_name": 'act_delassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": delete_assignment_cycle_req_mapping,
+        "response_mapping_function": update_assignment_cycles_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def delete_assignment_cycle_req_mapping(pk):
+    # need to test in DEV - does it need an ID  Timestamp?
+    mapped_request = {
+        "PV_API_VERSION_I": "",
+        'PV_AD_ID_I': '',
+        "i_cycle_id": pk,
+        # "i_cycle_last_updt_tmsmp_dt": '',
+        # "i_cycle_last_updt_user_id": ''
+    }
+    return mapped_request

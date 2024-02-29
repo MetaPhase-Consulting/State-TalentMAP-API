@@ -67,3 +67,16 @@ class FSBidAssignmentCyclesPostPosView(BaseView):
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
+
+
+class FSBidAssignmentCyclesDeleteView(BaseView):
+    '''
+    Delete an Assignment Cycle
+    '''
+
+    def post(self, request, pk):
+        jwt = request.META['HTTP_JWT']
+        result = services.delete_assignment_cycle(jwt, pk)
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(result)
