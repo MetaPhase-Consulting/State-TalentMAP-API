@@ -1,6 +1,7 @@
 import logging
 import requests  # pylint: disable=unused-import
 from talentmap_api.fsbid.services import common as services
+from talentmap_api.common.common_helpers import service_response
 
 
 logger = logging.getLogger(__name__)
@@ -72,27 +73,29 @@ def admin_projected_vacancy_filter_res_mapping(response):
             'code': x.get('FVS_CODE'),
             'description': x.get('FVS_DESCR_TXT'),
         }
-    return {
-        'bureauFilters': list(map(bureau_map, response.get('PCUR_BUREAU_TAB_O'))),
-        'organizationFilters': list(map(organization_map, response.get('PCUR_ORG_TAB_O'))),
-        'gradeFilters': list(map(grade_map, response.get('PCUR_GRADE_TAB_O'))),
-        'skillFilters': list(map(skill_map, response.get('PCUR_SKILL_TAB_O'))),
-        'languageFilters': list(map(language_map, response.get('PCUR_LANGUAGE_TAB_O'))),
-        'bidSeasonFilters': list(map(bid_season_map, response.get('PCUR_BSN_TAB_O'))),
-        'futureVacancyStatusFilters': list(map(status_map, response.get('PCUR_FVS_TAB_O'))),
-    }
+    def filters_map(x):
+        return {
+            'bureaus': list(map(bureau_map, x.get('PCUR_BUREAU_TAB_O'))),
+            'organizations': list(map(organization_map, x.get('PCUR_ORG_TAB_O'))),
+            'grades': list(map(grade_map, x.get('PCUR_GRADE_TAB_O'))),
+            'skills': list(map(skill_map, x.get('PCUR_SKILL_TAB_O'))),
+            'languages': list(map(language_map, x.get('PCUR_LANGUAGE_TAB_O'))),
+            'bid_seasons': list(map(bid_season_map, x.get('PCUR_BSN_TAB_O'))),
+            'statuses': list(map(status_map, x.get('PCUR_FVS_TAB_O'))),
+        }
+    return service_response(response, 'Projected Vacancy Filters', filters_map)
 
-# ======================== Get PV Dropdowns ========================
+# ======================== Get PV Language Offset Options ========================
 
-def get_admin_projected_vacancy_language_offsets(jwt_token):
+def get_admin_projected_vacancy_lang_offset_options(jwt_token):
     '''
-    Gets Language Offsets for Admin Projected Vacancies
+    Gets Language Offset Options for Admin Projected Vacancies
     '''
     args = {
         "proc_name": "PRC_LST_POS_PLO_CRITERIA",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
         "request_mapping_function": admin_projected_vacancy_filter_req_mapping,
-        "response_mapping_function": admin_projected_vacancy_language_offsets_res_mapping,
+        "response_mapping_function": admin_projected_vacancy_lang_offset_options_res_mapping,
         "jwt_token": jwt_token,
         "request_body": {},
     }
@@ -100,16 +103,18 @@ def get_admin_projected_vacancy_language_offsets(jwt_token):
         **args
     )
 
-def admin_projected_vacancy_language_offsets_res_mapping(response):
-    def language_offsets_map(x):
+def admin_projected_vacancy_lang_offset_options_res_mapping(response):
+    def language_offset_map(x):
         return {
             'code': x.get("LOT_SEQ_NUM"),
             'description': x.get("LO_DESCR_TEXT"),
         }
-    return {
-        'summerLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_S_O"))),
-        'winterLanguageOffsetFilters': list(map(language_offsets_map, response.get("PQRY_LANG_OFFSET_W_O"))),
-    }
+    def language_offsets_map(x):
+        return {
+            'summer_language_offsets': list(map(language_offset_map, x.get("PQRY_LANG_OFFSET_S_O"))),
+            'winter_language_offsets': list(map(language_offset_map, x.get("PQRY_LANG_OFFSET_W_O"))),
+        }
+    return service_response(response, 'Projected Vacancy Language Offset Filters', language_offsets_map)
 
 # ======================== Get PV List ========================
 
@@ -131,8 +136,31 @@ def get_admin_projected_vacancies(query, jwt_token):
 
 def admin_projected_vacancy_req_mapping(request):
     mapped_request = {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PV_SUBTRAN_I': '',
+        'PJSON_FVS_TAB_I': { 'Data': [] },
+        'PJSON_CUST_TP_TAB_I': { 'Data': [] },
+        'PXML_POSITION_I': '''
+            <XMLSearchCriterias>
+                <SearchList>
+                    <Value>30008009</Value>
+                    <Value>30008008</Value>
+                </SearchList>
+            </XMLSearchCriterias>
+        ''',
+        'PJSON_JC_DD_TAB_I': { 'Data': [] },
+        'PXML_OVERSEAS_I': '''
+            <XMLSearchCriterias>
+                <SearchList>
+                    <Value>O</Value>
+                    <Value>D</Value>
+                </SearchList>
+            </XMLSearchCriterias>
+        ''',
+        'PQRY_FV_ADMIN_O': '',
+        'PV_RETURN_CODE_O': '',
+        'PQRY_ERROR_DATA_O': '',
     }
     if request.get('bureaus'):
         mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
@@ -159,7 +187,7 @@ def admin_projected_vacancy_res_mapping(response):
             "organization_code": x.get("ORG_CODE"),
             "organization_short_description": x.get("ORG_SHORT_DESC"),
             "organization_description": x.get("ORG_LONG_DESC"),
-            "positon_seq_num": x.get("POS_SEQ_NUM"),
+            "position_seq_num": x.get("POS_SEQ_NUM"),
             "position_title": x.get("POS_TITLE_DESC"),
             "position_number": x.get("POS_NUM_TEXT"),
             "position_pay_plan_code": x.get("POS_PAY_PLAN_CODE"),
@@ -218,4 +246,231 @@ def admin_projected_vacancy_res_mapping(response):
             "bid_season_future_vacancy_indicator": x.get("BSN_FUTURE_VACANCY_IND"),
             "cycle_position_id": x.get("CP_ID"),
         }
-    return list(map(projected_vacancy_mapping, response.get("PQRY_FV_ADMIN_O")))
+    def list_pv_mapping(x):
+        return list(map(projected_vacancy_mapping, x.get("PQRY_FV_ADMIN_O")))
+    return service_response(response, 'Projected Vacancy List', list_pv_mapping)
+
+# ======================== Edit PV ========================
+
+def edit_admin_projected_vacancy(data, jwt_token):
+    '''
+    Edit Admin Projected Vacancy
+    '''
+    args = {
+        "proc_name": 'PRC_IUD_FUTURE_VACANCY',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": edit_admin_projected_vacancy_req_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_admin_projected_vacancy_req_mapping(request):
+    pvData = []
+    for pv in request:
+        pvData.append({
+            'FV_SEQ_NUM': pv.get('future_vacancy_seq_num'),
+            'FV_SEQ_NUM_REF': pv.get('future_vacancy_seq_num_ref'),
+            'POS_SEQ_NUM': pv.get('position_seq_num'),
+            'BSN_ID': pv.get('bid_season_code'),
+            'ASG_SEQ_NUM_EF': pv.get('assignment_seq_num_effective'),
+            'ASG_SEQ_NUM': pv.get('assignment_seq_num'),
+            'CDT_CD': pv.get('cycle_date_type_code'),
+            'FVS_CODE': pv.get('future_vacancy_status_code'),
+            'FVO_CODE': pv.get('future_vacancy_override_code'),
+            'FV_OVERRIDE_TED_DATE': pv.get('future_vacancy_override_tour_end_date'),
+            'FV_SYSTEM_IND': pv.get('future_vacancy_system_indicator'),
+            'FV_COMMENT_TXT': pv.get('future_vacancy_comment'),
+            'FV_CREATE_ID': pv.get('creator_id'),
+            'FV_CREATE_DATE': pv.get('created_date'),
+            'FV_UPDATE_ID': pv.get('updater_id'),
+            'FV_UPDATE_DATE': pv.get('updated_date'),
+            'FV_MC_IND': pv.get('future_vacancy_mc_indicator'),
+            'FV_EXCL_IMPORT_IND': pv.get('future_vacancy_exclude_import_indicator'),
+        })
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'pv_action_i': 'U',
+        'pjson_fv_i': {
+            'Data': pvData
+        }
+    }
+
+def edit_admin_projected_vacancy_res_mapping(data):
+    return service_response(data, 'Projected Vacancy Edit')
+
+# ======================== Edit PV Language Offsets ========================
+
+def edit_admin_projected_vacancy_lang_offsets(data, jwt_token):
+    '''
+    Edit Admin Projected Vacancy Language Offsets
+    '''
+    args = {
+        "proc_name": 'PRC_IUD_POSITION_PLO',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": edit_admin_projected_vacancy_lang_offsets_req_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_lang_offsets_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_admin_projected_vacancy_lang_offsets_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PX_LANGOS_I': f'''
+            <ROWSET>
+                <ROW>
+                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
+                    <LOT_SEQ_NUM>{request.get('language_offset_summer')}</LOT_SEQ_NUM>
+                </ROW>
+            </ROWSET>
+        ''',
+        'PX_LANGOW_I': f'''
+            <ROWSET>
+                <ROW>
+                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
+                    <LOT_SEQ_NUM>{request.get('language_offset_winter')}</LOT_SEQ_NUM>
+                </ROW>
+            </ROWSET>
+        ''',
+        'PV_RETURN_CODE_O': '',
+        'PQRY_ERROR_DATA_O': ''
+    }
+
+def edit_admin_projected_vacancy_lang_offsets_res_mapping(data):
+    return service_response(data, 'Projected Vacancy Edit Language Offsets')
+
+# ======================== Edit PV Capsule Description ========================
+
+def edit_admin_projected_vacancy_capsule_desc(data, jwt_token):
+    '''
+    Edit Admin Projected Vacancy Capsule Description
+    '''
+    args = {
+        "proc_name": 'act_modCapsulePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": edit_admin_projected_vacancy_capsule_desc_req_mapping,
+        "response_mapping_function": edit_admin_projected_vacancy_capsule_desc_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def edit_admin_projected_vacancy_capsule_desc_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_POS_SEQ_NUM': request.get('position_seq_num'),
+        'I_PPOS_CAPSULE_DESCR_TXT': request.get('capsule_description'),
+        'I_PPOS_LAST_UPDT_USER_ID': request.get('updater_id'),
+        'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('updated_date'),
+    }
+
+def edit_admin_projected_vacancy_capsule_desc_res_mapping(data):
+    return service_response(data, 'Projected Vacancy Edit Capsule Description')
+
+# ======================== Get PV Metadata ========================
+
+def get_admin_projected_vacancy_metadata(data, jwt_token):
+    '''
+    Get Admin Projected Vacancy Metadata
+    '''
+    args = {
+        "proc_name": 'PRC_S_FUTURE_VACANCY',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": get_admin_projected_vacancy_metadata_req_mapping,
+        "response_mapping_function": get_admin_projected_vacancy_metadata_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def get_admin_projected_vacancy_metadata_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PV_FV_SEQ_NUM_I': request.get('future_vacancy_seq_num'),
+        'PQRY_CUST_FV_TAB_O': '',
+        'PQRY_BSN_TAB_O': '',
+        'PQRY_FVS_TAB_O': '',
+        'PQRY_FVO_TAB_O': '',
+        'PQRY_FV_ADMIN_O': '',
+        'PV_RETURN_CODE_O': '',
+        'PQRY_ERROR_DATA_O': '',
+    }
+
+def get_admin_projected_vacancy_metadata_res_mapping(response):
+    def metadata_mapping(x):
+        admin_data = x.get('PQRY_FV_ADMIN_O')[0]
+        return {
+            'creator_id': admin_data.get('FV_CREATE_ID'),
+            'created_date': admin_data.get('FV_CREATE_DATE'),
+            'updater_id': admin_data.get('FV_UPDATE_ID'),
+            'updated_date': admin_data.get('FV_UPDATE_DATE'),
+        }
+    return service_response(response, 'Projected Vacancy Metadata', metadata_mapping)
+
+# ======================== Get PV Language Offsets ========================
+
+def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
+    '''
+    Get Admin Projected Vacancy Language Offsets
+    '''
+    args = {
+        "proc_name": 'prc_lst_pos_lang_results',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_mapping_function": get_admin_projected_vacancy_lang_offsets_req_mapping,
+        "response_mapping_function": get_admin_projected_vacancy_lang_offsets_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'PX_BUREAU_I': None,
+        'PX_ORG_I': None,
+        'PX_PAY_PLAN_I': None,
+        'PX_GRADE_I': None,
+        'PX_SKILL_I': None,
+        'PX_LANGUAGE_I': None,
+        'PX_CUST_TP_I': None,
+        'PX_TOD_I': None,
+        'PXML_POSITION_I': f'''
+            <XMLSearchCriterias>
+                <SearchList>
+                    <Value>{request.get('position_seq_num')}</Value>
+                </SearchList>
+            </XMLSearchCriterias>
+        ''',
+        'PX_OVERSEAS_I': None,
+        'PX_COUNTRY_I': None,
+        'PQRY_FV_ADMIN_O': '',
+        'PV_RETURN_CODE_O': '',
+        'PQRY_ERROR_DATA_O': '',
+    }
+
+def get_admin_projected_vacancy_lang_offsets_res_mapping(response):
+    def lang_offset_mapping(x):
+        admin_data = x.get('PQRY_FVPL_ADMIN_O')[0]
+        return {
+            'language_offset_summer': admin_data.get('LANG_OFFSET_SUMMER'),
+            'language_offset_winter': admin_data.get('LANG_OFFSET_WINTER'),
+        }
+    return service_response(response, 'Projected Vacancy Language Offsets', lang_offset_mapping)
