@@ -61,3 +61,31 @@ class FSBidFrequentPositionsView(BaseView):
         Return a list of reference data for all frequent positions
         """
         return Response(services.get_frequent_positions(request.query_params, request.META['HTTP_JWT']))
+
+class FSBidEntryLevelPositionsView(BaseView):
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+
+    def get(self, request):
+        """
+        Get a list of all Entry Level Positions
+        """
+        return Response(services.get_el_positions(request.query_params, request.META['HTTP_JWT']))
+
+class FSBidEntryLevelPositionsFiltersView(BaseView):
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+
+    def get(self, request):
+        """
+        Get Entry Level Positions Filters
+        """
+        return Response(services.get_el_positions_filters(request.query_params, request.META['HTTP_JWT']))
+
+class FSBidEntryLevelPositionsActionView(BaseView):
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+    '''
+    Edit and save an EL Position
+    '''
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.edit_el_position(jwt, request.data)
+        return Response(result)
