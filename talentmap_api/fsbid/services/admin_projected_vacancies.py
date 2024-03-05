@@ -216,6 +216,7 @@ def admin_projected_vacancy_res_mapping(response):
             "assignee_tour_end_date": x.get("ASSIGNEE_TED"),
             "assignee": x.get("ASSIGNEE"),
             "incumbent": x.get("INCUMBENT"),
+            "incumbent_tour_end_date": x.get("INCUMBENT_TED"),
             "cycle_date_type_code": x.get("CDT_CD"),
             "assignment_status_code": x.get("ASGS_CODE"),
             "bidding_tool_differential_rate_number": x.get("BT_DIFFERENTIAL_RATE_NUM"),
