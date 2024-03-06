@@ -207,6 +207,7 @@ def admin_projected_vacancy_res_mapping(response):
             "bidding_tool_danger_rate_number": x.get("BT_DANGER_PAY_NUM"),
             "bidding_tool_most_difficult_to_staff_flag": x.get("BT_MOST_DIFFICULT_TO_STAFF_FLG"),
             "bidding_tool_service_need_differential_flag": x.get("BT_SERVICE_NEEDS_DIFF_FLG"),
+            "obc_url": services.get_post_bidding_considerations_url(x.get("LOCATION_CODE")),
             "tour_of_duty_code": x.get("TOD_CODE"),
             "tour_of_duty_description": x.get("TOD_DESC_TEXT"),
             "unaccompanied_status_code": x.get("US_CODE"),
