@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^post/(?P<pk>[0-9]+)/$', views.FSBidAssignmentCyclesPostPosView.as_view(), name="FSBid-assignment-cycles-post-pos"),
     url(r'^delete/(?P<pk>[0-9]+)/$', views.FSBidAssignmentCyclesDeleteView.as_view(), name="FSBid-assignment-cycles-delete"),
     url(r'^(?P<pk>[0-9]+)/$', views.FSBidAssignmentCycleListView.as_view(), name="FSBid-assignment-cycle-list"),
+    url(r'^positions/filters/$', views.FSBidCyclePositionsFiltersView.as_view(), name="FSBid-cycle-positions-filters"),
+    url(r'^positions/$', views.FSBidCyclePositionsView.as_view(), name="FSBid-cycle-positions"),
 ]
 
 urlpatterns += router.urls
