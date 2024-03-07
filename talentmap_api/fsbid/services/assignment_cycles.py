@@ -5,6 +5,7 @@ from django.conf import settings
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
 from rest_framework import status
+from functools import partial
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ def format_date_string(input_date):
     return formatted_date
 
 
-def create_assignment_cycle_req_mapping(req):
+def create_assignment_cycle_req_mapping(req, is_update=False):
     data = req['data']
     name = data['assignmentCycle']
     cycle_category = data['cycleCategory']
@@ -142,13 +143,15 @@ def create_assignment_cycle_req_mapping(req):
     mapped_request['i_cd_bgn_dt'] = ','.join(cd_bgn)
     mapped_request['i_cd_end_dt'] = ','.join(cd_end)
 
-    # keep until tested in dev
-    logger.info('-------- assignment_cycles_req_mapping --------')
-    logger.info(mapped_request)
-    logger.info('-----------------------')
-    print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
-    print(mapped_request)
-    print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
+    if is_update:
+        mapped_request['I_CYCLE_ID'] = data['cycleId']
+        mapped_request['I_CYCLE_LAST_UPDT_TMSMP_DT'] = data['stampDate']
+        mapped_request['I_CYCLE_LAST_UPDT_USER_ID'] = data['stampId']
+        mapped_request['I_CD_LAST_UPDT_TMSMP_DT'] = data['stampStrings']
+        mapped_request['I_CD_LAST_UPDT_USER_ID'] = data['stampIdStrings']
+        mapped_request['O_RETURN_CODE'] = ''
+        mapped_request['QRY_ACTION_DATA'] = ''
+        mapped_request['QRY_ERROR_DATA'] = ''
 
     return mapped_request
 
@@ -190,6 +193,8 @@ def assignment_cycle_res_mapping(data):
             'begin_date': x.get('CD_BGN_DT') or None,
             'end_date': x.get('CD_END_DT') or None,
             'sort_order': x.get('CDT_SORT_ORDER_NUM') or None,
+            'last_update_stamp': x.get('CD_LAST_UPDT_TMSMP_DT') or None,
+            'last_update_id': x.get('CD_LAST_UPDT_USER_ID') or None,
         }
 
     def cycle_status_mapping(x):
@@ -211,23 +216,34 @@ def assignment_cycle_res_mapping(data):
 
     def success_mapping(x):
         dates_mapped = {}
+        update_timestamps = []
+        id_timestamps = []
+
         for item in x.get('QRY_LSTCYCLEDATE_REF'):
             name = item['CDT_CD']
             dates_mapped[name] = dates_mapping(item)
+            update_timestamps.append(str(item['CD_LAST_UPDT_TMSMP_DT']))
+            id_timestamps.append(str(item['CD_LAST_UPDT_USER_ID']))
 
         cycle_status_reference = list(map(cycle_status_mapping, x.get('QRY_LSTCYCLESTATUS_REF')))
         cycle_category_reference = list(map(cycle_category_mapping, x.get('QRY_LSTCYCLECATEGORY_REF')))
 
+        string_stamps = ",".join(update_timestamps)
+        string_ids = ",".join(id_timestamps)
+
         results = {
             'cycle_name': x.get('O_CYCLE_NM_TXT'),
-            'last_updated': x.get('O_CYCLE_LAST_UPDT_TMSMP_DT'),
             'exclusive_position': x.get('O_CYCLE_EXCLUSIVE_POS_FLG'),
             'post_viewable': x.get('O_CYCLE_POST_VIEWABLE_IND'),
             'cycle_category': get_value_from_ref(cycle_category_reference, x.get('O_CC_CD')),
             'cycle_status': get_value_from_ref(cycle_status_reference, x.get('O_CS_CD')),
+            'last_updated': x.get('O_CYCLE_LAST_UPDT_TMSMP_DT'),
+            'last_updated_id': x.get('O_CYCLE_LAST_UPDT_USER_ID'),
             'dates_mapping': dates_mapped,
             'cycle_status_reference': cycle_status_reference,
             'cycle_category_reference': cycle_category_reference,
+            'update_timestamps': string_stamps,
+            'id_timestamps': string_ids,
         }
         return results
 
@@ -263,7 +279,7 @@ def update_assignment_cycle(jwt_token, request):
         "proc_name": 'act_modAssignCycle',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
-        "request_mapping_function": create_assignment_cycle_req_mapping,  # MIGHT work
+        "request_mapping_function": partial(create_assignment_cycle_req_mapping, is_update=True),
         "response_mapping_function": update_assignment_cycles_res_mapping,
         "jwt_token": jwt_token,
     }
