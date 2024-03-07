@@ -53,7 +53,7 @@ def assignment_cycles_res_mapping(data):
     def success_mapping(x):
         return list(map(results_mapping, x.get('QRY_LSTASSIGNCYCLES_REF')))
 
-    return service_response(data, 'Assginment Cycles Get Cycles', success_mapping)
+    return service_response(data, 'Assignment Cycles Get Cycles', success_mapping)
 
 
 def create_assignment_cycle(jwt_token, request):
@@ -157,7 +157,7 @@ def create_assignment_cycle_req_mapping(req, is_update=False):
 
 
 def create_assignment_cycle_res_mapping(data):
-    return service_response(data, 'Assginment Cycles Create Cycle')
+    return service_response(data, 'Assignment Cycles Create Cycle')
 
 
 def get_assignment_cycle_data(jwt_token, pk):
@@ -242,7 +242,7 @@ def assignment_cycle_res_mapping(data):
         }
         return results
 
-    return service_response(data, 'Assginment Cycles Get Cycle', success_mapping)
+    return service_response(data, 'Assignment Cycles Get Cycle', success_mapping)
 
 
 def post_assignment_cycle_positions(jwt_token, pk):
@@ -263,7 +263,7 @@ def post_assignment_cycle_positions(jwt_token, pk):
 
 
 def post_positions_res_mapping(data):
-    return service_response(data, 'Assginment Cycles Post Open Positions')
+    return service_response(data, 'Assignment Cycles Post Open Positions')
 
 
 def update_assignment_cycle(jwt_token, request):
@@ -284,7 +284,7 @@ def update_assignment_cycle(jwt_token, request):
 
 
 def update_assignment_cycles_res_mapping(data):
-    return service_response(data, 'Assginment Cycles Update Cycle')
+    return service_response(data, 'Assignment Cycles Update Cycle')
 
 
 def delete_assignment_cycle(jwt_token, request):
