@@ -64,7 +64,7 @@ def create_assignment_cycle(jwt_token, request):
         "proc_name": 'act_addassigncycle',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
-        "request_mapping_function": create_assignment_cycle_req_mapping,
+        "request_mapping_function": save_assignment_cycle_req_mapping,
         "response_mapping_function": create_assignment_cycle_res_mapping,
         "jwt_token": jwt_token,
     }
@@ -84,7 +84,7 @@ def format_date_string(input_date):
     return formatted_date
 
 
-def create_assignment_cycle_req_mapping(req, is_update=False):
+def save_assignment_cycle_req_mapping(req, is_update=False):
     data = req['data']
     name = data['assignmentCycle']
     cycle_category = data['cycleCategory']
@@ -274,7 +274,7 @@ def update_assignment_cycle(jwt_token, request):
         "proc_name": 'act_modAssignCycle',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
-        "request_mapping_function": partial(create_assignment_cycle_req_mapping, is_update=True),
+        "request_mapping_function": partial(save_assignment_cycle_req_mapping, is_update=True),
         "response_mapping_function": update_assignment_cycles_res_mapping,
         "jwt_token": jwt_token,
     }
