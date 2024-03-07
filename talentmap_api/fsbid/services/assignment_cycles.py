@@ -53,7 +53,7 @@ def assignment_cycles_res_mapping(data):
     def success_mapping(x):
         return list(map(results_mapping, x.get('QRY_LSTASSIGNCYCLES_REF')))
 
-    return service_response(data, 'Assginment Cycles Data', success_mapping)
+    return service_response(data, 'Assginment Cycles Get Cycles', success_mapping)
 
 
 def create_assignment_cycle(jwt_token, request):
@@ -157,7 +157,7 @@ def create_assignment_cycle_req_mapping(req, is_update=False):
 
 
 def create_assignment_cycle_res_mapping(data):
-    return service_response(data, 'Assginment Cycles Data')
+    return service_response(data, 'Assginment Cycles Create Cycle')
 
 
 def get_assignment_cycle_data(jwt_token, pk):
@@ -209,11 +209,6 @@ def assignment_cycle_res_mapping(data):
             'value': x.get('CC_CD') or None,
         }
 
-    def get_value_from_ref(data_set, value):
-        for item in data_set:
-            if item['value'] == value:
-                return item
-
     def success_mapping(x):
         dates_mapped = {}
         update_timestamps = []
@@ -235,8 +230,8 @@ def assignment_cycle_res_mapping(data):
             'cycle_name': x.get('O_CYCLE_NM_TXT'),
             'exclusive_position': x.get('O_CYCLE_EXCLUSIVE_POS_FLG'),
             'post_viewable': x.get('O_CYCLE_POST_VIEWABLE_IND'),
-            'cycle_category': get_value_from_ref(cycle_category_reference, x.get('O_CC_CD')),
-            'cycle_status': get_value_from_ref(cycle_status_reference, x.get('O_CS_CD')),
+            'cycle_category': x.get('O_CC_CD'),
+            'cycle_status': x.get('O_CS_CD'),
             'last_updated': x.get('O_CYCLE_LAST_UPDT_TMSMP_DT'),
             'last_updated_id': x.get('O_CYCLE_LAST_UPDT_USER_ID'),
             'dates_mapping': dates_mapped,
@@ -247,7 +242,7 @@ def assignment_cycle_res_mapping(data):
         }
         return results
 
-    return service_response(data, 'Assginment Cycles Data', success_mapping)
+    return service_response(data, 'Assginment Cycles Get Cycle', success_mapping)
 
 
 def post_assignment_cycle_positions(jwt_token, pk):
@@ -258,7 +253,7 @@ def post_assignment_cycle_positions(jwt_token, pk):
         "proc_name": 'act_modpostassigncycle',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": pk,
-        "request_mapping_function": assignment_cycle_req_mapping,  # SHOULD work
+        "request_mapping_function": assignment_cycle_req_mapping,
         "response_mapping_function": post_positions_res_mapping,
         "jwt_token": jwt_token,
     }
@@ -268,7 +263,7 @@ def post_assignment_cycle_positions(jwt_token, pk):
 
 
 def post_positions_res_mapping(data):
-    return service_response(data, 'Assginment Cycles Data')
+    return service_response(data, 'Assginment Cycles Post Open Positions')
 
 
 def update_assignment_cycle(jwt_token, request):
@@ -289,7 +284,7 @@ def update_assignment_cycle(jwt_token, request):
 
 
 def update_assignment_cycles_res_mapping(data):
-    return service_response(data, 'Assginment Cycles Data')
+    return service_response(data, 'Assginment Cycles Update Cycle')
 
 
 def delete_assignment_cycle(jwt_token, request):
@@ -309,13 +304,16 @@ def delete_assignment_cycle(jwt_token, request):
     )
 
 
-def delete_assignment_cycle_req_mapping(pk):
-    # need to test in DEV - does it need an ID  Timestamp?
+def delete_assignment_cycle_req_mapping(request):
+    data = request['data']
+    cycleId = data['cycleId']
+    timestamp = data['stampDate']
+    timestamp_id = data['stampId']
     mapped_request = {
         "PV_API_VERSION_I": "",
         'PV_AD_ID_I': '',
-        "i_cycle_id": pk,
-        # "i_cycle_last_updt_tmsmp_dt": '',
-        # "i_cycle_last_updt_user_id": ''
+        "i_cycle_id": cycleId,
+        "i_cycle_last_updt_tmsmp_dt": timestamp,
+        "i_cycle_last_updt_user_id": timestamp_id
     }
     return mapped_request
