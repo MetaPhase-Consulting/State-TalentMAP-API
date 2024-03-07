@@ -231,6 +231,10 @@ def admin_projected_vacancy_res_mapping(response):
             "cycle_position_link": x.get("CP_LINK"),
             "bid_season_future_vacancy_indicator": x.get("BSN_FUTURE_VACANCY_IND"),
             "cycle_position_id": x.get("CP_ID"),
+            "creator_id": x.get("FV_CREATE_ID"),
+            "created_date": x.get("FV_CREATE_DATE"),
+            "updater_id": x.get("FV_UPDATE_ID"),
+            "updated_date": x.get("FV_UPDATE_DATE"),
         }
     def list_pv_mapping(x):
         return list(map(projected_vacancy_mapping, x.get("PQRY_FV_ADMIN_O")))
@@ -364,49 +368,6 @@ def edit_admin_projected_vacancy_capsule_desc_req_mapping(request):
 
 def edit_admin_projected_vacancy_capsule_desc_res_mapping(data):
     return service_response(data, 'Projected Vacancy Edit Capsule Description')
-
-# ======================== Get PV Metadata ========================
-
-def get_admin_projected_vacancy_metadata(data, jwt_token):
-    '''
-    Get Admin Projected Vacancy Metadata
-    '''
-    args = {
-        "proc_name": 'PRC_S_FUTURE_VACANCY',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": get_admin_projected_vacancy_metadata_req_mapping,
-        "response_mapping_function": get_admin_projected_vacancy_metadata_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def get_admin_projected_vacancy_metadata_req_mapping(request):
-    return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'PV_FV_SEQ_NUM_I': request.get('future_vacancy_seq_num'),
-        'PQRY_CUST_FV_TAB_O': '',
-        'PQRY_BSN_TAB_O': '',
-        'PQRY_FVS_TAB_O': '',
-        'PQRY_FVO_TAB_O': '',
-        'PQRY_FV_ADMIN_O': '',
-        'PV_RETURN_CODE_O': '',
-        'PQRY_ERROR_DATA_O': '',
-    }
-
-def get_admin_projected_vacancy_metadata_res_mapping(response):
-    def metadata_mapping(x):
-        admin_data = x.get('PQRY_FV_ADMIN_O')[0]
-        return {
-            'creator_id': admin_data.get('FV_CREATE_ID'),
-            'created_date': admin_data.get('FV_CREATE_DATE'),
-            'updater_id': admin_data.get('FV_UPDATE_ID'),
-            'updated_date': admin_data.get('FV_UPDATE_DATE'),
-        }
-    return service_response(response, 'Projected Vacancy Metadata', metadata_mapping)
 
 # ======================== Get PV Language Offsets ========================
 

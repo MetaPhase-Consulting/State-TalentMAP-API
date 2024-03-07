@@ -164,27 +164,6 @@ class FSBidAdminProjectedVacancyEditCapsuleDescView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FSBidAdminProjectedVacancyMetadataView(APIView):
-    
-    # ======================== Get PV Metadata ========================
-
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter("future_vacancy_seq_num", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num'),
-        ]
-    )
-
-    def get(self, request):
-        '''
-        Get Admin Projected Vacancy Metadata
-        '''
-        result = services.get_admin_projected_vacancy_metadata(request.query_params, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(result)
-
 class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
     
     # ======================== Get PV Language Offsets ========================
