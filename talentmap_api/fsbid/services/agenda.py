@@ -678,7 +678,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "custom_skills_description": skills_data.get("combined_skills_representation"),
         "combined_pp_grade": combined_pp_grade,
     }
-
+    
     # Remove fields not applicable for separation leg action types
     separation_types = ['H', 'M', 'N', 'O', 'P']
     if lat_code in separation_types:
