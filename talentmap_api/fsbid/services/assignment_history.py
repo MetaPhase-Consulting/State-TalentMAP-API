@@ -237,7 +237,7 @@ def alt_get_assignments(id, jwt_token):
     
 def alt_asg_req_mapping(request):
     return {
-        "i_pedet_seq_num": request.get("perdet_seq_num"),
+        "i_perdet_seq_num": request.get("perdet_seq_num"),
         "pv_api_version_i": "",
         "pv_ad_id_i": "",
     }
