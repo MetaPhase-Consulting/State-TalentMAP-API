@@ -599,6 +599,7 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token=None):
 
 def fsbid_legs_to_talentmap_legs(data):
     # Temporary mapping helper. FSBid will handle this
+    # 3.11 - in talks with WS to provide this instead
     tf_mapping = {
         "8150": "Post to Post without Home Leave (Direct Transfer)",
         "8151": "Post to Post with Home Leave",
@@ -664,8 +665,8 @@ def fsbid_legs_to_talentmap_legs(data):
         "languages": services.parseLanguagesToArr(pydash.get(data, "agendaLegPosition[0]", None)),
         "action": pydash.get(data, "latabbrdesctext", None),
         "action_code": lat_code,
-        "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
+        "travel_desc": map_tf(pydash.get(data, "ailtfcd", None)), # pending change when WS adds 3.11
         "is_separation": False,
         "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ETA, then by TED
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
@@ -747,7 +748,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "tod_long_desc": tod_other_text if is_other_tod else tod_long_desc,
         "grade": pydash.get(data, "position[0].posgradecode", None),
         "languages": services.parseLanguagesToArr(pydash.get(data, "position[0]", None)),
-        "travel": not_applicable,
+        "travel_desc": not_applicable,
         "action": not_applicable,
         "is_separation": False,
         "pay_plan": pydash.get(data, "position[0].pospayplancode", None),
