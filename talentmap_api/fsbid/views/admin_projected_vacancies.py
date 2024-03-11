@@ -172,9 +172,10 @@ class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter("position_seq_num", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Position Seq Num'),
+            openapi.Parameter("position_numbers", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Position Number Text Array'),
         ]
     )
+    # openapi.Parameter("position_numbers", openapi.IN_QUERY, type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING), description='Position Number Text Array'),
 
     def get(self, request):
         '''

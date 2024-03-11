@@ -388,6 +388,13 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
     )
 
 def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
+    search_list = ''
+    for number in request.get('position_numbers'):
+        search_list += f'''
+            <SearchList>
+                <Value>{number}</Value>
+            </SearchList>
+        '''
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -401,9 +408,7 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
         'PX_TOD_I': None,
         'PXML_POSITION_I': f'''
             <XMLSearchCriterias>
-                <SearchList>
-                    <Value>{request.get('position_seq_num')}</Value>
-                </SearchList>
+                {search_list}
             </XMLSearchCriterias>
         ''',
         'PX_OVERSEAS_I': None,
@@ -415,9 +420,10 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
 
 def get_admin_projected_vacancy_lang_offsets_res_mapping(response):
     def lang_offset_mapping(x):
-        admin_data = x.get('PQRY_FVPL_ADMIN_O')[0]
         return {
-            'language_offset_summer': admin_data.get('LANG_OFFSET_SUMMER'),
-            'language_offset_winter': admin_data.get('LANG_OFFSET_WINTER'),
+            'language_offset_summer': x.get('LANG_OFFSET_SUMMER'),
+            'language_offset_winter': x.get('LANG_OFFSET_WINTER'),
         }
-    return service_response(response, 'Projected Vacancy Language Offsets', lang_offset_mapping)
+    def list_lang_offset_mapping(x):
+        return list(map(lang_offset_mapping, x.get("PQRY_FVPL_ADMIN_O")))
+    return service_response(response, 'Projected Vacancy Language Offsets List', list_lang_offset_mapping)
