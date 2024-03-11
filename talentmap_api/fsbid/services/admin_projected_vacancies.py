@@ -421,6 +421,8 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
 def get_admin_projected_vacancy_lang_offsets_res_mapping(response):
     def lang_offset_mapping(x):
         return {
+            'position_seq_num': x.get('POS_SEQ_NUM'),
+            'position_number': x.get('POS_NUM_TEXT'),
             'language_offset_summer': x.get('LANG_OFFSET_SUMMER'),
             'language_offset_winter': x.get('LANG_OFFSET_WINTER'),
         }
