@@ -338,7 +338,7 @@ def el_postions_req_mapping(request):
         elif key == 'el-jobs':
             for jc in request[key].split(','):
                 values_formatted.append(f"{{\"JC_ID\": \"{jc}\"}}")
-            result['PTYP_JC_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+            result['PTYP_JC_DD_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-language':
             for lang in request[key].split(','):
                 values_formatted.append(f"{{\"LANG_CODE\": \"{lang}\"}}")
