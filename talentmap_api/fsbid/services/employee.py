@@ -314,6 +314,7 @@ def map_assignments_separations_bids(data):
             "languages": pydash.get(pos, 'languages'),
             "eta": data.get('start_date'),
             "ted": data.get('end_date'),
+            "tod_code": data.get("tod_code"),
             "tod_long_desc": tod_long_desc,
             "tod_short_desc": tod_short_desc,
             "separation_location": {},
