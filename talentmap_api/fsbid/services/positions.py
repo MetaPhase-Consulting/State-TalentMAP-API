@@ -314,40 +314,40 @@ def el_postions_req_mapping(request):
         'PV_AD_ID_I': '',
     }
     for key in request:
+        values_formatted = []
         if key == 'el-tps':
-            values_formatted = []
             for tp in request[key].split(','):
                 values_formatted.append(f"{{\"TP_CODE\": \"{tp}\"}}")
             result['PTYP_TP_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-bureaus':
-            values_formatted = []
+            # values_formatted = []
             for bur in request[key].split(','):
-                values_formatted.append(f"{{\"BUREAU_CODE\": \"{bur}\"}}")
+                values_formatted.append(f"{{\"BUREAU_ORG_CODE\": \"{bur}\"}}")
             result['PTYP_BUREAU_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-orgs':
-            values_formatted = []
+            # values_formatted = []
             for org in request[key].split(','):
-                values_formatted.append(f"{{\"ORG_CODE\": \"{org}\"}}")
+                values_formatted.append(f"{{\"ORG_SHORT_DESC\": \"{org}\"}}")
             result['PTYP_ORG_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-grades':
-            values_formatted = []
+            # values_formatted = []
             for grade in request[key].split(','):
-                values_formatted.append(f"{{\"GRADE_CODE\": \"{grade}\"}}")
+                values_formatted.append(f"{{\"GRD_GRADE_CODE\": \"{grade}\"}}")
             result['PTYP_GRADE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-skills':
-            values_formatted = []
+            # values_formatted = []
             for skl in request[key].split(','):
-                values_formatted.append(f"{{\"SKILL_CODE\": \"{skl}\"}}")
+                values_formatted.append(f"{{\"SKL_CODE\": \"{skl}\"}}")
             result['PTYP_SKILL_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-jobs':
-            values_formatted = []
+            # values_formatted = []
             for jc in request[key].split(','):
-                values_formatted.append(f"{{\"JC_CODE\": \"{jc}\"}}")
+                values_formatted.append(f"{{\"JC_ID\": \"{jc}\"}}")
             result['PTYP_JC_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         elif key == 'el-language':
-            values_formatted = []
+            # values_formatted = []
             for lang in request[key].split(','):
-                values_formatted.append(f"{{\"LANGUAGE_CODE\": \"{lang}\"}}")
+                values_formatted.append(f"{{\"LANG_CODE\": \"{lang}\"}}")
             result['PTYP_LANGUAGE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
         
     return result
