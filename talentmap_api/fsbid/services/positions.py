@@ -290,3 +290,147 @@ def fsbid_to_talentmap_frequent_positions(data):
     add_these.extend(hard_coded)
 
     return services.map_return_template_cols(add_these, cols_mapping, position)
+
+
+def get_el_positions(request, jwt_token):
+    '''
+    Gets Entry Level Positions
+    '''
+    args = {
+        "proc_name": "prc_lst_tracking_details_grid",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "request_body": {},
+        "request_mapping_function": el_postions_req_mapping,
+        "response_mapping_function": el_postions_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def el_postions_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+def el_postions_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call for Entry Level filters failed.")
+        return None
+
+    def el_pos_map(x):
+        return {
+            'positionNumber': x.get('POS_SEQ_NUM'),
+            'skill': x.get('POS_SKILL_CODE'),
+            'positionTitle': x.get('POS_TITLE_DESC'),
+            'bureau': x.get('BUREAU_SHORT_DESC'),
+            'org': x.get('ORG_SHORT_DESC'),
+            'grade': x.get('POS_GRADE_CODE'),
+            'jobCategory': x.get('POS_JOB_CATEGORY'),
+            'languages': x.get('POS_POSITION_LANG_PROF_CODE'),
+            'OD': x.get('POS_OVERSEAS_DESC'),
+            'incumbent': x.get('INCUMBENT'),
+            'incumbentTED': x.get('INCUMBENT_TED'),
+            'assignee': x.get('ASSIGNEE'),
+            'assigneeTED': x.get('ASSIGNEE_TED'),
+            'EL': x.get('EL'),
+            'MC': x.get('MC'),
+            'LNA': x.get('LNA'),
+            'FICA': x.get('FICA'),
+            'mcEndDate': x.get('MC_END_DATE'),
+        }
+
+    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:200]))
+
+def get_el_positions_filters(request, jwt_token):
+    '''
+    Gets Filters for Publishable Positions Page
+    '''
+    args = {
+        'proc_name': 'prc_tracking_detail_pos_search',
+        'package_name': 'PKG_WEBAPI_WRAP_SPRINT101',
+        'request_body': {},
+        'request_mapping_function': el_positions_filter_req_mapping,
+        'response_mapping_function': el_positions_filter_res_mapping,
+        'jwt_token': jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def el_positions_filter_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+def el_positions_filter_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call for Entry Level filters failed.")
+        return None
+
+    def TP_map(x):
+        return {
+            'code': x.get('TP_CODE'),
+            'description': x.get('TP_DESCR_TXT'),
+        }
+    def bureau_map(x):
+        return {
+            'code': x.get('BUREAU_ORG_CODE'),
+            'description': x.get('BUREAU_SHORT_DESC'),
+        }
+    def org_map(x):
+        # WS payload does not include ORG_CODE, only ORG_SHORT_DESC
+        return {
+            'code': x.get('ORG_SHORT_DESC'),
+            'description': x.get('ORG_SHORT_DESC'),
+        }
+    def grade_map(x):
+        return {
+            'code': x.get('GRD_GRADE_CODE'),
+            'description': x.get('GRD_GRADE_CODE'),
+        }
+    def skills_map(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
+            'custom_description': f"{x.get('SKL_CODE')} {x.get('SKL_DESC')}",
+        }
+    def jc_map(x):
+        return {
+            'code': x.get('JC_ID'),
+            'description': x.get('JC_NM_TXT'),
+        }
+    def languages_map(x):
+        return {
+            'code': x.get('LANG_CODE'),
+            'description': x.get('LANG_LONG_DESC'),
+        }
+
+
+    return {
+        'tpFilters': list(map(TP_map, data.get('PTYP_TP_TAB_O'))),
+        'bureauFilters': list(map(bureau_map, data.get('PTYP_BUREAU_TAB_O'))),
+        'orgFilters': list(map(org_map, data.get('PTYP_ORG_TAB_O'))),
+        'gradeFilters': list(map(grade_map, data.get('PTYP_GRADE_TAB_O'))),
+        'skillsFilters': list(map(skills_map, data.get('PTYP_SKILL_TAB_O'))),
+        'jcFilters': list(map(jc_map, data.get('PTYP_JC_TAB_O'))),
+        'languageFilters': list(map(languages_map, data.get('PTYP_LANGUAGE_TAB_O'))),
+    }
+
+def edit_el_positions(request, jwt_token):
+    '''
+    Edit and save an Entry Level Position
+    '''
+    args = {
+        "proc_name": "prc_iud_tracking_details_grid",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "request_body": {},
+        # "request_mapping_function": edit_el_positions_req_mapping,
+        # "response_mapping_function": edit_el_positions_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
