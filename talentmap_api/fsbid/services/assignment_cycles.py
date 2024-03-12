@@ -89,8 +89,8 @@ def save_assignment_cycle_req_mapping(req, is_update=False):
     name = data['assignmentCycle']
     cycle_category = data['cycleCategory']
     cycle_status = data['cycleStatus']
-    exclusive_position = 'Y' if data['exclusivePosition'] else 'N'
-    post_viewable = 'Y' if data['postViewable'] else 'N'
+    exclusive_position = data['exclusivePosition']
+    post_viewable = data['postViewable']
 
 
     mapped_request = {
