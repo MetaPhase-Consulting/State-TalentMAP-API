@@ -128,11 +128,10 @@ def validate_individual_leg(leg):
 
     # Leg - must have Action
     # NOTE: New legs now default to 'Reassign' as default, not 'Keep Unselected' - 
-    # can we remove validation for action now since there's no 'empty' value anymore?
-    # if not leg.get('action_code'):
-    #     individual_leg_validation['action_code']['valid'] = False
-    #     individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
-    #     whole_leg_valid = False
+    if not leg.get('action_code'):
+        individual_leg_validation['action_code']['valid'] = False
+        individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
+        whole_leg_valid = False
 
     # Leg - Travel is nullable according to DB, so validation removed.
 
