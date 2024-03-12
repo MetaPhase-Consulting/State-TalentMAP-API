@@ -127,7 +127,6 @@ def validate_individual_leg(leg):
         whole_leg_valid = False
 
     # Leg - must have Action
-    # NOTE: New legs now default to 'Reassign' as default, not 'Keep Unselected' - 
     if not leg.get('action_code'):
         individual_leg_validation['action_code']['valid'] = False
         individual_leg_validation['action_code']['errorMessage'] = 'Missing Action'
