@@ -292,14 +292,14 @@ def fsbid_to_talentmap_frequent_positions(data):
     return services.map_return_template_cols(add_these, cols_mapping, position)
 
 
-def get_el_positions(request, jwt_token):
+def get_el_positions(query, jwt_token):
     '''
     Gets Entry Level Positions
     '''
     args = {
         "proc_name": "prc_lst_tracking_details_grid",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
-        "request_body": {},
+        "request_body": query,
         "request_mapping_function": el_postions_req_mapping,
         "response_mapping_function": el_postions_res_mapping,
         "jwt_token": jwt_token,
@@ -309,10 +309,48 @@ def get_el_positions(request, jwt_token):
     )
 
 def el_postions_req_mapping(request):
-    return {
+    result = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
     }
+    for key in request:
+        if key == 'el-tps':
+            values_formatted = []
+            for tp in request[key].split(','):
+                values_formatted.append(f"{{\"TP_CODE\": \"{tp}\"}}")
+            result['PTYP_TP_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-bureaus':
+            values_formatted = []
+            for bur in request[key].split(','):
+                values_formatted.append(f"{{\"BUREAU_CODE\": \"{bur}\"}}")
+            result['PTYP_BUREAU_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-orgs':
+            values_formatted = []
+            for org in request[key].split(','):
+                values_formatted.append(f"{{\"ORG_CODE\": \"{org}\"}}")
+            result['PTYP_ORG_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-grades':
+            values_formatted = []
+            for grade in request[key].split(','):
+                values_formatted.append(f"{{\"GRADE_CODE\": \"{grade}\"}}")
+            result['PTYP_GRADE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-skills':
+            values_formatted = []
+            for skl in request[key].split(','):
+                values_formatted.append(f"{{\"SKILL_CODE\": \"{skl}\"}}")
+            result['PTYP_SKILL_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-jobs':
+            values_formatted = []
+            for jc in request[key].split(','):
+                values_formatted.append(f"{{\"JC_CODE\": \"{jc}\"}}")
+            result['PTYP_JC_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-language':
+            values_formatted = []
+            for lang in request[key].split(','):
+                values_formatted.append(f"{{\"LANGUAGE_CODE\": \"{lang}\"}}")
+            result['PTYP_LANGUAGE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        
+    return result
 
 def el_postions_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
