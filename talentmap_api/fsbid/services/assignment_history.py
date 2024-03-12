@@ -188,6 +188,7 @@ def fsbid_assignments_to_talentmap_assignments(data):
 
     return services.map_return_template_cols(add_these, cols_mapping, data)
 
+
 def get_assignment_ref_data(data, jwt_token):
     '''
     Get maintain assignment reference data
@@ -204,6 +205,7 @@ def get_assignment_ref_data(data, jwt_token):
         **args
     )
 
+
 def asg_ref_data_req_mapping(request):
     return {
         "i_asg_seq_num": request.get("asg_id"),
@@ -211,6 +213,7 @@ def asg_ref_data_req_mapping(request):
         "pv_api_version_i": "",
         "pv_ad_id_i": "",
     }
+
 
 def asg_ref_data_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -235,12 +238,14 @@ def alt_get_assignments(id, jwt_token):
         **args
     )
     
+
 def alt_asg_req_mapping(request):
     return {
         "i_perdet_seq_num": request.get("perdet_seq_num"),
         "pv_api_version_i": "",
         "pv_ad_id_i": "",
     }
+
 
 def alt_asg_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
@@ -266,6 +271,7 @@ def alt_update_assignment(query, jwt_token):
         **args
     )
     
+
 def alt_update_asg_req_mapping(request, hru_id):
     return {
         "PV_API_VERSION_I": "",
@@ -275,8 +281,8 @@ def alt_update_asg_req_mapping(request, hru_id):
         "I_ASGD_ETA_DATE": request.get("eta"),
         "I_ASGD_ETD_TED_DATE": request.get("etd"),
         "I_ASGD_TOD_CODE": request.get("tod"),
-        "I_ASGD_TOD_MONTHS_NUM": None,
-        "I_ASGD_TOD_OTHER_TEXT": "",
+        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"),
+        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"),
         "I_ASGD_ADJUST_MONTHS_NUM": None,
         "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
         "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
@@ -287,57 +293,99 @@ def alt_update_asg_req_mapping(request, hru_id):
         "I_ASGD_LAT_CODE": request.get("lat_code"),
         "I_ASGD_TF_CD": request.get("travel_code"),
         "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
-        "I_ASGD_NOTE_COMMENT_TEXT": "",
+        "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
         "I_ASGD_UPDATE_ID": hru_id,
         "I_ASGD_UPDATE_DATE": request.get("update_date")
     }
 
+
 def alt_update_asg_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for fetching assignments/separations failed.')
+        logger.error('FSBid call for updating assignment failed.')
         return None
     return data
 
 
 def alt_create_assignment(query, jwt_token):
     '''
-    Create assignments and separations via fsbid 
+    Create assignments separations via fsbid 
     '''
-    # TO DO: This does not work until there is more documentation 
-    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
-    args = {
-        "proc_name": 'qry_addasg',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_mapping_function": partial(alt_update_asg_req_mapping, hru_id=hru_id),
-        "response_mapping_function": alt_update_asg_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": query,
-    }
+    if query.get("is_separation"):
+        args = {
+            "proc_name": 'act_addsep',
+            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+            "request_mapping_function": alt_create_sep_req_mapping,
+            "response_mapping_function": alt_create_sep_res_mapping,
+            "jwt_token": jwt_token,
+            "request_body": query,
+        }
+    else:
+        args = {
+            "proc_name": 'qry_addasg',
+            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+            "request_mapping_function": alt_create_asg_req_mapping,
+            "response_mapping_function": alt_create_asg_res_mapping,
+            "jwt_token": jwt_token,
+            "request_body": query,
+        }
+
     return services.send_post_back_office(
         **args
     )
-    
-def alt_create_asg_req_mapping(request, hru_id):
+
+
+def alt_create_sep_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_EMP_SEQ_NBR": "",
-        "O_SECREF_ROLE_IND": "",
-        "QRY_LSTASGS_REF": "",
-        "QRY_LSTLAT_REF": "",
-        "QRY_LSTTF_REF": "",
-        "QRY_LSTTOD_REF": "",
-        "QRY_LSTWRT_REF": "",
-        "QRY_LSTBUREAUS_REF": "",
-        "QRY_ADDASG_REF": "",
-        "O_RETURN_CODE": "",
-        "QRY_ACTION_DATA": "",
-        "QRY_ERROR_DATA": ""
+        "I_EMP_SEQ_NBR": request.get("employee"),
+        "I_DSC_CD": request.get("location_code"),
+        "I_SEPD_SEPARATION_DATE": request.get("etd"), 
+        "I_SEPD_CITY_TEXT": request.get("city"),
+        "I_SEPD_COUNTRY_STATE_TEXT": request.get("country"),
+        "I_SEPD_US_IND": "Y" if request.get("separation_ind") else "N",
+        "I_ASGS_CODE": request.get("status_code"),
+        "I_LAT_CODE": "M", # Should always be separtion LAT?
+        "I_TF_CD": request.get("travel_code"),
+        "I_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
+        "I_SEPD_NOTE_COMMMENT_TEXT": "", # No comment feature
+    }
+
+
+def alt_create_sep_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for creating separation failed.')
+        return None
+    return data
+
+   
+def alt_create_asg_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_EMP_SEQ_NBR": request.get("employee"),
+        "I_POS_SEQ_NUM": request.get("position"),
+        "I_ASGD_ETA_DATE": request.get("eta"),
+        "I_ASGD_ETD_TED_DATE": request.get("etd"),
+        "I_ASGD_TOD_CODE": request.get("tod"),
+        # TO DO: Clarify custom tod feature
+        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"), 
+        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"), 
+        "I_ASGD_ADJUST_MONTHS_NUM": request.get("tod_adjust_months_num"), 
+        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
+        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
+        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
+        "I_ASGD_ORG_CODE": request.get("org_code"),
+        "I_ASGD_ASGS_CODE": request.get("status_code"),
+        "I_ASGD_LAT_CODE": request.get("lat_code"),
+        "I_ASGD_TF_CD": request.get("travel_code"),
+        "I_ASGD_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
+        "I_ASGD_NOTE_COMMMENT_TEXT": "", # No comment feature
     }
 
 def alt_create_asg_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for fetching assignments/separations failed.')
+        logger.error('FSBid call for creating assignment failed.')
         return None
     return data
 
