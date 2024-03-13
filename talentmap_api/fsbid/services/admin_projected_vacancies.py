@@ -133,7 +133,7 @@ def get_admin_projected_vacancies(query, jwt_token):
     return services.send_post_back_office(
         **args
     )
-
+eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjpbIkFPIiwiQnVyZWF1IiwiQ0RPIiwiRlNCSURfQUEiLCJGU0JJRF9TQSIsImZzb2ZmaWNlciIsImRldmVsb3BlciIsInNlY3JlZl9hZG1pbiJdLCJ1bmlxdWVfbmFtZSI6IkRPU0RFVlxcbGFtamUiLCJkaXNwbGF5X25hbWUiOiJMQU0sIEpFQU5JRSAiLCJlbWFpbCI6ImxhbWplQHN0YXRlLmdvdiIsInN1YiI6IjkyMDMzIiwianRpIjoiMmE4Y2JhNWMtMzNjMy00MGU2LThlMTItNGUxOGYyZWJhOTg5Iiwic3lzdGVtIjoiMzIiLCJuYmYiOjE3MTAzNjYwNjIsImV4cCI6MTcxMDQ1MjQ2MiwiaXNzIjoiSFIvRVgvU0REIiwiYXVkIjoiaHR0cHM6Ly9ndG1kZXYxaHJvbmxpbmUuaHIuZG9zZGV2LnVzL2RldjEvSFJEYXRhIn0.BB5nSrfJwFPZB26fyPkDqZih0ipIukVt-XClUdbrRs4
 def admin_projected_vacancy_req_mapping(request):
     mapped_request = {
         'PV_API_VERSION_I': '',
@@ -141,9 +141,9 @@ def admin_projected_vacancy_req_mapping(request):
         'PV_SUBTRAN_I': '',
         'PJSON_FVS_TAB_I': { 'Data': [] },
         'PJSON_CUST_TP_TAB_I': { 'Data': [] },
-        'PXML_POSITION_I': '<XMLSearchCriterias></XMLSearchCriterias>',
+        'PXML_POSITION_I': '<XMLSearchCriterias><SearchList><Value>30008009</Value><Value>30008008</Value></SearchList></XMLSearchCriterias>',
         'PJSON_JC_DD_TAB_I': { 'Data': [] },
-        'PXML_OVERSEAS_I': '<XMLSearchCriterias></XMLSearchCriterias>',
+        'PXML_OVERSEAS_I': '<XMLSearchCriterias><SearchList><Value>O</Value><Value>D</Value></SearchList></XMLSearchCriterias>',
         'PQRY_FV_ADMIN_O': '',
         'PV_RETURN_CODE_O': '',
         'PQRY_ERROR_DATA_O': '',
