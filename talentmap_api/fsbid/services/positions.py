@@ -305,10 +305,7 @@ def fsbid_to_talentmap_frequent_positions(data):
         'pos_grade_code': position.get('posgradecode'),
         'pos_title_desc': position.get('postitledesc'),
         'pay_plan': position.get('pospayplancode'),
-        
-
-
-            }
+    }
 
 
 def get_el_positions(request, jwt_token):
