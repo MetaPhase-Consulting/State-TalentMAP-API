@@ -225,28 +225,53 @@ def convert_position_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 def fsbid_to_talentmap_pos(data):
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-
     data['languages'] = services.parseLanguagesToArr(data)
 
-    hard_coded = ['pos_seq_num', 'organization', 'position_number', 'grade', 'title', 'languages', 'pay_plan']
-
-    add_these = []
-
-    cols_mapping = {
-        'pos_seq_num': 'posseqnum',
-        'organization': 'posorgshortdesc',
-        'position_number': 'posnumtext',
-        'grade': 'posgradecode',
-        'title': 'postitledesc',
-        'languages': 'languages',
-        'pay_plan' : 'pospayplancode',
+    return {
+        'pos_seq_num': data.get('posseqnum'),
+        'organization': data.get('posorgshortdesc'),
+        'pos_org_code': data.get('posorgcode'),
+        'pos_org_long_desc': data.get('posorglongdesc'),
+        'position_number': data.get('posnumtext'),
+        'grade': data.get('posgradecode'),
+        'pos_grade_desc': data.get('posgradedesc'),
+        'title': data.get('postitledesc'),
+        'pos_title_code': data.get('postitlecode'),
+        'languages': data.get('languages'),
+        'pay_plan': data.get('pospayplancode'),
+        'pos_update_id': data.get('posupdateid'),
+        'pos_update_date': data.get('posupdatedate'),
+        'pos_create_id': data.get('poscreateid'),
+        'pos_create_date': data.get('poscreatedate'),
+        'pos_effective_date': data.get('poseffectivedate'),
+        'pos_job_code': data.get('posjobcodecode'),
+        'pos_job_category_desc': data.get('posjobcategorydesc'),
+        'pos_bureau_code': data.get('posbureaucode'),
+        'pos_bureau_short_desc': data.get('posbureaushortdesc'),
+        'pos_bureau_long_desc': data.get('posbureaulongdesc'),
+        'pos_skill_code': data.get('posskillcode'),
+        'pos_skill_desc': data.get('posskilldesc'),
+        'pos_staff_pattern_skill_code': data.get('posstaffptrnskillcode'),
+        'pos_staff_pattern_skill_desc': data.get('posstaffptrnskilldesc'),
+        'pos_overseas_ind': data.get('posoverseasind'),
+        'pos_pay_plan_code': data.get('pospayplancode'),
+        'pos_pay_plan_desc': data.get('pospayplandesc'),
+        'pos_status_code': data.get('posstatuscode'),
+        'pos_status_desc': data.get('posstatusdesc'),
+        'pos_post_code': data.get('pospostcode'),
+        'pos_location_code': data.get('poslocationcode'),
+        'bt_dsc_cd': data.get('btdsccd'),
+        'bt_us_code': data.get('btuscode'),
+        'bt_bts_code': data.get('btbtscode'),
+        'bt_sp_code': data.get('btspcode'),
+        'bt_qt_code': data.get('btqtcode'),
+        'bt_ht_code': data.get('bthtcode'),
+        'bt_tod_code': data.get('bttodcode'),
+        'bt_ehcp_code': data.get('btehcpcode'),
+        'todo_pos_seq_num': data.get('todoposseqnum'),
+        'todo_tod_code': data.get('todo_tod_code'),
     }
 
-    add_these.extend(hard_coded)
-
-    return services.map_return_template_cols(add_these, cols_mapping, data)
 
 def get_frequent_positions(query, jwt_token):
     '''
@@ -273,23 +298,17 @@ def fsbid_to_talentmap_frequent_positions(data):
     data = pydash.get(data, 'position') or []
     position = data[0] if data else {}
 
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-    hard_coded = ['pos_seq_num', 'pos_org_short_desc', 'pos_num_text', 'pos_grade_code', 'pos_title_desc', 'pay_plan']
-    add_these = []
+    return {
+        'pos_seq_num': position.get('posseqnum'),
+        'pos_org_short_desc': position.get('posorgshortdesc'),
+        'pos_num_text': position.get('posnumtext'),
+        'pos_grade_code': position.get('posgradecode'),
+        'pos_title_desc': position.get('postitledesc'),
+        'pay_plan': position.get('pospayplancode'),
+        
 
-    cols_mapping = {
-        'pos_seq_num': 'posseqnum',
-        'pos_org_short_desc': 'posorgshortdesc',
-        'pos_num_text': 'posnumtext',
-        'pos_grade_code': 'posgradecode',
-        'pos_title_desc': 'postitledesc',
-        'pay_plan': 'pospayplancode'
-    }
 
-    add_these.extend(hard_coded)
-
-    return services.map_return_template_cols(add_these, cols_mapping, position)
+            }
 
 
 def get_el_positions(request, jwt_token):
