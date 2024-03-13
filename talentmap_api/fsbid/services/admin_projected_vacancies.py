@@ -392,11 +392,7 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
 def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
     search_list = ''
     for number in request.get('position_numbers'):
-        search_list += f'''
-            <SearchList>
-                <Value>{number}</Value>
-            </SearchList>
-        '''
+        search_list += f'<Value>{number}</Value>'
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -410,7 +406,9 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
         'PX_TOD_I': None,
         'PXML_POSITION_I': f'''
             <XMLSearchCriterias>
-                {search_list}
+                <SearchList>
+                    {search_list}
+                </SearchList>
             </XMLSearchCriterias>
         ''',
         'PX_OVERSEAS_I': None,
