@@ -1,11 +1,11 @@
-import logging
-import pydash
 from datetime import datetime as dt
-from django.conf import settings
+from functools import partial
+import logging
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
+import pydash
+from django.conf import settings
 from rest_framework import status
-from functools import partial
 
 logger = logging.getLogger(__name__)
 
@@ -74,14 +74,21 @@ def create_assignment_cycle(jwt_token, request):
 
 
 def format_date_string(input_date):
-    if input_date == '':
+    try:
+        if input_date == '':
+            return input_date
+        if len(input_date) == 10:
+            return input_date
+        if len(input_date) == 14:
+            long_date_object = dt.strptime(input_date, "%Y%m%d%H%M%S")
+            long_formatted_date = long_date_object.strftime("%m/%d/%Y")
+            return long_formatted_date
+        date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+        # Format the date as MM/dd/yyyy (unless it already is)
+        formatted_date = date_object.strftime("%m/%d/%Y")
+        return formatted_date
+    except:
         return input_date
-    if len(input_date) == 10:
-        return input_date
-    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
-    # Format the date as MM/dd/yyyy (unless it already is)
-    formatted_date = date_object.strftime("%m/%d/%Y")
-    return formatted_date
 
 
 def save_assignment_cycle_req_mapping(req, is_update=False):
@@ -433,6 +440,7 @@ def cycle_positions_res_mapping(data):
             'bid_cycle': x.get('CYCLE_NM_TXT') or None,
             'ted': x.get('TED') or None,
             'pay_plan': x.get('PPL_CODE') or None,
+            'formatted_last_updated': format_date_string(x.get('CP_LAST_UPDT_TMSMP_DT')) if x.get('CP_LAST_UPDT_TMSMP_DT') else None,
             'last_updated': x.get('CP_LAST_UPDT_TMSMP_DT') or None,
             'last_editing_user': x.get('CP_LAST_UPDT_USER_ID') or None,
             'posted_date': x.get('CP_POST_DT') or None,
