@@ -141,23 +141,7 @@ def admin_projected_vacancy_req_mapping(request):
         'PV_SUBTRAN_I': '',
         'PJSON_FVS_TAB_I': { 'Data': [] },
         'PJSON_CUST_TP_TAB_I': { 'Data': [] },
-        'PXML_POSITION_I': '''
-            <XMLSearchCriterias>
-                <SearchList>
-                    <Value>30008009</Value>
-                    <Value>30008008</Value>
-                </SearchList>
-            </XMLSearchCriterias>
-        ''',
         'PJSON_JC_DD_TAB_I': { 'Data': [] },
-        'PXML_OVERSEAS_I': '''
-            <XMLSearchCriterias>
-                <SearchList>
-                    <Value>O</Value>
-                    <Value>D</Value>
-                </SearchList>
-            </XMLSearchCriterias>
-        ''',
         'PQRY_FV_ADMIN_O': '',
         'PV_RETURN_CODE_O': '',
         'PQRY_ERROR_DATA_O': '',
@@ -196,10 +180,10 @@ def admin_projected_vacancy_res_mapping(response):
             "position_skill_description": x.get("POS_SKILL_DESC"),
             "position_job_category_code": x.get("POS_JOBCAT_CODE"),
             "position_job_category_description": x.get("POS_JOBCAT_DESC"),
-            "positon_language1_code": x.get("POS_LANGUAGE_1_CODE"),
-            "positon_language2_code": x.get("POS_LANGUAGE_2_CODE"),
-            "position_language_profficiency_code": x.get("POS_POSITION_LANG_PROF_CODE"),
-            "position_language_profficiency_description": x.get("POS_POSITION_LANG_PROF_DESC"),
+            "position_language_1_code": x.get("POS_LANGUAGE_1_CODE"),
+            "position_language_2_code": x.get("POS_LANGUAGE_2_CODE"),
+            "position_language_proficiency_code": x.get("POS_POSITION_LANG_PROF_CODE"),
+            "position_language_proficiency_description": x.get("POS_POSITION_LANG_PROF_DESC"),
             "future_vacancy_seq_num": x.get("FV_SEQ_NUM"),
             "future_vacancy_seq_num_ref": x.get("FV_SEQ_NUM_REF"),
             "future_vacancy_override_code": x.get("FVO_CODE"),
@@ -216,12 +200,14 @@ def admin_projected_vacancy_res_mapping(response):
             "assignee_tour_end_date": x.get("ASSIGNEE_TED"),
             "assignee": x.get("ASSIGNEE"),
             "incumbent": x.get("INCUMBENT"),
+            "incumbent_tour_end_date": x.get("INCUMBENT_TED"),
             "cycle_date_type_code": x.get("CDT_CD"),
             "assignment_status_code": x.get("ASGS_CODE"),
             "bidding_tool_differential_rate_number": x.get("BT_DIFFERENTIAL_RATE_NUM"),
             "bidding_tool_danger_rate_number": x.get("BT_DANGER_PAY_NUM"),
             "bidding_tool_most_difficult_to_staff_flag": x.get("BT_MOST_DIFFICULT_TO_STAFF_FLG"),
             "bidding_tool_service_need_differential_flag": x.get("BT_SERVICE_NEEDS_DIFF_FLG"),
+            "obc_url": services.get_post_bidding_considerations_url(x.get("LOCATION_CODE")),
             "tour_of_duty_code": x.get("TOD_CODE"),
             "tour_of_duty_description": x.get("TOD_DESC_TEXT"),
             "unaccompanied_status_code": x.get("US_CODE"),
@@ -245,6 +231,10 @@ def admin_projected_vacancy_res_mapping(response):
             "cycle_position_link": x.get("CP_LINK"),
             "bid_season_future_vacancy_indicator": x.get("BSN_FUTURE_VACANCY_IND"),
             "cycle_position_id": x.get("CP_ID"),
+            "creator_id": x.get("FV_CREATE_ID"),
+            "created_date": x.get("FV_CREATE_DATE"),
+            "updater_id": x.get("FV_UPDATE_ID"),
+            "updated_date": x.get("FV_UPDATE_DATE"),
         }
     def list_pv_mapping(x):
         return list(map(projected_vacancy_mapping, x.get("PQRY_FV_ADMIN_O")))
@@ -379,49 +369,6 @@ def edit_admin_projected_vacancy_capsule_desc_req_mapping(request):
 def edit_admin_projected_vacancy_capsule_desc_res_mapping(data):
     return service_response(data, 'Projected Vacancy Edit Capsule Description')
 
-# ======================== Get PV Metadata ========================
-
-def get_admin_projected_vacancy_metadata(data, jwt_token):
-    '''
-    Get Admin Projected Vacancy Metadata
-    '''
-    args = {
-        "proc_name": 'PRC_S_FUTURE_VACANCY',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": get_admin_projected_vacancy_metadata_req_mapping,
-        "response_mapping_function": get_admin_projected_vacancy_metadata_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def get_admin_projected_vacancy_metadata_req_mapping(request):
-    return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'PV_FV_SEQ_NUM_I': request.get('future_vacancy_seq_num'),
-        'PQRY_CUST_FV_TAB_O': '',
-        'PQRY_BSN_TAB_O': '',
-        'PQRY_FVS_TAB_O': '',
-        'PQRY_FVO_TAB_O': '',
-        'PQRY_FV_ADMIN_O': '',
-        'PV_RETURN_CODE_O': '',
-        'PQRY_ERROR_DATA_O': '',
-    }
-
-def get_admin_projected_vacancy_metadata_res_mapping(response):
-    def metadata_mapping(x):
-        admin_data = x.get('PQRY_FV_ADMIN_O')[0]
-        return {
-            'creator_id': admin_data.get('FV_CREATE_ID'),
-            'created_date': admin_data.get('FV_CREATE_DATE'),
-            'updater_id': admin_data.get('FV_UPDATE_ID'),
-            'updated_date': admin_data.get('FV_UPDATE_DATE'),
-        }
-    return service_response(response, 'Projected Vacancy Metadata', metadata_mapping)
-
 # ======================== Get PV Language Offsets ========================
 
 def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
@@ -441,6 +388,13 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
     )
 
 def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
+    search_list = ''
+    for number in request.get('position_numbers'):
+        search_list += f'''
+            <SearchList>
+                <Value>{number}</Value>
+            </SearchList>
+        '''
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -454,9 +408,7 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
         'PX_TOD_I': None,
         'PXML_POSITION_I': f'''
             <XMLSearchCriterias>
-                <SearchList>
-                    <Value>{request.get('position_seq_num')}</Value>
-                </SearchList>
+                {search_list}
             </XMLSearchCriterias>
         ''',
         'PX_OVERSEAS_I': None,
@@ -468,9 +420,12 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
 
 def get_admin_projected_vacancy_lang_offsets_res_mapping(response):
     def lang_offset_mapping(x):
-        admin_data = x.get('PQRY_FVPL_ADMIN_O')[0]
         return {
-            'language_offset_summer': admin_data.get('LANG_OFFSET_SUMMER'),
-            'language_offset_winter': admin_data.get('LANG_OFFSET_WINTER'),
+            'position_seq_num': x.get('POS_SEQ_NUM'),
+            'position_number': x.get('POS_NUM_TEXT'),
+            'language_offset_summer': x.get('LANG_OFFSET_SUMMER'),
+            'language_offset_winter': x.get('LANG_OFFSET_WINTER'),
         }
-    return service_response(response, 'Projected Vacancy Language Offsets', lang_offset_mapping)
+    def list_lang_offset_mapping(x):
+        return list(map(lang_offset_mapping, x.get("PQRY_FVPL_ADMIN_O")))
+    return service_response(response, 'Projected Vacancy Language Offsets List', list_lang_offset_mapping)
