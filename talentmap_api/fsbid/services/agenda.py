@@ -598,28 +598,6 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token=None):
 
 
 def fsbid_legs_to_talentmap_legs(data):
-    # Temporary mapping helper. FSBid will handle this
-    # 3.11 - in talks with WS to provide this instead
-    tf_mapping = {
-        "8150": "Post to Post without Home Leave (Direct Transfer)",
-        "8151": "Post to Post with Home Leave",
-        "8152": "Post to U.S. with Home Leave",
-        "8153": "Post to U.S. without Home Leave (Direct Transfer to U.S.)",
-        "8154": "Separation from the Service",
-        "8155": "U.S. to Post",
-        "8156": "Initial Appointment to Post from U.S.",
-        "8157": "Initial Appointment to U.S.",
-        "8158": "Initial Appointment from Overseas",
-        "8159": "Intra U.S. (Transfer from one U.S. Location to Another U.S. Location)",
-        "8160": "Round Trip Home Leave",
-        "8161": "Advance Travel of Dependents",
-        "8162": "Remains of Deceased Dependents",
-        "8169": "SMA Travel",
-    }
-
-    def map_tf(tf=None):
-        return pydash.get(tf_mapping, tf, None)
-
     tod_code = pydash.get(data, "ailtodcode")
     tod_short_desc = pydash.get(data, "todshortdesc")
     tod_long_desc = pydash.get(data, "toddesctext")
@@ -666,7 +644,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "action": pydash.get(data, "latabbrdesctext", None),
         "action_code": lat_code,
         "travel_code": data.get("ailtfcd"),
-        "travel_desc": map_tf(pydash.get(data, "ailtfcd", None)), # pending change when WS adds 3.11
+        "travel_desc": pydash.get(data, "ailtfcd") or None,
         "is_separation": False,
         "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ETA, then by TED
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
