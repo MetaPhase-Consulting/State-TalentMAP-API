@@ -317,22 +317,8 @@ def edit_admin_projected_vacancy_lang_offsets_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'PX_LANGOS_I': f'''
-            <ROWSET>
-                <ROW>
-                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
-                    <LOT_SEQ_NUM>{request.get('language_offset_summer')}</LOT_SEQ_NUM>
-                </ROW>
-            </ROWSET>
-        ''',
-        'PX_LANGOW_I': f'''
-            <ROWSET>
-                <ROW>
-                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
-                    <LOT_SEQ_NUM>{request.get('language_offset_winter')}</LOT_SEQ_NUM>
-                </ROW>
-            </ROWSET>
-        ''',
+        'PX_LANGOS_I': f'<ROWSET><ROW><POS_SEQ_NUM>{request.get("position_seq_num") or ""}</POS_SEQ_NUM><LOT_SEQ_NUM>{request.get("language_offset_summer")}</LOT_SEQ_NUM></ROW></ROWSET>',
+        'PX_LANGOW_I': f'<ROWSET><ROW><POS_SEQ_NUM>{request.get("position_seq_num") or ""}</POS_SEQ_NUM><LOT_SEQ_NUM>{request.get("language_offset_winter")}</LOT_SEQ_NUM></ROW></ROWSET>',
         'PV_RETURN_CODE_O': '',
         'PQRY_ERROR_DATA_O': ''
     }
