@@ -246,7 +246,6 @@ def fsbid_to_talentmap_pos(data):
         'pos_title_desc': data.get('postitledesc'),
         'pos_title_code': data.get('postitlecode'),
         'languages': data.get('languages'),
-        'pay_plan': data.get('pospayplancode'),
         'pos_update_id': data.get('posupdateid'),
         'pos_update_date': data.get('posupdatedate'),
         'pos_create_id': data.get('poscreateid'),
@@ -262,6 +261,8 @@ def fsbid_to_talentmap_pos(data):
         'pos_staff_pattern_skill_code': data.get('posstaffptrnskillcode'),
         'pos_staff_pattern_skill_desc': data.get('posstaffptrnskilldesc'),
         'pos_overseas_ind': data.get('posoverseasind'),
+        # Clean up redundant naming
+        'pay_plan': data.get('pospayplancode'),
         'pos_pay_plan_code': data.get('pospayplancode'),
         'pos_pay_plan_desc': data.get('pospayplandesc'),
         'pos_status_code': data.get('posstatuscode'),
