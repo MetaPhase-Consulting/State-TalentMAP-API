@@ -397,7 +397,7 @@ def el_postions_res_mapping(data):
 
 def get_el_positions_filters(request, jwt_token):
     '''
-    Gets Filters for Publishable Positions Page
+    Gets Filters for Manage EL Page
     '''
     args = {
         'proc_name': 'prc_tracking_detail_pos_search',
