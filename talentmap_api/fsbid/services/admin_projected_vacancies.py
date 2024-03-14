@@ -141,7 +141,9 @@ def admin_projected_vacancy_req_mapping(request):
         'PV_SUBTRAN_I': '',
         'PJSON_FVS_TAB_I': { 'Data': [] },
         'PJSON_CUST_TP_TAB_I': { 'Data': [] },
+        'PXML_POSITION_I': '<XMLSearchCriterias><SearchList></SearchList></XMLSearchCriterias>',
         'PJSON_JC_DD_TAB_I': { 'Data': [] },
+        'PXML_OVERSEAS_I': '<XMLSearchCriterias><SearchList></SearchList></XMLSearchCriterias>',
         'PQRY_FV_ADMIN_O': '',
         'PV_RETURN_CODE_O': '',
         'PQRY_ERROR_DATA_O': '',
@@ -263,22 +265,22 @@ def edit_admin_projected_vacancy_req_mapping(request):
     for pv in request:
         pvData.append({
             'FV_SEQ_NUM': pv.get('future_vacancy_seq_num'),
-            'FV_SEQ_NUM_REF': pv.get('future_vacancy_seq_num_ref'),
+            # 'FV_SEQ_NUM_REF': pv.get('future_vacancy_seq_num_ref'),
             'POS_SEQ_NUM': pv.get('position_seq_num'),
             'BSN_ID': pv.get('bid_season_code'),
-            'ASG_SEQ_NUM_EF': pv.get('assignment_seq_num_effective'),
-            'ASG_SEQ_NUM': pv.get('assignment_seq_num'),
-            'CDT_CD': pv.get('cycle_date_type_code'),
+            # 'ASG_SEQ_NUM_EF': pv.get('assignment_seq_num_effective'),
+            # 'ASG_SEQ_NUM': pv.get('assignment_seq_num'),
+            # 'CDT_CD': pv.get('cycle_date_type_code'),
             'FVS_CODE': pv.get('future_vacancy_status_code'),
-            'FVO_CODE': pv.get('future_vacancy_override_code'),
+            # 'FVO_CODE': pv.get('future_vacancy_override_code'),
             'FV_OVERRIDE_TED_DATE': pv.get('future_vacancy_override_tour_end_date'),
-            'FV_SYSTEM_IND': pv.get('future_vacancy_system_indicator'),
-            'FV_COMMENT_TXT': pv.get('future_vacancy_comment'),
-            'FV_CREATE_ID': pv.get('creator_id'),
-            'FV_CREATE_DATE': pv.get('created_date'),
-            'FV_UPDATE_ID': pv.get('updater_id'),
-            'FV_UPDATE_DATE': pv.get('updated_date'),
-            'FV_MC_IND': pv.get('future_vacancy_mc_indicator'),
+            # 'FV_SYSTEM_IND': pv.get('future_vacancy_system_indicator'),
+            # 'FV_COMMENT_TXT': pv.get('future_vacancy_comment'),
+            # 'FV_CREATE_ID': pv.get('creator_id'),
+            # 'FV_CREATE_DATE': pv.get('created_date'),
+            # 'FV_UPDATE_ID': pv.get('updater_id'),
+            # 'FV_UPDATE_DATE': pv.get('updated_date'),
+            # 'FV_MC_IND': pv.get('future_vacancy_mc_indicator'),
             'FV_EXCL_IMPORT_IND': pv.get('future_vacancy_exclude_import_indicator'),
         })
     return {
@@ -315,22 +317,8 @@ def edit_admin_projected_vacancy_lang_offsets_req_mapping(request):
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'PX_LANGOS_I': f'''
-            <ROWSET>
-                <ROW>
-                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
-                    <LOT_SEQ_NUM>{request.get('language_offset_summer')}</LOT_SEQ_NUM>
-                </ROW>
-            </ROWSET>
-        ''',
-        'PX_LANGOW_I': f'''
-            <ROWSET>
-                <ROW>
-                    <POS_SEQ_NUM>{request.get('position_seq_num')}</POS_SEQ_NUM>
-                    <LOT_SEQ_NUM>{request.get('language_offset_winter')}</LOT_SEQ_NUM>
-                </ROW>
-            </ROWSET>
-        ''',
+        'PX_LANGOS_I': f'<ROWSET><ROW><POS_SEQ_NUM>{request.get("position_seq_num")}</POS_SEQ_NUM><LOT_SEQ_NUM>{request.get("language_offset_summer") or ""}</LOT_SEQ_NUM></ROW></ROWSET>',
+        'PX_LANGOW_I': f'<ROWSET><ROW><POS_SEQ_NUM>{request.get("position_seq_num")}</POS_SEQ_NUM><LOT_SEQ_NUM>{request.get("language_offset_winter") or ""}</LOT_SEQ_NUM></ROW></ROWSET>',
         'PV_RETURN_CODE_O': '',
         'PQRY_ERROR_DATA_O': ''
     }
@@ -389,12 +377,9 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
 
 def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
     search_list = ''
-    for number in request.get('position_numbers'):
-        search_list += f'''
-            <SearchList>
-                <Value>{number}</Value>
-            </SearchList>
-        '''
+    position_numbers = request.get('position_numbers').split(',')  
+    for number in position_numbers:
+        search_list += f'<Value>{number}</Value>'
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -406,11 +391,7 @@ def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
         'PX_LANGUAGE_I': None,
         'PX_CUST_TP_I': None,
         'PX_TOD_I': None,
-        'PXML_POSITION_I': f'''
-            <XMLSearchCriterias>
-                {search_list}
-            </XMLSearchCriterias>
-        ''',
+        'PXML_POSITION_I': f'<XMLSearchCriterias><SearchList>{search_list}</SearchList></XMLSearchCriterias>',
         'PX_OVERSEAS_I': None,
         'PX_COUNTRY_I': None,
         'PQRY_FV_ADMIN_O': '',
