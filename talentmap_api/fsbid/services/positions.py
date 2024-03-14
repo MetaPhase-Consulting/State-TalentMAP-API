@@ -343,6 +343,10 @@ def el_postions_req_mapping(request):
             for lang in request[key].split(','):
                 values_formatted.append(f"{{\"LANG_CODE\": \"{lang}\"}}")
             result['PTYP_LANGUAGE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-overseas':
+            result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"O\"}}}}"
+        elif key == 'el-domestic':
+            result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"D\"}}}}"
         
     return result
 
