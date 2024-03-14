@@ -270,27 +270,27 @@ def map_assignments_separations_bids(data):
     is_assignment = bool(data.get('status')) 
     is_separation = bool(data.get('seq_num'))
 
-    pos = pydash.get(data, 'pos', {})
+    pos = data.get('pos') or {}
     if is_bid:
         return {
-            "status": pydash.get(data, 'hs_code'),
-            "org": pydash.get(pos, 'posorgshortdesc'),
-            "grade": pydash.get(pos, 'posgradecode'),
-            "pos_num": pydash.get(pos, 'posnumtext'), 
-            "pos_title": pydash.get(pos, 'postitledesc'),
-            "pos_seq_num": pydash.get(pos, 'posseqnum'),
-            "cp_id": pydash.get(data, 'cp_id'),
-            "asg_seq_num": pydash.get(data, 'id'),
-            "revision_num": pydash.get(pos, 'asgd_revision_num'),
-            "languages": pydash.get(pos, 'languages'),
-            "eta": pydash.get(data, 'start_date'),
-            "ted": pydash.get(data, 'end_date'),
-            # TO DO: Add TOD field
+            "status": data.get('hs_code'),
+            "org": pos.get('pos_org_short_desc'),
+            "grade": pos.get('pos_grade_code'),
+            "pos_num": pos.get('pos_num_text'), 
+            "pos_title": pos.get('pos_title_desc'),
+            "pos_seq_num": pos.get('pos_seq_num'),
+            "cp_id": data.get('cp_id'),
+            "asg_seq_num": data.get('id'),
+            "revision_num": pos.get('asgd_revision_num'),
+            "languages": pos.get('languages'),
+            "eta": data.get('start_date'),
+            "ted": data.get('end_date'),
+            "tod_code": pos.get('todo_tod_code') or pos.get('bt_tod_code') or None,
             "separation_location": {},
             "is_bid": is_bid,
             "is_assignment": is_assignment,
             "is_separation": is_separation,
-            "pay_plan": pydash.get(pos, 'pospayplancode'),
+            "pay_plan": pos.get('pos_pay_plan_code'),
         }
     if is_assignment:
         tod_long_desc = data.get('tod_desc_text')
@@ -314,6 +314,7 @@ def map_assignments_separations_bids(data):
             "languages": pydash.get(pos, 'languages'),
             "eta": data.get('start_date'),
             "ted": data.get('end_date'),
+            "tod_code": data.get("tod_code"),
             "tod_long_desc": tod_long_desc,
             "tod_short_desc": tod_short_desc,
             "separation_location": {},
