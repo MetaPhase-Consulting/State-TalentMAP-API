@@ -10,6 +10,7 @@ POSITIONS_V2_ROOT = settings.POSITIONS_API_V2_URL
 POSITIONS_ROOT = settings.POSITIONS_API_URL
 
 logger = logging.getLogger(__name__)
+test_cap = 200
 
 
 def get_position(id, jwt_token):
@@ -372,7 +373,9 @@ def el_postions_req_mapping(request):
             result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"O\"}}}}"
         elif key == 'el-domestic':
             result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"D\"}}}}"
-        
+        elif key == 'el-testCap':
+            global test_cap
+            test_cap = request[key]
     return result
 
 def el_postions_res_mapping(data):
@@ -401,8 +404,8 @@ def el_postions_res_mapping(data):
             'FICA': x.get('FICA'),
             'mcEndDate': x.get('MC_END_DATE'),
         }
-
-    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:200]))
+    global test_cap
+    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(test_cap)]))
 
 def get_el_positions_filters(request, jwt_token):
     '''
