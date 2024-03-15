@@ -225,28 +225,62 @@ def convert_position_query(query):
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 def fsbid_to_talentmap_pos(data):
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-
     data['languages'] = services.parseLanguagesToArr(data)
 
-    hard_coded = ['pos_seq_num', 'organization', 'position_number', 'grade', 'title', 'languages', 'pay_plan']
-
-    add_these = []
-
-    cols_mapping = {
-        'pos_seq_num': 'posseqnum',
-        'organization': 'posorgshortdesc',
-        'position_number': 'posnumtext',
-        'grade': 'posgradecode',
-        'title': 'postitledesc',
-        'languages': 'languages',
-        'pay_plan' : 'pospayplancode',
+    return {
+        'pos_seq_num': data.get('posseqnum'),
+        # Clean up redundant naming
+        'organization': data.get('posorgshortdesc'),
+        'pos_org_short_desc': data.get('posorgshortdesc'),
+        'pos_org_code': data.get('posorgcode'),
+        'pos_org_long_desc': data.get('posorglongdesc'),
+        # Clean up redundant naming
+        'position_number': data.get('posnumtext'),
+        'pos_num_text': data.get('posnumtext'),
+        # Clean up redundant naming
+        'grade': data.get('posgradecode'),
+        'pos_grade_code': data.get('posgradecode'),
+        'pos_grade_desc': data.get('posgradedesc'),
+        # Clean up redundant naming
+        'title': data.get('postitledesc'),
+        'pos_title_desc': data.get('postitledesc'),
+        'pos_title_code': data.get('postitlecode'),
+        'languages': data.get('languages'),
+        'pos_update_id': data.get('posupdateid'),
+        'pos_update_date': data.get('posupdatedate'),
+        'pos_create_id': data.get('poscreateid'),
+        'pos_create_date': data.get('poscreatedate'),
+        'pos_effective_date': data.get('poseffectivedate'),
+        'pos_job_code': data.get('posjobcodecode'),
+        'pos_job_category_desc': data.get('posjobcategorydesc'),
+        'pos_bureau_code': data.get('posbureaucode'),
+        'pos_bureau_short_desc': data.get('posbureaushortdesc'),
+        'pos_bureau_long_desc': data.get('posbureaulongdesc'),
+        'pos_skill_code': data.get('posskillcode'),
+        'pos_skill_desc': data.get('posskilldesc'),
+        'pos_staff_pattern_skill_code': data.get('posstaffptrnskillcode'),
+        'pos_staff_pattern_skill_desc': data.get('posstaffptrnskilldesc'),
+        'pos_overseas_ind': data.get('posoverseasind'),
+        # Clean up redundant naming
+        'pay_plan': data.get('pospayplancode'),
+        'pos_pay_plan_code': data.get('pospayplancode'),
+        'pos_pay_plan_desc': data.get('pospayplandesc'),
+        'pos_status_code': data.get('posstatuscode'),
+        'pos_status_desc': data.get('posstatusdesc'),
+        'pos_post_code': data.get('pospostcode'),
+        'pos_location_code': data.get('poslocationcode'),
+        'bt_dsc_cd': data.get('btdsccd'),
+        'bt_us_code': data.get('btuscode'),
+        'bt_bts_code': data.get('btbtscode'),
+        'bt_sp_code': data.get('btspcode'),
+        'bt_qt_code': data.get('btqtcode'),
+        'bt_ht_code': data.get('bthtcode'),
+        'bt_tod_code': data.get('bttodcode'),
+        'bt_ehcp_code': data.get('btehcpcode'),
+        'todo_pos_seq_num': data.get('todoposseqnum'),
+        'todo_tod_code': data.get('todo_tod_code'),
     }
 
-    add_these.extend(hard_coded)
-
-    return services.map_return_template_cols(add_these, cols_mapping, data)
 
 def get_frequent_positions(query, jwt_token):
     '''
@@ -273,33 +307,24 @@ def fsbid_to_talentmap_frequent_positions(data):
     data = pydash.get(data, 'position') or []
     position = data[0] if data else {}
 
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-    hard_coded = ['pos_seq_num', 'pos_org_short_desc', 'pos_num_text', 'pos_grade_code', 'pos_title_desc', 'pay_plan']
-    add_these = []
-
-    cols_mapping = {
-        'pos_seq_num': 'posseqnum',
-        'pos_org_short_desc': 'posorgshortdesc',
-        'pos_num_text': 'posnumtext',
-        'pos_grade_code': 'posgradecode',
-        'pos_title_desc': 'postitledesc',
-        'pay_plan': 'pospayplancode'
+    return {
+        'pos_seq_num': position.get('posseqnum'),
+        'pos_org_short_desc': position.get('posorgshortdesc'),
+        'pos_num_text': position.get('posnumtext'),
+        'pos_grade_code': position.get('posgradecode'),
+        'pos_title_desc': position.get('postitledesc'),
+        'pay_plan': position.get('pospayplancode'),
     }
 
-    add_these.extend(hard_coded)
 
-    return services.map_return_template_cols(add_these, cols_mapping, position)
-
-
-def get_el_positions(request, jwt_token):
+def get_el_positions(query, jwt_token):
     '''
     Gets Entry Level Positions
     '''
     args = {
         "proc_name": "prc_lst_tracking_details_grid",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
-        "request_body": {},
+        "request_body": query,
         "request_mapping_function": el_postions_req_mapping,
         "response_mapping_function": el_postions_res_mapping,
         "jwt_token": jwt_token,
@@ -309,10 +334,46 @@ def get_el_positions(request, jwt_token):
     )
 
 def el_postions_req_mapping(request):
-    return {
+    result = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
     }
+    for key in request:
+        values_formatted = []
+        if key == 'el-tps':
+            for tp in request[key].split(','):
+                values_formatted.append(f"{{\"TP_CODE\": \"{tp}\"}}")
+            result['PTYP_TP_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-bureaus':
+            for bur in request[key].split(','):
+                values_formatted.append(f"{{\"BUREAU_ORG_CODE\": \"{bur}\"}}")
+            result['PTYP_BUREAU_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-orgs':
+            for org in request[key].split(','):
+                values_formatted.append(f"{{\"ORG_SHORT_DESC\": \"{org}\"}}")
+            result['PTYP_ORG_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-grades':
+            for grade in request[key].split(','):
+                values_formatted.append(f"{{\"GRD_GRADE_CODE\": \"{grade}\"}}")
+            result['PTYP_GRADE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-skills':
+            for skl in request[key].split(','):
+                values_formatted.append(f"{{\"SKL_CODE\": \"{skl}\"}}")
+            result['PTYP_SKILL_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-jobs':
+            for jc in request[key].split(','):
+                values_formatted.append(f"{{\"JC_ID\": \"{jc}\"}}")
+            result['PTYP_JC_DD_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-language':
+            for lang in request[key].split(','):
+                values_formatted.append(f"{{\"LANG_CODE\": \"{lang}\"}}")
+            result['PTYP_LANGUAGE_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
+        elif key == 'el-overseas':
+            result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"O\"}}}}"
+        elif key == 'el-domestic':
+            result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"D\"}}}}"
+        
+    return result
 
 def el_postions_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
@@ -345,7 +406,7 @@ def el_postions_res_mapping(data):
 
 def get_el_positions_filters(request, jwt_token):
     '''
-    Gets Filters for Publishable Positions Page
+    Gets Filters for Manage EL Page
     '''
     args = {
         'proc_name': 'prc_tracking_detail_pos_search',

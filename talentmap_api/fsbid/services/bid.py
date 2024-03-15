@@ -13,6 +13,7 @@ import jwt
 from talentmap_api.bidding.models import BidHandshakeCycle
 
 from talentmap_api.common.common_helpers import ensure_date
+from talentmap_api.fsbid.services.positions import fsbid_to_talentmap_pos
 
 from talentmap_api.bidding.models import Bid
 from talentmap_api.fsbid.requests import requests
@@ -279,28 +280,15 @@ def convert_bids_query(pk, query):
 
 
 def fsbid_to_talentmap_bids(data):
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-    from talentmap_api.fsbid.services.common import map_return_template_cols, parseLanguagesToArr
+    pos = data.get('position', [])
 
-    hard_coded = ['hs_code', 'cp_id', 'pos_seq_num', 'pos_num', 'pos_org_short_desc', 'pos_title', 'pos']
-
-    add_these = []
-
-    cols_mapping = {
-        'hs_code': 'ubwhscode',
-        'cp_id': 'ubwcpid',
-        'pos_seq_num': 'cpposseqnum',
-        'pos_num': 'posnumtext',
-        'pos_org_short_desc': 'posorgshortdesc',
-        'pos_title': 'postitledesc',
-        'perdet': 'perdet_seq_num',
-        'pos': 'position[0]',
+    return {
+        'hs_code': data.get('ubwhscode'),
+        'cp_id': data.get('ubwcpid'),
+        'pos_seq_num': data.get('cpposseqnum'),
+        'pos_num': data.get('posnumtext'),
+        'pos_org_short_desc': data.get('posorgshortdesc'),
+        'pos_title': data.get('postitledesc'),
+        'perdet': data.get('perdet_seq_num'),
+        'pos': fsbid_to_talentmap_pos(pos[0] if len(pos) else {}),
     }
-
-    add_these.extend(hard_coded)
-
-    mappedKeys = map_return_template_cols(add_these, cols_mapping, data)
-    mappedKeys['pos']['languages'] = parseLanguagesToArr(mappedKeys['pos'])
-
-    return mappedKeys
