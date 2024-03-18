@@ -21,11 +21,11 @@ class FSBidCycleCategoriesView(APIView):
 
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
-    def get(self, request, pk):
+    def get(self, request):
         '''
         Gets Cycle Categories
         '''
-        result = services.get_cycle_categories(pk, request.META['HTTP_JWT'])
+        result = services.get_cycle_categories(request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -35,11 +35,17 @@ class FSBidCycleJobCategoriesView(APIView):
 
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
-    def get(self, request, pk):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("cycle_category_code", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Cycle Category Code'),
+        ]
+    )
+
+    def get(self, request):
         '''
         Gets Cycle Job Categories
         '''
-        result = services.get_cycle_job_categories(pk, request.META['HTTP_JWT'])
+        result = services.get_cycle_job_categories(request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -47,18 +53,18 @@ class FSBidCycleJobCategoriesView(APIView):
 
 class FSBidCycleJobCategoriesActionView(APIView):
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'included': openapi.Schema(type=openapi.TYPE_INTEGER, description='Inclusion Indicators'),
-            'cycle_codes': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Category Code'),
-            'job_codes': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Job Category Codes'),
-            'updater_ids': openapi.Schema(type=openapi.TYPE_INTEGER, description='Updater User IDs'),
-            'updated_dates': openapi.Schema(type=openapi.TYPE_STRING, description='Updated Dates'),
-        }
-    ))
+    # @swagger_auto_schema(request_body=openapi.Schema(
+    #     type=openapi.TYPE_OBJECT,
+    #     properties={
+    #         'included': openapi.Schema(type=openapi.TYPE_STRING, description='Inclusion Indicators'),
+    #         'cycle_category_code': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Category Code'),
+    #         'job_category_codes': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Job Category Codes'),
+    #         'updater_ids': openapi.Schema(type=openapi.TYPE_STRING, description='Updater User IDs'),
+    #         'updated_dates': openapi.Schema(type=openapi.TYPE_STRING, description='Updated Dates'),
+    #     }
+    # ))
 
     def put(self, request):
         '''
