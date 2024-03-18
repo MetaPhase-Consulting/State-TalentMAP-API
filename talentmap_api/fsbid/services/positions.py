@@ -324,7 +324,7 @@ def get_el_positions(query, jwt_token):
     '''
     args = {
         "proc_name": "prc_lst_tracking_details_grid",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": query,
         "request_mapping_function": el_postions_req_mapping,
         "response_mapping_function": el_postions_res_mapping,
@@ -411,7 +411,7 @@ def get_el_positions_filters(request, jwt_token):
     '''
     args = {
         'proc_name': 'prc_tracking_detail_pos_search',
-        'package_name': 'PKG_WEBAPI_WRAP_SPRINT101',
+        'package_name': 'PKG_WEBAPI_WRAP',
         'request_body': {},
         'request_mapping_function': el_positions_filter_req_mapping,
         'response_mapping_function': el_positions_filter_res_mapping,
