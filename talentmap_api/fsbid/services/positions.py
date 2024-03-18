@@ -10,6 +10,7 @@ POSITIONS_V2_ROOT = settings.POSITIONS_API_V2_URL
 POSITIONS_ROOT = settings.POSITIONS_API_URL
 
 logger = logging.getLogger(__name__)
+RESULTS_CAP = settings.MANAGE_EL_RESULTS_LIMIT
 
 
 def get_position(id, jwt_token):
@@ -402,7 +403,7 @@ def el_postions_res_mapping(data):
             'mcEndDate': x.get('MC_END_DATE'),
         }
 
-    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:200]))
+    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)]))
 
 def get_el_positions_filters(request, jwt_token):
     '''
