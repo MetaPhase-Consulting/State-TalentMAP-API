@@ -52,11 +52,17 @@ urlpatterns = [
     url(r'^api/v1/available_position/', include('talentmap_api.available_positions.urls.available_positions')),
     url(r'^api/v1/available_position/tandem/', include('talentmap_api.available_tandem.urls.available_tandem')),
 
+    #Organization Stats
+    url(r'^api/v1/fsbid/org_stats/', include('talentmap_api.fsbid.urls.org_stats')),
+
     # Projected Vacancies
     url(r'^api/v1/fsbid/projected_vacancies/', include('talentmap_api.fsbid.urls.projected_vacancies')),
     url(r'^api/v1/projected_vacancy/', include('talentmap_api.projected_vacancies.urls.projected_vacancies')),
     url(r'^api/v1/projected_vacancy/tandem/', include('talentmap_api.projected_tandem.urls.projected_tandem')),
 
+    # Projected Vacancies Management
+    url(r'^api/v1/fsbid/admin/projected_vacancies/', include('talentmap_api.fsbid.urls.admin_projected_vacancies')),
+    
     # Job Categories
     url(r'^api/v1/fsbid/job_categories/', include('talentmap_api.fsbid.urls.job_categories')),
 

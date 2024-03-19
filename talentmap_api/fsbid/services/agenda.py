@@ -598,27 +598,6 @@ def fsbid_agenda_items_to_talentmap_agenda_items(data, jwt_token=None):
 
 
 def fsbid_legs_to_talentmap_legs(data):
-    # Temporary mapping helper. FSBid will handle this
-    tf_mapping = {
-        "8150": "Post to Post without Home Leave (Direct Transfer)",
-        "8151": "Post to Post with Home Leave",
-        "8152": "Post to U.S. with Home Leave",
-        "8153": "Post to U.S. without Home Leave (Direct Transfer to U.S.)",
-        "8154": "Separation from the Service",
-        "8155": "U.S. to Post",
-        "8156": "Initial Appointment to Post from U.S.",
-        "8157": "Initial Appointment to U.S.",
-        "8158": "Initial Appointment from Overseas",
-        "8159": "Intra U.S. (Transfer from one U.S. Location to Another U.S. Location)",
-        "8160": "Round Trip Home Leave",
-        "8161": "Advance Travel of Dependents",
-        "8162": "Remains of Deceased Dependents",
-        "8169": "SMA Travel",
-    }
-
-    def map_tf(tf=None):
-        return pydash.get(tf_mapping, tf, None)
-
     tod_code = pydash.get(data, "ailtodcode")
     tod_short_desc = pydash.get(data, "todshortdesc")
     tod_long_desc = pydash.get(data, "toddesctext")
@@ -638,6 +617,9 @@ def fsbid_legs_to_talentmap_legs(data):
     eta_date = data.get("ailetadate", None)
     ted_date = data.get("ailetdtedsepdate", None)
     not_applicable = '-'
+    pay_plan = pydash.get(data, "agendaLegPosition[0].pospayplancode", "None Listed")
+    grade = pydash.get(data, "agendaLegPosition[0].posgradecode", "None Listed")
+    combined_pp_grade = "None Listed" if pay_plan == "None Listed" and grade == "None Listed" else f"{pay_plan} {grade}"
 
     res = {
         "id": pydash.get(data, "ailaiseqnum", None),
@@ -657,12 +639,12 @@ def fsbid_legs_to_talentmap_legs(data):
         "tod_months": tod_months if is_other_tod else None, # only a custom/other TOD should have months
         "tod_short_desc": tod_other_text if is_other_tod else tod_short_desc,
         "tod_long_desc": tod_other_text if is_other_tod else tod_long_desc,
-        "grade": pydash.get(data, "agendaLegPosition[0].posgradecode", None),
+        "grade": grade,
         "languages": services.parseLanguagesToArr(pydash.get(data, "agendaLegPosition[0]", None)),
         "action": pydash.get(data, "latabbrdesctext", None),
         "action_code": lat_code,
-        "travel": map_tf(pydash.get(data, "ailtfcd", None)),
         "travel_code": data.get("ailtfcd"),
+        "travel_desc": data.get("ailtfdescr") or None,
         "is_separation": False,
         "sort_date": eta_date or ted_date or None,  # AgendaItems sort legs by ETA, then by TED
         "pay_plan": pydash.get(data, "agendaLegPosition[0].pospayplancode", None),
@@ -672,6 +654,7 @@ def fsbid_legs_to_talentmap_legs(data):
         "skill_secondary": skills_data.get("skill_2_representation"),
         "skill_secondary_code": skills_data.get("skill_2_code"),
         "custom_skills_description": skills_data.get("combined_skills_representation"),
+        "combined_pp_grade": combined_pp_grade,
     }
     
     # Remove fields not applicable for separation leg action types
@@ -723,6 +706,9 @@ def fsbid_aia_to_talentmap_aia(data):
     is_other_tod = True if (tod_code == 'X') and (tod_other_text) else False
     skills_data = services.get_skills(pydash.get(data, 'position[0]', {}))
     not_applicable = '-'
+    pay_plan = pydash.get(data, "position[0].pospayplancode", "--")
+    grade = pydash.get(data, "position[0].posgradecode", "--")
+    combined_pp_grade = f"{pay_plan} {grade}"
 
     return {
         "id": pydash.get(data, "asgdasgseqnum", None),
@@ -740,7 +726,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "tod_long_desc": tod_other_text if is_other_tod else tod_long_desc,
         "grade": pydash.get(data, "position[0].posgradecode", None),
         "languages": services.parseLanguagesToArr(pydash.get(data, "position[0]", None)),
-        "travel": not_applicable,
+        "travel_desc": not_applicable,
         "action": not_applicable,
         "is_separation": False,
         "pay_plan": pydash.get(data, "position[0].pospayplancode", None),
@@ -750,6 +736,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "skill_secondary": skills_data.get("skill_2_representation"),
         "skill_secondary_code": skills_data.get("skill_2_code"),
         "custom_skills_description": skills_data.get("combined_skills_representation"),
+        "combined_pp_grade": combined_pp_grade,
     }
 
 def fsbid_lang_to_talentmap_lang(data):

@@ -109,31 +109,24 @@ def post_access_res_mapping(data):
         }
     return list(map(spa_results_mapping, data.get('PQRY_ORG_ACCESS_O')))
 
-def format_request_data_to_string(request_values, table_key):
-    data_entries = []
-    for item in request_values.split(","):
-        data_entry = f'"Data": {{"{table_key}": "{item}"}}'
-        data_entries.append(data_entry)
-
-    result_string = "{" + ",".join(data_entries) + "}"
-    return result_string
 
 def post_access_req_mapping(req):
     mapped_request = {
       "PV_API_VERSION_I": "2",  
     }
     if req.get('persons'):
-        mapped_request['PJSON_EMP_TAB_I'] = format_request_data_to_string(req.get('persons'), 'PER_SEQ_NUM')
+        mapped_request['PJSON_EMP_TAB_I'] = services.format_request_data_to_string(req.get('persons'), 'PER_SEQ_NUM')
     if req.get('bureaus'):
-        mapped_request['PJSON_BUREAU_TAB_I'] = format_request_data_to_string(req.get('bureaus'), 'BUREAU_ORG_CODE')
+        mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(req.get('bureaus'), 'BUREAU_ORG_CODE')
     if req.get('locations'):
-        mapped_request['PJSON_COUNTRY_TAB_I'] = format_request_data_to_string(req.get('locations'), 'COUNTRY_STATE_CODE')
+        mapped_request['PJSON_COUNTRY_TAB_I'] = services.format_request_data_to_string(req.get('locations'), 'COUNTRY_STATE_CODE')
     if req.get('roles'):
-        mapped_request['PJSON_POST_ROLE_TAB_I'] = format_request_data_to_string(req.get('roles'), 'ROLE_CODE')
+        mapped_request['PJSON_POST_ROLE_TAB_I'] = services.format_request_data_to_string(req.get('roles'), 'ROLE_CODE')
     if req.get('orgs'):
-        mapped_request['PJSON_ORG_TAB_I'] = format_request_data_to_string(req.get('orgs'), 'ORG_SHORT_DESC')
+        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(req.get('orgs'), 'ORG_SHORT_DESC')
     if req.get('positions'):
-        mapped_request['PJSON_POS_DD_TAB_I'] = format_request_data_to_string(req.get('positions'), 'POS_SEQ_NUM')
+        mapped_request['PJSON_POS_DD_TAB_I'] = services.format_request_data_to_string(req.get('positions'), 'POS_SEQ_NUM')
+
     return mapped_request
 
 

@@ -1,4 +1,6 @@
 import logging
+from functools import partial
+import jwt
 from urllib.parse import urlencode, quote
 from django.conf import settings
 
@@ -52,6 +54,7 @@ def assignment_history_to_client_format(data):
                     "end_date": ensure_date(x['end_date']),
                     # TO DO: Clean up
                     "status": x['asgd_asgs_text'] or x['asgd_asgs_code'],
+                    "tod_code": x.get('tod_code') or None,
                     "tod_desc_text": x.get('tod_desc_text') or None,
                     "tod_short_desc": x.get('tod_short_desc') or None,
                     "asgd_tod_other_text": x.get('asgd_tod_other_text') or None,
@@ -109,79 +112,254 @@ def convert_assignments_query(query):
 
 
 def fsbid_assignments_to_talentmap_assignments(data):
-    # hard_coded are the default data points (opinionated EP)
-    # add_these are the additional data points we want returned
-
-    hard_coded = [
-        "id",
-        "position_id",
-        "start_date",
-        "end_date",
-        "asgd_tod_desc_text",
-        "asgd_asgs_code",
-        "asgd_asgs_text",
-        "position",
-        "asgd_revision_num",
-        "asgd_tod_code",
-        "asgd_tod_other_text",
-        "asgd_tod_months_num",
-        "tod_code",
-        "tod_desc_text",
-        "tod_months_num",
-        "tod_short_desc",
-        "tod_status_code",
-    ]
-
-    add_these = []
-
-    cols_mapping = {
-        "id": "asgdasgseqnum",
-        "asg_emp_seq_nbr": "asgempseqnbr",
-        "asg_perdet_seq_num": "asgperdetseqnum",
-        "position_id": "asgposseqnum",
-        "asg_create_id": "asgcreateid",
-        "asg_create_date": "asgcreatedate",
-        "asg_update_id": "asgupdateid",
-        "asg_update_date": "asgupdatedate",
-        "asgd_asg_seq_num": "asgdasgseqnum",
-        "asgd_revision_num": "asgdrevisionnum",
-        "asgd_asgs_text": "asgsdesctext",
-        "asgd_asgs_code": "asgdasgscode",
-        "asgd_lat_code": "asgdlatcode",
-        "asgd_tfcd": "asgdtfcd",
-        "asgd_tod_code": "asgdtodcode",
-        "asgd_ail_seq_num": "asgdailseqnum",
-        "asgd_org_code": "asgdorgcode",
-        "asgd_wrt_code_rrrepay": "asgdwrtcoderrrepay",
-        "start_date": "asgdetadate",
-        "asgd_adjust_months_num": "asgdadjustmonthsnum",
-        "end_date": "asgdetdteddate",
-        "asgd_salary_reimburse_ind": "asgdsalaryreimburseind",
-        "asgd_travelreimburse_ind": "asgdtravelreimburseind",
-        "asgd_training_ind": "asgdtrainingind",
-        "asgd_create_id": "asgdcreateid",
-        "asgd_create_date": "asgdcreatedate",
-        "asgd_update_id": "asgdupdateid",
-        "asgd_update_date": "asgdupdatedate",
-        "asgd_note_comment_text": "asgdnotecommenttext",
-        "asgd_priority_ind": "asgdpriorityind",
-        "asgd_critical_need_ind": "asgdcriticalneedind",
-        "asgs_code": "asgscode",
-        "asgs_desc_text": "asgsdesctext",
-        "asgs_create_id": "asgscreateid",
-        "asgs_create_date": "asgscreatedate",
-        "asgs_update_id": "asgsupdateid",
-        "asgs_update_date": "asgsupdatedate",
-        "position": "position",
-        "asgd_tod_other_text": "asgdtodothertext",
-        "asgd_tod_months_num": "asgdtodmonthsnum",
-        "tod_code": "todcode",
-        "tod_desc_text": "toddesctext",
-        "tod_months_num": "todmonthsnum",
-        "tod_short_desc": "todshortdesc",
-        "tod_status_code": "todstatuscode",
+    return {
+        "id": data.get("asgdasgseqnum"),
+        "asg_emp_seq_nbr": data.get("asgempseqnbr"),
+        "asg_perdet_seq_num": data.get("asgperdetseqnum"),
+        "position_id": data.get("asgposseqnum"),
+        "asg_create_id": data.get("asgcreateid"),
+        "asg_create_date": data.get("asgcreatedate"),
+        "asg_update_id": data.get("asgupdateid"),
+        "asg_update_date": data.get("asgupdatedate"),
+        "asgd_asg_seq_num": data.get("asgdasgseqnum"),
+        "asgd_revision_num": data.get("asgdrevisionnum"),
+        "asgd_asgs_text": data.get("asgsdesctext"),
+        "asgd_asgs_code": data.get("asgdasgscode"),
+        "asgd_lat_code": data.get("asgdlatcode"),
+        "asgd_tfcd": data.get("asgdtfcd"),
+        "asgd_tod_code": data.get("asgdtodcode"),
+        "asgd_ail_seq_num": data.get("asgdailseqnum"),
+        "asgd_org_code": data.get("asgdorgcode"),
+        "asgd_wrt_code_rrrepay": data.get("asgdwrtcoderrrepay"),
+        "start_date": data.get("asgdetadate"),
+        "asgd_adjust_months_num": data.get("asgdadjustmonthsnum"),
+        "end_date": data.get("asgdetdteddate"),
+        "asgd_salary_reimburse_ind": data.get("asgdsalaryreimburseind"),
+        "asgd_travelreimburse_ind": data.get("asgdtravelreimburseind"),
+        "asgd_training_ind": data.get("asgdtrainingind"),
+        "asgd_create_id": data.get("asgdcreateid"),
+        "asgd_create_date": data.get("asgdcreatedate"),
+        "asgd_update_id": data.get("asgdupdateid"),
+        "asgd_update_date": data.get("asgdupdatedate"),
+        "asgd_note_comment_text": data.get("asgdnotecommenttext"),
+        "asgd_priority_ind": data.get("asgdpriorityind"),
+        "asgd_critical_need_ind": data.get("asgdcriticalneedind"),
+        "asgs_code": data.get("asgscode"),
+        "asgs_desc_text": data.get("asgsdesctext"),
+        "asgs_create_id": data.get("asgscreateid"),
+        "asgs_create_date": data.get("asgscreatedate"),
+        "asgs_update_id": data.get("asgsupdateid"),
+        "asgs_update_date": data.get("asgsupdatedate"),
+        # TO DO: reuse position mapping
+        "position": data.get("position"),
+        "asgd_tod_other_text": data.get("asgdtodothertext"),
+        "asgd_tod_months_num": data.get("asgdtodmonthsnum"),
+        "tod_code": data.get("todcode"),
+        "tod_desc_text": data.get("toddesctext"),
+        "tod_months_num": data.get("todmonthsnum"),
+        "tod_short_desc": data.get("todshortdesc"),
+        "tod_status_code": data.get("todstatuscode"),
     }
 
-    add_these.extend(hard_coded)
 
-    return services.map_return_template_cols(add_these, cols_mapping, data)
+def get_assignment_ref_data(data, jwt_token):
+    '''
+    Get maintain assignment reference data
+    '''
+    args = {
+        "proc_name": 'qry_getAsgDtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": asg_ref_data_req_mapping,
+        "response_mapping_function": asg_ref_data_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def asg_ref_data_req_mapping(request):
+    return {
+        "i_asg_seq_num": request.get("asg_id"),
+        "i_asgd_revision_num": request.get("revision_num"),
+        "pv_api_version_i": "",
+        "pv_ad_id_i": "",
+    }
+
+
+def asg_ref_data_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for fetching assignment reference data failed.')
+        return None
+    return data
+
+
+def alt_get_assignments(id, jwt_token):
+    '''
+    Get assignments and separations by perdet from fsbid proc 
+    '''
+    args = {
+        "proc_name": 'qry_lstAsgsSeps',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": alt_asg_req_mapping,
+        "response_mapping_function": alt_asg_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": { "perdet_seq_num": id },
+    }
+    return services.send_post_back_office(
+        **args
+    )
+    
+
+def alt_asg_req_mapping(request):
+    return {
+        "i_perdet_seq_num": request.get("perdet_seq_num"),
+        "pv_api_version_i": "",
+        "pv_ad_id_i": "",
+    }
+
+
+def alt_asg_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for fetching assignments/separations failed.')
+        return None
+    return data.get('QRY_LSTASGS_REF')
+
+
+def alt_update_assignment(query, jwt_token):
+    '''
+    Get assignments and separations by perdet from fsbid proc 
+    '''
+    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
+    args = {
+        "proc_name": 'act_modasgdtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": partial(alt_update_asg_req_mapping, hru_id=hru_id),
+        "response_mapping_function": alt_update_asg_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+    
+
+def alt_update_asg_req_mapping(request, hru_id):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_ASG_SEQ_NUM": request.get("asg_seq_num"),
+        "I_ASGD_REVISION_NUM": request.get("asgd_revision_num"),
+        "I_ASGD_ETA_DATE": request.get("eta"),
+        "I_ASGD_ETD_TED_DATE": request.get("etd"),
+        "I_ASGD_TOD_CODE": request.get("tod"),
+        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"),
+        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"),
+        "I_ASGD_ADJUST_MONTHS_NUM": None,
+        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
+        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
+        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
+        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
+        "I_ASGD_ORG_CODE": request.get("org_code"),
+        "I_ASGD_ASGS_CODE": request.get("status_code"),
+        "I_ASGD_LAT_CODE": request.get("lat_code"),
+        "I_ASGD_TF_CD": request.get("travel_code"),
+        "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
+        "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
+        "I_ASGD_UPDATE_ID": hru_id,
+        "I_ASGD_UPDATE_DATE": request.get("update_date")
+    }
+
+
+def alt_update_asg_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for updating assignment failed.')
+        return None
+    return data
+
+
+def alt_create_assignment(query, jwt_token):
+    '''
+    Create assignments separations via fsbid 
+    '''
+    if query.get("is_separation"):
+        args = {
+            "proc_name": 'act_addsep',
+            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+            "request_mapping_function": alt_create_sep_req_mapping,
+            "response_mapping_function": alt_create_sep_res_mapping,
+            "jwt_token": jwt_token,
+            "request_body": query,
+        }
+    else:
+        args = {
+            "proc_name": 'qry_addasg',
+            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+            "request_mapping_function": alt_create_asg_req_mapping,
+            "response_mapping_function": alt_create_asg_res_mapping,
+            "jwt_token": jwt_token,
+            "request_body": query,
+        }
+
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def alt_create_sep_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_EMP_SEQ_NBR": request.get("employee"),
+        "I_DSC_CD": request.get("location_code"),
+        "I_SEPD_SEPARATION_DATE": request.get("etd"), 
+        "I_SEPD_CITY_TEXT": request.get("city"),
+        "I_SEPD_COUNTRY_STATE_TEXT": request.get("country"),
+        "I_SEPD_US_IND": "Y" if request.get("separation_ind") else "N",
+        "I_ASGS_CODE": request.get("status_code"),
+        "I_LAT_CODE": "M", # Should always be separtion LAT?
+        "I_TF_CD": request.get("travel_code"),
+        "I_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
+        "I_SEPD_NOTE_COMMMENT_TEXT": "", # No comment feature
+    }
+
+
+def alt_create_sep_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for creating separation failed.')
+        return None
+    return data
+
+   
+def alt_create_asg_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "I_EMP_SEQ_NBR": request.get("employee"),
+        "I_POS_SEQ_NUM": request.get("position"),
+        "I_ASGD_ETA_DATE": request.get("eta"),
+        "I_ASGD_ETD_TED_DATE": request.get("etd"),
+        "I_ASGD_TOD_CODE": request.get("tod"),
+        # TO DO: Clarify custom tod feature
+        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"), 
+        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"), 
+        "I_ASGD_ADJUST_MONTHS_NUM": request.get("tod_adjust_months_num"), 
+        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
+        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
+        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
+        "I_ASGD_ORG_CODE": request.get("org_code"),
+        "I_ASGD_ASGS_CODE": request.get("status_code"),
+        "I_ASGD_LAT_CODE": request.get("lat_code"),
+        "I_ASGD_TF_CD": request.get("travel_code"),
+        "I_ASGD_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
+        "I_ASGD_NOTE_COMMMENT_TEXT": "", # No comment feature
+    }
+
+def alt_create_asg_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for creating assignment failed.')
+        return None
+    return data
+
+
