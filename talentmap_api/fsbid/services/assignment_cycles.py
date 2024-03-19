@@ -18,7 +18,7 @@ def get_assignment_cycles_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstassigncycles',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": assignment_cycles_req_mapping,
         "response_mapping_function": assignment_cycles_res_mapping,
@@ -62,7 +62,7 @@ def create_assignment_cycle(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": save_assignment_cycle_req_mapping,
         "response_mapping_function": create_assignment_cycle_res_mapping,
@@ -173,7 +173,7 @@ def get_assignment_cycle_data(jwt_token, pk):
     '''
     args = {
         "proc_name": 'qry_getassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": pk,
         "request_mapping_function": assignment_cycle_req_mapping,
         "response_mapping_function": assignment_cycle_res_mapping,
@@ -258,7 +258,7 @@ def post_assignment_cycle_positions(jwt_token, pk):
     '''
     args = {
         "proc_name": 'act_modpostassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": pk,
         "request_mapping_function": assignment_cycle_req_mapping,
         "response_mapping_function": post_positions_res_mapping,
@@ -279,7 +279,7 @@ def update_assignment_cycle(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modAssignCycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": partial(save_assignment_cycle_req_mapping, is_update=True),
         "response_mapping_function": update_assignment_cycles_res_mapping,
@@ -300,7 +300,7 @@ def delete_assignment_cycle(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_delassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": delete_assignment_cycle_req_mapping,
         "response_mapping_function": update_assignment_cycles_res_mapping,
