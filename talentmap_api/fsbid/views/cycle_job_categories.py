@@ -51,6 +51,20 @@ class FSBidCycleJobCategoriesView(APIView):
 
         return Response(result)
 
+class FSBidCycleJobCategoriesStatusesView(APIView):
+
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    def get(self, request):
+        '''
+        Gets Cycle Job Categories Statuses
+        '''
+        result = services.get_cycle_job_categories_statuses(request.META['HTTP_JWT'])
+        if result is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+    
 class FSBidCycleJobCategoriesActionView(APIView):
 
     permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
