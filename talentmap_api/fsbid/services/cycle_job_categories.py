@@ -77,6 +77,35 @@ def cycle_job_categories_res_mapping(response):
         return list(map(categories, x.get('QRY_LSTJOBS_REF')))
     return service_response(response, 'Cycle Job Categories List Data', success_mapping)
 
+# ======================== Get Cycle Job Categories Statuses ========================
+
+def get_cycle_job_categories_statuses(jwt_token):
+    '''
+    Gets Cycle Job Categories Statuses
+    '''
+    args = {
+        "proc_name": "qry_lstjobcats",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
+        "request_body": {},
+        "request_mapping_function": cycle_categories_req_mapping,
+        "response_mapping_function": cycle_job_categories_statuses_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def cycle_job_categories_statuses_res_mapping(response):
+    def categories(x):
+        return {
+            'code': x.get('JC_ID'),
+            'description': x.get('JC_NM_TXT'),
+            'status': x.get('JC_STS_IND'),
+        }
+    def success_mapping(x):
+        return list(map(categories, x.get('QRY_LSTJOBCATS_REF')))
+    return service_response(response, 'Cycle Job Categories Statuses List Data', success_mapping)
+
 # ======================== Edit Cycle Job Categories ========================
 
 def edit_cycle_job_categories(data, jwt_token):
