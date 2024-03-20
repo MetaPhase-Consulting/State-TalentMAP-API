@@ -8,7 +8,8 @@ router = routers.SimpleRouter()
 urlpatterns = [
     url(r'^$', views.FSBidCycleCategoriesView.as_view(), name="cycle-categories"),
     url(r'^job_categories/$', views.FSBidCycleJobCategoriesView.as_view(), name="cycle-job-categories"),
-    url(r'^job_categories/edit$', views.FSBidCycleJobCategoriesActionView.as_view(), name="edit-cycle-job-categories"),
+    url(r'^job_categories/status/$', views.FSBidCycleJobCategoriesStatusesView.as_view(), name="cycle-job-categories-statuses"),
+    url(r'^job_categories/edit/$', views.FSBidCycleJobCategoriesActionView.as_view(), name="edit-cycle-job-categories"),
 ]
 
 urlpatterns += router.urls
