@@ -74,21 +74,14 @@ def create_assignment_cycle(jwt_token, request):
 
 
 def format_date_string(input_date):
-    try:
-        if input_date == '':
-            return input_date
-        if len(input_date) == 10:
-            return input_date
-        if len(input_date) == 14:
-            long_date_object = dt.strptime(input_date, "%Y%m%d%H%M%S")
-            long_formatted_date = long_date_object.strftime("%m/%d/%Y")
-            return long_formatted_date
-        date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
-        # Format the date as MM/dd/yyyy (unless it already is)
-        formatted_date = date_object.strftime("%m/%d/%Y")
-        return formatted_date
-    except:
+    if input_date == '':
         return input_date
+    if len(input_date) == 10:
+        return input_date
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # Format the date as MM/dd/yyyy (unless it already is)
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
 
 
 def save_assignment_cycle_req_mapping(req, is_update=False):
@@ -424,28 +417,36 @@ def cycle_positions_req_mapping(req):
     return mapped_request
 
 
+def format_cycle_position_date(input_date):
+    if input_date == '' or input_date is None:
+        return input_date
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
+
 def cycle_positions_res_mapping(data):
     def position_mapping(x):
         return {
-            'id': x.get('POS_SEQ_NUM') or None,  # ???
+            'id': x.get('CP_ID') or None,
             'position_number': x.get('POS_NUM_TXT') or None,
             'skill_code': x.get('SKL_CODE_POS') or None,
             'skill_desc': x.get('SKL_DESC_POS') or None,
             'title': x.get('PTITLE') or None,
             'org_code': x.get('ORG_CODE') or None,
-            'bureau': x.get('ORGS_SHORT_DESC') or None,
+            'org_desc': x.get('ORGS_SHORT_DESC') or None,
             'grade': x.get('GRD_CD') or None,
             'status': x.get('CPS_DESCR_TXT') or None,
             'languages': x.get('POSLTEXT') or None,
             'bid_cycle': x.get('CYCLE_NM_TXT') or None,
             'ted': x.get('TED') or None,
             'pay_plan': x.get('PPL_CODE') or None,
-            'formatted_last_updated': format_date_string(x.get('CP_LAST_UPDT_TMSMP_DT')) if x.get('CP_LAST_UPDT_TMSMP_DT') else None,
-            'last_updated': x.get('CP_LAST_UPDT_TMSMP_DT') or None,
-            'last_editing_user': x.get('CP_LAST_UPDT_USER_ID') or None,
+            'posted_date_formatted': format_cycle_position_date(x.get('CP_POST_DT')) if x.get('CP_POST_DT') else None,
             'posted_date': x.get('CP_POST_DT') or None,
             'incumbent_name': x.get('INCUMBENT_NAME') or None,
             'job_category': x.get('JC_NM_TXT') or None,
+            'hard_fill_flag': x.get('ACP_HARD_TO_FILL_IND') or None,
+            'crit_need_flag': x.get('CP_CRITICAL_NEED_IND') or None,
         }
 
     def success_mapping(x):
