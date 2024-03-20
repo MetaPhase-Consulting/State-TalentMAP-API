@@ -351,9 +351,10 @@ def cycle_positions_filter_res_mapping(data):
         logger.error(f"Fsbid call for Cycle Positions filters failed.")
         return None
 
-    def bureau_map(x):
+    def status_map(x):
         return {
-            'description': x.get('ORGS_SHORT_DESC'),
+            'code': x.get('CPS_CD'),
+            'description': x.get('CPS_DESCR_TXT'),
         }
 
     def org_map(x):
@@ -375,7 +376,7 @@ def cycle_positions_filter_res_mapping(data):
         }
 
     return {
-        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
+        'statusFilters': list(map(status_map, data.get('QRY_LSTCYCLEPOSSTATUS_DD_REF'))),
         'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
         'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
@@ -400,19 +401,14 @@ def get_cycle_positions(jwt, req):
 
 
 def cycle_positions_req_mapping(req):
-    value = req.get('query')
-    grades = ",".join([item['code'] for item in value['selectedGrades']]) or ''
-    skills = ",".join([item['code'] for item in value['selectedSkills']]) or ''
-    orgs = ",".join([item['code'] for item in value['selectedOrgs']]) or ''
-    bureaus = ",".join([item['description'] for item in value['selectedBureaus']]) or ''
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'I_CYCLE_ID': value['cycleId'],
-        'I_GRD_CD': grades,
-        'I_SKL_CODE_POS': skills,
-        'I_ORG_CODE': orgs,
-        'I_BUREAU_CD': bureaus,
+        'I_CYCLE_ID': req.get('cycleId'),
+        'I_GRD_CD': req.get('grades') or '',
+        'I_SKL_CODE_POS': req.get('skills') or '',
+        'I_ORG_CODE': req.get('orgs') or '',
+        'I_CPS_CD': req.get('statuses') or '',
     }
     return mapped_request
 

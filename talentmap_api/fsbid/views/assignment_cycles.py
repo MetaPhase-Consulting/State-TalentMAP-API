@@ -126,12 +126,12 @@ class FSBidCyclePositionsFiltersView(BaseView):
 class FSBidCyclePositionsView(BaseView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request):
         '''
         Get Cycle Positions
         '''
         jwt = request.META['HTTP_JWT']
-        result = services.get_cycle_positions(jwt, request.data)
+        result = services.get_cycle_positions(jwt, request.query_params)
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
