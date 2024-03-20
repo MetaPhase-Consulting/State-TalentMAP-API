@@ -411,7 +411,7 @@ def cycle_positions_req_mapping(req):
     grades = ",".join([item['code'] for item in value['selectedGrades']]) or ''
     skills = ",".join([item['code'] for item in value['selectedSkills']]) or ''
     orgs = ",".join([item['code'] for item in value['selectedOrgs']]) or ''
-    bureaus = ",".join([item['description'] for item in value['selectedGrades']]) or ''
+    bureaus = ",".join([item['description'] for item in value['selectedBureaus']]) or ''
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
