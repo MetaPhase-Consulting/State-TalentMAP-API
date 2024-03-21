@@ -45,7 +45,7 @@ class FSBidCycleJobCategoriesView(APIView):
         '''
         Gets Cycle Job Categories
         '''
-        result = services.get_cycle_job_categories(request.META['HTTP_JWT'])
+        result = services.get_cycle_job_categories(request.query_params, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

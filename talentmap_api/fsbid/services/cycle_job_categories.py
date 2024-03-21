@@ -41,17 +41,17 @@ def cycle_categories_res_mapping(response):
 
 # ======================== Get Cycle Job Categories ========================
 
-def get_cycle_job_categories(jwt_token):
+def get_cycle_job_categories(data, jwt_token):
     '''
     Gets Cycle Job Categories for a Cycle Category
     '''
     args = {
         "proc_name": "qry_getcyclejob",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
-        "request_body": {},
         "request_mapping_function": cycle_job_categories_req_mapping,
         "response_mapping_function": cycle_job_categories_res_mapping,
         "jwt_token": jwt_token,
+        "request_body": data,
     }
     return services.send_post_back_office(
         **args
