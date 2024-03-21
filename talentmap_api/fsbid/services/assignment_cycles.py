@@ -1,11 +1,11 @@
-import logging
-import pydash
 from datetime import datetime as dt
-from django.conf import settings
+from functools import partial
+import logging
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
+import pydash
+from django.conf import settings
 from rest_framework import status
-from functools import partial
 
 logger = logging.getLogger(__name__)
 
@@ -317,3 +317,135 @@ def delete_assignment_cycle_req_mapping(request):
         "i_cycle_last_updt_user_id": timestamp_id
     }
     return mapped_request
+
+
+# --------------------------------------------------------------------------------------- Cycle Positions
+
+
+def get_cycle_positions_filters(jwt_token):
+    '''
+    Gets Filters for Cycle Positions Page
+    '''
+    args = {
+        'proc_name': 'qry_lstfsbidSearch',
+        'package_name': 'PKG_WEBAPI_WRAP',
+        'request_body': {},
+        'request_mapping_function': cycle_positions_filter_req_mapping,
+        'response_mapping_function': cycle_positions_filter_res_mapping,
+        'jwt_token': jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def cycle_positions_filter_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+
+def cycle_positions_filter_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Cycle Positions filters failed.")
+        return None
+
+    def status_map(x):
+        return {
+            'code': x.get('CPS_CD'),
+            'description': x.get('CPS_DESCR_TXT'),
+        }
+
+    def org_map(x):
+        return {
+            'code': x.get('ORG_CODE'),
+            'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
+        }
+
+    def skills_map(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
+        }
+
+    def grade_map(x):
+        return {
+            'code': x.get('GRD_CD'),
+            'description': x.get('GRD_DESCR_TXT'),
+        }
+
+    return {
+        'statusFilters': list(map(status_map, data.get('QRY_LSTCYCLEPOSSTATUS_DD_REF'))),
+        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
+        'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
+        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
+    }
+
+
+def get_cycle_positions(jwt, req):
+    '''
+    Gets Positions for the Cycle Positions Page
+    '''
+    args = {
+        'proc_name': 'qry_modCyclePos',
+        'package_name': 'PKG_WEBAPI_WRAP_SPRINT98',
+        'request_body': req,
+        'request_mapping_function': cycle_positions_req_mapping,
+        'response_mapping_function': cycle_positions_res_mapping,
+        'jwt_token': jwt,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def cycle_positions_req_mapping(req):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_CYCLE_ID': req.get('cycleId'),
+        'I_GRD_CD': req.get('grades') or '',
+        'I_SKL_CODE_POS': req.get('skills') or '',
+        'I_ORG_CODE': req.get('orgs') or '',
+        'I_CPS_CD': req.get('statuses') or '',
+    }
+    return mapped_request
+
+
+def format_cycle_position_date(input_date):
+    if input_date == '' or input_date is None:
+        return input_date
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
+
+def cycle_positions_res_mapping(data):
+    def position_mapping(x):
+        return {
+            'id': x.get('CP_ID') or None,
+            'position_number': x.get('POS_NUM_TXT') or None,
+            'skill_code': x.get('SKL_CODE_POS') or None,
+            'skill_desc': x.get('SKL_DESC_POS') or None,
+            'title': x.get('PTITLE') or None,
+            'org_code': x.get('ORG_CODE') or None,
+            'org_desc': x.get('ORGS_SHORT_DESC') or None,
+            'grade': x.get('GRD_CD') or None,
+            'status': x.get('CPS_DESCR_TXT') or None,
+            'languages': x.get('POSLTEXT') or None,
+            'bid_cycle': x.get('CYCLE_NM_TXT') or None,
+            'ted': x.get('TED') or None,
+            'pay_plan': x.get('PPL_CODE') or None,
+            'posted_date_formatted': format_cycle_position_date(x.get('CP_POST_DT')) if x.get('CP_POST_DT') else None,
+            'posted_date': x.get('CP_POST_DT') or None,
+            'incumbent_name': x.get('INCUMBENT_NAME') or None,
+            'job_category': x.get('JC_NM_TXT') or None,
+            'hard_fill_flag': x.get('ACP_HARD_TO_FILL_IND') or None,
+            'crit_need_flag': x.get('CP_CRITICAL_NEED_IND') or None,
+        }
+
+    def success_mapping(x):
+        return list(map(position_mapping, x.get('QRY_MODCYCLEPOS_REF')))
+
+    return service_response(data, 'Cycle Positions Data', success_mapping)
