@@ -108,6 +108,22 @@ class FSBidAssignmentCyclesDeleteView(BaseView):
         return Response(result)
 
 
+class FSBidAssignmentCyclesMergeView(BaseView):
+    '''
+    Merge two Assignment Cycles
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.merge_assignment_cycles(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Post Open Positions failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
 class FSBidCyclePositionsFiltersView(BaseView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
 
