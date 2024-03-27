@@ -341,8 +341,8 @@ def merge_assignment_cycles_req_mapping(request):
     mapped_request = {
         "PV_API_VERSION_I": "",
         'PV_AD_ID_I': '',
-        "i_source_cycle_id": data['sourceCycle'],
-        "i_target_cycle_id": data['targetCycle'],
+        "i_source_cycle_id": data.get('sourceCycle'),
+        "i_target_cycle_id": data.get('targetCycle'),
     }
     return mapped_request
 
