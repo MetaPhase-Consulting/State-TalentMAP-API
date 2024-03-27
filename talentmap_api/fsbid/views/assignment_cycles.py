@@ -2,7 +2,6 @@ import logging
 
 from rest_condition import Or
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from talentmap_api.fsbid.views.base import BaseView
@@ -29,7 +28,7 @@ class FSBidAssignmentCyclesListView(BaseView):
         return Response(result)
 
 
-class FSBidAssignmentCyclesCreateView(APIView):
+class FSBidAssignmentCyclesCreateView(BaseView):
     '''
     Create a new Assignment Cycle for the Cycle Management Page
     '''
@@ -61,7 +60,7 @@ class FSBidAssignmentCycleListView(BaseView):
         return Response(result)
 
 
-class FSBidAssignmentCyclesUpdateView(APIView):
+class FSBidAssignmentCyclesUpdateView(BaseView):
     '''
     Update an Assignment Cycle for the Cycle Management Page
     '''
@@ -93,7 +92,7 @@ class FSBidAssignmentCyclesPostPosView(BaseView):
         return Response(result)
 
 
-class FSBidAssignmentCyclesDeleteView(APIView):
+class FSBidAssignmentCyclesDeleteView(BaseView):
     '''
     Delete an Assignment Cycle
     '''
@@ -109,7 +108,7 @@ class FSBidAssignmentCyclesDeleteView(APIView):
         return Response(result)
 
 
-class FSBidAssignmentCyclesMergeView(APIView):
+class FSBidAssignmentCyclesMergeView(BaseView):
     '''
     Merge two Assignment Cycles
     '''
