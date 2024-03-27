@@ -325,7 +325,7 @@ def merge_assignment_cycles(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modMergeCycles',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
         "request_mapping_function": merge_assignment_cycles_req_mapping,
         "response_mapping_function": update_assignment_cycles_res_mapping,
