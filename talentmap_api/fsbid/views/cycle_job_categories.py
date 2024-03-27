@@ -14,6 +14,7 @@ from drf_yasg import openapi
 import talentmap_api.fsbid.services.cycle_job_categories as services
 
 from talentmap_api.common.permissions import isDjangoGroupMember
+from talentmap_api.common.common_helpers import view_result
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +27,7 @@ class FSBidCycleCategoriesView(APIView):
         Gets Cycle Categories
         '''
         result = services.get_cycle_categories(request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
+        return view_result(result)
     
 class FSBidCycleJobCategoriesView(APIView):
 
@@ -46,10 +44,7 @@ class FSBidCycleJobCategoriesView(APIView):
         Gets Cycle Job Categories
         '''
         result = services.get_cycle_job_categories(request.query_params, request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
+        return view_result(result)
 
 class FSBidCycleJobCategoriesStatusesView(APIView):
 
@@ -60,10 +55,7 @@ class FSBidCycleJobCategoriesStatusesView(APIView):
         Gets Cycle Job Categories Statuses
         '''
         result = services.get_cycle_job_categories_statuses(request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
+        return view_result(result)
     
 class FSBidCycleJobCategoriesActionView(APIView):
 
@@ -85,7 +77,4 @@ class FSBidCycleJobCategoriesActionView(APIView):
         Edit Cycle Job Categories
         '''
         result = services.edit_cycle_job_categories(request.data, request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return view_result(result)
