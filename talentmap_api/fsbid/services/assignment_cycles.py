@@ -319,6 +319,33 @@ def delete_assignment_cycle_req_mapping(request):
     return mapped_request
 
 
+def merge_assignment_cycles(jwt_token, request):
+    '''
+    Merge two Assignment Cycles
+    '''
+    args = {
+        "proc_name": 'act_modMergeCycles',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_body": request,
+        "request_mapping_function": merge_assignment_cycles_req_mapping,
+        "response_mapping_function": update_assignment_cycles_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def merge_assignment_cycles_req_mapping(request):
+    data = request.get('data')
+    mapped_request = {
+        "PV_API_VERSION_I": "",
+        'PV_AD_ID_I': '',
+        "i_source_cycle_id": data.get('sourceCycle'),
+        "i_target_cycle_id": data.get('targetCycle'),
+    }
+    return mapped_request
+
 # --------------------------------------------------------------------------------------- Cycle Positions
 
 
