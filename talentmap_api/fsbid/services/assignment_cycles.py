@@ -476,3 +476,77 @@ def cycle_positions_res_mapping(data):
         return list(map(position_mapping, x.get('QRY_MODCYCLEPOS_REF')))
 
     return service_response(data, 'Cycle Positions Data', success_mapping)
+
+
+def get_cycle_classifications(jwt_token, request):
+    '''
+    Gets the Data for the Assignment Cycle Classifications Page
+    '''
+    args = {
+        "proc_name": 'qry_modCycleDateClasses',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": assignment_cycles_req_mapping,  # double check in swagger
+        "response_mapping_function": assignment_cycles_classifications_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def assignment_cycles_classifications_res_mapping(data):
+    def classifications_mapping(x):
+        return {
+            'code': x.get('PCT_CODE'),
+            'description': x.get('PCT_DESC_TEXT'),
+            'short_description': x.get('PCT_SHORT_DESC_TEXT'),
+        }
+
+    def cycle_mapping(x):
+        return {
+            'cycle_code': x.get('CDT_CD'),
+            'sort_order': x.get('CDT_SORT_ORDER_NUM'),
+            'code': x.get('PCT_CODE'),
+            'selection_text': x.get('PCT_DESC_TEXT'),
+            'value': x.get('INC_IND'),
+            'update_id': x.get('CDC_UPDATE_ID'),
+            'update_date': x.get('CDC_UPDATE_DATE'),
+        }
+
+    def cycle_classifications_selection(cycle_data):
+        cycles_mapped = []
+
+        for item in cycle_data:
+            cycle_id = item['CYCLE_ID']
+            cycle_name = item['CYCLE_NM_TXT']
+            cycle_code = item['CDT_CD']
+            description = item['CDT_DESCR_TXT']
+
+            # Check if the id and code exist in the mapped results list
+            # Split by Pre-Season (BURPREBD) & Early Season (BUREARLY) Bid Review Dates
+            existing_item = next((x for x in cycles_mapped if (x['cycle_id'] == cycle_id and x['cycle_code'] == cycle_code)), None)
+
+            # If the id & code don't exist, add a new dict to the result list
+            if existing_item is None:
+                cycles_mapped.append(
+                    {
+                        'cycle_id': cycle_id,
+                        'cycle_desc': description,
+                        'cycle_name': cycle_name,
+                        'cycle_code': cycle_code,
+                        'values': [cycle_mapping(item)]
+                    }
+                )
+            else:
+                existing_item['values'].append(cycle_mapping(item))
+
+        return cycles_mapped
+
+    def success_mapping(x):
+        return {
+            'cycle_classifications': list(map(classifications_mapping, x.get('QRY_PCT_REF'))),
+            'classification_selections': cycle_classifications_selection(x.get('QRY_MODCYCLEDATECLASSES_REF')),
+        }
+
+    return service_response(data, 'Cycle Classifications Data', success_mapping)
