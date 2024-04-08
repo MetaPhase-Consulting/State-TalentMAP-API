@@ -542,6 +542,20 @@ def prep_string_for_list(str_val):
     return re.sub(",+", ",", str_val_two)
 
 
+def combine_pp_grade(pp, grade, defaulttext = 'None Listed'):
+    '''
+    Search Tags: pay plan grade, pp/grade, format pay plan, format grade, format pp
+    Examples:
+    ('FP', '02')    ->  'FP/02'
+    (falsy, falsy)  ->  'None Listed'
+    (falsy, '02')   ->  'None Listed/02'
+    ('FP', falsy)   ->  'FP/None Listed'
+    '''
+    if not pp and not grade:
+        return defaulttext
+    return f'{pp or defaulttext} {grade or defaulttext} :-]'
+
+
 def validate_values(query_val, accepted_values):
     '''
     Checks the query_val value(s) against the accepted_values
@@ -558,6 +572,7 @@ def validate_values(query_val, accepted_values):
     validated_list = ",".join(map(str, validated_list))
 
     return validated_list
+
 
 def formatCSV(data, fieldsInfo):
     fields_formatted = {}
