@@ -553,7 +553,7 @@ def combine_pp_grade(pp, grade, defaulttext = 'None Listed'):
     '''
     if not pp and not grade:
         return defaulttext
-    return f'{pp or defaulttext} {grade or defaulttext} :-]'
+    return f'{pp or defaulttext} {grade or defaulttext}'
 
 
 def validate_values(query_val, accepted_values):
