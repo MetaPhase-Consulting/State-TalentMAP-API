@@ -2,8 +2,14 @@ import logging
 from urllib.parse import urlencode, quote
 import jwt
 import pydash
+import csv
+from copy import deepcopy
+from datetime import datetime
+from functools import partial
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
@@ -67,6 +73,7 @@ def convert_capsule_query(query):
 
 
 def get_publishable_positions(query, jwt_token):
+    # logger.info('GET QUERY: ', query)
     '''
     Gets Publishable Positions
     '''
@@ -83,6 +90,7 @@ def get_publishable_positions(query, jwt_token):
     )
 
 def publishable_positions_req_mapping(request):
+    logger.info('req mapping query: ', request)
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -234,3 +242,80 @@ def publishable_positions_filter_res_mapping(data):
         'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
     }
+
+def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
+    # logger.info('CSV QUERY: ', query)
+    csvQuery = deepcopy(query)
+    csvQuery['page'] = 1
+    csvQuery['limit'] = 1000
+
+    mapping_subset = {
+        'default': 'None Listed',
+        'wskeys': {
+            'POS_NUM_TXT': {},
+            'SKL_CODE_POS': {},
+            'POS_TITLE_TXT': {},
+            'BUR_SHORT_DESC': {},
+            'ORGS_SHORT_DESC': {},
+            'GRD_CD': {},
+            'PUBS_CD': {},
+            'LANG_DESCR_TXT': {},
+            'PPL_CODE': {},
+            'PPOS_CAPSULE_DESCR_TXT': {},
+        }
+    }
+    # args = {
+    #     "uri": "",
+    #     "query": csvQuery,
+    #     "query_mapping_function": publishable_positions_req_mapping,
+    #     "count_function": None,
+    #     "jwt_token": jwt_token,
+    #     "mapping_function": partial(services.csv_fsbid_template_to_tm, mapping=mapping_subset),
+    #     "base_url": "/api/v1/panels/",
+    #     "api_root": PANEL_API_ROOT,
+    #     "host": host,
+    #     "use_post": False,
+    # }
+
+    args = {
+        "proc_name": 'qry_modPublishPos',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_mapping_function": publishable_positions_req_mapping,
+        # "response_mapping_function": publishable_positions_res_mapping,
+        "response_mapping_function": partial(services.csv_fsbid_template_to_tm, mapping=mapping_subset),
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+
+    data = services.send_post_back_office(
+        **args
+    )
+    logger.info('PP data: ', str(data))
+
+    # data = services.send_get_request(**args)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f"attachment; filename=publishable_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+
+    writer = csv.writer(response, csv.excel)
+    response.write(u'\ufeff'.encode('utf8'))
+
+    # write the headers
+    writer.writerow([
+        smart_str(u"Position Number"),
+        smart_str(u"Skill"),
+        smart_str(u"Position Title"),
+        smart_str(u"Bureau"),
+        smart_str(u"Organization"),
+        smart_str(u"Grade"),
+        smart_str(u"Status"),
+        smart_str(u"Language"),
+        smart_str(u"Pay Plan"),
+        smart_str(u"Position Details"),
+    ])
+    # for x in data:
+    #     logger.info('========X========', str(x))
+        # writer.writerow([x])
+    writer.writerows([data])
+
+    return response
