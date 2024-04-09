@@ -73,7 +73,6 @@ def convert_capsule_query(query):
 
 
 def get_publishable_positions(query, jwt_token):
-    # logger.info('GET QUERY: ', query)
     '''
     Gets Publishable Positions
     '''
@@ -90,7 +89,6 @@ def get_publishable_positions(query, jwt_token):
     )
 
 def publishable_positions_req_mapping(request):
-    logger.info('req mapping query: ', request)
     return {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
