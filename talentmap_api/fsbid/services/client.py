@@ -381,8 +381,10 @@ def map_skill_codes_for_csv(data, prefix='per'):
         index = f'_{i}'
         if i == 1:
             index = ''
+        code = data.get(f'{prefix}_skill{index}_code', None)
         desc = data.get(f'{prefix}_skill{index}_code_desc', None)
-        skills.append(desc)
+        skill = f'({code}) {desc}'
+        skills.append(skill)
     return filter(lambda x: x is not None, skills)
 
 
