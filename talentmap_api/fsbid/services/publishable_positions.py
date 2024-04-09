@@ -244,45 +244,11 @@ def publishable_positions_filter_res_mapping(data):
     }
 
 def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
-    # logger.info('CSV QUERY: ', query)
-    csvQuery = deepcopy(query)
-    csvQuery['page'] = 1
-    csvQuery['limit'] = 1000
-
-    mapping_subset = {
-        'default': 'None Listed',
-        'wskeys': {
-            'POS_NUM_TXT': {},
-            'SKL_CODE_POS': {},
-            'POS_TITLE_TXT': {},
-            'BUR_SHORT_DESC': {},
-            'ORGS_SHORT_DESC': {},
-            'GRD_CD': {},
-            'PUBS_CD': {},
-            'LANG_DESCR_TXT': {},
-            'PPL_CODE': {},
-            'PPOS_CAPSULE_DESCR_TXT': {},
-        }
-    }
-    # args = {
-    #     "uri": "",
-    #     "query": csvQuery,
-    #     "query_mapping_function": publishable_positions_req_mapping,
-    #     "count_function": None,
-    #     "jwt_token": jwt_token,
-    #     "mapping_function": partial(services.csv_fsbid_template_to_tm, mapping=mapping_subset),
-    #     "base_url": "/api/v1/panels/",
-    #     "api_root": PANEL_API_ROOT,
-    #     "host": host,
-    #     "use_post": False,
-    # }
-
     args = {
         "proc_name": 'qry_modPublishPos',
         "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": publishable_positions_req_mapping,
-        # "response_mapping_function": publishable_positions_res_mapping,
-        "response_mapping_function": partial(services.csv_fsbid_template_to_tm, mapping=mapping_subset),
+        "response_mapping_function": publishable_positions_res_mapping,
         "jwt_token": jwt_token,
         "request_body": query,
     }
@@ -290,9 +256,6 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
     data = services.send_post_back_office(
         **args
     )
-    logger.info('PP data: ', str(data))
-
-    # data = services.send_get_request(**args)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=publishable_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
@@ -311,11 +274,36 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Status"),
         smart_str(u"Language"),
         smart_str(u"Pay Plan"),
+        smart_str(u"RWA/DETO Eligible"),
+        smart_str(u"Bid Cycle"),
+        smart_str(u"TED"),
+        smart_str(u"Incumbent"),
+        smart_str(u"Tour of Duty"),
+        smart_str(u"Assignee"),
+        smart_str(u"Post Differential | Danger Pay"),
+        smart_str(u"Posted Date"),
         smart_str(u"Position Details"),
     ])
-    # for x in data:
-    #     logger.info('========X========', str(x))
-        # writer.writerow([x])
-    writer.writerows([data])
+    for x in data:
+        writer.writerow([
+            smart_str(x.get('positionNumber')),
+            smart_str(x.get('skill')),
+            smart_str(x.get('positionTitle')),
+            smart_str(x.get('bureau')),
+            smart_str(x.get('org')),
+            smart_str(x.get('grade')),
+            smart_str(x.get('status')),
+            smart_str(x.get('language')),
+            smart_str(x.get('payPlan')),
+            smart_str(x.get('rwa')), # We are not receiving this data yet from here -
+            smart_str(x.get('bidCycle')),
+            smart_str(x.get('ted')),
+            smart_str(x.get('incumbent')),
+            smart_str(x.get('tod')),
+            smart_str(x.get('assignee')),
+            smart_str(x.get('post')),
+            smart_str(x.get('postedDate')), # - To here
+            smart_str(x.get('positionDetails')),
+        ])
 
     return response

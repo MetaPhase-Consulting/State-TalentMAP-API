@@ -1055,9 +1055,6 @@ def csv_fsbid_template_to_tm(data, mapping):
     '''
     row = []
 
-    data = data['QRY_MODPUBLISHPOS_REF'][1]
-    logger.info('common data: ', str(data))
-
     for x in mapping['wskeys'].keys():
         default = mapping['wskeys'][x]['default'] if 'default' in mapping['wskeys'][x] else mapping['default']
 
