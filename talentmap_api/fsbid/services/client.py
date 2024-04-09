@@ -11,8 +11,9 @@ import pydash
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
 from talentmap_api.fsbid.requests import requests
+
 
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
@@ -270,14 +271,19 @@ def fsbid_clients_to_talentmap_clients(data):
     middle_name = get_middle_name(employee)
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
+    pp = employee.get("per_pay_plan_code")
+    grade = employee.get("per_grade_code")
+    combined_pp_grade = combine_pp_grade(pp, grade)
+
     return {
         "id": str(employee.get("pert_external_id", None)),
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
         "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
-        "grade": employee.get("per_grade_code", None),
-        "pay_plan": employee.get("per_pay_plan_code"),
+        "pay_plan": pp,
+        "grade": grade,
+        "combined_pp_grade": combined_pp_grade,
         "skills": map_skill_codes(employee),
         "employee_id": str(employee.get("pert_external_id", None)),
         "role_code": data.get("rl_cd", None),
