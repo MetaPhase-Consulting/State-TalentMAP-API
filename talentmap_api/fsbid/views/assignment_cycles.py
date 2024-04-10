@@ -158,7 +158,7 @@ class FSBidCyclePositionsView(BaseView):
 
 class FSBidCycleClassificationsView(BaseView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
-    # double check the roles that can view & edit
+    # Bureau & AO can View, only Admin can Edit
 
     def get(self, request):
         '''

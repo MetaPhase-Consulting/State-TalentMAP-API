@@ -486,7 +486,7 @@ def get_cycle_classifications(jwt_token, request):
         "proc_name": 'qry_modCycleDateClasses',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_body": request,
-        "request_mapping_function": assignment_cycles_req_mapping,  # double check in swagger
+        "request_mapping_function": assignment_cycles_req_mapping,
         "response_mapping_function": assignment_cycles_classifications_res_mapping,
         "jwt_token": jwt_token,
     }
@@ -505,8 +505,6 @@ def assignment_cycles_classifications_res_mapping(data):
 
     def cycle_mapping(x):
         return {
-            'cycle_code': x.get('CDT_CD'),
-            'sort_order': x.get('CDT_SORT_ORDER_NUM'),
             'code': x.get('PCT_CODE'),
             'selection_text': x.get('PCT_DESC_TEXT'),
             'value': x.get('INC_IND'),
@@ -522,6 +520,7 @@ def assignment_cycles_classifications_res_mapping(data):
             cycle_name = item['CYCLE_NM_TXT']
             cycle_code = item['CDT_CD']
             description = item['CDT_DESCR_TXT']
+            sort_order = item['CDT_SORT_ORDER_NUM']
 
             # Check if the id and code exist in the mapped results list
             # Split by Pre-Season (BURPREBD) & Early Season (BUREARLY) Bid Review Dates
@@ -535,6 +534,7 @@ def assignment_cycles_classifications_res_mapping(data):
                         'cycle_desc': description,
                         'cycle_name': cycle_name,
                         'cycle_code': cycle_code,
+                        'sort_order': sort_order,
                         'values': [cycle_mapping(item)]
                     }
                 )
