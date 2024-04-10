@@ -189,9 +189,13 @@ def asg_ref_data_req_mapping(request):
 
 
 def asg_ref_data_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for fetching assignment reference data failed.')
-        return None
+    # if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+    #    logger.error('FSBid call for fetching assignment reference data failed.')
+    #    return None
+    
+    # Skip error handling because there is reference data returned with id based data
+    # Scenario 1: fetch id data and ref asg_ref_data_res_mapping (edit existing asg)
+    # Scenario 2: fetch just ref data and id data errors (create new asg)
     return data
 
 
