@@ -154,3 +154,20 @@ class FSBidCyclePositionsView(BaseView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidCycleClassificationsView(BaseView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
+    # Bureau & AO can View, only Admin can Edit
+
+    def get(self, request):
+        '''
+        Get Cycle Classifications
+        '''
+        jwt = request.META['HTTP_JWT']
+        result = services.get_cycle_classifications(jwt, request.query_params)
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Get Cycle Classifications Failed")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)

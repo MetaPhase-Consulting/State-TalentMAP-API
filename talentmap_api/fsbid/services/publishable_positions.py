@@ -13,6 +13,7 @@ from django.utils.encoding import smart_str
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
+from talentmap_api.common.common_helpers import combine_pp_grade
 
 PUBLISHABLE_POSITIONS_ROOT = settings.PUBLISHABLE_POSITIONS_API_URL
 
@@ -122,10 +123,11 @@ def publishable_positions_res_mapping(data):
             'positionTitle': x.get('POS_TITLE_TXT'),
             'bureau': x.get('BUR_SHORT_DESC'),
             'org': services.format_desc_code(x.get('ORGS_SHORT_DESC'), x.get('ORG_CODE')),
-            'grade': x.get('GRD_CD'),
             'status': x.get('PUBS_CD'),
             'language': x.get('LANG_DESCR_TXT'),
             'payPlan': x.get('PPL_CODE'),
+            'grade': x.get('GRD_CD'),
+            'combined_pp_grade': combine_pp_grade(x.get('PPL_CODE'), x.get('GRD_CD')),
             'positionDetails': x.get('PPOS_CAPSULE_DESCR_TXT'),
             'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
             'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
