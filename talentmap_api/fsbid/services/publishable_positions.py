@@ -259,10 +259,9 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Position Title"),
         smart_str(u"Bureau"),
         smart_str(u"Organization"),
-        smart_str(u"Grade"),
+        smart_str(u"Pay Plan/Grade"),
         smart_str(u"Status"),
         smart_str(u"Language"),
-        smart_str(u"Pay Plan"),
         smart_str(u"RWA/DETO Eligible"),
         smart_str(u"Bid Cycle"),
         smart_str(u"TED"),
@@ -276,14 +275,13 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
     for x in data:
         writer.writerow([
             smart_str(x.get('positionNumber')),
-            smart_str(x.get('skill')),
+            smart_str(x.get('skill').strip('()')),
             smart_str(x.get('positionTitle')),
             smart_str(x.get('bureau')),
             smart_str(x.get('org')),
-            smart_str(x.get('grade')),
+            smart_str(combine_pp_grade(x.get('payPlan'), x.get('grade'))),
             smart_str(x.get('status')),
             smart_str(x.get('language')),
-            smart_str(x.get('payPlan')),
             smart_str(x.get('rwa')), # We are not receiving this data yet from here -
             smart_str(x.get('bidCycle')),
             smart_str(x.get('ted')),
