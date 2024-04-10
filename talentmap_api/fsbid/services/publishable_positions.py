@@ -244,18 +244,7 @@ def publishable_positions_filter_res_mapping(data):
     }
 
 def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
-    args = {
-        "proc_name": 'qry_modPublishPos',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": publishable_positions_req_mapping,
-        "response_mapping_function": publishable_positions_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": query,
-    }
-
-    data = services.send_post_back_office(
-        **args
-    )
+    data = get_publishable_positions(query, jwt_token)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=publishable_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
