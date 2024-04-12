@@ -550,3 +550,46 @@ def assignment_cycles_classifications_res_mapping(data):
         }
 
     return service_response(data, 'Cycle Classifications Data', success_mapping)
+
+
+def update_assignment_cycle_classification_dates(jwt_token, request):
+    '''
+    Update Assignment Cycle Dates
+    '''
+    args = {
+        "proc_name": 'act_modCycleDateClasses',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": update_assignment_cycles_classifications_req_mapping,
+        "response_mapping_function": update_assignment_cycles_classifications_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def update_assignment_cycles_classifications_res_mapping(data):
+    return service_response(data, 'Assignment Cycles Update Cycle Dates')
+
+
+def update_assignment_cycles_classifications_req_mapping(req):
+    data = req['data']
+    cycle_id = data['id']
+    cycle_code = data['code']
+    checked_values = [item['value'] for item in data['values']]
+    checked_codes = [item['code'] for item in data['values']]
+    checked_values_string = ",".join(checked_values)
+    checked_codes_string = ",".join(checked_codes)
+
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_CYCLE_ID': cycle_id,
+        'I_CDT_CD': cycle_code,
+        'I_INC_IND': checked_values_string,
+        'I_PCT_CODE': checked_codes_string,
+        'I_CDC_UPDATE_ID': ',,,,,,,,,,,,,,',
+        'I_CDC_UPDATE_DATE': ',,,,,,,,,,,,,,',
+    }
+    return mapped_request
