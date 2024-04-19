@@ -261,7 +261,6 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Pay Plan/Grade"),
         smart_str(u"Publishable Status"),
         smart_str(u"Language"),
-        smart_str(u"RWA/DETO Eligible"),
         smart_str(u"Bid Cycle"),
         smart_str(u"TED"),
         smart_str(u"Incumbent"),
@@ -282,8 +281,7 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
             smart_str(combine_pp_grade(x.get('payPlan'), x.get('grade'))),
             smart_str(x.get('status')),
             smart_str(x.get('language')),
-            smart_str(x.get('rwa')), # We are not receiving this data yet from here -
-            smart_str(x.get('bidCycle')),
+            smart_str(x.get('bidCycle')), # We are not receiving this data yet from here -
             smart_str(x.get('ted')),
             smart_str(x.get('incumbent')),
             smart_str(x.get('tod')),
