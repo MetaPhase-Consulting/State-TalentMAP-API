@@ -48,7 +48,7 @@ def get_bid_audit_res_mapping(data):
             'audit_desc': x.get('AAC_DESC_TXT') or None,
             'audit_date': format_dates(x.get('AAC_AUDIT_DT')) if x.get('AAC_AUDIT_DT') else None,
             'audit_date_unformatted': x.get('AAC_AUDIT_DT'),
-            'posted_by_date': x.get('AAC_POSTED_BY_DT') or None,
+            'posted_by_date': format_dates(x.get('AAC_POSTED_BY_DT')) if x.get('AAC_POSTED_BY_DT') else None,
             'cycle_id': x.get('CYCLE_ID') or None,
             'cycle_name': x.get('CYCLE_NM_TXT') or None,
             'cycle_status_code': x.get('CS_CD') or None,
