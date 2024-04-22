@@ -1,14 +1,12 @@
 import logging
-
-# from rest_condition import Or
 from rest_framework import status
-# from rest_framework.views import APIView
 from rest_framework.response import Response
 # from rest_framework.permissions import IsAuthenticated
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.bid_audit as services
 
 # from talentmap_api.common.permissions import isDjangoGroupMember
+# double check permissions
 
 logger = logging.getLogger(__name__)
 

@@ -1,11 +1,7 @@
-# from datetime import datetime as dt
-# from functools import partial
 import logging
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
-# import pydash
 from django.conf import settings
-# from rest_framework import status
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +72,6 @@ def get_in_category(jwt_token, request):
 
 
 def get_in_category_req_mapping(request):
-    # data = request.get('data')
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -120,7 +115,6 @@ def get_at_grade(jwt_token, request):
 
 
 def get_at_grade_req_mapping(request):
-    # data = request.get('data')
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
