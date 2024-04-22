@@ -1,7 +1,8 @@
 import logging
+from django.conf import settings
+from datetime import datetime as dt
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +34,20 @@ def get_bid_audit_req_mapping(request):
     return mapped_request
 
 
+def format_dates(input_date):
+    if input_date == '' or input_date is None:
+        return input_date
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
 def get_bid_audit_res_mapping(data):
     def results_mapping(x):
         return {
             'audit_id': x.get('AAC_AUDIT_NBR') or None,
             'audit_desc': x.get('AAC_DESC_TXT') or None,
-            'audit_date': x.get('AAC_AUDIT_DT') or None,
+            'audit_date': format_dates(x.get('AAC_AUDIT_DT')) if x.get('AAC_AUDIT_DT') else None,
+            'audit_date_unformatted': x.get('AAC_AUDIT_DT'),
             'posted_by_date': x.get('AAC_POSTED_BY_DT') or None,
             'cycle_id': x.get('CYCLE_ID') or None,
             'cycle_name': x.get('CYCLE_NM_TXT') or None,
@@ -48,8 +57,16 @@ def get_bid_audit_res_mapping(data):
             'cycle_category': x.get('CC_DESCR_TXT') or None,
         }
 
+    def sort_by_audit_date(audits):
+        if audits['audit_date_unformatted'] is None:
+            return ''
+        else:
+            return audits['audit_date_unformatted']
+
     def success_mapping(x):
-        return list(map(results_mapping, x.get('QRY_LSTAUDITASSIGNCYCLES_REF')))
+        audits = list(map(results_mapping, x.get('QRY_LSTAUDITASSIGNCYCLES_REF')))
+        sorted_audits = sorted(audits, key=sort_by_audit_date, reverse=True)
+        return sorted_audits
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
 
