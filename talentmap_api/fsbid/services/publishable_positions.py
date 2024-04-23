@@ -123,7 +123,6 @@ def publishable_positions_res_mapping(data):
             'bureau': x.get('BUR_SHORT_DESC'),
             'org': services.format_desc_code(x.get('ORGS_SHORT_DESC'), x.get('ORG_CODE')),
             'orgCode': x.get('ORG_CODE'),
-            'grade': x.get('GRD_CD'),
             'status': x.get('PUBS_CD'),
             'language': x.get('LANG_DESCR_TXT'),
             'payPlan': x.get('PPL_CODE'),
