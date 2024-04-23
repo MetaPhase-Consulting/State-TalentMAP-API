@@ -1,10 +1,7 @@
-import logging
 from django.conf import settings
 from datetime import datetime as dt
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
-
-logger = logging.getLogger(__name__)
 
 WS_ROOT = settings.WS_ROOT_API_URL
 
@@ -64,7 +61,7 @@ def get_bid_audit_res_mapping(data):
             return audits['audit_date_unformatted']
 
     def success_mapping(x):
-        audits = list(map(results_mapping, x.get('QRY_LSTAUDITASSIGNCYCLES_REF')))
+        audits = list(map(results_mapping, x.get('QRY_LSTAUDITASSIGNCYCLES_REF', {})))
         sorted_audits = sorted(audits, key=sort_by_audit_date, reverse=True)
         return sorted_audits
 
@@ -109,7 +106,7 @@ def get_in_category_res_mapping(data):
         }
 
     def success_mapping(x):
-        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITINCATEGORIES_REF')))
+        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITINCATEGORIES_REF', {})))
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
 
@@ -156,6 +153,6 @@ def get_at_grade_res_mapping(data):
         }
 
     def success_mapping(x):
-        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITATGRADES_REF')))
+        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITATGRADES_REF', {})))
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
