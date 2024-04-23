@@ -171,3 +171,20 @@ class FSBidCycleClassificationsView(BaseView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidCycleClassificationsUpdateView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), )]
+    '''
+    Update an Assignment Cycle Date Classifications
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.update_assignment_cycles_classifications(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Update Assignment Cycle Date Classifications Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
