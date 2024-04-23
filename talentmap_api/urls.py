@@ -103,6 +103,7 @@ urlpatterns = [
     # Bidding
     url(r'^api/v1/bidding/', include('talentmap_api.bidding.urls.bidding')),
     url(r'^api/v1/bidhandshakecycle/', include('talentmap_api.bidding.urls.bidhandshakecycle')),
+    url(r'^api/v1/fsbid/bid_audit/', include('talentmap_api.fsbid.urls.bid_audit')),
 
     # Bidding Tool
     url(r'^api/v1/fsbid/bidding_tool/', include('talentmap_api.fsbid.urls.bidding_tool')),
