@@ -1,11 +1,11 @@
-import logging
-import pydash
 from datetime import datetime as dt
-from django.conf import settings
+from functools import partial
+import logging
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
+import pydash
+from django.conf import settings
 from rest_framework import status
-from functools import partial
 
 logger = logging.getLogger(__name__)
 
@@ -317,3 +317,236 @@ def delete_assignment_cycle_req_mapping(request):
         "i_cycle_last_updt_user_id": timestamp_id
     }
     return mapped_request
+
+
+def merge_assignment_cycles(jwt_token, request):
+    '''
+    Merge two Assignment Cycles
+    '''
+    args = {
+        "proc_name": 'act_modMergeCycles',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": merge_assignment_cycles_req_mapping,
+        "response_mapping_function": update_assignment_cycles_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def merge_assignment_cycles_req_mapping(request):
+    data = request.get('data')
+    mapped_request = {
+        "PV_API_VERSION_I": "",
+        'PV_AD_ID_I': '',
+        "i_source_cycle_id": data.get('sourceCycle'),
+        "i_target_cycle_id": data.get('targetCycle'),
+    }
+    return mapped_request
+
+# --------------------------------------------------------------------------------------- Cycle Positions
+
+
+def get_cycle_positions_filters(jwt_token):
+    '''
+    Gets Filters for Cycle Positions Page
+    '''
+    args = {
+        'proc_name': 'qry_lstfsbidSearch',
+        'package_name': 'PKG_WEBAPI_WRAP',
+        'request_body': {},
+        'request_mapping_function': cycle_positions_filter_req_mapping,
+        'response_mapping_function': cycle_positions_filter_res_mapping,
+        'jwt_token': jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def cycle_positions_filter_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+
+
+def cycle_positions_filter_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error(f"Fsbid call for Cycle Positions filters failed.")
+        return None
+
+    def status_map(x):
+        return {
+            'code': x.get('CPS_CD'),
+            'description': x.get('CPS_DESCR_TXT'),
+        }
+
+    def org_map(x):
+        return {
+            'code': x.get('ORG_CODE'),
+            'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
+        }
+
+    def skills_map(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'description': x.get('SKL_DESC'),
+        }
+
+    def grade_map(x):
+        return {
+            'code': x.get('GRD_CD'),
+            'description': x.get('GRD_DESCR_TXT'),
+        }
+
+    return {
+        'statusFilters': list(map(status_map, data.get('QRY_LSTCYCLEPOSSTATUS_DD_REF'))),
+        'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
+        'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
+        'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
+    }
+
+
+def get_cycle_positions(jwt, req):
+    '''
+    Gets Positions for the Cycle Positions Page
+    '''
+    args = {
+        'proc_name': 'qry_modCyclePos',
+        'package_name': 'PKG_WEBAPI_WRAP_SPRINT98',
+        'request_body': req,
+        'request_mapping_function': cycle_positions_req_mapping,
+        'response_mapping_function': cycle_positions_res_mapping,
+        'jwt_token': jwt,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def cycle_positions_req_mapping(req):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_CYCLE_ID': req.get('cycleId'),
+        'I_GRD_CD': req.get('grades') or '',
+        'I_SKL_CODE_POS': req.get('skills') or '',
+        'I_ORG_CODE': req.get('orgs') or '',
+        'I_CPS_CD': req.get('statuses') or '',
+    }
+    return mapped_request
+
+
+def format_cycle_position_date(input_date):
+    if input_date == '' or input_date is None:
+        return input_date
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
+
+def cycle_positions_res_mapping(data):
+    def position_mapping(x):
+        return {
+            'id': x.get('CP_ID') or None,
+            'position_number': x.get('POS_NUM_TXT') or None,
+            'skill_code': x.get('SKL_CODE_POS') or None,
+            'skill_desc': x.get('SKL_DESC_POS') or None,
+            'title': x.get('PTITLE') or None,
+            'org_code': x.get('ORG_CODE') or None,
+            'org_desc': x.get('ORGS_SHORT_DESC') or None,
+            'grade': x.get('GRD_CD') or None,
+            'status': x.get('CPS_DESCR_TXT') or None,
+            'languages': x.get('POSLTEXT') or None,
+            'bid_cycle': x.get('CYCLE_NM_TXT') or None,
+            'ted': x.get('TED') or None,
+            'pay_plan': x.get('PPL_CODE') or None,
+            'posted_date_formatted': format_cycle_position_date(x.get('CP_POST_DT')) if x.get('CP_POST_DT') else None,
+            'posted_date': x.get('CP_POST_DT') or None,
+            'incumbent_name': x.get('INCUMBENT_NAME') or None,
+            'job_category': x.get('JC_NM_TXT') or None,
+            'hard_fill_flag': x.get('ACP_HARD_TO_FILL_IND') or None,
+            'crit_need_flag': x.get('CP_CRITICAL_NEED_IND') or None,
+        }
+
+    def success_mapping(x):
+        return list(map(position_mapping, x.get('QRY_MODCYCLEPOS_REF')))
+
+    return service_response(data, 'Cycle Positions Data', success_mapping)
+
+
+def get_cycle_classifications(jwt_token, request):
+    '''
+    Gets the Data for the Assignment Cycle Classifications Page
+    '''
+    args = {
+        "proc_name": 'qry_modCycleDateClasses',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": assignment_cycles_req_mapping,
+        "response_mapping_function": assignment_cycles_classifications_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def assignment_cycles_classifications_res_mapping(data):
+    def classifications_mapping(x):
+        return {
+            'code': x.get('PCT_CODE'),
+            'description': x.get('PCT_DESC_TEXT'),
+            'short_description': x.get('PCT_SHORT_DESC_TEXT'),
+        }
+
+    def cycle_mapping(x):
+        return {
+            'code': x.get('PCT_CODE'),
+            'selection_text': x.get('PCT_DESC_TEXT'),
+            'value': x.get('INC_IND'),
+            'update_id': x.get('CDC_UPDATE_ID'),
+            'update_date': x.get('CDC_UPDATE_DATE'),
+        }
+
+    def cycle_classifications_selection(cycle_data):
+        cycles_mapped = []
+
+        for item in cycle_data:
+            cycle_id = item['CYCLE_ID']
+            cycle_name = item['CYCLE_NM_TXT']
+            cycle_code = item['CDT_CD']
+            description = item['CDT_DESCR_TXT']
+            sort_order = item['CDT_SORT_ORDER_NUM']
+
+            # Check if the id and code exist in the mapped results list
+            # Split by Pre-Season (BURPREBD) & Early Season (BUREARLY) Bid Review Dates
+            existing_item = next((x for x in cycles_mapped if (x['cycle_id'] == cycle_id and x['cycle_code'] == cycle_code)), None)
+
+            # If the id & code don't exist, add a new dict to the result list
+            if existing_item is None:
+                cycles_mapped.append(
+                    {
+                        'cycle_id': cycle_id,
+                        'cycle_desc': description,
+                        'cycle_name': cycle_name,
+                        'cycle_code': cycle_code,
+                        'sort_order': sort_order,
+                        'values': [cycle_mapping(item)]
+                    }
+                )
+            else:
+                existing_item['values'].append(cycle_mapping(item))
+
+        return cycles_mapped
+
+    def success_mapping(x):
+        return {
+            'cycle_classifications': list(map(classifications_mapping, x.get('QRY_PCT_REF'))),
+            'classification_selections': cycle_classifications_selection(x.get('QRY_MODCYCLEDATECLASSES_REF')),
+        }
+
+    return service_response(data, 'Cycle Classifications Data', success_mapping)

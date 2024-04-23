@@ -89,6 +89,6 @@ class FSBidAltAssignmentHistoryListView(BaseView):
         '''
         Create asg sep by perdet from fsbid proc
         '''
-        return Response(alt_create_assignment(request, request.META['HTTP_JWT']))
+        return Response(alt_create_assignment(request.data, request.META['HTTP_JWT']))
 
 

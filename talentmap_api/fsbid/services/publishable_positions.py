@@ -2,11 +2,17 @@ import logging
 from urllib.parse import urlencode, quote
 import jwt
 import pydash
+import csv
+from copy import deepcopy
+from datetime import datetime
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
+from talentmap_api.common.common_helpers import combine_pp_grade
 
 PUBLISHABLE_POSITIONS_ROOT = settings.PUBLISHABLE_POSITIONS_API_URL
 
@@ -121,6 +127,8 @@ def publishable_positions_res_mapping(data):
             'status': x.get('PUBS_CD'),
             'language': x.get('LANG_DESCR_TXT'),
             'payPlan': x.get('PPL_CODE'),
+            'grade': x.get('GRD_CD'),
+            'combined_pp_grade': combine_pp_grade(x.get('PPL_CODE'), x.get('GRD_CD')),
             'positionDetails': x.get('PPOS_CAPSULE_DESCR_TXT'),
             'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
             'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
@@ -235,3 +243,55 @@ def publishable_positions_filter_res_mapping(data):
         'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
     }
+
+def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
+    data = get_publishable_positions(query, jwt_token)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f"attachment; filename=publishable_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+
+    writer = csv.writer(response, csv.excel)
+    response.write(u'\ufeff'.encode('utf8'))
+
+    # write the headers
+    writer.writerow([
+        smart_str(u"Position Number"),
+        smart_str(u"Skill"),
+        smart_str(u"Position Title"),
+        smart_str(u"Bureau"),
+        smart_str(u"Organization"),
+        smart_str(u"Pay Plan/Grade"),
+        smart_str(u"Publishable Status"),
+        smart_str(u"Language"),
+        smart_str(u"Bid Cycle"),
+        smart_str(u"TED"),
+        smart_str(u"Incumbent"),
+        smart_str(u"Default TOD"),
+        smart_str(u"Assignee"),
+        smart_str(u"Post Differential | Danger Pay"),
+        smart_str(u"Employee ID"),
+        smart_str(u"Employee Status"),
+        smart_str(u"Position Details"),
+    ])
+    for x in data:
+        writer.writerow([
+            smart_str(x.get('positionNumber')),
+            smart_str(x.get('skill').strip('()')),
+            smart_str(x.get('positionTitle')),
+            smart_str(x.get('bureau')),
+            smart_str(x.get('org')),
+            smart_str(combine_pp_grade(x.get('payPlan'), x.get('grade'))),
+            smart_str(x.get('status')),
+            smart_str(x.get('language')),
+            smart_str(x.get('bidCycle')), # We are not receiving this data yet from here -
+            smart_str(x.get('ted')),
+            smart_str(x.get('incumbent')),
+            smart_str(x.get('tod')),
+            smart_str(x.get('assignee')),
+            smart_str(x.get('post')),
+            smart_str(x.get('empID')),
+            smart_str(x.get('empStatus')), # - To here
+            smart_str(x.get('positionDetails')),
+        ])
+
+    return response

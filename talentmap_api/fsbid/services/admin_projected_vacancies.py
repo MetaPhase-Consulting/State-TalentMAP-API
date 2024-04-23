@@ -151,7 +151,7 @@ def admin_projected_vacancy_req_mapping(request):
     if request.get('bureaus'):
         mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
     if request.get('organizations'):
-        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('organizations'), 'ORG_CODE')
+        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('organizations'), 'ORG_SHORT_DESC')
     if request.get('bidSeasons'):
         mapped_request['PJSON_BSN_TAB_I'] = services.format_request_data_to_string(request.get('bidSeasons'), 'BSN_ID')
     if request.get('grades'):
@@ -186,6 +186,8 @@ def admin_projected_vacancy_res_mapping(response):
             "position_language_2_code": x.get("POS_LANGUAGE_2_CODE"),
             "position_language_proficiency_code": x.get("POS_POSITION_LANG_PROF_CODE"),
             "position_language_proficiency_description": x.get("POS_POSITION_LANG_PROF_DESC"),
+            "position_updater_id": x.get("PPOS_LAST_UPDT_USER_ID"),
+            "position_updated_date": x.get("PPOS_LAST_UPDT_TMSMP_DT"),
             "future_vacancy_seq_num": x.get("FV_SEQ_NUM"),
             "future_vacancy_seq_num_ref": x.get("FV_SEQ_NUM_REF"),
             "future_vacancy_override_code": x.get("FVO_CODE"),
