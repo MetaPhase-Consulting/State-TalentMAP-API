@@ -181,7 +181,7 @@ class FSBidCycleClassificationsUpdateView(APIView):
 
     def post(self, request):
         jwt = request.META['HTTP_JWT']
-        result = services.update_assignment_cycle_classification_dates(jwt, request.data)
+        result = services.update_assignment_cycles_classifications(jwt, request.data)
 
         if result is None or 'return_code' in result and result['return_code'] != 0:
             logger.error(f"Fsbid call to Update Assignment Cycle Date Classifications Failed.")

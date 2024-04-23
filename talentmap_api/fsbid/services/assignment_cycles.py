@@ -552,7 +552,7 @@ def assignment_cycles_classifications_res_mapping(data):
     return service_response(data, 'Cycle Classifications Data', success_mapping)
 
 
-def update_assignment_cycle_classification_dates(jwt_token, request):
+def update_assignment_cycles_classifications(jwt_token, request):
     '''
     Update Assignment Cycle Dates
     '''
