@@ -550,3 +550,56 @@ def assignment_cycles_classifications_res_mapping(data):
         }
 
     return service_response(data, 'Cycle Classifications Data', success_mapping)
+
+
+def update_assignment_cycles_classifications(jwt_token, request):
+    '''
+    Update Assignment Cycle Dates
+    '''
+    args = {
+        "proc_name": 'act_modCycleDateClasses',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_body": request,
+        "request_mapping_function": update_assignment_cycles_classifications_req_mapping,
+        "response_mapping_function": update_assignment_cycles_classifications_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def update_assignment_cycles_classifications_res_mapping(data):
+    return service_response(data, 'Assignment Cycles Update Cycle Dates')
+
+
+def update_assignment_cycles_classifications_req_mapping(req):
+    data = req['data']
+    cycle_ids = [str(data['id']) for _ in data['values']]
+    cycle_codes = [data['code'] for _ in data['values']]
+    checked_values = [item['value'] for item in data['values']]
+    checked_codes = [item['code'] for item in data['values']]
+    # if the date or id value is null or zero pass in blank string so:
+    # 'I_CDC_UPDATE_ID': '57675,,,,,,,,,,,,,',
+    # 'I_CDC_UPDATE_DATE': '20240402083632,,,,,,,,,,,,,'
+    checked_dates = [(str(item['update_date']) if item['update_date'] else "") for item in data['values']]
+    checked_ids = [(str(item['update_id']) if item['update_id'] else "") for item in data['values']]
+
+    cycle_id_string = ",".join(cycle_ids)
+    cycle_code_string = ",".join(cycle_codes)
+    checked_values_string = ",".join(checked_values)
+    checked_codes_string = ",".join(checked_codes)
+    checked_dates_string = ",".join(checked_dates)
+    checked_id_string = ",".join(checked_ids)
+
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_CYCLE_ID': cycle_id_string,
+        'I_CDT_CD': cycle_code_string,
+        'I_INC_IND': checked_values_string,
+        'I_PCT_CODE': checked_codes_string,
+        'I_CDC_UPDATE_ID': checked_id_string,
+        'I_CDC_UPDATE_DATE': checked_dates_string,
+    }
+    return mapped_request
