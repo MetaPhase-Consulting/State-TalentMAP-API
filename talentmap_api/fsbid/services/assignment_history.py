@@ -223,7 +223,7 @@ def get_assignment_separation(data, jwt_token, is_separation):
 
 def get_assignment_req_mapping(request):
     return {
-        "i_asg_seq_num": request.get("asg_id"),
+        "i_asg_seq_num": request.get("asg_id") or None,
         "i_asgd_revision_num": request.get("revision_num"),
         "pv_api_version_i": "",
         "pv_ad_id_i": "",
@@ -233,7 +233,7 @@ def get_separation_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_SEP_SEQ_NUM": request.get("sep_id"),
+        "I_SEP_SEQ_NUM": request.get("sep_id") or None,
         "I_SEPD_REVISION_NUM": request.get("revision_num"),
         "O_SECREF_ROLE_IND": "",
         "QRY_LSTASGS_REF": "",
