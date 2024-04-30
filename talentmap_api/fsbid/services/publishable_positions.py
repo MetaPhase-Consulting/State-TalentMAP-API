@@ -261,14 +261,14 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Pay Plan/Grade"),
         smart_str(u"Publishable Status"),
         smart_str(u"Language"),
-        smart_str(u"Bid Cycle"),
-        smart_str(u"TED"),
-        smart_str(u"Incumbent"),
-        smart_str(u"Default TOD"),
-        smart_str(u"Assignee"),
-        smart_str(u"Post Differential | Danger Pay"),
-        smart_str(u"Employee ID"),
-        smart_str(u"Employee Status"),
+        # smart_str(u"Bid Cycle"),
+        # smart_str(u"TED"),
+        # smart_str(u"Incumbent"),
+        # smart_str(u"Default TOD"),
+        # smart_str(u"Assignee"),
+        # smart_str(u"Post Differential | Danger Pay"),
+        # smart_str(u"Employee ID"),
+        # smart_str(u"Employee Status"),
         smart_str(u"Position Details"),
     ])
     for x in data:
@@ -281,14 +281,14 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
             smart_str(combine_pp_grade(x.get('payPlan'), x.get('grade'))),
             smart_str(x.get('status')),
             smart_str(x.get('language')),
-            smart_str(x.get('bidCycle')), # We are not receiving this data yet from here -
-            smart_str(x.get('ted')),
-            smart_str(x.get('incumbent')),
-            smart_str(x.get('tod')),
-            smart_str(x.get('assignee')),
-            smart_str(x.get('post')),
-            smart_str(x.get('empID')),
-            smart_str(x.get('empStatus')), # - To here
+            # smart_str(x.get('bidCycle')), # We are not receiving this data yet from here -
+            # smart_str(x.get('ted')),
+            # smart_str(x.get('incumbent')),
+            # smart_str(x.get('tod')),
+            # smart_str(x.get('assignee')),
+            # smart_str(x.get('post')),
+            # smart_str(x.get('empID')),
+            # smart_str(x.get('empStatus')), # - To here
             smart_str(x.get('positionDetails')),
         ])
 
