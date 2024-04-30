@@ -224,7 +224,7 @@ def get_assignment_separation(data, jwt_token, is_separation):
 def get_assignment_req_mapping(request):
     return {
         "i_asg_seq_num": request.get("asg_id") or None,
-        "i_asgd_revision_num": request.get("revision_num"),
+        "i_asgd_revision_num": request.get("revision_num") or None,
         "pv_api_version_i": "",
         "pv_ad_id_i": "",
     }
@@ -234,7 +234,7 @@ def get_separation_req_mapping(request):
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
         "I_SEP_SEQ_NUM": request.get("sep_id") or None,
-        "I_SEPD_REVISION_NUM": request.get("revision_num"),
+        "I_SEPD_REVISION_NUM": request.get("revision_num") or None,
         "O_SECREF_ROLE_IND": "",
         "QRY_LSTASGS_REF": "",
         "QRY_LSTLAT_REF": "",
@@ -333,7 +333,7 @@ def update_assignment_req_mapping(request, hru_id):
         "I_ASGD_REVISION_NUM": request.get("revision_num"),
         "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
         "I_ASGD_UPDATE_ID": hru_id,
-        "I_ASGD_UPDATE_DATE": request.get("update_date"),
+        "I_ASGD_UPDATE_DATE": request.get("updated_date"),
     }
 
 def update_assignment_res_mapping(data):
