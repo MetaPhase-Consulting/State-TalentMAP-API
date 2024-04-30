@@ -96,6 +96,7 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         "results": agenda_items,
     }
 
+
 def modify_agenda(query={}, jwt_token=None, host=None):
     '''
     Create/Edit Agenda
@@ -135,13 +136,11 @@ def modify_agenda(query={}, jwt_token=None, host=None):
         logger.error("Error updating/creating PMI")
         logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return 
-
     # Only continue if PMI exists
     if newly_created_pmi_seq_num or existing_pmi_pm_seq_num:
         try:
             # Inject PMI seq num into query
             query['pmiseqnum'] = newly_created_pmi_seq_num if newly_created_pmi_seq_num else existing_pmi_pm_seq_num
-
             # Unpack AI request
             status_code = query.get("agendaStatusCode")
             tod_code = query.get("combinedTod")
@@ -309,6 +308,12 @@ def edit_agenda_item(query, jwt_token):
         **args
     )
 
+def delete_agenda_item(jwt_token, pk):
+    '''
+    Deletes agenda item
+    '''
+    url = f"{API_ROOT}/v1/agendas/{pk}"
+    return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 def delete_agenda_item_leg(query, ai_seq_num, jwt_token):
     '''
