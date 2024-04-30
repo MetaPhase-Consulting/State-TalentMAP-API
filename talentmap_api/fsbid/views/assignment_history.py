@@ -61,25 +61,25 @@ class FSBidPrivateAssignmentHistoryListView(BaseView):
             logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-# ======== Maintain Assignments/Separations ========
+# ======== Alternative Assignments/Separations ========
 
-class FSBidMaintainAssignmentsSeparationsListView(APIView):
+class FSBidAltAssignmentsSeparationsListView(APIView):
     def get(self, request, pk):
         '''
-        Get Maintain Assignments and Separations List
+        Get Alternative Assignments and Separations List
         '''
         return Response(services.get_assignments_separations(pk, request.META['HTTP_JWT']))
 
-# ======== Maintain Assignments ========
+# ======== Alternative Assignments ========
 
-class FSBidMaintainAssignmentsBaseView(APIView):
+class FSBidAltAssignmentsBaseView(APIView):
     def post(self, request):
         '''
         Create Assignment
         '''
         return Response(services.create_assignment_separation(request.data, request.META['HTTP_JWT'], 0))
 
-class FSBidMaintainAssignmentsActionView(BaseView):
+class FSBidAltAssignmentsActionView(BaseView):
     def get(self, request, pk, id):
         '''
         Get Assignment Detail and Reference Data
@@ -97,16 +97,16 @@ class FSBidMaintainAssignmentsActionView(BaseView):
         return Response(services.update_assignment_separation(request.data, request.META['HTTP_JWT'], 0))
     
 
-# ======== Maintain Separations ========
+# ======== Alternative Separations ========
 
-class FSBidmaintainSeparationsListBaseView(APIView):
+class FSBidAltSeparationsListBaseView(APIView):
     def post(self, request):
         '''
         Create Separation
         '''
         return Response(services.create_assignment_separation(request.data, request.META['HTTP_JWT'], 1))
     
-class FSBidmaintainSeparationsListActionView(BaseView):
+class FSBidAltSeparationsListActionView(BaseView):
     def get(self, request, pk, id):
         '''
         Get Separation Detail and Reference Data
