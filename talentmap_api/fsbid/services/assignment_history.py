@@ -329,8 +329,8 @@ def update_assignment_separation(query, jwt_token, is_separation):
 def update_assignment_req_mapping(request, hru_id):
     return {
         **base_assignment_action_req(request),
-        "I_ASG_SEQ_NUM": request.get("asg_seq_num"),
-        "I_ASGD_REVISION_NUM": request.get("asgd_revision_num"),
+        "I_ASG_SEQ_NUM": request.get("asg_id"),
+        "I_ASGD_REVISION_NUM": request.get("revision_num"),
         "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
         "I_ASGD_UPDATE_ID": hru_id,
         "I_ASGD_UPDATE_DATE": request.get("update_date"),
@@ -345,11 +345,11 @@ def update_assignment_res_mapping(data):
 def update_separation_req_mapping(request, hru_id):
     return {
         **base_separation_action_req(request),
-        "I_SEP_SEQ_NUM": request.get("sep_seq_num"),
-        "I_SEPD_REVISION_NUM": request.get("sep_seq_num"),
+        "I_SEP_SEQ_NUM": request.get("sep_id"),
+        "I_SEPD_REVISION_NUM": request.get("revision_num"),
         "I_SEPD_UPDATE_ID": hru_id,
         "I_SEPD_UPDATE_DATE": request.get("updated_date"),
-        "O_SEPD_REVISION_NUM": request.get("sep_revision_number"),
+        "O_SEPD_REVISION_NUM": request.get("o_revision_num"),
         "O_RETURN_CODE": "",
         "QRY_ACTION_DATA": "",
         "QRY_ERROR_DATA": "",

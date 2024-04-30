@@ -90,11 +90,17 @@ class FSBidAltAssignmentsActionView(BaseView):
             "revision_num": request.query_params.get("revision_num"),
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 0))
-    def patch(self, request):
+    def patch(self, request, pk, id):
         '''
         Update Assignment
         '''
-        return Response(services.update_assignment_separation(request.data, request.META['HTTP_JWT'], 0))
+        query = { 
+            **request.data,
+            "perdet_seq_num": pk,
+            "asg_id": id,
+            "revision_num": request.query_params.get("revision_num"),
+        }
+        return Response(services.update_assignment_separation(query, request.META['HTTP_JWT'], 0))
     
 
 # ======== Alternative Separations ========
@@ -117,8 +123,14 @@ class FSBidAltSeparationsListActionView(BaseView):
             "revision_num": request.query_params.get("revision_num"),
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 1))
-    def patch(self, request):
+    def patch(self, request, pk, id):
         '''
         Update Separation
         '''
-        return Response(services.update_assignment_separation(request.data, request.META['HTTP_JWT'], 1))
+        query = { 
+            **request.data,
+            "perdet_seq_num": pk,
+            "sep_id": id,
+            "revision_num": request.query_params.get("revision_num"),
+        }
+        return Response(services.update_assignment_separation(query, request.META['HTTP_JWT'], 1))
