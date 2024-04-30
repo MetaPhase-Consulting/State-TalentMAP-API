@@ -89,7 +89,7 @@ class FSBidAltAssignmentsActionView(BaseView):
             "asg_id": id,
             "revision_num": request.query_params.get("revision_num"),
         }
-        return Response(services.get_assignment_separation_detail(query, request.META['HTTP_JWT'], 0))
+        return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 0))
     def patch(self, request):
         '''
         Update Assignment
@@ -116,7 +116,7 @@ class FSBidAltSeparationsListActionView(BaseView):
             "sep_id": id,
             "revision_num": request.query_params.get("revision_num"),
         }
-        return Response(services.get_assignment_separation_detail(query, request.META['HTTP_JWT'], 1))
+        return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 1))
     def patch(self, request):
         '''
         Update Separation
