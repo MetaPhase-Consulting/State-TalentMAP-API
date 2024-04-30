@@ -7,8 +7,11 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/$', views.FSBidAssignmentHistoryListView.as_view(), name="assignment-history-list"),
-    url(r'^(?P<pk>[0-9]+)/alt/$', views.FSBidAltAssignmentHistoryListView.as_view(), name="alt-assignment-history-list"),
-    url(r'^(?P<pk>[-\w]+)/assignment/(?P<asg_id>[-\w]+)/$', views.FSBidAssignmentReferenceView.as_view(), name="assignment-ref-data"),
+    url(r'^(?P<pk>[-\w]+)/assignments-separations/$', views.FSBidMaintainAssignmentsSeparationsListView.as_view(), name="maintain-assignments-separations-list"),
+    url(r'^(?P<pk>[-\w]+)/assignments/$', views.FSBidMaintainAssignmentsBaseView.as_view(), name="maintain-assignments-base"),
+    url(r'^(?P<pk>[-\w]+)/separations/$', views.FSBidmaintainSeparationsListBaseView.as_view(), name="maintain-separations-base"),
+    url(r'^(?P<pk>[-\w]+)/assignments/(?P<id>[-\w]+)/$', views.FSBidMaintainAssignmentsActionView.as_view(), name="maintain-assignments-actions"),
+    url(r'^(?P<pk>[-\w]+)/separations/(?P<id>[-\w]+)/$', views.FSBidmaintainSeparationsListActionView.as_view(), name="maintain-separations-actions"),
     url(r'^$', views.FSBidPrivateAssignmentHistoryListView.as_view(), name="private-assignment-history-list"),
 ]
 
