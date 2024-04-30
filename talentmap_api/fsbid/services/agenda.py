@@ -135,13 +135,13 @@ def modify_agenda(query={}, jwt_token=None, host=None):
         logger.error("Error updating/creating PMI")
         logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         return 
-    
+
     # Only continue if PMI exists
     if newly_created_pmi_seq_num or existing_pmi_pm_seq_num:
         try:
             # Inject PMI seq num into query
             query['pmiseqnum'] = newly_created_pmi_seq_num if newly_created_pmi_seq_num else existing_pmi_pm_seq_num
-            
+
             # Unpack AI request
             status_code = query.get("agendaStatusCode")
             tod_code = query.get("combinedTod")
