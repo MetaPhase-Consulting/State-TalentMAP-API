@@ -10,7 +10,7 @@ from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.agenda as services
 import talentmap_api.fsbid.services.agenda_item_validator as ai_validator
 from talentmap_api.common.permissions import isDjangoGroupMember
-from django.core.exceptions import ValidationError
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class AgendaItemDeleteView(BaseView):
         try:
             services.delete_agenda_item(request.META['HTTP_JWT'], pk)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except ValidationError as e:
+        except Exception as e:
             return Response(str(e), status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 class AgendaItemListView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
