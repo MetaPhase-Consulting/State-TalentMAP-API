@@ -289,7 +289,6 @@ def assignment_separation_detail_res_mapping(data):
 
 # ======== Update Assignment/Separation ========
 
-
 def base_assignment_action_req(request):
     return {
         "PV_API_VERSION_I": "",
@@ -310,19 +309,7 @@ def base_assignment_action_req(request):
         "I_ASGD_TF_CD": request.get("travel_code"),
         "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
         "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
-
-        # Update
-        "I_ASG_SEQ_NUM": request.get("asg_seq_num"),
-        "I_ASGD_REVISION_NUM": request.get("asgd_revision_num"),
-        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
-        "I_ASGD_UPDATE_ID": hru_id,
-        "I_ASGD_UPDATE_DATE": request.get("update_date"),
-
-        # Create
-        "I_EMP_SEQ_NBR": request.get("employee"),
-        "I_POS_SEQ_NUM": request.get("position"),
     }
-
 
 def base_separation_action_req(request):
     return {
@@ -337,20 +324,7 @@ def base_separation_action_req(request):
         "I_LAT_CODE": "M", # Should always be "Separation" LAT
         "I_TF_CD": request.get("travel_code"),
         "I_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
-        "I_SEPD_NOTE_COMMMENT_TEXT": request.get("note"), # No comment feature
-
-        # Update
-        "I_SEP_SEQ_NUM": request.get("sep_seq_num"),
-        "I_SEPD_REVISION_NUM": request.get("sep_seq_num"),
-        "I_SEPD_UPDATE_ID": hru_id,
-        "I_SEPD_UPDATE_DATE": request.get("updated_date"),
-        "O_SEPD_REVISION_NUM": request.get("sep_revision_number"),
-        "O_RETURN_CODE": "",
-        "QRY_ACTION_DATA": "",
-        "QRY_ERROR_DATA": "",
-
-        # Create
-        "I_EMP_SEQ_NBR": request.get("employee"),
+        "I_SEPD_NOTE_COMMMENT_TEXT": "", # No comment feature
     }
 
 def update_assignment_separation(query, jwt_token, is_separation):
@@ -382,28 +356,12 @@ def update_assignment_separation(query, jwt_token, is_separation):
 
 def update_assignment_req_mapping(request, hru_id):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
+        **base_assignment_action_req(request),
         "I_ASG_SEQ_NUM": request.get("asg_seq_num"),
         "I_ASGD_REVISION_NUM": request.get("asgd_revision_num"),
-        "I_ASGD_ETA_DATE": request.get("eta"),
-        "I_ASGD_ETD_TED_DATE": request.get("etd"),
-        "I_ASGD_TOD_CODE": request.get("tod"),
-        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"),
-        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"),
-        "I_ASGD_ADJUST_MONTHS_NUM": None,
-        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
-        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
-        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
         "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
-        "I_ASGD_ORG_CODE": request.get("org_code"),
-        "I_ASGD_ASGS_CODE": request.get("status_code"),
-        "I_ASGD_LAT_CODE": request.get("lat_code"),
-        "I_ASGD_TF_CD": request.get("travel_code"),
-        "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
-        "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
         "I_ASGD_UPDATE_ID": hru_id,
-        "I_ASGD_UPDATE_DATE": request.get("update_date")
+        "I_ASGD_UPDATE_DATE": request.get("update_date"),
     }
 
 def update_assignment_res_mapping(data):
@@ -414,26 +372,15 @@ def update_assignment_res_mapping(data):
     
 def update_separation_req_mapping(request, hru_id):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
+        **base_separation_action_req(request),
         "I_SEP_SEQ_NUM": request.get("sep_seq_num"),
         "I_SEPD_REVISION_NUM": request.get("sep_seq_num"),
-        "I_DSC_CD": request.get("location_code"),
-        "I_SEPD_SEPARATION_DATE": request.get("separation_date"), 
-        "I_SEPD_CITY_TEXT": request.get("city_text"),
-        "I_SEPD_COUNTRY_STATE_TEXT": request.get("country_state_text"),
-        "I_SEPD_US_IND": "Y" if request.get("us_ind") else "N",
-        "I_ASGS_CODE": request.get("status_code"),
-        "I_LAT_CODE": "M", # Should always be "Separation" LAT
-        "I_TF_CD": request.get("travel_code"),
-        "I_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
-        "I_SEPD_NOTE_COMMMENT_TEXT": request.get("note"), # No comment feature
         "I_SEPD_UPDATE_ID": hru_id,
         "I_SEPD_UPDATE_DATE": request.get("updated_date"),
         "O_SEPD_REVISION_NUM": request.get("sep_revision_number"),
         "O_RETURN_CODE": "",
         "QRY_ACTION_DATA": "",
-        "QRY_ERROR_DATA": ""
+        "QRY_ERROR_DATA": "",
     }
 
 def update_separation_res_mapping(data):
@@ -474,26 +421,9 @@ def create_assignment_separation(query, jwt_token, is_separation):
 
 def create_assignment_req_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
+        **base_assignment_action_req(request),
         "I_EMP_SEQ_NBR": request.get("employee"),
         "I_POS_SEQ_NUM": request.get("position"),
-        "I_ASGD_ETA_DATE": request.get("eta"),
-        "I_ASGD_ETD_TED_DATE": request.get("etd"),
-        "I_ASGD_TOD_CODE": request.get("tod"),
-        # TO DO: Clarify custom tod feature
-        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"), 
-        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"), 
-        "I_ASGD_ADJUST_MONTHS_NUM": request.get("tod_adjust_months_num"), 
-        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
-        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
-        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
-        "I_ASGD_ORG_CODE": request.get("org_code"),
-        "I_ASGD_ASGS_CODE": request.get("status_code"),
-        "I_ASGD_LAT_CODE": request.get("lat_code"),
-        "I_ASGD_TF_CD": request.get("travel_code"),
-        "I_ASGD_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
-        "I_ASGD_NOTE_COMMMENT_TEXT": "", # No comment feature
     }
 
 def create_assignment_res_mapping(data):
@@ -504,19 +434,8 @@ def create_assignment_res_mapping(data):
 
 def create_separation_req_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
+        **base_separation_action_req(request),
         "I_EMP_SEQ_NBR": request.get("employee"),
-        "I_DSC_CD": request.get("location_code"),
-        "I_SEPD_SEPARATION_DATE": request.get("separation_date"), 
-        "I_SEPD_CITY_TEXT": request.get("city_text"),
-        "I_SEPD_COUNTRY_STATE_TEXT": request.get("country_state_text"),
-        "I_SEPD_US_IND": "Y" if request.get("us_ind") else "N",
-        "I_ASGS_CODE": request.get("status_code"),
-        "I_LAT_CODE": "M", # Should always be "Separation" LAT
-        "I_TF_CD": request.get("travel_code"),
-        "I_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
-        "I_SEPD_NOTE_COMMMENT_TEXT": request.get("note"), # No comment feature
     }
 
 def create_separation_res_mapping(data):
