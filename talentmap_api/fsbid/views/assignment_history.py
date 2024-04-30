@@ -68,16 +68,11 @@ class FSBidMaintainAssignmentsSeparationsListView(APIView):
         '''
         Get Maintain Assignments and Separations List
         '''
-        return Response(services.get_all_assignments_separations(pk, request.META['HTTP_JWT']))
+        return Response(services.get_assignments_separations(pk, request.META['HTTP_JWT']))
 
 # ======== Maintain Assignments ========
 
 class FSBidMaintainAssignmentsBaseView(APIView):
-    def get(self, request, pk):
-        '''
-        Get Maintain Assignments List
-        '''
-        return Response(services.get_assignments_separations(pk, request.META['HTTP_JWT'], 0))
     def post(self, request):
         '''
         Create Assignment
@@ -105,11 +100,6 @@ class FSBidMaintainAssignmentsActionView(BaseView):
 # ======== Maintain Separations ========
 
 class FSBidmaintainSeparationsListBaseView(APIView):
-    def get(self, request, pk):
-        '''
-        Get Maintain Separations List
-        '''
-        return Response(services.get_assignments_separations(pk, request.META['HTTP_JWT'], 1))
     def post(self, request):
         '''
         Create Separation

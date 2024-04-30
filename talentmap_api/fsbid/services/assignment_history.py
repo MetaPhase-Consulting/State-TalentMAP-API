@@ -163,7 +163,7 @@ def fsbid_assignments_to_talentmap_assignments(data):
 
 # ======== Get Assignments and Separations List ========
 
-def get_all_assignments_separations(id, jwt_token):
+def get_assignments_separations(id, jwt_token):
     '''
     Get assignments and separations by perdet from fsbid proc 
     '''
@@ -179,22 +179,6 @@ def get_all_assignments_separations(id, jwt_token):
         **args
     )
 
-def get_assignments_separations(id, jwt_token, is_separation):
-    '''
-    Get assignments or separations by perdet from fsbid proc 
-    '''
-    args = {
-        "proc_name": 'qry_lstAsgsSeps',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-        "request_mapping_function": get_assignments_separations_req_mapping,
-        "response_mapping_function": get_separations_res_mapping if is_separation else get_assignments_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": { "perdet_seq_num": id },
-    }
-    return services.send_post_back_office(
-        **args
-    )
-    
 def get_assignments_separations_req_mapping(request):
     return {
         "i_perdet_seq_num": request.get("perdet_seq_num"),
@@ -207,18 +191,6 @@ def get_assignments_separations_res_mapping(data):
         logger.error('FSBid call for fetching assignments and separations failed.')
         return None
     return data
-
-def get_assignments_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for fetching assignments failed.')
-        return None
-    return data.get("QRY_LSTASGS_REF")
-
-def get_separations_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for fetching separations failed.')
-        return None
-    return data.get("QRY_LSTSEPS_REF")
 
 
 # ======== Get Assignment/Separation Detail and Reference Data ========
