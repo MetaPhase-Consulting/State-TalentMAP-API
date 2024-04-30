@@ -27,6 +27,7 @@ class AgendaItemView(BaseView):
 class AgendaItemDeleteView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
+
     def post(self, request, pk):
         '''
         Delete single agenda by ai_seq_num
