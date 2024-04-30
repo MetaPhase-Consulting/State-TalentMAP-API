@@ -195,7 +195,7 @@ def get_assignments_separations_res_mapping(data):
 
 # ======== Get Assignment/Separation Detail and Reference Data ========
 
-def get_assignment_separation_detail(data, jwt_token, is_separation):
+def get_assignment_separation(data, jwt_token, is_separation):
     '''
     Get Assignment or Separation Detail and Reference Data
     '''
@@ -203,8 +203,8 @@ def get_assignment_separation_detail(data, jwt_token, is_separation):
         args = {
             "proc_name": 'qry_getSepDtl',
             "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": separation_detail_req_mapping,
-            "response_mapping_function": assignment_separation_detail_res_mapping,
+            "request_mapping_function": get_separation_req_mapping,
+            "response_mapping_function": get_assignment_separation_res_mapping,
             "jwt_token": jwt_token,
             "request_body": data,
         }
@@ -212,8 +212,8 @@ def get_assignment_separation_detail(data, jwt_token, is_separation):
         args = {
             "proc_name": 'qry_getAsgDtl',
             "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": assignment_detail_req_mapping,
-            "response_mapping_function": assignment_separation_detail_res_mapping,
+            "request_mapping_function": get_assignment_req_mapping,
+            "response_mapping_function": get_assignment_separation_res_mapping,
             "jwt_token": jwt_token,
             "request_body": data,
         }
@@ -221,7 +221,7 @@ def get_assignment_separation_detail(data, jwt_token, is_separation):
         **args
     )
 
-def assignment_detail_req_mapping(request):
+def get_assignment_req_mapping(request):
     return {
         "i_asg_seq_num": request.get("asg_id"),
         "i_asgd_revision_num": request.get("revision_num"),
@@ -229,7 +229,7 @@ def assignment_detail_req_mapping(request):
         "pv_ad_id_i": "",
     }
 
-def separation_detail_req_mapping(request):
+def get_separation_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -248,7 +248,7 @@ def separation_detail_req_mapping(request):
         "QRY_ERROR_DATA": ""
     }
 
-def assignment_separation_detail_res_mapping(data):
+def get_assignment_separation_res_mapping(data):
     # if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
     #    logger.error('FSBid call for fetching assignment reference data failed.')
     #    return None
