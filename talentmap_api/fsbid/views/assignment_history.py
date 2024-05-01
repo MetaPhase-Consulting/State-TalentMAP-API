@@ -73,7 +73,7 @@ class FSBidAltAssignmentsSeparationsListView(APIView):
 # ======== Alternative Assignments ========
 
 class FSBidAltAssignmentsBaseView(APIView):
-    def post(self, request):
+    def post(self, request, pk):
         '''
         Create Assignment
         '''
@@ -105,7 +105,7 @@ class FSBidAltAssignmentsActionView(BaseView):
 # ======== Alternative Separations ========
 
 class FSBidAltSeparationsListBaseView(APIView):
-    def post(self, request):
+    def post(self, request, pk):
         '''
         Create Separation
         '''
