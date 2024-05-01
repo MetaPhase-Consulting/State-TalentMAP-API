@@ -88,8 +88,6 @@ class FSBidAltAssignmentsActionView(BaseView):
             **request.data,
             "perdet_seq_num": pk,
             "asg_id": id,
-            "revision_num": request.query_params.get("revision_num"),
-            "ignore_params": request.query_params.get("ignore_params"),
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 0))
     def post(self, request, pk, id):
@@ -100,8 +98,6 @@ class FSBidAltAssignmentsActionView(BaseView):
             **request.data,
             "perdet_seq_num": pk,
             "asg_id": id,
-            "revision_num": request.query_params.get("revision_num"),
-            "ignore_params": request.query_params.get("ignore_params"),
         }
         return Response(services.update_assignment_separation(query, request.META['HTTP_JWT'], 0))
     
@@ -121,9 +117,9 @@ class FSBidAltSeparationsListActionView(BaseView):
         Get Separation Detail and Reference Data
         '''
         query = { 
+            **request.data,
             "perdet_seq_num": pk,
             "sep_id": id,
-            "revision_num": request.query_params.get("revision_num"),
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 1))
     def post(self, request, pk, id):
@@ -134,6 +130,5 @@ class FSBidAltSeparationsListActionView(BaseView):
             **request.data,
             "perdet_seq_num": pk,
             "sep_id": id,
-            "revision_num": request.query_params.get("revision_num"),
         }
         return Response(services.update_assignment_separation(query, request.META['HTTP_JWT'], 1))

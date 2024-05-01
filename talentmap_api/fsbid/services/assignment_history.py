@@ -349,7 +349,7 @@ def update_separation_req_mapping(request, hru_id):
         "I_SEPD_REVISION_NUM": request.get("revision_num"),
         "I_SEPD_UPDATE_ID": hru_id,
         "I_SEPD_UPDATE_DATE": request.get("updated_date"),
-        "O_SEPD_REVISION_NUM": request.get("o_revision_num"),
+        "O_SEPD_REVISION_NUM": "",
         "O_RETURN_CODE": "",
         "QRY_ACTION_DATA": "",
         "QRY_ERROR_DATA": "",
