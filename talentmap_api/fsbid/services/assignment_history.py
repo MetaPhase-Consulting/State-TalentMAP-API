@@ -291,9 +291,9 @@ def base_separation_action_req(request):
         "I_SEPD_SEPARATION_DATE": request.get("separation_date"), 
         "I_SEPD_CITY_TEXT": request.get("city_text"),
         "I_SEPD_COUNTRY_STATE_TEXT": request.get("country_state_text"),
-        "I_SEPD_US_IND": "Y" if request.get("us_ind") else "N",
+        "I_SEPD_US_IND": request.get("us_ind"),
         "I_ASGS_CODE": request.get("status_code"),
-        "I_LAT_CODE": "M", # Should always be "Separation" LAT
+        "I_LAT_CODE": request.get("lat_code"), # Should separation always be "Separation" M LAT?
         "I_TF_CD": request.get("travel_code"),
         "I_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
         "I_SEPD_NOTE_COMMMENT_TEXT": "", # No comment feature
