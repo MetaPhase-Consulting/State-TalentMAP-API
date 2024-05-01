@@ -90,7 +90,7 @@ class FSBidAltAssignmentsActionView(BaseView):
             "asg_id": id,
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 0))
-    def post(self, request, pk, id):
+    def put(self, request, pk, id):
         '''
         Update Assignment
         '''
@@ -122,7 +122,7 @@ class FSBidAltSeparationsListActionView(BaseView):
             "sep_id": id,
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 1))
-    def post(self, request, pk, id):
+    def put(self, request, pk, id):
         '''
         Update Separation
         '''
