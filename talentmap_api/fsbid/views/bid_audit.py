@@ -27,6 +27,22 @@ class FSBidBidAuditListView(BaseView):
         return Response(result)
 
 
+class FSBidRunBidAuditListView(BaseView):
+    '''
+    Run Bid Audit, Updates Bid Count
+    '''
+
+    def get(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.run_bid_audit(jwt, request.query_params)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to run Bid Audit failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
 class FSBidBidAuditCategoryListView(BaseView):
     '''
     Get List of Positions In Category for a Cycle
