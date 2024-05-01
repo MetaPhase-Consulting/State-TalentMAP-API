@@ -309,11 +309,14 @@ def edit_agenda_item(query, jwt_token):
         **args
     )
 
-def delete_agenda_item(jwt_token, pk):
+def delete_agenda_item(query, jwt_token):
     '''
     Deletes agenda item
     '''
-    url = f"{API_ROOT}/v1/agendas/{pk}"
+    ai_seq_num = query.get("aiseqnum")
+    # These chained function cut the timestamp to the second, as the API does not accept milliseconds
+    ai_update_date = query.get("aiupdatedate").replace("T", " ").replace("Z", "")[:-4]
+    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/?aiupdatedate={ai_update_date}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 def delete_agenda_item_leg(query, ai_seq_num, jwt_token):

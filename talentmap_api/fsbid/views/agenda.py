@@ -26,14 +26,21 @@ class AgendaItemView(BaseView):
     
 class AgendaItemDeleteView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'pmi__seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Person Detail ID'),
+            'pmi_update_date': openapi.Schema(type=openapi.TYPE_STRING, description='Agenda Status Code'),
+        }
+    ))
 
-
-    def post(self, request, pk):
+    def post(self, request):
         '''
         Delete single agenda by ai_seq_num
         '''
         try:
-            services.delete_agenda_item(request.META['HTTP_JWT'], pk)
+            services.delete_agenda_item(request.data, request.META['HTTP_JWT'])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response(str(e), status=status.HTTP_422_UNPROCESSABLE_ENTITY)
