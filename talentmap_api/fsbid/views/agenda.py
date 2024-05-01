@@ -26,14 +26,6 @@ class AgendaItemView(BaseView):
     
 class AgendaItemDeleteView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-    
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'pmi__seq_num': openapi.Schema(type=openapi.TYPE_INTEGER, description='Person Detail ID'),
-            'pmi_update_date': openapi.Schema(type=openapi.TYPE_STRING, description='Agenda Status Code'),
-        }
-    ))
 
     def post(self, request):
         '''
