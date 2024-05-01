@@ -85,7 +85,7 @@ class FSBidAltAssignmentsActionView(BaseView):
         Get Assignment Detail and Reference Data
         '''
         query = { 
-            **request.data,
+            **request.query_params,
             "perdet_seq_num": pk,
             "asg_id": id,
         }
@@ -117,7 +117,7 @@ class FSBidAltSeparationsListActionView(BaseView):
         Get Separation Detail and Reference Data
         '''
         query = { 
-            **request.data,
+            **request.query_params,
             "perdet_seq_num": pk,
             "sep_id": id,
         }
