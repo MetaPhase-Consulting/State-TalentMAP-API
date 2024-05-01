@@ -85,9 +85,9 @@ class FSBidAltAssignmentsActionView(BaseView):
         Get Assignment Detail and Reference Data
         '''
         query = { 
-            **request.query_params,
             "perdet_seq_num": pk,
             "asg_id": id,
+            "revision_num": request.query_params.get("revision_num"),
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 0))
     def put(self, request, pk, id):
@@ -117,9 +117,9 @@ class FSBidAltSeparationsListActionView(BaseView):
         Get Separation Detail and Reference Data
         '''
         query = { 
-            **request.query_params,
             "perdet_seq_num": pk,
             "sep_id": id,
+            "revision_num": request.query_params.get("revision_num"),
         }
         return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 1))
     def put(self, request, pk, id):
