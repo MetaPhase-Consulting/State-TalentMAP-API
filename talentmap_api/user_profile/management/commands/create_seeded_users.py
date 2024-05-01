@@ -25,7 +25,8 @@ class Command(BaseCommand):
         ("woodwardw", "woodwardw@state.gov", "password", "Wendy", "Woodward", False, False, ["bureau_user"]),
         ("velezp", "velezp@state.gov", "password", "Preston", "Velez", False, False, ["post_user"]),
         ("lincolna", "lincolna@state.gov", "password", "Abigail", "Lincoln", True, False, ["ao_user"]),
-        ("patricka", "patricka@state.gov", "password", "Patrick", "Anthony", False, False, ["panel_admin", "cdo"]),
+        ("anthonyp", "anthonyp@state.gov", "password", "Patrick", "Anthony", False, False, ["panel_admin", "cdo"]),
+        ("andersons", "andersons@state.gov", "password", "Stephanie", "Anderson", False, False, ["fsbid_admin", "cdo"]),
     ]
 
     def handle(self, *args, **options):

@@ -24,6 +24,7 @@ class Command(BaseCommand):
             "post_user",
             "helppage_editor",
             "panel_admin",
+            "fsbid_admin",
         ]
 
     def handle(self, *args, **options):
