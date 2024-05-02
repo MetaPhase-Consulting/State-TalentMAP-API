@@ -26,7 +26,13 @@ class AgendaItemView(BaseView):
     
 class AgendaItemDeleteView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-
+    
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("aiseqnum", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Panel Meeting ID'),
+            openapi.Parameter("aiupdatedate", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel Meeting Date'),
+        ])
+    
     def post(self, request):
         '''
         Delete single agenda by ai_seq_num
