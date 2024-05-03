@@ -60,6 +60,22 @@ class FSBidBidAuditCreateView(APIView):
         return Response(result)
 
 
+class FSBidBidAuditUpdateView(APIView):
+    '''
+    Update a Bid Audit
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.update_bid_audit(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Update a Bid Audit Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
 class FSBidBidAuditUpdateCountListView(BaseView):
     '''
     Run Bid Audit, Updates Bid Count

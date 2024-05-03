@@ -101,7 +101,7 @@ def get_cycles_res_mapping(data):
 
 def create_new_audit(jwt_token, request):
     '''
-    Create a new Assignment Cycle for the Cycle Management Page
+    Create a new Bid Audit
     '''
     args = {
         "proc_name": 'act_addauditassigncycle',
@@ -136,7 +136,24 @@ def create_new_audit_req_mapping(request):
 
 
 def create_new_audit_res_mapping(data):
-    return service_response(data, 'Create New Bid Audit')
+    return service_response(data, 'Save Bid Audit')
+
+
+def update_bid_audit(jwt_token, request):
+    '''
+    Update a Bid Audit
+    '''
+    args = {
+        "proc_name": 'act_modauditassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": create_new_audit_req_mapping,
+        "response_mapping_function": create_new_audit_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
 
 
 def update_bid_count(jwt_token, request):
