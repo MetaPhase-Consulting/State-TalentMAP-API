@@ -68,7 +68,95 @@ def get_bid_audit_res_mapping(data):
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
 
 
-def run_bid_audit(jwt_token, request):
+def get_cycles(jwt_token, request):
+    '''
+    Get Active Cycles for New Bid Audits
+    '''
+    args = {
+        "proc_name": 'qry_addauditassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_bid_audit_req_mapping,
+        "response_mapping_function": get_cycles_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_cycles_res_mapping(data):
+    def results_mapping(x):
+        return {
+            'id': x.get('CYCLE_ID') or None,
+            'name': x.get('CYCLE_NM_TXT') or None,
+            'audit_number': x.get('aac_audit_nbr'),
+        }
+
+    def success_mapping(x):
+        return list(map(results_mapping, x.get('QRY_ADDAUDITASSIGNCYCLE_REF', {})))
+
+    return service_response(data, 'Bid Audit Get Cycles', success_mapping)
+
+
+def create_new_audit(jwt_token, request):
+    '''
+    Create a new Bid Audit
+    '''
+    args = {
+        "proc_name": 'act_addauditassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP',
+        "request_body": request,
+        "request_mapping_function": create_new_audit_req_mapping,
+        "response_mapping_function": create_new_audit_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def create_new_audit_req_mapping(request):
+    data = request.get('data')
+    cycle_id = data.get('id')
+    audit_number = data.get('auditNumber')
+    audit_desc = data.get('auditDescription')
+    posted_by_date = data.get('postByDate')
+
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': cycle_id,
+        'i_aac_desc_txt': audit_desc,
+        'i_aac_audit_nbr': audit_number,
+        'i_aac_posted_by_dt': posted_by_date,
+    }
+
+    return mapped_request
+
+
+def create_new_audit_res_mapping(data):
+    return service_response(data, 'Save Bid Audit')
+
+
+def update_bid_audit(jwt_token, request):
+    '''
+    Update a Bid Audit
+    '''
+    args = {
+        "proc_name": 'act_modauditassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": create_new_audit_req_mapping,
+        "response_mapping_function": create_new_audit_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def update_bid_count(jwt_token, request):
     '''
     Run Bid Audit, Updates Bid Count
     '''
@@ -77,7 +165,7 @@ def run_bid_audit(jwt_token, request):
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
-        "response_mapping_function": run_bid_audit_res_mapping,
+        "response_mapping_function": update_bid_count_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
@@ -85,7 +173,7 @@ def run_bid_audit(jwt_token, request):
     )
 
 
-def run_bid_audit_res_mapping(data):
+def update_bid_count_res_mapping(data):
     return service_response(data, 'Run Bid Audit')
 
 
