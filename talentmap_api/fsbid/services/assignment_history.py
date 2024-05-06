@@ -254,17 +254,6 @@ def get_alt_separation_req_mapping(request):
         "PV_AD_ID_I": "",
         "I_SEP_SEQ_NUM": None if request.get("ignore_params") else request.get("sep_id"),
         "I_SEPD_REVISION_NUM": None if request.get("ignore_params") else request.get("revision_num"),
-        "O_SECREF_ROLE_IND": "",
-        "QRY_LSTASGS_REF": "",
-        "QRY_LSTLAT_REF": "",
-        "QRY_LSTTF_REF": "",
-        "QRY_LSTWRT_REF": "",
-        "QRY_LSTDIST_REF": "",
-        "QRY_LSTNOTP_REF": "",
-        "QRY_GETSEPDTL_REF": "",
-        "O_RETURN_CODE": "",
-        "QRY_ACTION_DATA": "",
-        "QRY_ERROR_DATA": ""
     }
 
 
@@ -368,10 +357,6 @@ def update_alt_separation_req_mapping(request, hru_id):
         "I_SEPD_REVISION_NUM": request.get("revision_num"),
         "I_SEPD_UPDATE_ID": hru_id,
         "I_SEPD_UPDATE_DATE": request.get("updated_date"),
-        "O_SEPD_REVISION_NUM": "",
-        "O_RETURN_CODE": "",
-        "QRY_ACTION_DATA": "",
-        "QRY_ERROR_DATA": "",
     }
 
 def update_alt_separation_res_mapping(data):
