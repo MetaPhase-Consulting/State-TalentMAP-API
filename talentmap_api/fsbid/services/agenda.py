@@ -315,7 +315,7 @@ def delete_agenda_item(query, jwt_token):
     '''
     ai_seq_num = query.get("aiseqnum")
     ai_update_date = query.get("aiupdatedate")
-    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}/?aiupdatedate={ai_update_date}"
+    url = f"{API_ROOT}/v1/agendas/{ai_seq_num}?aiupdatedate={ai_update_date}"
     return requests.delete(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'})
 
 def delete_agenda_item_leg(query, ai_seq_num, jwt_token):

@@ -29,8 +29,8 @@ class AgendaItemDeleteView(BaseView):
     
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter("aiseqnum", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Panel Meeting ID'),
-            openapi.Parameter("aiupdatedate", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel Meeting Date'),
+            openapi.Parameter("aiseqnum", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='AI Sequence Number'),
+            openapi.Parameter("aiupdatedate", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='AI Update Date'),
         ])
     
     def post(self, request):
