@@ -15,6 +15,7 @@ from talentmap_api.fsbid.views.base import BaseView
 from rest_framework.views import APIView
 from talentmap_api.common.common_helpers import user_in_any_group
 import talentmap_api.fsbid.services.employee as services
+import talentmap_api.fsbid.services.client as client_services
 
 logger = logging.getLogger(__name__)
 
@@ -121,3 +122,12 @@ class FSBidEmployeeProfileReportView(APIView):
             return services.get_employee_profile_report(request.query_params, pk, request.META['HTTP_JWT'])
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SECREFUserInfoView(APIView):
+
+    def get(self, request, pk):
+        '''
+        Get user's info
+        '''
+        return Response(client_services.get_user_information(request.META['HTTP_JWT'], pk))
