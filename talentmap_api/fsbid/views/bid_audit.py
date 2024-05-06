@@ -1,5 +1,6 @@
 import logging
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 # from rest_framework.permissions import IsAuthenticated
 from talentmap_api.fsbid.views.base import BaseView
@@ -27,14 +28,62 @@ class FSBidBidAuditListView(BaseView):
         return Response(result)
 
 
-class FSBidRunBidAuditListView(BaseView):
+class FSBidActiveCyclesListView(BaseView):
+    '''
+    Get Active Cycles for New Bid Audits
+    '''
+
+    def get(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_cycles(jwt, request.query_params)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to get Active Cycles failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditCreateView(APIView):
+    '''
+    Create a new Bid Audit
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.create_new_audit(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Create New Bid Audit Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditUpdateView(APIView):
+    '''
+    Update a Bid Audit
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.update_bid_audit(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Update a Bid Audit Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditUpdateCountListView(BaseView):
     '''
     Run Bid Audit, Updates Bid Count
     '''
 
     def get(self, request):
         jwt = request.META['HTTP_JWT']
-        result = services.run_bid_audit(jwt, request.query_params)
+        result = services.update_bid_count(jwt, request.query_params)
 
         if result is None or 'return_code' in result and result['return_code'] != 0:
             logger.error(f"Fsbid call to run Bid Audit failed.")

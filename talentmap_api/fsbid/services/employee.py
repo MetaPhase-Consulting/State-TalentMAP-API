@@ -354,8 +354,7 @@ def get_employee_profile_report(query, pk, jwt_token=None):
     '''
     Get Employee Profile Report
     '''
-
-
+    # pk is hru id
     if query.get("redacted_report") == "true":
         url = f"{WS_ROOT}/v1/Employees/{pk}/PrintEmployeeProfileReport"
 

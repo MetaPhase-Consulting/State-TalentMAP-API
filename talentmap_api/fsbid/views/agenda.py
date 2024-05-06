@@ -11,6 +11,7 @@ import talentmap_api.fsbid.services.agenda as services
 import talentmap_api.fsbid.services.agenda_item_validator as ai_validator
 from talentmap_api.common.permissions import isDjangoGroupMember
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,8 +23,26 @@ class AgendaItemView(BaseView):
         Get single agenda by ai_seq_num
         '''
         return Response(services.get_single_agenda_item(request.META['HTTP_JWT'], pk))
-
-
+    
+class AgendaItemDeleteView(BaseView):
+    permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter("aiseqnum", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='AI Sequence Number'),
+            openapi.Parameter("aiupdatedate", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='AI Update Date'),
+        ])
+    
+    def post(self, request):
+        '''
+        Delete single agenda by ai_seq_num
+        '''
+        try:
+            services.delete_agenda_item(request.data, request.META['HTTP_JWT'])
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        
 class AgendaItemListView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
