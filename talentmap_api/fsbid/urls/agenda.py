@@ -7,7 +7,7 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     url(r'^agenda_items/(?P<pk>[0-9]+)/$', views.AgendaItemView.as_view(), name="agenda-agenda-item"),
-    url(r'^agenda_items/delete/$', views.AgendaItemDeleteView.as_view(), name="agenda-delete-agenda-item"),
+    url(r'^agenda_item/delete/$', views.AgendaItemDeleteView.as_view(), name="agenda-delete-agenda-item"),
     url(r'^agenda_items/$', views.AgendaItemListView.as_view(), name="agenda-agenda-items"),
     url(r'^agenda_item/$', views.AgendaItemActionView.as_view(), name="agenda-agenda-item"),
     url(r'^agenda_items/export/$', views.AgendaItemCSVView.as_view(), name="agenda-export-agenda-items"),
