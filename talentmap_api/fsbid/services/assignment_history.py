@@ -233,8 +233,8 @@ def get_separation_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_SEP_SEQ_NUM": None if request.get("ignore_params") else  request.get("sep_id"),
-        "I_SEPD_REVISION_NUM": None if request.get("ignore_params") else  request.get("revision_num"),
+        "I_SEP_SEQ_NUM": None if request.get("ignore_params") else request.get("sep_id"),
+        "I_SEPD_REVISION_NUM": None if request.get("ignore_params") else request.get("revision_num"),
         "O_SECREF_ROLE_IND": "",
         "QRY_LSTASGS_REF": "",
         "QRY_LSTLAT_REF": "",
