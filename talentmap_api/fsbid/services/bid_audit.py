@@ -68,6 +68,27 @@ def get_bid_audit_res_mapping(data):
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
 
 
+def run_bid_audit(jwt_token, request):
+    '''
+    Run Bid Audit, Updates Bid Count
+    '''
+    args = {
+        "proc_name": 'act_runauditdynamic',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_bid_audit_req_mapping,
+        "response_mapping_function": run_bid_audit_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def run_bid_audit_res_mapping(data):
+    return service_response(data, 'Run Bid Audit')
+
+
 def get_in_category(jwt_token, request):
     '''
     Gets In Category Positions for a Cycle
