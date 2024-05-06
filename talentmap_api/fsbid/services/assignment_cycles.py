@@ -534,7 +534,7 @@ def get_cycle_position_res_mapping(data):
             'now_ted_flag': x.get('O_CP_NOW_TED_FLG'),
             'incumbent_code': '' if x.get('O_IO_CODE') == 'null' else x.get('O_IO_CODE'),
             'last_updated': x.get('O_CP_LAST_UPDT_TMSMP_DT'),
-            'last_updated_id': x.get('O_CYCLE_LAST_UPDT_USER_ID'),
+            'last_updated_id': x.get('O_CP_LAST_UPDT_USER_ID'),
             'dates_mapping': x.get('O_CP_LAST_UPDT_USER_ID'),
             'position_remark_text': '' if x.get('O_CP_REMARK_TXT') == 'null' else x.get('O_CP_REMARK_TXT'),
             'critical_need_indicator': x.get('O_CP_CRITICAL_NEED_IND'),
@@ -575,17 +575,16 @@ def update_cycle_position_req_mapping(req):
     remark_text = data.get('remarkText')
     critical_need_flag = data.get('critNeedFlag')
 
-    # ADD DEFAULTS
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'I_CP_ID': position_id,
+        'I_CP_ID': str(position_id),
         'I_CPS_CD': cycle_status,
         'I_CP_TED_OVRRD_DT': ted_override_date,
         'I_CP_NOW_TED_FLG': ted_flag,
         'I_IO_CODE': vacancy_code,
         'I_CP_LAST_UPDT_TMSMP_DT': last_updated,
-        'I_CP_LAST_UPDT_USER_ID': last_updated_id,
+        'I_CP_LAST_UPDT_USER_ID': str(last_updated_id),
         'I_CP_REMARK_TXT': remark_text,
         'I_CP_CRITICAL_NEED_IND': critical_need_flag,
         'I_CP_POST_IND': '0'  # required
