@@ -193,43 +193,62 @@ def get_assignments_separations_res_mapping(data):
     return data
 
 
-# ======== Get Assignment/Separation Detail and Reference Data ========
+# ======== Get Assignment Detail and Reference Data ========
 
-def get_assignment_separation(data, jwt_token, is_separation):
+def get_alt_assignment(data, jwt_token):
     '''
-    Get Assignment or Separation Detail and Reference Data
+    Get Assignment Detail and Reference Data
     '''
-    if (is_separation):
-        args = {
-            "proc_name": 'qry_getSepDtl',
-            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": get_separation_req_mapping,
-            "response_mapping_function": get_assignment_separation_res_mapping,
-            "jwt_token": jwt_token,
-            "request_body": data,
-        }
-    else:
-        args = {
-            "proc_name": 'qry_getAsgDtl',
-            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": get_assignment_req_mapping,
-            "response_mapping_function": get_assignment_separation_res_mapping,
-            "jwt_token": jwt_token,
-            "request_body": data,
-        }
+    args = {
+        "proc_name": 'qry_getAsgDtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": get_alt_assignment_req_mapping,
+        "response_mapping_function": get_alt_assignment_separation_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
     return services.send_post_back_office(
         **args
     )
 
-def get_assignment_req_mapping(request):
+def get_alt_assignment_req_mapping(request):
     return {
         "i_asg_seq_num": None if request.get("ignore_params") else request.get("asg_id"),
-        "i_asgd_revision_num": None if request.get("ignore_params") else  request.get("revision_num"),
+        "i_asgd_revision_num": None if request.get("ignore_params") else request.get("revision_num"),
         "pv_api_version_i": "",
         "pv_ad_id_i": "",
     }
 
-def get_separation_req_mapping(request):
+def get_alt_assignment_separation_res_mapping(data):
+    # if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+    #    logger.error('FSBid call for fetching assignment reference data failed.')
+    #    return None
+    
+    # Skip error handling because there is reference data returned with id based data
+    # Scenario 1: fetch id data and ref asg_ref_data_res_mapping (edit existing asg)
+    # Scenario 2: fetch just ref data and id data errors (create new asg)
+    return data
+
+
+# ======== Get Separation Detail and Reference Data ========
+
+def get_alt_separation(data, jwt_token):
+    '''
+    Get Separation Detail and Reference Data
+    '''
+    args = {
+        "proc_name": 'qry_getSepDtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": get_alt_separation_req_mapping,
+        "response_mapping_function": get_alt_assignment_separation_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def get_alt_separation_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -248,18 +267,8 @@ def get_separation_req_mapping(request):
         "QRY_ERROR_DATA": ""
     }
 
-def get_assignment_separation_res_mapping(data):
-    # if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-    #    logger.error('FSBid call for fetching assignment reference data failed.')
-    #    return None
-    
-    # Skip error handling because there is reference data returned with id based data
-    # Scenario 1: fetch id data and ref asg_ref_data_res_mapping (edit existing asg)
-    # Scenario 2: fetch just ref data and id data errors (create new asg)
-    return data
 
-
-# ======== Update Assignment/Separation ========
+# ======== Update Assignment ========
 
 def base_assignment_action_req(request):
     return {
@@ -283,6 +292,42 @@ def base_assignment_action_req(request):
         "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
     }
 
+def update_alt_assignment(query, jwt_token):
+    '''
+    Update Assignment
+    '''
+    hru_id = jwt.decode(jwt_token, verify=False).get('sub')
+    args = {
+        "proc_name": 'act_modasgdtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": partial(update_alt_assignment_req_mapping, hru_id=hru_id),
+        "response_mapping_function": update_alt_assignment_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def update_alt_assignment_req_mapping(request, hru_id):
+    return {
+        **base_assignment_action_req(request),
+        "I_ASG_SEQ_NUM": request.get("asg_id"),
+        "I_ASGD_REVISION_NUM": request.get("revision_num"),
+        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
+        "I_ASGD_UPDATE_ID": hru_id,
+        "I_ASGD_UPDATE_DATE": request.get("updated_date"),
+    }
+
+def update_alt_assignment_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for updating assignment failed.')
+        return None
+    return data
+
+
+# ======== Update Separation ========
+
 def base_separation_action_req(request):
     return {
         "PV_API_VERSION_I": "",
@@ -299,50 +344,24 @@ def base_separation_action_req(request):
         "I_SEPD_NOTE_COMMMENT_TEXT": "", # No comment feature
     }
 
-def update_assignment_separation(query, jwt_token, is_separation):
+def update_alt_separation(query, jwt_token):
     '''
-    Update Assignment or Separation
+    Update Separation
     '''
     hru_id = jwt.decode(jwt_token, verify=False).get('sub')
-    if is_separation:
-        args = {
-            "proc_name": 'act_modSepDtl',
-            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": partial(update_separation_req_mapping, hru_id=hru_id),
-            "response_mapping_function": update_separation_res_mapping,
-            "jwt_token": jwt_token,
-            "request_body": query,
-        }
-    else:
-        args = {
-            "proc_name": 'act_modasgdtl',
-            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": partial(update_assignment_req_mapping, hru_id=hru_id),
-            "response_mapping_function": update_assignment_res_mapping,
-            "jwt_token": jwt_token,
-            "request_body": query,
-        }
+    args = {
+        "proc_name": 'act_modSepDtl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": partial(update_alt_separation_req_mapping, hru_id=hru_id),
+        "response_mapping_function": update_alt_separation_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
     return services.send_post_back_office(
         **args
     )
-
-def update_assignment_req_mapping(request, hru_id):
-    return {
-        **base_assignment_action_req(request),
-        "I_ASG_SEQ_NUM": request.get("asg_id"),
-        "I_ASGD_REVISION_NUM": request.get("revision_num"),
-        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
-        "I_ASGD_UPDATE_ID": hru_id,
-        "I_ASGD_UPDATE_DATE": request.get("updated_date"),
-    }
-
-def update_assignment_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for updating assignment failed.')
-        return None
-    return data
     
-def update_separation_req_mapping(request, hru_id):
+def update_alt_separation_req_mapping(request, hru_id):
     return {
         **base_separation_action_req(request),
         "I_SEP_SEQ_NUM": request.get("sep_id"),
@@ -355,62 +374,70 @@ def update_separation_req_mapping(request, hru_id):
         "QRY_ERROR_DATA": "",
     }
 
-def update_separation_res_mapping(data):
+def update_alt_separation_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error('FSBid call for updating separation failed.')
         return None
     return data
 
 
-# ======== Create Assignment/Separation ========
+# ======== Create Assignment ========
 
-def create_assignment_separation(query, jwt_token, is_separation):
+def create_alt_assignment(query, jwt_token):
     '''
-    Create Assignment or Separation
+    Create Assignment
     '''
-    if is_separation:
-        args = {
-            "proc_name": 'act_addsep',
-            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": create_separation_req_mapping,
-            "response_mapping_function": create_separation_res_mapping,
-            "jwt_token": jwt_token,
-            "request_body": query,
-        }
-    else:
-        args = {
-            "proc_name": 'qry_addasg',
-            "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
-            "request_mapping_function": create_assignment_req_mapping,
-            "response_mapping_function": create_assignment_res_mapping,
-            "jwt_token": jwt_token,
-            "request_body": query,
-        }
-
+    args = {
+        "proc_name": 'qry_addasg',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": create_alt_assignment_req_mapping,
+        "response_mapping_function": create_alt_assignment_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
     return services.send_post_back_office(
         **args
     )
 
-def create_assignment_req_mapping(request):
+def create_alt_assignment_req_mapping(request):
     return {
         **base_assignment_action_req(request),
         "I_EMP_SEQ_NBR": request.get("employee"),
         "I_POS_SEQ_NUM": request.get("position"),
     }
 
-def create_assignment_res_mapping(data):
+def create_alt_assignment_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error('FSBid call for creating assignment failed.')
         return None
     return data
 
-def create_separation_req_mapping(request):
+
+# ======== Create Separation ========
+
+def create_alt_separation(query, jwt_token):
+    '''
+    Create Separation
+    '''
+    args = {
+        "proc_name": 'act_addsep',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "request_mapping_function": create_alt_separation_req_mapping,
+        "response_mapping_function": create_alt_separation_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def create_alt_separation_req_mapping(request):
     return {
         **base_separation_action_req(request),
         "I_EMP_SEQ_NBR": request.get("employee"),
     }
 
-def create_separation_res_mapping(data):
+def create_alt_separation_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error('FSBid call for creating separation failed.')
         return None

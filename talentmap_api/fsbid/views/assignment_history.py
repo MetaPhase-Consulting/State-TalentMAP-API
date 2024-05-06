@@ -77,7 +77,7 @@ class FSBidAltAssignmentsBaseView(APIView):
         '''
         Create Assignment
         '''
-        return Response(services.create_assignment_separation(request.data, request.META['HTTP_JWT'], 0))
+        return Response(services.create_alt_assignment(request.data, request.META['HTTP_JWT']))
 
 class FSBidAltAssignmentsActionView(BaseView):
     def get(self, request, pk, id):
@@ -90,7 +90,7 @@ class FSBidAltAssignmentsActionView(BaseView):
             "revision_num": request.query_params.get("revision_num"),
             "ignore_params": request.query_params.get("ignore_params"),
         }
-        return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 0))
+        return Response(services.get_alt_assignment(query, request.META['HTTP_JWT']))
     def put(self, request, pk, id):
         '''
         Update Assignment
@@ -100,7 +100,7 @@ class FSBidAltAssignmentsActionView(BaseView):
             "perdet_seq_num": pk,
             "asg_id": id,
         }
-        return Response(services.update_assignment_separation(query, request.META['HTTP_JWT'], 0))
+        return Response(services.update_alt_assignment(query, request.META['HTTP_JWT']))
     
 
 # ======== Alternative Separations ========
@@ -110,7 +110,7 @@ class FSBidAltSeparationsListBaseView(APIView):
         '''
         Create Separation
         '''
-        return Response(services.create_assignment_separation(request.data, request.META['HTTP_JWT'], 1))
+        return Response(services.create_alt_separation(request.data, request.META['HTTP_JWT']))
     
 class FSBidAltSeparationsListActionView(BaseView):
     def get(self, request, pk, id):
@@ -123,7 +123,7 @@ class FSBidAltSeparationsListActionView(BaseView):
             "revision_num": request.query_params.get("revision_num"),
             "ignore_params": request.query_params.get("ignore_params"),
         }
-        return Response(services.get_assignment_separation(query, request.META['HTTP_JWT'], 1))
+        return Response(services.get_alt_separation(query, request.META['HTTP_JWT']))
     def put(self, request, pk, id):
         '''
         Update Separation
@@ -133,4 +133,4 @@ class FSBidAltSeparationsListActionView(BaseView):
             "perdet_seq_num": pk,
             "sep_id": id,
         }
-        return Response(services.update_assignment_separation(query, request.META['HTTP_JWT'], 1))
+        return Response(services.update_alt_separation(query, request.META['HTTP_JWT']))
