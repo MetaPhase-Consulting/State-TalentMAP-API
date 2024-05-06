@@ -41,7 +41,8 @@ class AgendaItemDeleteView(BaseView):
             services.delete_agenda_item(request.data, request.META['HTTP_JWT'])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
-            return Response(str(e), status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        
 class AgendaItemListView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
