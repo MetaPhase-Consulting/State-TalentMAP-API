@@ -478,6 +478,125 @@ def cycle_positions_res_mapping(data):
     return service_response(data, 'Cycle Positions Data', success_mapping)
 
 
+def get_cycle_position(jwt_token, pk):
+    '''
+    Get Data for a Single Cycle Position
+    '''
+    args = {
+        "proc_name": 'qry_getCyclePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_body": pk,
+        "request_mapping_function": get_cycle_position_req_mapping,
+        "response_mapping_function": get_cycle_position_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_cycle_position_req_mapping(pk):
+    mapped_request = {
+        "PV_API_VERSION_I": "",
+        'PV_AD_ID_I': '',
+        'I_CP_ID': pk,
+    }
+    return mapped_request
+
+
+def format_ted_date_string(input_date):
+    # formats 01-JUN-23 to mm/dd/yyyy
+    if not input_date or input_date == 'null':
+        return None
+    date_object = dt.strptime(input_date, "%d-%b-%y")
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
+
+def get_cycle_position_res_mapping(data):
+    def status_mapping(x):
+        return {
+            'code': x.get('CPS_CD'),
+            'name': x.get('CPS_DESCR_TXT')
+        }
+
+    def incumbent_mapping(x):
+        return {
+            'code': x.get('IO_CODE'),
+            'name': x.get('IO_DESCR_TXT')
+        }
+
+    def success_mapping(x):
+        results = {
+            'cycle_position_id': x.get('O_CP_ID'),
+            'cycle_position_status': x.get('O_CPS_CD'),
+            'ted_override_date': format_ted_date_string(x.get('O_CP_TED_OVRRD_DT')),
+            'now_ted_flag': x.get('O_CP_NOW_TED_FLG'),
+            'incumbent_code': '' if x.get('O_IO_CODE') == 'null' else x.get('O_IO_CODE'),
+            'last_updated': x.get('O_CP_LAST_UPDT_TMSMP_DT'),
+            'last_updated_id': x.get('O_CYCLE_LAST_UPDT_USER_ID'),
+            'dates_mapping': x.get('O_CP_LAST_UPDT_USER_ID'),
+            'position_remark_text': '' if x.get('O_CP_REMARK_TXT') == 'null' else x.get('O_CP_REMARK_TXT'),
+            'critical_need_indicator': x.get('O_CP_CRITICAL_NEED_IND'),
+            'cycle_status_reference': list(map(status_mapping, x.get('QRY_CPS_REF'))),
+            'incumbent_code_reference': list(map(incumbent_mapping, x.get('QRY_LSTIO_REF'))),
+        }
+        return results
+
+    return service_response(data, 'Cycle Position Get Single Cycle', success_mapping)
+
+
+def update_cycle_position(jwt_token, request):
+    '''
+    Update a Cycle Position
+    '''
+    args = {
+        "proc_name": 'act_modCyclePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "request_body": request,
+        "request_mapping_function": update_cycle_position_req_mapping,
+        "response_mapping_function": update_cycle_position_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def update_cycle_position_req_mapping(req):
+    data = req.get('data')
+    position_id = data.get('cycle_position_id')
+    cycle_status = data.get('cycleStatus')
+    ted_override_date = data.get('tedOverrideDate')
+    ted_flag = data.get('nowTedFlag')
+    vacancy_code = data.get('incumbentVacancyCode')
+    last_updated = data.get('last_updated')
+    last_updated_id = data.get('last_updated_id')
+    remark_text = data.get('remarkText')
+    critical_need_flag = data.get('critNeedFlag')
+
+    # ADD DEFAULTS
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'I_CP_ID': position_id,
+        'I_CPS_CD': cycle_status,
+        'I_CP_TED_OVRRD_DT': ted_override_date,
+        'I_CP_NOW_TED_FLG': ted_flag,
+        'I_IO_CODE': vacancy_code,
+        'I_CP_LAST_UPDT_TMSMP_DT': last_updated,
+        'I_CP_LAST_UPDT_USER_ID': last_updated_id,
+        'I_CP_REMARK_TXT': remark_text,
+        'I_CP_CRITICAL_NEED_IND': critical_need_flag,
+        'I_CP_POST_IND': '0'  # required
+    }
+    return mapped_request
+
+
+def update_cycle_position_res_mapping(data):
+    return service_response(data, 'Cycle Positions Update Position')
+
+
 def get_cycle_classifications(jwt_token, request):
     '''
     Gets the Data for the Assignment Cycle Classifications Page
