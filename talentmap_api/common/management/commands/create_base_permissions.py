@@ -23,6 +23,8 @@ class Command(BaseCommand):
             "ao_user",
             "post_user",
             "helppage_editor",
+            "panel_admin",
+            "fsbid_admin",
         ]
 
     def handle(self, *args, **options):
