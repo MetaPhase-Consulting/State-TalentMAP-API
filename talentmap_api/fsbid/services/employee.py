@@ -89,6 +89,8 @@ ROLE_MAPPING = {
     "CDO3": "cdo",
     "Bureau": "bureau_user",
     "AO": "ao_user",
+    "FSBID_PA": "panel_admin",
+    "FSBID_SA": "fsbid_admin",
 }
 
 
