@@ -2,18 +2,21 @@ import logging
 import coreapi
 
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework import status
 from rest_condition import Or
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from talentmap_api.common.permissions import isDjangoGroupMember
 from talentmap_api.fsbid.views.base import BaseView
 from talentmap_api.user_profile.models import UserProfile
-from talentmap_api.fsbid.services.assignment_history import alt_update_assignment, alt_create_assignment, alt_get_assignments, get_assignments, assignment_history_to_client_format, get_assignment_ref_data
-from talentmap_api.common.permissions import isDjangoGroupMember
+import talentmap_api.fsbid.services.assignment_history as services
 
 logger = logging.getLogger(__name__)
 
+
+# ======== Assignment History ========
 
 class FSBidAssignmentHistoryListView(BaseView):
     permission_classes = [Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
@@ -32,7 +35,7 @@ class FSBidAssignmentHistoryListView(BaseView):
         query_copy["perdet_seq_num"] = pk
         query_copy["ordering"] = "-assignment_start_date"
         query_copy._mutable = False
-        data = assignment_history_to_client_format(get_assignments(query_copy, request.META['HTTP_JWT']))
+        data = services.assignment_history_to_client_format(services.get_assignments(query_copy, request.META['HTTP_JWT']))
         return Response(data)
 
 class FSBidPrivateAssignmentHistoryListView(BaseView):
@@ -52,43 +55,82 @@ class FSBidPrivateAssignmentHistoryListView(BaseView):
             query_copy["perdet_seq_num"] = user.emp_id
             query_copy["ordering"] = "-assignment_start_date"
             query_copy._mutable = False
-            data = assignment_history_to_client_format(get_assignments(query_copy, request.META['HTTP_JWT']))
+            data = services.assignment_history_to_client_format(services.get_assignments(query_copy, request.META['HTTP_JWT']))
             return Response(data)
         except Exception as e:
             logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}. User {self.request.user}")
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+# ======== Alternative Assignments/Separations ========
 
-class FSBidAssignmentReferenceView(BaseView):
-    def get(self, request, pk, asg_id):
+class FSBidAltAssignmentsSeparationsListView(APIView):
+    def get(self, request, pk):
         '''
-        Get ref data for maintain assignment
+        Get Alternative Assignments and Separations List
+        '''
+        return Response(services.get_assignments_separations(pk, request.META['HTTP_JWT']))
+
+# ======== Alternative Assignments ========
+
+class FSBidAltAssignmentsBaseView(APIView):
+    def post(self, request, pk):
+        '''
+        Create Assignment
+        '''
+        return Response(services.create_alt_assignment(request.data, request.META['HTTP_JWT']))
+
+class FSBidAltAssignmentsActionView(BaseView):
+    def get(self, request, pk, id):
+        '''
+        Get Assignment Detail and Reference Data
         '''
         query = { 
             "perdet_seq_num": pk,
-            "asg_id": asg_id,
+            "asg_id": id,
             "revision_num": request.query_params.get("revision_num"),
+            "ignore_params": request.query_params.get("ignore_params"),
         }
-        return Response(get_assignment_ref_data(query, request.META['HTTP_JWT']))
-
-class FSBidAltAssignmentHistoryListView(BaseView):
-    def get(self, request, pk):
+        return Response(services.get_alt_assignment(query, request.META['HTTP_JWT']))
+    def put(self, request, pk, id):
         '''
-        Fetch asg sep history by perdet from fsbid proc
+        Update Assignment
         '''
-        return Response(alt_get_assignments(pk, request.META['HTTP_JWT']))
+        query = { 
+            **request.data,
+            "perdet_seq_num": pk,
+            "asg_id": id,
+        }
+        return Response(services.update_alt_assignment(query, request.META['HTTP_JWT']))
+    
 
-    def patch(self, request, pk):
-        '''
-        Update existing asg sep by perdet from fsbid proc
-        '''
-        return Response(alt_update_assignment(request.data, request.META['HTTP_JWT']))
+# ======== Alternative Separations ========
 
-
+class FSBidAltSeparationsListBaseView(APIView):
     def post(self, request, pk):
         '''
-        Create asg sep by perdet from fsbid proc
+        Create Separation
         '''
-        return Response(alt_create_assignment(request.data, request.META['HTTP_JWT']))
-
-
+        return Response(services.create_alt_separation(request.data, request.META['HTTP_JWT']))
+    
+class FSBidAltSeparationsListActionView(BaseView):
+    def get(self, request, pk, id):
+        '''
+        Get Separation Detail and Reference Data
+        '''
+        query = { 
+            "perdet_seq_num": pk,
+            "sep_id": id,
+            "revision_num": request.query_params.get("revision_num"),
+            "ignore_params": request.query_params.get("ignore_params"),
+        }
+        return Response(services.get_alt_separation(query, request.META['HTTP_JWT']))
+    def put(self, request, pk, id):
+        '''
+        Update Separation
+        '''
+        query = { 
+            **request.data,
+            "perdet_seq_num": pk,
+            "sep_id": id,
+        }
+        return Response(services.update_alt_separation(query, request.META['HTTP_JWT']))
