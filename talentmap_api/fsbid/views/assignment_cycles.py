@@ -156,6 +156,39 @@ class FSBidCyclePositionsView(BaseView):
         return Response(result)
 
 
+class FSBidCyclePositionView(BaseView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
+
+    def get(self, request, pk):
+        '''
+        Get Single Cycle Position - with more specific data
+        '''
+        jwt = request.META['HTTP_JWT']
+        result = services.get_cycle_position(jwt, pk)
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Get Cycle Position Failed")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidCyclePositionUpdateView(APIView):
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
+    '''
+    Update a Cycle Position
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.update_cycle_position(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Update Assignment Cycle Date Classifications Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
 class FSBidCycleClassificationsView(BaseView):
     permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), )]
     # Bureau & AO can View, only Admin can Edit
