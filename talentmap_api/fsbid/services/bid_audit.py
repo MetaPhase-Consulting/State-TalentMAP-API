@@ -105,7 +105,7 @@ def create_new_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
         "request_body": request,
         "request_mapping_function": create_new_audit_req_mapping,
         "response_mapping_function": create_new_audit_res_mapping,
