@@ -44,7 +44,6 @@ def get_bid_audit_res_mapping(data):
             'audit_id': x.get('AAC_AUDIT_NBR') or None,
             'audit_desc': x.get('AAC_DESC_TXT') or None,
             'audit_date': format_dates(x.get('AAC_AUDIT_DT')) if x.get('AAC_AUDIT_DT') else None,
-            'audit_date_unformatted': x.get('AAC_AUDIT_DT'),
             'posted_by_date': format_dates(x.get('AAC_POSTED_BY_DT')) if x.get('AAC_POSTED_BY_DT') else None,
             'cycle_id': x.get('CYCLE_ID') or None,
             'cycle_name': x.get('CYCLE_NM_TXT') or None,
@@ -54,15 +53,9 @@ def get_bid_audit_res_mapping(data):
             'cycle_category': x.get('CC_DESCR_TXT') or None,
         }
 
-    def sort_by_audit_date(audits):
-        if audits['audit_date_unformatted'] is None:
-            return ''
-        else:
-            return audits['audit_date_unformatted']
-
     def success_mapping(x):
         audits = list(map(results_mapping, x.get('QRY_LSTAUDITASSIGNCYCLES_REF', {})))
-        sorted_audits = sorted(audits, key=sort_by_audit_date, reverse=True)
+        sorted_audits = sorted(audits, key=lambda x: (x['cycle_id'], x['audit_id']), reverse=True)
         return sorted_audits
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
@@ -208,14 +201,30 @@ def get_in_category_res_mapping(data):
     def in_category_results_mapping(x):
         return {
             'id': x.get('AIC_ID') or None,
-            'skill_code_position': x.get('SKL_CODE_POS') or None,
-            'skill_desc_position': x.get('skl_desc_pos') or None,
-            'skill_code_employee': x.get('SKL_CODE_EMP') or None,
-            'skill_desc_employee': x.get('skl_desc_emp') or None,
+            'position_skill_code': x.get('SKL_CODE_POS') or None,
+            'position_skill_desc': x.get('skl_desc_pos') or None,
+            'employee_skill_code': x.get('SKL_CODE_EMP') or None,
+            'employee_skill_desc': x.get('skl_desc_emp') or None,
+        }
+
+    def in_category_audit_mapping(x):
+        return {
+            'cycle_id': x.get('CYCLE_ID') or None,
+            'cycle_name': x.get('CYCLE_NM_TXT') or None,
+            'audit_date': x.get('AAC_AUDIT_DT') or None,
+            'audit_number': x.get('AAC_AUDIT_NBR') or None,
+            'audit_desc': x.get('AAC_DESC_TXT') or None,
+            'last_updated': x.get('AAC_LAST_UPDT_TMSMP_DT') or None,
+            'last_updated_id': x.get('AAC_LAST_UPDT_USER_ID') or None,
+            'posted_by_date': format_dates(x.get('AAC_POSTED_BY_DT')) if x.get('AAC_POSTED_BY_DT') else None,
         }
 
     def success_mapping(x):
-        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITINCATEGORIES_REF', {})))
+        results = {
+            "in_categories": list(map(in_category_results_mapping, x.get('QRY_LSTAUDITINCATEGORIES_REF', {}))),
+            "audit_info": in_category_audit_mapping(x['QRY_GETAUDITASSIGNCYCLE_REF'][0]),
+        }
+        return results
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
 
