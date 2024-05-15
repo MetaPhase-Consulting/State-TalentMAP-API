@@ -260,16 +260,12 @@ def get_alt_separation_req_mapping(request):
 # ======== Update Assignment ========
 
 def base_assignment_action_req(request):
-    return {
+    base = {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
         "I_ASGD_ETA_DATE": request.get("eta"),
         "I_ASGD_ETD_TED_DATE": request.get("etd"),
         "I_ASGD_TOD_CODE": request.get("tod"),
-        # TO DO: Clarify custom tod feature
-        "I_ASGD_TOD_MONTHS_NUM": request.get("tod_months_num"), 
-        "I_ASGD_TOD_OTHER_TEXT": request.get("tod_other_text"), 
-        "I_ASGD_ADJUST_MONTHS_NUM": request.get("tod_adjust_months_num"), 
         "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
         "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
         "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
@@ -280,6 +276,14 @@ def base_assignment_action_req(request):
         "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
         "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
     }
+    # TO DO: Clarify custom tod feature
+    if request.get("tod_months_num"):
+        base["I_ASGD_TOD_MONTHS_NUM"] = request.get("tod_months_num")
+    if request.get("tod_months_num"):
+        base["I_ASGD_TOD_OTHER_TEXT"] = request.get("tod_other_text")
+    if request.get("tod_months_num"):
+        base["I_ASGD_ADJUST_MONTHS_NUM"] = request.get("tod_adjust_months_num")
+    return base
 
 def update_alt_assignment(query, jwt_token):
     '''
