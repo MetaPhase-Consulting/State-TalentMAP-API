@@ -18,7 +18,7 @@ from talentmap_api.common.common_helpers import ensure_date, sort_legs, combine_
 from talentmap_api.fsbid.requests import requests
 
 AGENDA_API_ROOT = settings.AGENDA_API_URL
-PANEL_API_ROOT = settings.PANEL_API_URL
+PANEL_API_ROOT_V2 = settings.PANEL_API_V2_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 API_ROOT = settings.WS_ROOT_API_URL
 
@@ -1152,8 +1152,8 @@ def get_agendas_by_panel(pk, jwt_token):
         "jwt_token": jwt_token,
         "mapping_function": partial(fsbid_single_agenda_item_to_talentmap_single_agenda_item, ref_skills=skills_lookup),
         "count_function": None,
-        "base_url": "/api/v1/panels/",
-        "api_root": PANEL_API_ROOT,
+        "base_url": "/api/v2/panels/",
+        "api_root": PANEL_API_ROOT_V2,
     }
     agendas_by_panel = services.send_get_request(
         **args
@@ -1217,8 +1217,8 @@ def get_agendas_by_panel_export(pk, jwt_token, host=None):
         "jwt_token": jwt_token,
         "mapping_function": partial(services.csv_fsbid_template_to_tm, mapping=mapping_subset),
         "count_function": None,
-        "base_url": "/api/v1/panels/",
-        "api_root": PANEL_API_ROOT,
+        "base_url": "/api/v2/panels/",
+        "api_root": PANEL_API_ROOT_V2,
         "host": host,
         "use_post": False,
     }

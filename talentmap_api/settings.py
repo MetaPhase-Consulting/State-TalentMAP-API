@@ -546,6 +546,7 @@ AVATAR_URL = get_delineated_environment_variable('AVATAR_URL', 'https://usdos.sh
 TP_API_URL = get_delineated_environment_variable('TP_API_URL', 'http://mock_fsbid:3333/v1/TrackingPrograms')
 AGENDA_API_URL = get_delineated_environment_variable('AGENDA_API_URL', 'http://mock_fsbid:3333/v1/Agendas')
 PANEL_API_URL = get_delineated_environment_variable('PANEL_API_URL', 'http://mock_fsbid:3333/v1/panels')
+PANEL_API_V2_URL = get_delineated_environment_variable('PANEL_API_URL', 'http://mock_fsbid:3333/v2/panels')
 PERSON_API_URL = get_delineated_environment_variable('PERSON_API_URL', 'http://mock_fsbid:3333/v3/persons')
 BIDS_API_V2_URL = get_delineated_environment_variable('BIDS_API_V2_URL', 'http://mock_fsbid:3333/v2/bids')
 POSITIONS_API_URL = get_delineated_environment_variable('POSITIONS_API_URL', 'http://mock_fsbid:3333/v1/positions')
