@@ -122,3 +122,67 @@ class FSBidBidAuditGradeListView(BaseView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidBidAuditCategoryOptionsListView(BaseView):
+    '''
+    Get List of Options for In Category designation
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_in_category_options(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for Bid Audit Category data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditCategoryCreateListView(APIView):
+    '''
+    Create a new In Category
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.create_new_in_category(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Create New In Category Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditGradeOptionsListView(BaseView):
+    '''
+    Get List of Options for At Grade designation
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_at_grade_options(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for Bid Audit Grade data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditGradeCreateListView(APIView):
+    '''
+    Create a new At Grade
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.create_new_at_grade(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Create New At Grade Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
