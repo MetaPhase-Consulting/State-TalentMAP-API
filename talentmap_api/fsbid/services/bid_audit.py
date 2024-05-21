@@ -318,7 +318,8 @@ def get_in_category_options_res_mapping(data):
 
     def success_mapping(x):
         results = {
-            'skill_options': list(map(in_category_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {})))
+            'position_skill_options': list(map(in_category_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {}))),
+            'employee_skill_options': list(map(in_category_options_mapping, x.get('QRY_LSTAUDITEMPSKILLS_REF', {})))
         }
         return results
 
@@ -395,9 +396,11 @@ def get_at_grade_options_res_mapping(data):
 
     def success_mapping(x):
         results = {
-            'grade_options': list(map(at_grade_grade_options_mapping, x.get('QRY_LSTAUDITPOSGRADES_REF', {}))),
-            'skill_options': list(map(at_grade_skill_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {}))),
-            'tenure_options': list(map(at_grade_tenure_options_mapping, x.get('QRY_LSTAUDITEMPTENURES_REF', {}))),
+            'position_grade_options': list(map(at_grade_grade_options_mapping, x.get('QRY_LSTAUDITPOSGRADES_REF', {}))),
+            'position_skill_options': list(map(at_grade_skill_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {}))),
+            'employee_grade_options': list(map(at_grade_grade_options_mapping, x.get('QRY_LSTAUDITEMPGRADES_REF', {}))),
+            'employee_skill_options': list(map(at_grade_skill_options_mapping, x.get('QRY_LSTAUDITEMPSKILLS_REF', {}))),
+            'employee_tenure_options': list(map(at_grade_tenure_options_mapping, x.get('QRY_LSTAUDITEMPTENURES_REF', {}))),
         }
         return results
 
