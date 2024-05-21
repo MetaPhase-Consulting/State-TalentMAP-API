@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class FSBidPublishablePositionsView(APIView):
     # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
