@@ -290,3 +290,151 @@ def get_at_grade_res_mapping(data):
         return results
 
     return service_response(data, 'Bid Audit Get At-Grade', success_mapping)
+
+
+def get_in_category_options(jwt_token, request):
+    '''
+    Gets In Category Options for Positions
+    '''
+    args = {
+        "proc_name": 'qry_addauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_in_category_req_mapping,
+        "response_mapping_function": get_in_category_options_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_in_category_options_res_mapping(data):
+    def in_category_options_mapping(x):
+        return {
+            'code': x.get('SKL_CODE') or None,
+            'text': x.get('SKL_DESC') or None,
+        }
+
+    def success_mapping(x):
+        results = {
+            'skill_options': list(map(in_category_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {})))
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get In-Category', success_mapping)
+
+
+def create_new_in_category(jwt_token, request):
+    '''
+    Create In Category Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_addauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": create_in_category_req_mapping,
+        "response_mapping_function": create_in_category_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def create_in_category_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_skl_code_pos': request.get('positionSkill'),
+        'i_skl_code_emp': request.get('employeeSkill'),
+    }
+    return mapped_request
+
+
+def create_in_category_res_mapping(data):
+    return service_response(data, 'Save In Category')
+
+
+def get_at_grade_options(jwt_token, request):
+    '''
+    Gets At Grade Options for Positions
+    '''
+    args = {
+        "proc_name": 'qry_addauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_at_grade_req_mapping,
+        "response_mapping_function": get_at_grade_options_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_at_grade_options_res_mapping(data):
+    def at_grade_grade_options_mapping(x):
+        return {
+            'code': x.get('GRD_CD'),
+        }
+
+    def at_grade_skill_options_mapping(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'text': x.get('SKL_DESC'),
+        }
+
+    def at_grade_tenure_options_mapping(x):
+        return {
+            'code': x.get('TNR_CODE'),
+            'text': x.get('TNR_DESC'),
+        }
+
+    def success_mapping(x):
+        results = {
+            'grade_options': list(map(at_grade_grade_options_mapping, x.get('QRY_LSTAUDITPOSGRADES_REF', {}))),
+            'skill_options': list(map(at_grade_skill_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {}))),
+            'tenure_options': list(map(at_grade_tenure_options_mapping, x.get('QRY_LSTAUDITEMPTENURES_REF', {}))),
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get At-Grade', success_mapping)
+
+
+def create_new_at_grade(jwt_token, request):
+    '''
+    Create At Grade Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_addauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": create_at_grade_req_mapping,
+        "response_mapping_function": create_at_grade_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def create_at_grade_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_skl_code_pos': request.get('positionSkill'),
+        'i_grd_code_pos': request.get('positionGrade'),
+        'i_grd_code_emp': request.get('employeeGrade'),
+        'i_skl_code_emp': request.get('employeeSkill'),
+        'i_tnr_code_emp': request.get('employeeTenure'),
+    }
+    return mapped_request
+
+
+def create_at_grade_res_mapping(data):
+    return service_response(data, 'Save At Grade')
