@@ -52,7 +52,7 @@ class FSBidPanelMeetingView(BaseView):
 # ======================== Edit Panel Meeting ========================
 
 class FSBidPanelMeetingActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('fsbid_admin')]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -79,7 +79,7 @@ class FSBidPanelMeetingActionView(APIView):
 # ======================== Post Panel Processing ========================
 
 class FSBidPostPanelView(BaseView):
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('panel_admin')]
 
     def get(self, request, pk):
         '''
@@ -94,7 +94,7 @@ class FSBidPostPanelView(BaseView):
 # ======================== Edit Post Panel Processing ========================
 
 class FSBidPostPanelActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('panel_admin')]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -120,7 +120,7 @@ class FSBidPostPanelActionView(APIView):
 # ======================== Panel Run Actions ========================
 
 class FSBidRunPreliminaryActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('panel_admin')]
 
     def put(self, request, pk):
         '''
@@ -130,7 +130,7 @@ class FSBidRunPreliminaryActionView(APIView):
         return view_result(result)
     
 class FSBidRunAddendumActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('panel_admin')]
 
     def put(self, request, pk):
         '''
@@ -140,7 +140,7 @@ class FSBidRunAddendumActionView(APIView):
         return view_result(result)
     
 class FSBidRunPostPanelActionView(APIView):
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('cdo_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('panel_admin')]
 
     def put(self, request, pk):
         '''
