@@ -116,7 +116,6 @@ def publishable_positions_req_mapping(request):
     }
 
 def publishable_positions_res_mapping(data):
-    logger.info('hit res mapping')
     fsbid_lang_data = {
         "poslanguage1code": data.get('poslanguage1code'),
         "poslanguage1desc": data.get('poslanguage1desc'),
