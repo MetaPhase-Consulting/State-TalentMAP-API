@@ -38,8 +38,11 @@ class AgendaItemDeleteView(BaseView):
         Delete single agenda by ai_seq_num
         '''
         try:
-            services.delete_agenda_item(request.data, request.META['HTTP_JWT'])
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            res = services.delete_agenda_item(request.data, request.META['HTTP_JWT'])
+            if res.json().get('ReturnCode') is 0:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         
