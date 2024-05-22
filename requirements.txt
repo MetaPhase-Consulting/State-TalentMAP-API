@@ -41,7 +41,7 @@ future==0.16.0
 gitdb2==2.0.3
 GitPython==2.1.7
 greenlet==0.4.17
-idna==2.6
+idna==3.7
 isodate==0.6.0
 itsdangerous==2.0.1
 itypes==1.1.0
