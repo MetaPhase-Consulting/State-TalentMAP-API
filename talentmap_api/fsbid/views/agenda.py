@@ -39,7 +39,7 @@ class AgendaItemDeleteView(BaseView):
         '''
         try:
             res = services.delete_agenda_item(request.data, request.META['HTTP_JWT'])
-            if res.json().get('return_code') is 0:
+            if res.json().get('ReturnCode') is 0:
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
