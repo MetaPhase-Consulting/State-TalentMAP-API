@@ -308,7 +308,7 @@ def update_alt_assignment_req_mapping(request, hru_id):
         **base_assignment_action_req(request),
         "I_ASG_SEQ_NUM": request.get("asg_id"),
         "I_ASGD_REVISION_NUM": request.get("revision_num"),
-        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
+        "I_ASGD_CRITICAL_NEED_IND": request.get("critical_need_ind"),
         "I_ASGD_UPDATE_ID": hru_id,
         "I_ASGD_UPDATE_DATE": request.get("updated_date"),
     }
