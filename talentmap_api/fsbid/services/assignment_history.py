@@ -304,7 +304,7 @@ def update_alt_assignment(query, jwt_token):
     )
 
 def update_alt_assignment_req_mapping(request, hru_id):
-    yes = {
+    return {
         **base_assignment_action_req(request),
         "I_ASG_SEQ_NUM": request.get("asg_id"),
         "I_ASGD_REVISION_NUM": request.get("revision_num"),
@@ -312,8 +312,6 @@ def update_alt_assignment_req_mapping(request, hru_id):
         "I_ASGD_UPDATE_ID": hru_id,
         "I_ASGD_UPDATE_DATE": request.get("updated_date"),
     }
-    logger.info(yes)
-    return yes
 
 def update_alt_assignment_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
