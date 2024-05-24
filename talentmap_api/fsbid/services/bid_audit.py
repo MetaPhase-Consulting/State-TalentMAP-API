@@ -44,7 +44,6 @@ def get_bid_audit_res_mapping(data):
             'audit_id': x.get('AAC_AUDIT_NBR') or None,
             'audit_desc': x.get('AAC_DESC_TXT') or None,
             'audit_date': format_dates(x.get('AAC_AUDIT_DT')) if x.get('AAC_AUDIT_DT') else None,
-            'audit_date_unformatted': x.get('AAC_AUDIT_DT'),
             'posted_by_date': format_dates(x.get('AAC_POSTED_BY_DT')) if x.get('AAC_POSTED_BY_DT') else None,
             'cycle_id': x.get('CYCLE_ID') or None,
             'cycle_name': x.get('CYCLE_NM_TXT') or None,
@@ -54,15 +53,9 @@ def get_bid_audit_res_mapping(data):
             'cycle_category': x.get('CC_DESCR_TXT') or None,
         }
 
-    def sort_by_audit_date(audits):
-        if audits['audit_date_unformatted'] is None:
-            return ''
-        else:
-            return audits['audit_date_unformatted']
-
     def success_mapping(x):
         audits = list(map(results_mapping, x.get('QRY_LSTAUDITASSIGNCYCLES_REF', {})))
-        sorted_audits = sorted(audits, key=sort_by_audit_date, reverse=True)
+        sorted_audits = sorted(audits, key=lambda x: (x['cycle_id'], x['audit_id']), reverse=True)
         return sorted_audits
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
@@ -208,16 +201,32 @@ def get_in_category_res_mapping(data):
     def in_category_results_mapping(x):
         return {
             'id': x.get('AIC_ID') or None,
-            'skill_code_position': x.get('SKL_CODE_POS') or None,
-            'skill_desc_position': x.get('skl_desc_pos') or None,
-            'skill_code_employee': x.get('SKL_CODE_EMP') or None,
-            'skill_desc_employee': x.get('skl_desc_emp') or None,
+            'position_skill_code': x.get('SKL_CODE_POS') or None,
+            'position_skill_desc': x.get('skl_desc_pos') or None,
+            'employee_skill_code': x.get('SKL_CODE_EMP') or None,
+            'employee_skill_desc': x.get('skl_desc_emp') or None,
+        }
+
+    def in_category_audit_mapping(x):
+        return {
+            'cycle_id': x.get('CYCLE_ID') or None,
+            'cycle_name': x.get('CYCLE_NM_TXT') or None,
+            'audit_date': format_dates(x.get('AAC_AUDIT_DT')) if x.get('AAC_AUDIT_DT') else None,
+            'audit_number': x.get('AAC_AUDIT_NBR') or None,
+            'audit_desc': x.get('AAC_DESC_TXT') or None,
+            'last_updated': x.get('AAC_LAST_UPDT_TMSMP_DT') or None,
+            'last_updated_id': x.get('AAC_LAST_UPDT_USER_ID') or None,
+            'posted_by_date': format_dates(x.get('AAC_POSTED_BY_DT')) if x.get('AAC_POSTED_BY_DT') else None,
         }
 
     def success_mapping(x):
-        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITINCATEGORIES_REF', {})))
+        results = {
+            "in_categories": list(map(in_category_results_mapping, x.get('QRY_LSTAUDITINCATEGORIES_REF', {}))),
+            "audit_info": in_category_audit_mapping(x['QRY_GETAUDITASSIGNCYCLE_REF'][0]),
+        }
+        return results
 
-    return service_response(data, 'Bid Audit Get Audits', success_mapping)
+    return service_response(data, 'Bid Audit Get In-Category', success_mapping)
 
 
 def get_at_grade(jwt_token, request):
@@ -251,17 +260,184 @@ def get_at_grade_res_mapping(data):
     def in_category_results_mapping(x):
         return {
             'id': x.get('AAG_ID') or None,
-            'grade_code_position': x.get('GRD_CODE_POS') or None,
-            'skill_code_position': x.get('SKL_CODE_POS') or None,
-            'skill_desc_position': x.get('skl_desc_pos') or None,
-            'grade_code_employee': x.get('GRD_CODE_EMP') or None,
-            'skill_code_employee': x.get('SKL_CODE_EMP') or None,
-            'skill_desc_employee': x.get('skl_desc_emp') or None,
-            'tenure_code_employee': x.get('TNR_CODE_EMP') or None,
-            'tenure_desc_employee': x.get('tnr_desc_emp') or None,
+            'position_grade_code': x.get('GRD_CODE_POS') or None,
+            'position_skill_code': x.get('SKL_CODE_POS') or None,
+            'position_skill_desc': x.get('skl_desc_pos') or None,
+            'employee_grade_code': x.get('GRD_CODE_EMP') or None,
+            'employee_skill_code': x.get('SKL_CODE_EMP') or None,
+            'employee_skill_desc': x.get('skl_desc_emp') or None,
+            'employee_tenure_code': x.get('TNR_CODE_EMP') or None,
+            'employee_tenure_desc': x.get('tnr_desc_emp') or None,
+        }
+
+    def at_grade_audit_mapping(x):
+        return {
+            'cycle_id': x.get('CYCLE_ID') or None,
+            'cycle_name': x.get('CYCLE_NM_TXT') or None,
+            'audit_date': format_dates(x.get('AAC_AUDIT_DT')) if x.get('AAC_AUDIT_DT') else None,
+            'audit_number': x.get('AAC_AUDIT_NBR') or None,
+            'audit_desc': x.get('AAC_DESC_TXT') or None,
+            'last_updated': x.get('AAC_LAST_UPDT_TMSMP_DT') or None,
+            'last_updated_id': x.get('AAC_LAST_UPDT_USER_ID') or None,
+            'posted_by_date': format_dates(x.get('AAC_POSTED_BY_DT')) if x.get('AAC_POSTED_BY_DT') else None,
         }
 
     def success_mapping(x):
-        return list(map(in_category_results_mapping, x.get('QRY_LSTAUDITATGRADES_REF', {})))
+        results = {
+            "at_grades": list(map(in_category_results_mapping, x.get('QRY_LSTAUDITATGRADES_REF', {}))),
+            "audit_info": at_grade_audit_mapping(x['QRY_GETAUDITASSIGNCYCLE_REF'][0]),
+        }
+        return results
 
-    return service_response(data, 'Bid Audit Get Audits', success_mapping)
+    return service_response(data, 'Bid Audit Get At-Grade', success_mapping)
+
+
+def get_in_category_options(jwt_token, request):
+    '''
+    Gets In Category Options for Positions
+    '''
+    args = {
+        "proc_name": 'qry_addauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_in_category_req_mapping,
+        "response_mapping_function": get_in_category_options_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_in_category_options_res_mapping(data):
+    def in_category_options_mapping(x):
+        return {
+            'code': x.get('SKL_CODE') or None,
+            'text': x.get('SKL_DESC') or None,
+        }
+
+    def success_mapping(x):
+        results = {
+            'position_skill_options': list(map(in_category_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {}))),
+            'employee_skill_options': list(map(in_category_options_mapping, x.get('QRY_LSTAUDITEMPSKILLS_REF', {})))
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get In-Category', success_mapping)
+
+
+def create_new_in_category(jwt_token, request):
+    '''
+    Create In Category Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_addauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": create_in_category_req_mapping,
+        "response_mapping_function": create_in_category_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def create_in_category_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_skl_code_pos': request.get('positionSkill'),
+        'i_skl_code_emp': request.get('employeeSkill'),
+    }
+    return mapped_request
+
+
+def create_in_category_res_mapping(data):
+    return service_response(data, 'Save In Category')
+
+
+def get_at_grade_options(jwt_token, request):
+    '''
+    Gets At Grade Options for Positions
+    '''
+    args = {
+        "proc_name": 'qry_addauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_at_grade_req_mapping,
+        "response_mapping_function": get_at_grade_options_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_at_grade_options_res_mapping(data):
+    def at_grade_grade_options_mapping(x):
+        return {
+            'code': x.get('GRD_CD'),
+        }
+
+    def at_grade_skill_options_mapping(x):
+        return {
+            'code': x.get('SKL_CODE'),
+            'text': x.get('SKL_DESC'),
+        }
+
+    def at_grade_tenure_options_mapping(x):
+        return {
+            'code': x.get('TNR_CODE'),
+            'text': x.get('TNR_DESC'),
+        }
+
+    def success_mapping(x):
+        results = {
+            'position_grade_options': list(map(at_grade_grade_options_mapping, x.get('QRY_LSTAUDITPOSGRADES_REF', {}))),
+            'position_skill_options': list(map(at_grade_skill_options_mapping, x.get('QRY_LSTAUDITPOSSKILLS_REF', {}))),
+            'employee_grade_options': list(map(at_grade_grade_options_mapping, x.get('QRY_LSTAUDITEMPGRADES_REF', {}))),
+            'employee_skill_options': list(map(at_grade_skill_options_mapping, x.get('QRY_LSTAUDITEMPSKILLS_REF', {}))),
+            'employee_tenure_options': list(map(at_grade_tenure_options_mapping, x.get('QRY_LSTAUDITEMPTENURES_REF', {}))),
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get At-Grade', success_mapping)
+
+
+def create_new_at_grade(jwt_token, request):
+    '''
+    Create At Grade Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_addauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": create_at_grade_req_mapping,
+        "response_mapping_function": create_at_grade_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def create_at_grade_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_skl_code_pos': request.get('positionSkill'),
+        'i_grd_code_pos': request.get('positionGrade'),
+        'i_grd_code_emp': request.get('employeeGrade'),
+        'i_skl_code_emp': request.get('employeeSkill'),
+        'i_tnr_code_emp': request.get('employeeTenure'),
+    }
+    return mapped_request
+
+
+def create_at_grade_res_mapping(data):
+    return service_response(data, 'Save At Grade')
