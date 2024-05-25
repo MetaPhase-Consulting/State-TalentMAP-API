@@ -7,6 +7,7 @@ router = routers.SimpleRouter()
 
 urlpatterns = [
     url(r'^$', views.FSBidBidAuditListView.as_view(), name='FSBid-bid-audit-list'),
+    url(r'^run/$', views.FSBidBidAuditRunView.as_view(), name="FSBid-run-bid-audit-list"),
     url(r'^cycles/$', views.FSBidActiveCyclesListView.as_view(), name='FSBid-active-cycles-list'),
     url(r'^update/$', views.FSBidBidAuditUpdateView.as_view(), name='FSBid-update-audit'),
     url(r'^update_count/$', views.FSBidBidAuditUpdateCountListView.as_view(), name="FSBid-update-bid-count-list"),
