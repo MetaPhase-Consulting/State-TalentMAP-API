@@ -201,3 +201,35 @@ class FSBidBidAuditGradeCreateListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidBidAuditUpdateGradeListView(APIView):
+    '''
+    Modify existing At Grade
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.update_at_grade(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Update At Grade Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditUpdateCategoryListView(APIView):
+    '''
+    Modify existing In Category
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.update_in_category(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Update In Category Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
