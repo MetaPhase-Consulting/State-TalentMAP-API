@@ -233,3 +233,35 @@ class FSBidBidAuditUpdateCategoryListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidBidAuditDeleteGradeListView(APIView):
+    '''
+    Delete existing At Grade relationship
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.delete_at_grade(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Delete At Grade Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditDeleteCategoryListView(APIView):
+    '''
+    Delete existing In Category relationship
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.delete_in_category(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Delete In Category Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
