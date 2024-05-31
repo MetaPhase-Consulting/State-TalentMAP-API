@@ -83,7 +83,8 @@ def map_group_to_fsbid_role(jwt_token):
 ROLE_MAPPING = {
     # post_user gets manually mapped, but we still include it here so it can be removed if necessary
     "post_user": "post_user",
-    "FSBid_Capsule_Org_Bidders": "post_user",
+    "FSBid_Org_Bidders": "post_user",
+    "FSBid_Org_Capsule": "post_user",
     "fsofficer": "bidder",
     "FSBidCycleAdministrator": "bidcycle_admin",
     "CDO": "cdo",
