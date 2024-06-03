@@ -320,7 +320,7 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
 
 def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
     search_list = ''
-    position_numbers = request.get('position_numbers').split(',')  
+    position_numbers = request.get('position_numbers', '').split(',')
     for number in position_numbers:
         search_list += f'<Value>{number}</Value>'
     return {
