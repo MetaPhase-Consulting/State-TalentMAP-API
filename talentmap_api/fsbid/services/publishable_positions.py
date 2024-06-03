@@ -137,7 +137,7 @@ def publishable_positions_res_mapping(data):
         'languages': services.parseLanguagesToArr(fsbid_lang_data),
         'payPlan': data.get('pospayplancode'),
         'grade': data.get('posgradecode'),
-        'combined_pp_grade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
+        'combinedPPGrade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
         'positionDetails': data.get('pposcapsuledescrtxt'),
         'positionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
         'lastUpdated': data.get('pposlastupdttmsmpdt'),
