@@ -267,17 +267,18 @@ def base_assignment_action_req(request):
         "I_ASGD_ETA_DATE": request.get("eta"),
         "I_ASGD_ETD_TED_DATE": request.get("etd"),
         "I_ASGD_TOD_CODE": request.get("tod"),
-        "I_ASGD_SALARY_REIMBURSE_IND": "Y" if request.get("salary_reimburse_ind") else "N",
-        "I_ASGD_TRAVEL_REIMBURSE_IND": "Y" if request.get("travel_reimburse_ind") else "N",
-        "I_ASGD_TRAINING_IND": "Y" if request.get("training_ind") else "N",
+        "I_ASGD_SALARY_REIMBURSE_IND": request.get("salary_reimburse_ind"),
+        "I_ASGD_TRAVEL_REIMBURSE_IND": request.get("travel_reimburse_ind"),
+        "I_ASGD_TRAINING_IND": request.get("training_ind"),
+        "I_ASGD_CRITICAL_NEED_IND": request.get("critical_need_ind"),
         "I_ASGD_ORG_CODE": request.get("org_code"),
         "I_ASGD_ASGS_CODE": request.get("status_code"),
         "I_ASGD_LAT_CODE": request.get("lat_code"),
         "I_ASGD_TF_CD": request.get("travel_code"),
-        "I_ASGD_WRT_CODE_RR_REPAY": "Y" if request.get("rr_repay_ind") else "N",
+        "I_ASGD_WRT_CODE_RR_REPAY": request.get("rr_repay_ind"),
         "I_ASGD_NOTE_COMMENT_TEXT": "", # No comment feature
     }
-    # TO DO: Clarify custom tod feature
+    # TO DO: Clarify custom TOD feature
     if request.get("tod_months_num"):
         base["I_ASGD_TOD_MONTHS_NUM"] = request.get("tod_months_num")
     if request.get("tod_months_num"):
@@ -308,7 +309,7 @@ def update_alt_assignment_req_mapping(request, hru_id):
         **base_assignment_action_req(request),
         "I_ASG_SEQ_NUM": request.get("asg_id"),
         "I_ASGD_REVISION_NUM": request.get("revision_num"),
-        "I_ASGD_CRITICAL_NEED_IND": "Y" if request.get("critical_need_ind") else "N",
+        "I_ASGD_CRITICAL_NEED_IND": request.get("critical_need_ind"),
         "I_ASGD_UPDATE_ID": hru_id,
         "I_ASGD_UPDATE_DATE": request.get("updated_date"),
     }
