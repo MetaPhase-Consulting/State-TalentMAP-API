@@ -49,9 +49,12 @@ def post_access_filter_res_mapping(data):
             'description': x.get('ROLE_DESC'),
         }
     def org_map(x):
+        code = x.get('Org')
+        desc = x.get('ORG_DESC')
         return {
             'code': x.get('Org'),
             'description': x.get('ORG_DESC'),
+            'custom_description': f'{desc} ({code})',
         }
     def location_map(x):
         return {
