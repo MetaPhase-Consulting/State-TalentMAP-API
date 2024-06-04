@@ -6,6 +6,37 @@ from talentmap_api.common.common_helpers import service_response
 WS_ROOT = settings.WS_ROOT_API_URL
 
 
+def run_bid_audit(jwt_token, request):
+    '''
+    Runs the Bid Audit
+    '''
+    args = {
+        "proc_name": 'act_runauditassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": run_bid_audit_req_mapping,
+        "response_mapping_function": run_bid_audit_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def run_bid_audit_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+    }
+    return mapped_request
+
+
+def run_bid_audit_res_mapping(data):
+    return service_response(data, 'Run Bid Audit')
+
+
 def get_bid_audit_data(jwt_token, request):
     '''
     Gets the Data for the Bid Audit Page
@@ -110,11 +141,10 @@ def create_new_audit(jwt_token, request):
 
 
 def create_new_audit_req_mapping(request):
-    data = request.get('data')
-    cycle_id = data.get('id')
-    audit_number = data.get('auditNumber')
-    audit_desc = data.get('auditDescription')
-    posted_by_date = data.get('postByDate')
+    cycle_id = request.get('id')
+    audit_number = request.get('auditNumber')
+    audit_desc = request.get('auditDescription')
+    posted_by_date = request.get('postByDate')
 
     mapped_request = {
         'PV_API_VERSION_I': '',
@@ -167,7 +197,7 @@ def update_bid_count(jwt_token, request):
 
 
 def update_bid_count_res_mapping(data):
-    return service_response(data, 'Run Bid Audit')
+    return service_response(data, 'Update Bid Counts')
 
 
 def get_in_category(jwt_token, request):
