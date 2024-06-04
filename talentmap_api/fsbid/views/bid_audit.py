@@ -12,6 +12,21 @@ import talentmap_api.fsbid.services.bid_audit as services
 logger = logging.getLogger(__name__)
 
 
+class FSBidBidAuditRunView(APIView):
+    '''
+    Run A Bid Audit 
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.run_bid_audit(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to Run Bid Audit Failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
 class FSBidBidAuditListView(BaseView):
     '''
     Gets the List of Bid Audits
@@ -78,7 +93,7 @@ class FSBidBidAuditUpdateView(APIView):
 
 class FSBidBidAuditUpdateCountListView(BaseView):
     '''
-    Run Bid Audit, Updates Bid Count
+    Update Bid Count
     '''
 
     def get(self, request):
