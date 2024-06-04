@@ -542,3 +542,67 @@ def update_in_category_req_mapping(request):
 
 def update_in_category_res_mapping(data):
     return service_response(data, 'Update In Category')
+
+
+def delete_at_grade(jwt_token, request):
+    '''
+    delete At Grade Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_delauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": delete_at_grade_req_mapping,
+        "response_mapping_function": delete_at_grade_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def delete_at_grade_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_aag_id': request.get('auditGradeId'),
+    }
+    return mapped_request
+
+
+def delete_at_grade_res_mapping(data):
+    return service_response(data, 'Delete At Grade')
+
+
+def delete_in_category(jwt_token, request):
+    '''
+    delete In Category Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_delauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": delete_in_category_req_mapping,
+        "response_mapping_function": delete_in_category_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def delete_in_category_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_aic_id': request.get('auditCategoryId'),
+    }
+    return mapped_request
+
+
+def delete_in_category_res_mapping(data):
+    return service_response(data, 'Delete In Category')
