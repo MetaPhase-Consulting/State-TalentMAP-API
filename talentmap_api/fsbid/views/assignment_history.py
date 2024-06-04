@@ -9,6 +9,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from talentmap_api.common.permissions import isDjangoGroupMember
+from talentmap_api.common.common_helpers import view_result
 from talentmap_api.fsbid.views.base import BaseView
 from talentmap_api.user_profile.models import UserProfile
 import talentmap_api.fsbid.services.assignment_history as services
@@ -77,7 +78,8 @@ class FSBidAltAssignmentsBaseView(APIView):
         '''
         Create Assignment
         '''
-        return Response(services.create_alt_assignment(request.data, request.META['HTTP_JWT']))
+        result = services.create_alt_assignment(request.data, request.META['HTTP_JWT'])
+        return view_result(result)
 
 class FSBidAltAssignmentsActionView(BaseView):
     def get(self, request, pk, id):
@@ -100,7 +102,8 @@ class FSBidAltAssignmentsActionView(BaseView):
             "perdet_seq_num": pk,
             "asg_id": id,
         }
-        return Response(services.update_alt_assignment(query, request.META['HTTP_JWT']))
+        result = services.update_alt_assignment(query, request.META['HTTP_JWT'])
+        return view_result(result)
     
 
 # ======== Alternative Separations ========
@@ -110,7 +113,8 @@ class FSBidAltSeparationsListBaseView(APIView):
         '''
         Create Separation
         '''
-        return Response(services.create_alt_separation(request.data, request.META['HTTP_JWT']))
+        result = services.create_alt_separation(request.data, request.META['HTTP_JWT'])
+        return view_result(result)
     
 class FSBidAltSeparationsListActionView(BaseView):
     def get(self, request, pk, id):
@@ -133,4 +137,5 @@ class FSBidAltSeparationsListActionView(BaseView):
             "perdet_seq_num": pk,
             "sep_id": id,
         }
-        return Response(services.update_alt_separation(query, request.META['HTTP_JWT']))
+        result = services.update_alt_separation(query, request.META['HTTP_JWT'])
+        return view_result(result)
