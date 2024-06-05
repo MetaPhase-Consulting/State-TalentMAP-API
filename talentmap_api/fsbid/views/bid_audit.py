@@ -240,7 +240,7 @@ class FSBidBidAuditDeleteGradeListView(APIView):
     Delete existing At Grade relationship
     '''
 
-    def delete(self, request):
+    def post(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.delete_at_grade(jwt, request.data)
 
@@ -256,7 +256,7 @@ class FSBidBidAuditDeleteCategoryListView(APIView):
     Delete existing In Category relationship
     '''
 
-    def delete(self, request):
+    def post(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.delete_in_category(jwt, request.data)
 

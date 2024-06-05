@@ -27,7 +27,7 @@ def run_bid_audit_req_mapping(request):
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'i_cycle_id': request.get('cycleId'),
+        'i_aac_cycle_id': request.get('cycleId'),
         'i_aac_audit_nbr': request.get('auditNbr'),
     }
     return mapped_request
@@ -497,11 +497,11 @@ def update_at_grade_req_mapping(request):
         'i_cycle_id': request.get('cycleId'),
         'i_aac_audit_nbr': request.get('auditNbr'),
         'i_aag_id': request.get('auditGradeId'),
-        'i_skl_code_pos': request.get('positionSkill'),
-        'i_grd_code_pos': request.get('positionGrade'),
-        'i_grd_code_emp': request.get('employeeGrade'),
-        'i_skl_code_emp': request.get('employeeSkill'),
-        'i_tnr_code_emp': request.get('employeeTenure'),
+        'i_skl_code_pos': request.get('posSkillCode'),
+        'i_grd_code_pos': request.get('posGradeCode'),
+        'i_grd_code_emp': request.get('empGradeCode'),
+        'i_skl_code_emp': request.get('empSkillCode'),
+        'i_tnr_code_emp': request.get('empTenCode'),
     }
     return mapped_request
 
