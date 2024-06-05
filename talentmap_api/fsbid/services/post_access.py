@@ -108,7 +108,7 @@ def post_access_res_mapping(data):
             'access_type': x.get('BAT_DESCR_TXT') or '---',
             'role': x.get('ROLEDESCR') or '---',
             'title': x.get('POS_TITLE_DESC') or '---',
-            'position': x.get('POS_NUM_TEXT') or '---',
+            'position': f"{x.get('POS_NUM_TEXT')} ({x.get('ORGNAME')})" if x.get('POS_NUM_TEXT') else '---',
         }
     return list(map(spa_results_mapping, data.get('PQRY_ORG_ACCESS_O')))
 
