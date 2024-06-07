@@ -1,8 +1,12 @@
 import logging
 import requests  # pylint: disable=unused-import
+import pydash
+from urllib.parse import urlencode, quote
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
+from django.conf import settings
 
+PV_API_V3_URL = settings.PV_API_V3_URL
 
 logger = logging.getLogger(__name__)
 
@@ -123,126 +127,63 @@ def get_admin_projected_vacancies(query, jwt_token):
     Gets List Data for Admin Projected Vacancies 
     '''
     args = {
-        "proc_name": "prc_lst_fv_admin",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
-        "request_mapping_function": admin_projected_vacancy_req_mapping,
-        "response_mapping_function": admin_projected_vacancy_res_mapping,
+        "uri": "",
+        "query": query,
+        "query_mapping_function": admin_projected_vacancy_req_mapping,
         "jwt_token": jwt_token,
-        "request_body": query,
+        "mapping_function": admin_projected_vacancy_res_mapping,
+        "count_function": get_projected_vacancy_count,
+        "base_url": "/api/v3/futureVacancies/",
+        "api_root": PV_API_V3_URL,
     }
-    return services.send_post_back_office(
-        **args
-    )
+    result = services.send_get_request(**args) 
+    return result or None
 
-def admin_projected_vacancy_req_mapping(request):
-    mapped_request = {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'PV_SUBTRAN_I': '',
-        'PJSON_FVS_TAB_I': { 'Data': [] },
-        'PJSON_CUST_TP_TAB_I': { 'Data': [] },
-        'PXML_POSITION_I': '<XMLSearchCriterias><SearchList></SearchList></XMLSearchCriterias>',
-        'PJSON_JC_DD_TAB_I': { 'Data': [] },
-        'PXML_OVERSEAS_I': '<XMLSearchCriterias><SearchList></SearchList></XMLSearchCriterias>',
-        'PQRY_FV_ADMIN_O': '',
-        'PV_RETURN_CODE_O': '',
-        'PQRY_ERROR_DATA_O': '',
+def get_projected_vacancy_count(query, jwt_token, host=None):
+    '''
+    Gets the total number of PVs for a filterset
+    '''
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": admin_projected_vacancy_req_mapping,
+        "jwt_token": jwt_token,
+        "host": host,
+        "use_post": False,
+        "is_template": True,
+        "api_root": PV_API_V3_URL,
     }
-    if request.get('bureaus'):
-        mapped_request['PJSON_BUREAU_TAB_I'] = services.format_request_data_to_string(request.get('bureaus'), 'BUREAU_ORG_CODE')
-    if request.get('organizations'):
-        mapped_request['PJSON_ORG_TAB_I'] = services.format_request_data_to_string(request.get('organizations'), 'ORG_SHORT_DESC')
-    if request.get('bidSeasons'):
-        mapped_request['PJSON_BSN_TAB_I'] = services.format_request_data_to_string(request.get('bidSeasons'), 'BSN_ID')
-    if request.get('grades'):
-        mapped_request['PJSON_GRADE_TAB_I'] = services.format_request_data_to_string(request.get('grades'), 'GRD_GRADE_CODE')
-    if request.get('skills'):
-       mapped_request['PJSON_SKILL_TAB_I'] = services.format_request_data_to_string(request.get('skills'), 'SKL_CODE')
-    if request.get('languages'):
-        mapped_request['PJSON_LANGUAGE_TAB_I'] = services.format_request_data_to_string(request.get('languages'), 'LANG_CODE')
-    return mapped_request
+    return services.send_count_request(**args)
+
+def admin_projected_vacancy_req_mapping(query):
+    '''
+    Converts TalentMap query into FSBid query
+    '''
+    values = {
+        "rp.pageNum": int(query.get("page", 1)),
+        "rp.pageRows": int(query.get("limit", 10)),
+        "rp.filter": services.convert_to_fsbid_ql([
+            {'col': 'posbureaucode', 'val': query.get("bureaus", None)},
+            {'col': 'posorgshortdesc', 'val': query.get("organizations", None)},
+            {'col': 'fvbsnid', 'val': query.get("bidSeasons", None)},
+            {'col': 'posgradecode', 'val': query.get("grades", None)},
+            {'col': 'posskillcode', 'val': query.get("skills", None)},
+            {'col': 'poslanguage1code', 'val': query.get("languages", None)},
+            {'col': 'poslanguage2code', 'val': query.get("languages", None)},
+        ]),
+    }
+    if query.get("getCount") == 'true':
+        values["rp.pageNum"] = 0
+        values["rp.pageRows"] = 0
+        values["rp.columns"] = "ROWCOUNT"
+
+    valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+
+    return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 def admin_projected_vacancy_res_mapping(response):
-    def projected_vacancy_mapping(x):
-        return {
-            "bid_season_code": x.get("BSN_ID"),
-            "bid_season_description": x.get("BSN_DESCR_TEXT"),
-            "bureau_code": x.get("BUREAU_CODE"),
-            "bureau_short_description": x.get("BUREAU_SHORT_DESC"),
-            "bureau_description": x.get("BUREAU_LONG_DESC"),
-            "organization_code": x.get("ORG_CODE"),
-            "organization_short_description": x.get("ORG_SHORT_DESC"),
-            "organization_description": x.get("ORG_LONG_DESC"),
-            "position_seq_num": x.get("POS_SEQ_NUM"),
-            "position_title": x.get("POS_TITLE_DESC"),
-            "position_number": x.get("POS_NUM_TEXT"),
-            "position_pay_plan_code": x.get("POS_PAY_PLAN_CODE"),
-            "position_grade_code": x.get("POS_GRADE_CODE"),
-            "position_skill_code": x.get("POS_SKILL_CODE"),
-            "position_skill_description": x.get("POS_SKILL_DESC"),
-            "position_job_category_code": x.get("POS_JOBCAT_CODE"),
-            "position_job_category_description": x.get("POS_JOBCAT_DESC"),
-            "position_language_1_code": x.get("POS_LANGUAGE_1_CODE"),
-            "position_language_2_code": x.get("POS_LANGUAGE_2_CODE"),
-            "position_language_proficiency_code": x.get("POS_POSITION_LANG_PROF_CODE"),
-            "position_language_proficiency_description": x.get("POS_POSITION_LANG_PROF_DESC"),
-            "position_updater_id": x.get("PPOS_LAST_UPDT_USER_ID"),
-            "position_updated_date": x.get("PPOS_LAST_UPDT_TMSMP_DT"),
-            "future_vacancy_seq_num": x.get("FV_SEQ_NUM"),
-            "future_vacancy_seq_num_ref": x.get("FV_SEQ_NUM_REF"),
-            "future_vacancy_override_code": x.get("FVO_CODE"),
-            "future_vacancy_override_description": x.get("FVO_DESCR_TXT"),
-            "future_vacancy_comment": x.get("FV_COMMENT_TXT"),
-            "future_vacancy_override_tour_end_date": x.get("FV_OVERRIDE_TED_DATE"),
-            "future_vacancy_system_indicator": x.get("FV_SYSTEM_IND"),
-            "future_vacancy_status_code": x.get("FVS_CODE"),
-            "future_vacancy_status_description": x.get("FVS_DESCR_TXT"),
-            "future_vacancy_mc_indicator": x.get("FV_MC_IND"),
-            "future_vacancy_exclude_import_indicator": x.get("FV_EXCL_IMPORT_IND"),
-            "assignment_seq_num": x.get("ASG_SEQ_NUM"),
-            "assignment_seq_num_effective": x.get("ASG_SEQ_NUM_EF"),
-            "assignee_tour_end_date": x.get("ASSIGNEE_TED"),
-            "assignee": x.get("ASSIGNEE"),
-            "incumbent": x.get("INCUMBENT"),
-            "incumbent_tour_end_date": x.get("INCUMBENT_TED"),
-            "cycle_date_type_code": x.get("CDT_CD"),
-            "assignment_status_code": x.get("ASGS_CODE"),
-            "bidding_tool_differential_rate_number": x.get("BT_DIFFERENTIAL_RATE_NUM"),
-            "bidding_tool_danger_rate_number": x.get("BT_DANGER_PAY_NUM"),
-            "bidding_tool_most_difficult_to_staff_flag": x.get("BT_MOST_DIFFICULT_TO_STAFF_FLG"),
-            "bidding_tool_service_need_differential_flag": x.get("BT_SERVICE_NEEDS_DIFF_FLG"),
-            "obc_url": services.get_post_bidding_considerations_url(x.get("LOCATION_CODE")),
-            "tour_of_duty_code": x.get("TOD_CODE"),
-            "tour_of_duty_description": x.get("TOD_DESC_TEXT"),
-            "unaccompanied_status_code": x.get("US_CODE"),
-            "unaccompanied_status_description": x.get("US_DESC_TEXT"),
-            "position_overseas_indicator": x.get("POS_OVERSEAS_IND"),
-            "state_country_code": x.get("STATECOUNTRYCODE"),
-            "state_country_description": x.get("STATECOUNTRYNAME"),
-            "contact_name": x.get("CONTACT_NAME"),
-            "entry_level_indicator": x.get("EL_IND"),
-            "midlevel_cede_indicator": x.get("ML_CEDE_IND"),
-            "location_code": x.get("LOCATION_CODE"),
-            "location_description": x.get("LOCATION_DESC"),
-            "commuter_code": x.get("COMMUTER_CODE"),
-            "commuter_description": x.get("COMMUTER_DESC"),
-            "alternate_bureau_code": x.get("ALT_BUREAU_CODE"),
-            "alternate_bureau_description": x.get("ALT_BUREAU_SHORT_DESC"),
-            "capsule_description": x.get("CAPSULE_DESC"),
-            "capsule_position_description": x.get("CAPSULE_POSITION_DESC"),
-            "famer_link": x.get("FAMER_LINK"),
-            "bidding_tool": x.get("BIDDING_TOOL"),
-            "cycle_position_link": x.get("CP_LINK"),
-            "bid_season_future_vacancy_indicator": x.get("BSN_FUTURE_VACANCY_IND"),
-            "cycle_position_id": x.get("CP_ID"),
-            "creator_id": x.get("FV_CREATE_ID"),
-            "created_date": x.get("FV_CREATE_DATE"),
-            "updater_id": x.get("FV_UPDATE_ID"),
-            "updated_date": x.get("FV_UPDATE_DATE"),
-        }
-    def list_pv_mapping(x):
-        return list(map(projected_vacancy_mapping, x.get("PQRY_FV_ADMIN_O")))
-    return service_response(response, 'Projected Vacancy List', list_pv_mapping)
+    # return service_response(response, 'Projected Vacancy List')
+    return response
 
 # ======================== Edit PV ========================
 
@@ -379,7 +320,7 @@ def get_admin_projected_vacancy_lang_offsets(data, jwt_token):
 
 def get_admin_projected_vacancy_lang_offsets_req_mapping(request):
     search_list = ''
-    position_numbers = request.get('position_numbers').split(',')  
+    position_numbers = request.get('position_numbers', '').split(',')
     for number in position_numbers:
         search_list += f'<Value>{number}</Value>'
     return {
