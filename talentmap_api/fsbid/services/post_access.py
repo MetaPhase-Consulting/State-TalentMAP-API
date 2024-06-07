@@ -49,9 +49,12 @@ def post_access_filter_res_mapping(data):
             'description': x.get('ROLE_DESC'),
         }
     def org_map(x):
+        code = x.get('Org')
+        desc = x.get('ORG_DESC')
         return {
             'code': x.get('Org'),
             'description': x.get('ORG_DESC'),
+            'custom_description': f'{desc} ({code})',
         }
     def location_map(x):
         return {
@@ -105,7 +108,7 @@ def post_access_res_mapping(data):
             'access_type': x.get('BAT_DESCR_TXT') or '---',
             'role': x.get('ROLEDESCR') or '---',
             'title': x.get('POS_TITLE_DESC') or '---',
-            'position': x.get('POS_NUM_TEXT') or '---',
+            'position': f"{x.get('POS_NUM_TEXT')} ({x.get('ORGNAME')})" if x.get('POS_NUM_TEXT') else '---',
         }
     return list(map(spa_results_mapping, data.get('PQRY_ORG_ACCESS_O')))
 
