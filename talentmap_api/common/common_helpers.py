@@ -24,6 +24,8 @@ from django.core.mail import send_mail
 from django.db.models import Q
 
 from talentmap_api.settings import AVATAR_URL, EMAIL_FROM_ADDRESS, EMAIL_IS_DEV, EMAIL_DEV_TO, EMAIL_ENABLED
+from datetime import datetime as dt
+
 
 logger = logging.getLogger(__name__)
 
@@ -729,3 +731,10 @@ def send_email_thread(subject='', body='', recipients=[]):
             )
         except:#nosec
             pass
+
+def format_dates(input_date):
+    if input_date == '' or input_date is None:
+        return input_date
+    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
