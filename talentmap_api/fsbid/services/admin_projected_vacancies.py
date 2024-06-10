@@ -6,8 +6,6 @@ from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import service_response
 from django.conf import settings
 
-PV_API_V3_URL = settings.PV_API_V3_URL
-
 logger = logging.getLogger(__name__)
 
 # ======================== Get PV Filters ========================
@@ -134,7 +132,6 @@ def get_admin_projected_vacancies(query, jwt_token):
         "mapping_function": admin_projected_vacancy_res_mapping,
         "count_function": get_projected_vacancy_count,
         "base_url": '',
-        # "api_root": PV_API_V3_URL,
     }
     result = services.send_get_request(**args) 
     return result or None
@@ -151,7 +148,6 @@ def get_projected_vacancy_count(query, jwt_token, host=None):
         "host": host,
         "use_post": False,
         "is_template": True,
-        # "api_root": PV_API_V3_URL,
     }
     return services.send_count_request(**args)
 
