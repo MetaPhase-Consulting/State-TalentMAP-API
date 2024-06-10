@@ -91,29 +91,7 @@ def get_publishable_positions(query, jwt_token):
     publishable_positions = services.send_get_request(
         **args
     )
-    return publishable_positions or None
-
-def publishable_positions_req_mapping(request):
-    return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'I_SVT_CODE': '',
-        'I_PPL_CODE': '',
-        'I_GRD_CD': request.get('grades') or '',
-        'I_SKL_CODE_POS': request.get('skills') or '',
-        'I_SKL_CODE_STFG_PTRN': '',
-        'I_ORG_CODE': request.get('orgs') or '',
-        'I_POS_NUM_TXT': request.get('posNum') or '',
-        'I_POS_OVRSES_IND': '',
-        'I_PS_CD': '',
-        'I_LLT_CD': '',
-        'I_LANG_CD': '',
-        'I_LR_CD': '',
-        'I_BUREAU_CD': request.get('bureaus') or '',
-        'I_PUBS_CD': request.get('statuses') or '',
-        'I_JC_ID': '',
-        'I_ORDER_BY': '',
-    }
+    return publishable_positions
 
 def publishable_positions_res_mapping(data):
     fsbid_lang_data = {
