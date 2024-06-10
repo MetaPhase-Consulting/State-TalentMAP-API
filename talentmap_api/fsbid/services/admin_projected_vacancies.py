@@ -3,7 +3,7 @@ import requests  # pylint: disable=unused-import
 import pydash
 from urllib.parse import urlencode, quote
 from talentmap_api.fsbid.services import common as services
-from talentmap_api.common.common_helpers import service_response
+from talentmap_api.common.common_helpers import combine_pp_grade, service_response
 from django.conf import settings
 
 PV_API_V3_URL = settings.PV_API_V3_URL
@@ -183,7 +183,10 @@ def admin_projected_vacancy_req_mapping(query):
 
 def admin_projected_vacancy_res_mapping(response):
     # return service_response(response, 'Projected Vacancy List')
-    return response
+    return {
+        **response,
+        "combinedppgrade": combine_pp_grade(response.pospayplancode, response.posgradecode),
+    }
 
 # ======================== Edit PV ========================
 
