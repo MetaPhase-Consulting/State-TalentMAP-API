@@ -552,6 +552,7 @@ PERSON_API_URL = get_delineated_environment_variable('PERSON_API_URL', 'http://m
 BIDS_API_V2_URL = get_delineated_environment_variable('BIDS_API_V2_URL', 'http://mock_fsbid:3333/v2/bids')
 POSITIONS_API_URL = get_delineated_environment_variable('POSITIONS_API_URL', 'http://mock_fsbid:3333/v1/positions')
 POSITIONS_API_V2_URL = get_delineated_environment_variable('POSITIONS_API_V2_URL', 'http://mock_fsbid:3333/v2/positions')
+PUBLISHABLE_POSITIONS_API_URL = get_delineated_environment_variable('PUBLISHABLE_POSITIONS_API_URL', 'http://mock_fsbid:3333/v1/publishablePositions')
 PUBLISHABLE_POSITIONS_API_URL = get_delineated_environment_variable('PUBLISHABLE_POSITIONS_API_URL', 'http://mock_fsbid:3333/v1/publishable_positions')
 PUBLISHABLE_POSITIONS_API_V2_URL = get_delineated_environment_variable('PUBLISHABLE_POSITIONS_API_V2_URL', 'http://mock_fsbid:3333/v2/publishablepositions')
 SAML_CONFIG_LOADER = 'talentmap_api.settings.config_settings_loader'
