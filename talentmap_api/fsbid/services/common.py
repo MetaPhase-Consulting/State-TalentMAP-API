@@ -249,10 +249,6 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
         url = f"{api_root}/{uri}?{query_mapping_function(queryClone)}"
     else:
         url = f"{api_root}/{uri}"
-    if api_root is 'http://mock_fsbid:3333/v2/publishablePositions':
-        print('🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳')
-        print(url)
-        print('🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳')
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):

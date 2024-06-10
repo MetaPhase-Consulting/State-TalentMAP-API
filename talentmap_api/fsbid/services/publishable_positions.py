@@ -168,11 +168,12 @@ def convert_ppos_query(query):
         "rp.pageNum": int(query.get("page", 1)),
         "rp.pageRows": int(query.get("limit", 10)),
         "rp.filter": services.convert_to_fsbid_ql([
-            {'col': 'posbureaushortdesc', 'val': query.get("bureaus", None)},
-            {'col': 'posgradecode', 'val': query.get("grades", None)},
-            {'col': 'ppospubscd', 'val': query.get("statuses", None)},
-            {'col': 'posorgcode', 'val': query.get("orgs", None)},
-            {'col': 'posskillcode', 'val': query.get("skills", None)},
+            {'col': 'posnumtext', 'val': query.get("posNum")},
+            {'col': 'ppospubscd', 'val': query.get("statuses")},
+            {'col': 'posbureaushortdesc', 'val': query.get("bureaus")},
+            {'col': 'posorgcode', 'val': query.get("orgs")},
+            {'col': 'posskillcode', 'val': query.get("skills")},
+            {'col': 'posgradecode', 'val': query.get("grades")},
         ]),
     }
     if query.get("getCount") == 'true':
@@ -186,9 +187,8 @@ def convert_ppos_query(query):
 
 def get_ppos_count(query, jwt_token, host=None, use_post=False):
     '''
-    Get total number of panel meetings for panel meeting search
+    Get number of Publishable Positions
     '''
-
     args = {
         "uri": "",
         "query": query,
