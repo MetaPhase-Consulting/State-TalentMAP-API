@@ -127,14 +127,14 @@ def get_admin_projected_vacancies(query, jwt_token):
     Gets List Data for Admin Projected Vacancies 
     '''
     args = {
-        "uri": "",
+        "uri": "v3/futureVacancies",
         "query": query,
         "query_mapping_function": admin_projected_vacancy_req_mapping,
         "jwt_token": jwt_token,
         "mapping_function": admin_projected_vacancy_res_mapping,
         "count_function": get_projected_vacancy_count,
-        "base_url": "/api/v3/futureVacancies/",
-        "api_root": PV_API_V3_URL,
+        "base_url": '',
+        # "api_root": PV_API_V3_URL,
     }
     result = services.send_get_request(**args) 
     return result or None
@@ -144,14 +144,14 @@ def get_projected_vacancy_count(query, jwt_token, host=None):
     Gets the total number of PVs for a filterset
     '''
     args = {
-        "uri": "",
+        "uri": "v3/futureVacancies",
         "query": query,
         "query_mapping_function": admin_projected_vacancy_req_mapping,
         "jwt_token": jwt_token,
         "host": host,
         "use_post": False,
         "is_template": True,
-        "api_root": PV_API_V3_URL,
+        # "api_root": PV_API_V3_URL,
     }
     return services.send_count_request(**args)
 
