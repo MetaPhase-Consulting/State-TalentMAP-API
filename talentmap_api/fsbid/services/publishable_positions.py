@@ -12,7 +12,7 @@ from django.utils.encoding import smart_str
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
-from talentmap_api.common.common_helpers import combine_pp_grade
+from talentmap_api.common.common_helpers import combine_pp_grade, format_dates
 
 PUBLISHABLE_POSITIONS_ROOT = settings.PUBLISHABLE_POSITIONS_API_URL
 PUBLISHABLE_POSITIONS_V2_ROOT = settings.PUBLISHABLE_POSITIONS_API_V2_URL
@@ -117,10 +117,14 @@ def publishable_positions_res_mapping(data):
         'grade': data.get('posgradecode'),
         'combinedPPGrade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
         'positionDetails': data.get('pposcapsuledescrtxt'),
-        'positionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
-        'lastUpdated': data.get('pposlastupdttmsmpdt'),
-        'lastUpdatedUserID': data.get('pposlastupdtuserid'),
+        # format_dates
+        'ORIGpositionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
+        'positionDetailsLastUpdated': format_dates(data.get('pposcapsulemodifydt')),
+        'ORIGpositionLastUpdated': data.get('pposlastupdttmsmpdt'),
+        'positionLastUpdated': format_dates(data.get('pposlastupdttmsmpdt')),
+        'positionLastUpdatedUserID': data.get('pposlastupdtuserid'),
         'psCD': data.get('ppospubscd'),
+        'psDesc': data.get('pubsdescrtxt'),
         # FE not currently using the ones below
         'posSeqNum': data.get('posseqnum'),
         'aptSeqNum': data.get('pposaptsequencenum'),
