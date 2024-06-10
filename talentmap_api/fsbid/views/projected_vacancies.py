@@ -13,6 +13,7 @@ from talentmap_api.fsbid.filters import ProjectedVacancyFilter
 
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.projected_vacancies as services
+from talentmap_api.common.permissions import isDjangoGroupMember
 
 from talentmap_api.common.common_helpers import in_superuser_group
 
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class FSBidProjectedVacanciesListView(BaseView):
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('ao_user'))
     filter_class = ProjectedVacancyFilter
 
     @swagger_auto_schema(
@@ -57,7 +58,7 @@ class FSBidProjectedVacanciesListView(BaseView):
 
 class FSBidProjectedVacanciesTandemListView(BaseView):
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('ao_user'))
     filter_class = ProjectedVacancyFilter
 
     @swagger_auto_schema(
@@ -110,7 +111,7 @@ class FSBidProjectedVacanciesTandemListView(BaseView):
 
 class FSBidProjectedVacancyView(BaseView):
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('ao_user'))
 
     def get(self, request, pk):
         '''
@@ -124,7 +125,7 @@ class FSBidProjectedVacancyView(BaseView):
 
 class FSBidProjectedVacanciesCSVView(BaseView):
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('ao_user'))
     filter_class = ProjectedVacancyFilter
 
     def get(self, request, *args, **kwargs):
@@ -138,7 +139,7 @@ class FSBidProjectedVacanciesCSVView(BaseView):
 
 class FSBidProjectedVacanciesTandemCSVView(BaseView):
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('ao_user'))
     filter_class = ProjectedVacancyFilter
 
     def get(self, request, *args, **kwargs):
