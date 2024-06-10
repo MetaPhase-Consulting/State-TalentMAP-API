@@ -270,7 +270,6 @@ def base_assignment_action_req(request):
         "I_ASGD_SALARY_REIMBURSE_IND": request.get("salary_reimburse_ind"),
         "I_ASGD_TRAVEL_REIMBURSE_IND": request.get("travel_reimburse_ind"),
         "I_ASGD_TRAINING_IND": request.get("training_ind"),
-        "I_ASGD_CRITICAL_NEED_IND": request.get("critical_need_ind"),
         "I_ASGD_ORG_CODE": request.get("org_code"),
         "I_ASGD_ASGS_CODE": request.get("status_code"),
         "I_ASGD_LAT_CODE": request.get("lat_code"),
