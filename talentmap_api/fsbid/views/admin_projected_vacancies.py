@@ -73,37 +73,12 @@ class FSBidAdminProjectedVacancyListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
+
 class FSBidAdminProjectedVacancyActionsView(APIView):
-    
+
     # ======================== Edit PV ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_ARRAY, items=openapi.Items(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'future_vacancy_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num'),
-                'future_vacancy_seq_num_ref': openapi.Schema(type=openapi.TYPE_STRING, description='Projected Vacancy Seq Num Reference'),
-                'position_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Position Seq Num'),
-                'bid_season_code': openapi.Schema(type=openapi.TYPE_STRING, description='Bid Season Code'),
-                'assignment_seq_num_effective': openapi.Schema(type=openapi.TYPE_STRING, description='Assignment Seq Num Effective'),
-                'assignment_seq_num': openapi.Schema(type=openapi.TYPE_STRING, description='Assignment Seq Num'),
-                'cycle_date_type_code': openapi.Schema(type=openapi.TYPE_STRING, description='Cycle Date Type Code'),
-                'future_vacancy_status_code': openapi.Schema(type=openapi.TYPE_STRING, description='Status Code'),
-                'future_vacancy_override_code': openapi.Schema(type=openapi.TYPE_STRING, description='Override Code'),
-                'future_vacancy_override_tour_end_date': openapi.Schema(type=openapi.TYPE_STRING, description='Override TED'),
-                'future_vacancy_system_indicator': openapi.Schema(type=openapi.TYPE_STRING, description='System Indicator'),
-                'future_vacancy_comment': openapi.Schema(type=openapi.TYPE_STRING, description='Comment'),
-                'created_date': openapi.Schema(type=openapi.TYPE_STRING, description='Created Date'),
-                'creator_id': openapi.Schema(type=openapi.TYPE_STRING, description='Creator ID'),
-                'updater_id': openapi.Schema(type=openapi.TYPE_STRING, description='Updater ID'),
-                'updated_date': openapi.Schema(type=openapi.TYPE_STRING, description='Updated Date'),
-                'future_vacancy_mc_indicator': openapi.Schema(type=openapi.TYPE_STRING, description='MC Indicator'),
-                'future_vacancy_exclude_import_indicator': openapi.Schema(type=openapi.TYPE_STRING, description='Exclude Import Indicator'),
-            }
-        ), description='Projected Vacancy'
-    ))
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), )]
 
     def put(self, request):
         '''
@@ -114,7 +89,8 @@ class FSBidAdminProjectedVacancyActionsView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 class FSBidAdminProjectedVacancyEditLangOffsetsView(APIView):
     
     # ======================== Edit PV Language Offsets ========================
