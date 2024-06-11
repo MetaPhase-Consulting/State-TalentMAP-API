@@ -27,7 +27,9 @@ services:
       - SECREF_URL=http://host.docker.internal:3333/v2/SECREF
       - CP_API_URL=http://host.docker.internal:3333/v1/cyclePositions
       - CP_API_V2_URL=http://host.docker.internal:3333/v2/cyclePositions
+      - PV_API_URL=http://host.docker.internal:3333/v1/futureVacancies
       - PV_API_V2_URL=http://host.docker.internal:3333/v2/futureVacancies
+      - PV_API_V3_URL=http://host.docker.internal:3333/v3/futureVacancies
       - ORG_API_URL=http://host.docker.internal:3333/v1/Organizations
       - CLIENTS_API_URL=http://host.docker.internal:3333/v1/Clients
       - CLIENTS_API_V2_URL=http://host.docker.internal:3333/v2/clients
@@ -39,6 +41,7 @@ services:
       - POSITIONS_API_URL=http://host.docker.internal:3333/v1/positions
       - POSITIONS_API_V2_URL=http://host.docker.internal:3333/v2/positions
       - PUBLISHABLE_POSITIONS_API_URL=http://host.docker.internal:3333/v1/publishablePositions
+      - PUBLISHABLE_POSITIONS_API_V2_URL=http://host.docker.internal:3333/v2/publishablepositions
       - EMAIL_ENABLED=true
       - EMAIL_HOST=host.docker.internal
       - EMAIL_PORT=1025

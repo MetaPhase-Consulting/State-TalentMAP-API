@@ -1,9 +1,39 @@
 from django.conf import settings
-from datetime import datetime as dt
 from talentmap_api.fsbid.services import common as services
-from talentmap_api.common.common_helpers import service_response
+from talentmap_api.common.common_helpers import service_response, format_dates
 
 WS_ROOT = settings.WS_ROOT_API_URL
+
+
+def run_bid_audit(jwt_token, request):
+    '''
+    Runs the Bid Audit
+    '''
+    args = {
+        "proc_name": 'act_runauditassigncycle',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": run_bid_audit_req_mapping,
+        "response_mapping_function": run_bid_audit_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def run_bid_audit_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_aac_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+    }
+    return mapped_request
+
+
+def run_bid_audit_res_mapping(data):
+    return service_response(data, 'Run Bid Audit')
 
 
 def get_bid_audit_data(jwt_token, request):
@@ -31,12 +61,6 @@ def get_bid_audit_req_mapping(request):
     return mapped_request
 
 
-def format_dates(input_date):
-    if input_date == '' or input_date is None:
-        return input_date
-    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
-    formatted_date = date_object.strftime("%m/%d/%Y")
-    return formatted_date
 
 def get_bid_audit_res_mapping(data):
     def results_mapping(x):
@@ -110,11 +134,10 @@ def create_new_audit(jwt_token, request):
 
 
 def create_new_audit_req_mapping(request):
-    data = request.get('data')
-    cycle_id = data.get('id')
-    audit_number = data.get('auditNumber')
-    audit_desc = data.get('auditDescription')
-    posted_by_date = data.get('postByDate')
+    cycle_id = request.get('id')
+    audit_number = request.get('auditNumber')
+    audit_desc = request.get('auditDescription')
+    posted_by_date = request.get('postByDate')
 
     mapped_request = {
         'PV_API_VERSION_I': '',
@@ -167,7 +190,7 @@ def update_bid_count(jwt_token, request):
 
 
 def update_bid_count_res_mapping(data):
-    return service_response(data, 'Run Bid Audit')
+    return service_response(data, 'Update Bid Counts')
 
 
 def get_in_category(jwt_token, request):
@@ -441,3 +464,138 @@ def create_at_grade_req_mapping(request):
 
 def create_at_grade_res_mapping(data):
     return service_response(data, 'Save At Grade')
+
+
+def update_at_grade(jwt_token, request):
+    '''
+    Update At Grade Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_modauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": update_at_grade_req_mapping,
+        "response_mapping_function": update_at_grade_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def update_at_grade_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_aag_id': request.get('auditGradeId'),
+        'i_skl_code_pos': request.get('posSkillCode'),
+        'i_grd_code_pos': request.get('posGradeCode'),
+        'i_grd_code_emp': request.get('empGradeCode'),
+        'i_skl_code_emp': request.get('empSkillCode'),
+        'i_tnr_code_emp': request.get('empTenCode'),
+    }
+    return mapped_request
+
+
+def update_at_grade_res_mapping(data):
+    return service_response(data, 'Update At Grade')
+
+
+def update_in_category(jwt_token, request):
+    '''
+    Update In Category Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_modauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": update_in_category_req_mapping,
+        "response_mapping_function": update_in_category_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def update_in_category_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_aic_id': request.get('auditCategoryId'),
+        'i_skl_code_pos': request.get('posCode'),
+        'i_skl_code_emp': request.get('empCode'),
+    }
+    return mapped_request
+
+
+def update_in_category_res_mapping(data):
+    return service_response(data, 'Update In Category')
+
+
+def delete_at_grade(jwt_token, request):
+    '''
+    delete At Grade Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_delauditatgrade',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": delete_at_grade_req_mapping,
+        "response_mapping_function": delete_at_grade_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def delete_at_grade_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_aag_id': request.get('auditGradeId'),
+    }
+    return mapped_request
+
+
+def delete_at_grade_res_mapping(data):
+    return service_response(data, 'Delete At Grade')
+
+
+def delete_in_category(jwt_token, request):
+    '''
+    delete In Category Relationships for Cycle Positions
+    '''
+    args = {
+        "proc_name": 'act_delauditincategory',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": delete_in_category_req_mapping,
+        "response_mapping_function": delete_in_category_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def delete_in_category_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditNbr'),
+        'i_aic_id': request.get('auditCategoryId'),
+    }
+    return mapped_request
+
+
+def delete_in_category_res_mapping(data):
+    return service_response(data, 'Delete In Category')

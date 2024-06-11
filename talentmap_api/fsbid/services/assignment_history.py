@@ -7,6 +7,7 @@ from django.conf import settings
 import pydash
 
 from talentmap_api.common.common_helpers import ensure_date
+from talentmap_api.common.common_helpers import service_response
 from talentmap_api.fsbid.services import common as services
 
 API_ROOT = settings.WS_ROOT_API_URL
@@ -269,7 +270,6 @@ def base_assignment_action_req(request):
         "I_ASGD_SALARY_REIMBURSE_IND": request.get("salary_reimburse_ind"),
         "I_ASGD_TRAVEL_REIMBURSE_IND": request.get("travel_reimburse_ind"),
         "I_ASGD_TRAINING_IND": request.get("training_ind"),
-        "I_ASGD_CRITICAL_NEED_IND": request.get("critical_need_ind"),
         "I_ASGD_ORG_CODE": request.get("org_code"),
         "I_ASGD_ASGS_CODE": request.get("status_code"),
         "I_ASGD_LAT_CODE": request.get("lat_code"),
@@ -314,10 +314,8 @@ def update_alt_assignment_req_mapping(request, hru_id):
     }
 
 def update_alt_assignment_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for updating assignment failed.')
-        return None
-    return data
+    return service_response(data, 'Edit Maintain Assignment Data')
+
 
 
 # ======== Update Separation ========
@@ -365,10 +363,8 @@ def update_alt_separation_req_mapping(request, hru_id):
     }
 
 def update_alt_separation_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for updating separation failed.')
-        return None
-    return data
+    return service_response(data, 'Edit Maintain Separation Data')
+
 
 
 # ======== Create Assignment ========
@@ -397,10 +393,7 @@ def create_alt_assignment_req_mapping(request):
     }
 
 def create_alt_assignment_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for creating assignment failed.')
-        return None
-    return data
+    return service_response(data, 'Create Maintain Assignment Data')
 
 
 # ======== Create Separation ========
@@ -428,7 +421,4 @@ def create_alt_separation_req_mapping(request):
     }
 
 def create_alt_separation_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for creating separation failed.')
-        return None
-    return data
+    return service_response(data, 'Create Maintain Separation Data')
