@@ -19,7 +19,7 @@ class FSBidAdminProjectedVacancyFiltersView(APIView):
 
     # ======================== Get PV Filters ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def get(self, request):
         '''
@@ -34,7 +34,7 @@ class FSBidAdminProjectedVacancyLangOffsetOptionsView(APIView):
 
     # ======================== Get Language Offset Options ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     def get(self, request):
         '''
@@ -49,7 +49,7 @@ class FSBidAdminProjectedVacancyListView(APIView):
 
     # ======================== Get PV List ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -77,7 +77,7 @@ class FSBidAdminProjectedVacancyActionsView(APIView):
     
     # ======================== Edit PV ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_ARRAY, items=openapi.Items(
@@ -119,7 +119,7 @@ class FSBidAdminProjectedVacancyEditLangOffsetsView(APIView):
     
     # ======================== Edit PV Language Offsets ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -144,7 +144,7 @@ class FSBidAdminProjectedVacancyEditCapsuleDescView(APIView):
     
     # ======================== Edit PV Capsule Description ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -170,7 +170,7 @@ class FSBidAdminProjectedVacancyLangOffsetsView(APIView):
     
     # ======================== Get PV Language Offsets ========================
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), isDjangoGroupMember('ao_user')) ]
 
     @swagger_auto_schema(
         manual_parameters=[
