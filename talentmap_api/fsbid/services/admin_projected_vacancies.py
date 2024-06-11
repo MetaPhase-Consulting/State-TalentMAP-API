@@ -191,7 +191,7 @@ def admin_projected_vacancy_res_mapping(response):
 
 # ======================== Edit PV ========================
 
-def edit_admin_projected_vacancy_2(query, jwt_token):
+def edit_admin_projected_vacancy(query, jwt_token):
     '''
     Edit Admin Projected Vacancy
     '''

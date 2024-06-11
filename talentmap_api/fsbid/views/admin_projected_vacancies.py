@@ -74,7 +74,7 @@ class FSBidAdminProjectedVacancyListView(APIView):
         return Response(result)
 
 
-class FSBidAdminProjectedVacancyActionsView2(APIView):
+class FSBidAdminProjectedVacancyActionsView(APIView):
 
     # ======================== Edit PV ========================
 
@@ -84,7 +84,7 @@ class FSBidAdminProjectedVacancyActionsView2(APIView):
         '''
         Edit Admin Projected Vacancy
         '''
-        result = services.edit_admin_projected_vacancy_2(request.data, request.META['HTTP_JWT'])
+        result = services.edit_admin_projected_vacancy(request.data, request.META['HTTP_JWT'])
         if result is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
