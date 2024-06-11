@@ -70,12 +70,11 @@ class FSBidPublishablePositionsFiltersView(BaseView):
         return Response(result)
 
 class FSBidPublishablePositionsCSVView(BaseView):
-    permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('bureau_user')), isDjangoGroupMember('superuser'), ]
-
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
         Exports Publishable Positions to CSV format
         '''
-        return services.get_publishable_positions_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+        return services.get_publishable_positions_csv(request.query_params, request.META['HTTP_JWT'])
 
