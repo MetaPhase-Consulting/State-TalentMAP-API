@@ -53,6 +53,8 @@ class FSBidAdminProjectedVacancyListView(APIView):
 
     @swagger_auto_schema(
         manual_parameters=[
+            openapi.Parameter("page", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Page'),
+            openapi.Parameter("limit", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Limit'),
             openapi.Parameter("bureaus", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Bureaus'),
             openapi.Parameter("organizations", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Organizations'),
             openapi.Parameter("bid_seasons", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Bid Seasons'),

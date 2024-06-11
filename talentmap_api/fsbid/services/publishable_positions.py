@@ -12,9 +12,10 @@ from django.utils.encoding import smart_str
 
 from talentmap_api.fsbid.requests import requests
 from talentmap_api.fsbid.services import common as services
-from talentmap_api.common.common_helpers import combine_pp_grade
+from talentmap_api.common.common_helpers import combine_pp_grade, format_dates
 
 PUBLISHABLE_POSITIONS_ROOT = settings.PUBLISHABLE_POSITIONS_API_URL
+PUBLISHABLE_POSITIONS_V2_ROOT = settings.PUBLISHABLE_POSITIONS_API_V2_URL
 
 logger = logging.getLogger(__name__)
 
@@ -77,72 +78,128 @@ def get_publishable_positions(query, jwt_token):
     Gets Publishable Positions
     '''
     args = {
-        "proc_name": 'qry_modPublishPos',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": publishable_positions_req_mapping,
-        "response_mapping_function": publishable_positions_res_mapping,
+        "uri": "",
+        "query": query,
+        "query_mapping_function": convert_ppos_query,
         "jwt_token": jwt_token,
-        "request_body": query,
+        "mapping_function": publishable_positions_res_mapping,
+        "count_function": get_ppos_count,
+        "base_url": "/api/v2/publishablepositions/",
+        "api_root": PUBLISHABLE_POSITIONS_V2_ROOT,
     }
-    return services.send_post_back_office(
+
+    publishable_positions = services.send_get_request(
         **args
     )
-
-def publishable_positions_req_mapping(request):
-    return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'I_SVT_CODE': '',
-        'I_PPL_CODE': '',
-        'I_GRD_CD': request.get('grades') or '',
-        'I_SKL_CODE_POS': request.get('skills') or '',
-        'I_SKL_CODE_STFG_PTRN': '',
-        'I_ORG_CODE': request.get('orgs') or '',
-        'I_POS_NUM_TXT': request.get('posNum') or '',
-        'I_POS_OVRSES_IND': '',
-        'I_PS_CD': '',
-        'I_LLT_CD': '',
-        'I_LANG_CD': '',
-        'I_LR_CD': '',
-        'I_BUREAU_CD': request.get('bureaus') or '',
-        'I_PUBS_CD': request.get('statuses') or '',
-        'I_JC_ID': '',
-        'I_ORDER_BY': '',
-    }
+    return publishable_positions
 
 def publishable_positions_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error(f"Fsbid call for Publishable Positions failed.")
-        return None
+    fsbid_lang_data = {
+        "poslanguage1code": data.get('poslanguage1code'),
+        "poslanguage1desc": data.get('poslanguage1desc'),
+        "poslanguage2code": data.get('poslanguage2code'),
+        "poslanguage2desc": data.get('poslanguage2desc'),
+        "posspeakproficiency1code": data.get('posspeakproficiency1code'),
+        "posreadproficiency1code": data.get('posreadproficiency1code'),
+        "posspeakproficiency2code": data.get('posspeakproficiency2code'),
+        "posreadproficiency2code": data.get('posreadproficiency2code'),
+    }
 
-    def pub_pos_map(x):
-        return {
-            'positionNumber': x.get('POS_NUM_TXT'),
-            'skill': services.format_desc_code(x.get('SKL_DESC_POS'), x.get('SKL_CODE_POS')),
-            'positionTitle': x.get('POS_TITLE_TXT'),
-            'bureau': x.get('BUR_SHORT_DESC'),
-            'org': services.format_desc_code(x.get('ORGS_SHORT_DESC'), x.get('ORG_CODE')),
-            'status': x.get('PUBS_CD'),
-            'language': x.get('LANG_DESCR_TXT'),
-            'payPlan': x.get('PPL_CODE'),
-            'grade': x.get('GRD_CD'),
-            'combined_pp_grade': combine_pp_grade(x.get('PPL_CODE'), x.get('GRD_CD')),
-            'positionDetails': x.get('PPOS_CAPSULE_DESCR_TXT'),
-            'positionDetailsLastUpdated': x.get('PPOS_CAPSULE_MODIFY_DT'),
-            'lastUpdated': x.get('PPOS_LAST_UPDT_TMSMP_DT'),
-            'lastUpdatedUserID': x.get('PPOS_LAST_UPDT_USER_ID'),
-            # FE not currently using the ones below
-            'posSeqNum': x.get('POS_SEQ_NUM'),
-            'aptSeqNum': x.get('APT_SEQUENCE_NUM'),
-            'aptDesc': x.get('APT_DESCRIPTION_TXT'),
-            'psCD': x.get('PS_CD'),
-            'posLtext': x.get('POSLTEXT'),
-            'lrDesc': x.get('LR_DESCR_TXT'),
-            'posAuditExclusionInd': x.get('PPOS_AUDIT_EXCLUSION_IND'),
-        }
+    return {
+        'positionNumber': data.get('posnumtext'),
+        'skill': services.format_desc_code(data.get('posskilldesc'), data.get('posskillcode')),
+        'positionTitle': data.get('postitledesc'),
+        'bureau': data.get('posbureaushortdesc'),
+        'org': services.format_desc_code(data.get('posorgshortdesc'), data.get('posorgcode')),
+        'status': data.get('posstatuscode'),
+        'languages': services.parseLanguagesToArr(fsbid_lang_data),
+        'payPlan': data.get('pospayplancode'),
+        'grade': data.get('posgradecode'),
+        'combinedPPGrade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
+        'positionDetails': data.get('pposcapsuledescrtxt'),
+        # format_dates
+        'ORIGpositionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
+        'positionDetailsLastUpdated': format_dates(data.get('pposcapsulemodifydt')),
+        'ORIGpositionLastUpdated': data.get('pposlastupdttmsmpdt'),
+        'positionLastUpdated': format_dates(data.get('pposlastupdttmsmpdt')),
+        'positionLastUpdatedUserID': data.get('pposlastupdtuserid'),
+        'psCD': data.get('ppospubscd'),
+        'psDesc': data.get('pubsdescrtxt'),
+        # FE not currently using the ones below
+        'posSeqNum': data.get('posseqnum'),
+        'aptSeqNum': data.get('pposaptsequencenum'),
+        'posAuditExclusionInd': data.get('pposauditexclusionind'),
+        'posupdateid': data.get('posupdateid'),
+        'posupdatedate': data.get('posupdatedate'),
+        'poseffectivedate': data.get('poseffectivedate'),
+        'posjobcodecode': data.get('posjobcodecode'),
+        'posoccseriescode': data.get('posoccseriescode'),
+        'postitlecode': data.get('postitlecode'),
+        'posbureaulongdesc': data.get('posbureaulongdesc'),
+        'posstaffptrnskillcode': data.get('posstaffptrnskillcode'),
+        'posstaffptrnskilldesc': data.get('posstaffptrnskilldesc'),
+        'posservicetypecode': data.get('posservicetypecode'),
+        'posservicetypedesc': data.get('posservicetypedesc'),
+        'posgradedesc': data.get('posgradedesc'),
+        'poslangreq1code': data.get('poslangreq1code'),
+        'poslangreq1desc': data.get('poslangreq1desc'),
+        'poslangreq2code': data.get('poslangreq2code'),
+        'poslangreq2desc': data.get('poslangreq2desc'),
+        'posjobcategorydesc': data.get('posjobcategorydesc'),
+        'poscreateid': data.get('poscreateid'),
+        'poscreatedate': data.get('poscreatedate'),
+        'pposposseqnum': data.get('pposposseqnum'),
+        'pposaptsequencenum': data.get('pposaptsequencenum'),
+        'pposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
+        'pposcreateuserid': data.get('pposcreateuserid'),
+        'pubsdescrtxt': data.get('pubsdescrtxt'),
+        'pubscreatetmsmpdt': data.get('pubscreatetmsmpdt'),
+        'pubscreateuserid': data.get('pubscreateuserid'),
+        'pubslastupdttmsmpdt': data.get('pubslastupdttmsmpdt'),
+        'pubslastupdtuserid': data.get('pubslastupdtuserid'),
+    }
 
-    return list(map(pub_pos_map, data.get('QRY_MODPUBLISHPOS_REF')))
+def convert_ppos_query(query):
+    '''
+    Converts TalentMap query into FSBid query
+    '''
 
+    values = {
+        "rp.pageNum": int(query.get("page", 1)),
+        "rp.pageRows": int(query.get("limit", 10)),
+        "rp.filter": services.convert_to_fsbid_ql([
+            {'col': 'posnumtext', 'val': query.get("posNum")},
+            {'col': 'ppospubscd', 'val': query.get("statuses")},
+            {'col': 'posbureaushortdesc', 'val': query.get("bureaus")},
+            {'col': 'posorgcode', 'val': query.get("orgs")},
+            {'col': 'posskillcode', 'val': query.get("skills")},
+            {'col': 'posgradecode', 'val': query.get("grades")},
+        ]),
+    }
+    if query.get("getCount") == 'true':
+        values["rp.pageNum"] = 0
+        values["rp.pageRows"] = 0
+        values["rp.columns"] = "ROWCOUNT"
+
+    valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+
+    return urlencode(valuesToReturn, doseq=True, quote_via=quote)
+
+def get_ppos_count(query, jwt_token, host=None, use_post=False):
+    '''
+    Get number of Publishable Positions
+    '''
+    args = {
+        "uri": "",
+        "query": query,
+        "query_mapping_function": convert_ppos_query,
+        "jwt_token": jwt_token,
+        "host": host,
+        "use_post": False,
+        "is_template": True,
+        "api_root": PUBLISHABLE_POSITIONS_V2_ROOT,
+    }
+    return services.send_count_request(**args)
 
 def edit_publishable_position(data, jwt_token):
     '''
