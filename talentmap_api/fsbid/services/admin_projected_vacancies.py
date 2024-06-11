@@ -195,7 +195,7 @@ def edit_admin_projected_vacancy(query, jwt_token):
     '''
     Edit Admin Projected Vacancy
     '''
-    fvseqnum = query.get("data", {})
+    fvseqnum = query.get("data")
     args = {
         "uri": f"v1/futureVacancies/{fvseqnum}",
         "query": query,
