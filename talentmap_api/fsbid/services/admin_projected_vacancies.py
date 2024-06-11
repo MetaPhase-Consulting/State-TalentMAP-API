@@ -183,10 +183,11 @@ def admin_projected_vacancy_req_mapping(query):
 
 def admin_projected_vacancy_res_mapping(response):
     # return service_response(response, 'Projected Vacancy List')
-    return {
-        **response,
-        "combinedppgrade": combine_pp_grade(response.pospayplancode, response.posgradecode),
-    }
+    return response
+    # return {
+    #     **response,
+    #     "combinedppgrade": combine_pp_grade(response.pospayplancode, response.posgradecode),
+    # }
 
 
 # ======================== Edit PV ========================
