@@ -1,7 +1,6 @@
 from django.conf import settings
-from datetime import datetime as dt
 from talentmap_api.fsbid.services import common as services
-from talentmap_api.common.common_helpers import service_response
+from talentmap_api.common.common_helpers import service_response, format_dates
 
 WS_ROOT = settings.WS_ROOT_API_URL
 
@@ -62,12 +61,6 @@ def get_bid_audit_req_mapping(request):
     return mapped_request
 
 
-def format_dates(input_date):
-    if input_date == '' or input_date is None:
-        return input_date
-    date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
-    formatted_date = date_object.strftime("%m/%d/%Y")
-    return formatted_date
 
 def get_bid_audit_res_mapping(data):
     def results_mapping(x):
