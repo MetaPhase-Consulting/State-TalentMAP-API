@@ -73,7 +73,7 @@ def convert_capsule_query(query):
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
 
-def get_publishable_positions(query, jwt_token):
+def get_publishable_positions(query, jwt_token, count_func=True):
     '''
     Gets Publishable Positions
     '''
@@ -83,7 +83,7 @@ def get_publishable_positions(query, jwt_token):
         "query_mapping_function": convert_ppos_query,
         "jwt_token": jwt_token,
         "mapping_function": publishable_positions_res_mapping,
-        "count_function": get_ppos_count,
+        "count_function": get_ppos_count if count_func else None,
         "base_url": "/api/v2/publishablepositions/",
         "api_root": PUBLISHABLE_POSITIONS_V2_ROOT,
     }
@@ -299,8 +299,8 @@ def publishable_positions_filter_res_mapping(data):
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
     }
 
-def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
-    data = get_publishable_positions(query, jwt_token)
+def get_publishable_positions_csv(query, jwt_token):
+    data = get_publishable_positions(query, jwt_token, False).get('results')
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=publishable_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
@@ -317,7 +317,7 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Organization"),
         smart_str(u"Pay Plan/Grade"),
         smart_str(u"Publishable Status"),
-        smart_str(u"Language"),
+        smart_str(u"Languages"),
         # smart_str(u"Bid Cycle"),
         # smart_str(u"TED"),
         # smart_str(u"Incumbent"),
@@ -329,15 +329,16 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Position Details"),
     ])
     for x in data:
+        lang_str = services.parseLanguagesString(x.get('languages'))
         writer.writerow([
             smart_str(x.get('positionNumber')),
-            smart_str(x.get('skill').strip('()')),
+            smart_str(x.get('skill')),
             smart_str(x.get('positionTitle')),
             smart_str(x.get('bureau')),
             smart_str(x.get('org')),
             smart_str(combine_pp_grade(x.get('payPlan'), x.get('grade'))),
-            smart_str(x.get('status')),
-            smart_str(x.get('language')),
+            smart_str(x.get('psDesc')),
+            smart_str(lang_str),
             # smart_str(x.get('bidCycle')), # We are not receiving this data yet from here -
             # smart_str(x.get('ted')),
             # smart_str(x.get('incumbent')),

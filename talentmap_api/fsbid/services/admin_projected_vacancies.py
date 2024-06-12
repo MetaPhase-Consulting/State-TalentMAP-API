@@ -183,63 +183,51 @@ def admin_projected_vacancy_req_mapping(query):
 
 def admin_projected_vacancy_res_mapping(response):
     # return service_response(response, 'Projected Vacancy List')
-    return {
-        **response,
-        "combinedppgrade": combine_pp_grade(response.pospayplancode, response.posgradecode),
-    }
+     return {
+         **response,
+         "combinedppgrade": combine_pp_grade(response.get("pospayplancode"), response.get("posgradecode")),
+     }
+
 
 # ======================== Edit PV ========================
 
-def edit_admin_projected_vacancy(data, jwt_token):
+def edit_admin_projected_vacancy(query, jwt_token):
     '''
     Edit Admin Projected Vacancy
     '''
+    fvseqnum = query.get("data")
     args = {
-        "proc_name": 'PRC_IUD_FUTURE_VACANCY',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
-        "request_mapping_function": edit_admin_projected_vacancy_req_mapping,
-        "response_mapping_function": edit_admin_projected_vacancy_res_mapping,
+        "uri": f"v1/futureVacancies/{fvseqnum}",
+        "query": query,
+        "query_mapping_function": convert_admin_projected_vacancy_edit_query,
         "jwt_token": jwt_token,
-        "request_body": data,
+        "mapping_function": None,
     }
-    return services.send_post_back_office(
-        **args
-    )
+    return services.send_put_request(**args)
 
-def edit_admin_projected_vacancy_req_mapping(request):
-    pvData = []
-    for pv in request:
-        pvData.append({
-            'FV_SEQ_NUM': pv.get('future_vacancy_seq_num'),
-            # 'FV_SEQ_NUM_REF': pv.get('future_vacancy_seq_num_ref'),
-            'POS_SEQ_NUM': pv.get('position_seq_num'),
-            'BSN_ID': pv.get('bid_season_code'),
-            # 'ASG_SEQ_NUM_EF': pv.get('assignment_seq_num_effective'),
-            # 'ASG_SEQ_NUM': pv.get('assignment_seq_num'),
-            # 'CDT_CD': pv.get('cycle_date_type_code'),
-            'FVS_CODE': pv.get('future_vacancy_status_code'),
-            # 'FVO_CODE': pv.get('future_vacancy_override_code'),
-            'FV_OVERRIDE_TED_DATE': pv.get('future_vacancy_override_tour_end_date'),
-            # 'FV_SYSTEM_IND': pv.get('future_vacancy_system_indicator'),
-            # 'FV_COMMENT_TXT': pv.get('future_vacancy_comment'),
-            # 'FV_CREATE_ID': pv.get('creator_id'),
-            # 'FV_CREATE_DATE': pv.get('created_date'),
-            # 'FV_UPDATE_ID': pv.get('updater_id'),
-            # 'FV_UPDATE_DATE': pv.get('updated_date'),
-            # 'FV_MC_IND': pv.get('future_vacancy_mc_indicator'),
-            'FV_EXCL_IMPORT_IND': pv.get('future_vacancy_exclude_import_indicator'),
-        })
-    return {
-        'PV_API_VERSION_I': '',
-        'PV_AD_ID_I': '',
-        'pv_action_i': 'U',
-        'pjson_fv_i': {
-            'Data': pvData
-        }
+
+def convert_admin_projected_vacancy_edit_query(query):
+    values = {
+        "fvfvscode": query.get("future_vacancy_status_code"),
+        "fvoverrideteddate": query.get("future_vacancy_override_tour_end_date"),
+        "fvbsnid": int(query.get("future_vacancy_bid_season_code")),
+        "fvcommenttxt": query.get("future_vacancy_comment_text"),
+        "fvexclimportind": query.get("future_vacancy_exclude_import_indicator"),
+        "fvseqnum": query.get("fvseqnum"),
+        "fvseqnumref": query.get("fvfvseqnumref"),
+        "fvposseqnum": query.get("fvposseqnum"),
+        "fvasgseqnumef": query.get("fvasgseqnumef"),
+        "fvasgseqnum": query.get("fvasgseqnum"),
+        "fvcdtcd": query.get("fvcdtcd"),
+        "fvfvocode": query.get("fvfvocode"),
+        "fvsystemind": query.get("fvsystemind"),
+        "fvcreateid": query.get("fvcreateid"),
+        "fvcreatedate": query.get("fvcreatedate", "").replace("T", " "),
+        "fvupdateid": query.get("fvupdateid"),
+        "fvupdatedate": query.get("fvupdatedate", "").replace("T", " "),
+        "fvmcind": query.get("fvmcind"),
     }
-
-def edit_admin_projected_vacancy_res_mapping(data):
-    return service_response(data, 'Projected Vacancy Edit')
+    return values
 
 # ======================== Edit PV Language Offsets ========================
 
