@@ -280,9 +280,9 @@ def base_assignment_action_req(request):
     # TO DO: Clarify custom TOD feature
     if request.get("tod_months_num"):
         base["I_ASGD_TOD_MONTHS_NUM"] = request.get("tod_months_num")
-    if request.get("tod_months_num"):
+    if request.get("tod_other_text"):
         base["I_ASGD_TOD_OTHER_TEXT"] = request.get("tod_other_text")
-    if request.get("tod_months_num"):
+    if request.get("tod_adjust_months_num"):
         base["I_ASGD_ADJUST_MONTHS_NUM"] = request.get("tod_adjust_months_num")
     return base
 
