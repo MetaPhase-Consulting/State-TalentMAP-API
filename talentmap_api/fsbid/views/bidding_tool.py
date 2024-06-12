@@ -116,10 +116,11 @@ class FSBidBiddingToolActionsView(APIView):
         Create Bidding Tool
         '''
         result = services.create_bidding_tool(request.data, request.META['HTTP_JWT'])
-        if result is None:
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for creating Bidding Tool failed.")
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        return Response(result)
     
     
     # ======================== Edit Bidding Tool ========================
