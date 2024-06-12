@@ -36,9 +36,16 @@ class FSBidPublishablePositionsActionView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pos_seq_num'),
-            'description': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_descr_txt'),
-            'updater_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_id'),
+            'posSeqNum': openapi.Schema(type=openapi.TYPE_INTEGER, description='pos_seq_num'),
+            'psCD': openapi.Schema(type=openapi.TYPE_STRING, description='ps_cd'),
+            'aptSeqNum': openapi.Schema(type=openapi.TYPE_STRING, description='apt_seq_num'),
+            'created': openapi.Schema(type=openapi.TYPE_STRING, description='create_date'),
+            'createdUserID': openapi.Schema(type=openapi.TYPE_STRING, description='create_id'),
+            'positionDetailsLastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_desc_update_date'),
+            'posAuditExclusionInd': openapi.Schema(type=openapi.TYPE_STRING, description='exclusion_ind'),
+            'positionDetails': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_descr_txt'),
+            'lastUpdated': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_date'),
+            'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_id'),
         }
     ))
 

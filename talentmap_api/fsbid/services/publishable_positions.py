@@ -118,6 +118,8 @@ def publishable_positions_res_mapping(data):
         'combinedPPGrade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
         'positionDetails': data.get('pposcapsuledescrtxt'),
         # format_dates
+        'ORIGpposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
+        'pposcreatetmsmpdt': format_dates(data.get('pposcreatetmsmpdt')),
         'ORIGpositionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
         'positionDetailsLastUpdated': format_dates(data.get('pposcapsulemodifydt')),
         'ORIGpositionLastUpdated': data.get('pposlastupdttmsmpdt'),
@@ -150,7 +152,6 @@ def publishable_positions_res_mapping(data):
         'poscreatedate': data.get('poscreatedate'),
         'pposposseqnum': data.get('pposposseqnum'),
         'pposaptsequencenum': data.get('pposaptsequencenum'),
-        'pposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
         'pposcreateuserid': data.get('pposcreateuserid'),
         'pubsdescrtxt': data.get('pubsdescrtxt'),
         'pubscreatetmsmpdt': data.get('pubscreatetmsmpdt'),
@@ -205,33 +206,31 @@ def edit_publishable_position(data, jwt_token):
     '''
     Edit Publishable Position
     '''
+    posseqnum = data.get("refData", {}).get("pos_seq_num")
     args = {
-        "proc_name": 'act_modCapsulePos',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": edit_publishable_position_req_mapping,
-        "response_mapping_function": edit_publishable_position_res_mapping,
+        "uri": f"v1/publishablePositions/{posseqnum}",
+        "query": data,
+        "query_mapping_function": edit_publishable_position_req_mapping,
         "jwt_token": jwt_token,
-        "request_body": data,
+        "mapping_function": None,
     }
-    return services.send_post_back_office(
+    return services.send_put_request(
         **args
     )
 
 def edit_publishable_position_req_mapping(request):
     return {
-      'PV_API_VERSION_I': '',
-      'PV_AD_ID_I': '',
-      'I_POS_SEQ_NUM': request.get('posSeqNum') or '',
-      'I_PPOS_CAPSULE_DESCR_TXT': request.get('positionDetails') or '',
-      'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
-      'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
+      'pposposseqnum': request.get('posSeqNum') or '',
+      'ppospubscd': request.get('psCD') or '',
+      'pposaptsequencenum': request.get('aptSeqNum') or '',
+      'pposcreatetmsmpdt': request.get('created') or '',
+      'pposcreateuserid': request.get('createdUserID') or '',
+      'pposcapsulemodifydt': request.get('positionDetailsLastUpdated') or '',
+      'pposauditexclusionind': request.get('posAuditExclusionInd') or '',
+      'pposcapsuledescrtxt': request.get('positionDetails') or '',
+      'pposlastupdttmsmpdt': request.get('lastUpdated') or '',
+      'pposlastupdtuserid': request.get('lastUpdatedUserID') or '',
     }
-
-def edit_publishable_position_res_mapping(data):
-    if data.get('O_RETURN_CODE', -1) != 0:
-        logger.error(f"Publishable Positions Edit error return code.")
-        raise ValidationError('Publishable Positions Edit error return code.')
-
 
 def get_publishable_positions_filters(jwt_token):
     '''
