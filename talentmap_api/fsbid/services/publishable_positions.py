@@ -118,6 +118,8 @@ def publishable_positions_res_mapping(data):
         'combinedPPGrade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
         'positionDetails': data.get('pposcapsuledescrtxt'),
         # format_dates
+        'ORIGpposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
+        'pposcreatetmsmpdt': format_dates(data.get('pposcreatetmsmpdt')),
         'ORIGpositionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
         'positionDetailsLastUpdated': format_dates(data.get('pposcapsulemodifydt')),
         'ORIGpositionLastUpdated': data.get('pposlastupdttmsmpdt'),
@@ -150,7 +152,6 @@ def publishable_positions_res_mapping(data):
         'poscreatedate': data.get('poscreatedate'),
         'pposposseqnum': data.get('pposposseqnum'),
         'pposaptsequencenum': data.get('pposaptsequencenum'),
-        'pposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
         'pposcreateuserid': data.get('pposcreateuserid'),
         'pubsdescrtxt': data.get('pubsdescrtxt'),
         'pubscreatetmsmpdt': data.get('pubscreatetmsmpdt'),
@@ -211,7 +212,7 @@ def edit_publishable_position(data, jwt_token):
         "query": data,
         "query_mapping_function": edit_publishable_position_req_mapping,
         "jwt_token": jwt_token,
-        "mapping_function": edit_publishable_position_res_mapping,
+        "mapping_function": None,
     }
     return services.send_put_request(
         **args
@@ -230,12 +231,6 @@ def edit_publishable_position_req_mapping(request):
       'pposlastupdttmsmpdt': request.get('lastUpdated') or '',
       'pposlastupdtuserid': request.get('lastUpdatedUserID') or '',
     }
-
-def edit_publishable_position_res_mapping(data):
-    if data.get('ReturnCode', -1) != 0:
-        logger.error(f"Publishable Positions Edit error return code.")
-        raise ValidationError('Publishable Positions Edit error return code.')
-
 
 def get_publishable_positions_filters(jwt_token):
     '''
