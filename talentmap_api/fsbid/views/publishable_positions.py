@@ -31,7 +31,8 @@ class FSBidPublishablePositionsView(APIView):
 
 class FSBidPublishablePositionsActionView(APIView):
     # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    # Todo: split up the edit action across the different roles to separate the permissions to edit each field
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('superuser'), )]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
