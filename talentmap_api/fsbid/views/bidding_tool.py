@@ -12,7 +12,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 import talentmap_api.fsbid.services.bidding_tool as services
-
+from talentmap_api.common.common_helpers import view_result
 from talentmap_api.common.permissions import isDjangoGroupMember
 
 logger = logging.getLogger(__name__)
@@ -80,28 +80,6 @@ class FSBidBiddingToolActionsView(APIView):
         return Response(result)
 
 
-    # ======================== Delete Bidding Tool ========================
-
-    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter("location", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='GSA Location Code'),
-            openapi.Parameter("updater_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Updater User ID'),
-            openapi.Parameter("updated_date", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Updated Date'),
-        ])
-
-    def delete(self, request):
-        '''
-        Deletes Bidding Tool
-        '''
-        result = services.delete_bidding_tool(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
-
-
     # ======================== Create Bidding Tool ========================
 
     permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
@@ -161,3 +139,24 @@ class FSBidBiddingToolCreateView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+    
+
+class FSBidBiddingToolDeleteView(APIView):
+
+    # ======================== Delete Bidding Tool ========================
+
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
+
+    @swagger_auto_schema(
+    manual_parameters=[
+        openapi.Parameter("location", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='GSA Location Code'),
+        openapi.Parameter("updater_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Updater User ID'),
+        openapi.Parameter("updated_date", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Updated Date'),
+    ])
+
+    def post(self, request):
+        '''
+        Deletes Bidding Tool
+        '''
+        result = services.delete_bidding_tool(request.data, request.META['HTTP_JWT'])
+        return view_result(result)
