@@ -124,7 +124,7 @@ def bidding_tool_response_mapping(response):
             'grade_education': x.get('O_BT_GRADE_EDUCATION_TEXT'),
             'efm_employment': x.get('O_BT_EFM_EMPLOYMENT_TXT'),
             'inside_efm_employment': x.get('O_BT_INSIDE_EFM_EMPLOYMENT_FLG'),
-            'outside_efm_employment': x.get('O_BT_OUTSIDE_EFM_EMPLOYMENT_FLG'),
+            'outside_efm_employment': x.get('O_BT_OUTSIDE_EFM_EMP_FLG'),
 
             'location': x.get('O_DSC_CD'),
             'unaccompanied_status': x.get('O_US_CODE'),
