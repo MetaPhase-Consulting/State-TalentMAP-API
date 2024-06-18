@@ -325,7 +325,7 @@ def merge_assignment_cycles(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modMergeCycles',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": merge_assignment_cycles_req_mapping,
         "response_mapping_function": update_assignment_cycles_res_mapping,
@@ -416,7 +416,7 @@ def get_cycle_positions(jwt, req):
     '''
     args = {
         'proc_name': 'qry_modCyclePos',
-        'package_name': 'PKG_WEBAPI_WRAP_SPRINT98',
+        'package_name': 'PKG_WEBAPI_WRAP',
         'request_body': req,
         'request_mapping_function': cycle_positions_req_mapping,
         'response_mapping_function': cycle_positions_res_mapping,
@@ -484,7 +484,7 @@ def get_cycle_position(jwt_token, pk):
     '''
     args = {
         "proc_name": 'qry_getCyclePos',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": pk,
         "request_mapping_function": get_cycle_position_req_mapping,
         "response_mapping_function": get_cycle_position_res_mapping,
@@ -552,7 +552,7 @@ def update_cycle_position(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modCyclePos',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": update_cycle_position_req_mapping,
         "response_mapping_function": update_cycle_position_res_mapping,
@@ -602,7 +602,7 @@ def get_cycle_classifications(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_modCycleDateClasses',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": assignment_cycles_req_mapping,
         "response_mapping_function": assignment_cycles_classifications_res_mapping,
@@ -676,7 +676,7 @@ def update_assignment_cycles_classifications(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modCycleDateClasses',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": update_assignment_cycles_classifications_req_mapping,
         "response_mapping_function": update_assignment_cycles_classifications_res_mapping,

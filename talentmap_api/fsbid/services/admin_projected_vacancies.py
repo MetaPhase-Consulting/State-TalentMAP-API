@@ -18,7 +18,7 @@ def get_admin_projected_vacancy_filters(jwt_token):
     '''
     args = {
         "proc_name": "PRC_FV_ADMIN_SEARCH",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT98",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_mapping_function": admin_projected_vacancy_filter_req_mapping,
         "response_mapping_function": admin_projected_vacancy_filter_res_mapping,
         "jwt_token": jwt_token,

@@ -11,7 +11,7 @@ def get_post_access_filters(jwt_token):
     '''
     args = {
         "proc_name": 'prc_lst_bureau_org_tree',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": {},
         "request_mapping_function": post_access_filter_req_mapping,
         "response_mapping_function": post_access_filter_res_mapping,
@@ -81,7 +81,7 @@ def get_post_access_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'prc_lst_org_access',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": post_access_req_mapping,
         "response_mapping_function": post_access_res_mapping,
@@ -136,7 +136,7 @@ def remove_post_access_permissions(jwt_token, request):
     '''
     args = {
         "proc_name": 'prc_mod_org_access',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": remove_post_access_req_mapping,
         "response_mapping_function": remove_post_access_res_mapping,
@@ -176,7 +176,7 @@ def grant_post_access_permissions(jwt_token, request):
     '''
     args = {
         "proc_name": 'prc_add_org_access',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": grant_post_access_permissions_req_mapping,
         "response_mapping_function": grant_post_access_res_mapping,

@@ -13,7 +13,7 @@ def get_position_classifications(pk, jwt_token):
     '''
     args = {
         "proc_name": "qry_modPosClasses",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": pk,
         "request_mapping_function": position_classifications_request_mapping,
         "response_mapping_function": position_classifications_response_mapping,
@@ -69,7 +69,7 @@ def edit_position_classifications(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modPosClasses',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_positon_classifications_req_mapping,
         "response_mapping_function": edit_positon_classifications_res_mapping,
         "jwt_token": jwt_token,
