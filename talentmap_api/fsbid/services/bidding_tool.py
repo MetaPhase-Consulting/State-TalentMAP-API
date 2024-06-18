@@ -13,7 +13,7 @@ def get_bidding_tools(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_lstbiddingtool",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": data,
         "request_mapping_function": bidding_tools_request_mapping,
         "response_mapping_function": bidding_tools_response_mapping,
@@ -50,7 +50,7 @@ def get_bidding_tool(pk, jwt_token):
     '''
     args = {
         "proc_name": "qry_getbiddingtool",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": pk,
         "request_mapping_function": bidding_tool_request_mapping,
         "response_mapping_function": bidding_tool_response_mapping,
@@ -124,7 +124,7 @@ def bidding_tool_response_mapping(response):
             'grade_education': x.get('O_BT_GRADE_EDUCATION_TEXT'),
             'efm_employment': x.get('O_BT_EFM_EMPLOYMENT_TXT'),
             'inside_efm_employment': x.get('O_BT_INSIDE_EFM_EMPLOYMENT_FLG'),
-            'outside_efm_employment': x.get('O_BT_OUTSIDE_EFM_EMPLOYMENT_FLG'),
+            'outside_efm_employment': x.get('O_BT_OUTSIDE_EFM_EMP_FLG'),
 
             'location': x.get('O_DSC_CD'),
             'unaccompanied_status': x.get('O_US_CODE'),
@@ -156,7 +156,7 @@ def delete_bidding_tool(data, jwt_token):
     '''
     args = {
         "proc_name": "act_delbiddingtool",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": data,
         "request_mapping_function": delete_bidding_tool_request_mapping,
         "response_mapping_function": delete_bidding_tool_response_mapping,
@@ -219,7 +219,7 @@ def create_bidding_tool(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_addbiddingtool',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": create_bidding_tool_request_mapping,
         "response_mapping_function": create_bidding_tool_response_mapping,
         "jwt_token": jwt_token,
@@ -243,7 +243,7 @@ def get_bidding_tool_create_data(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_addBiddingTool",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": data,
         "request_mapping_function": bidding_tool_create_data_request_mapping,
         "response_mapping_function": bidding_tool_create_data_response_mapping,
@@ -316,7 +316,7 @@ def edit_bidding_tool(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modbiddingtool',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_bidding_tool_request_mapping,
         "response_mapping_function": edit_bidding_tool_response_mapping,
         "jwt_token": jwt_token,

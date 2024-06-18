@@ -9,7 +9,7 @@ def get_job_categories_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstJobCats',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": {},
         "request_mapping_function": job_categories_req_mapping,
         "response_mapping_function": job_categories_res_mapping,
@@ -48,7 +48,7 @@ def get_job_category_skills(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_getJobCat',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": jc_skills_req_mapping,
         "response_mapping_function": jc_skills_res_mapping,
@@ -93,7 +93,7 @@ def create_job_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addJobCat',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_jc_req_mapping,
         "response_mapping_function": create_jc_res_mapping,
@@ -126,7 +126,7 @@ def edit_job_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modJobCat',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": edit_jc_req_mapping,
         "response_mapping_function": edit_jc_res_mapping,
@@ -168,7 +168,7 @@ def delete_job_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_delJobCat',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": delete_jc_req_mapping,
         "response_mapping_function": delete_jc_res_mapping,
