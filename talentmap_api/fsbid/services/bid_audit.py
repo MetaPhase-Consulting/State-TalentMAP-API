@@ -11,7 +11,7 @@ def run_bid_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_runauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": run_bid_audit_req_mapping,
         "response_mapping_function": run_bid_audit_res_mapping,
@@ -42,7 +42,7 @@ def get_bid_audit_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstauditassigncycles',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
         "response_mapping_function": get_bid_audit_res_mapping,
@@ -91,7 +91,7 @@ def get_cycles(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_addauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
         "response_mapping_function": get_cycles_res_mapping,
@@ -122,7 +122,7 @@ def create_new_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_new_audit_req_mapping,
         "response_mapping_function": create_new_audit_res_mapping,
@@ -161,7 +161,7 @@ def update_bid_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_new_audit_req_mapping,
         "response_mapping_function": create_new_audit_res_mapping,
@@ -178,7 +178,7 @@ def update_bid_count(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_runauditdynamic',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
         "response_mapping_function": update_bid_count_res_mapping,
@@ -199,7 +199,7 @@ def get_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstauditincategories',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_in_category_req_mapping,
         "response_mapping_function": get_in_category_res_mapping,
@@ -258,7 +258,7 @@ def get_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstauditatgrades',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_at_grade_req_mapping,
         "response_mapping_function": get_at_grade_res_mapping,
@@ -321,7 +321,7 @@ def get_in_category_options(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_addauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_in_category_req_mapping,
         "response_mapping_function": get_in_category_options_res_mapping,
@@ -355,7 +355,7 @@ def create_new_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_in_category_req_mapping,
         "response_mapping_function": create_in_category_res_mapping,
@@ -388,7 +388,7 @@ def get_at_grade_options(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_addauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_at_grade_req_mapping,
         "response_mapping_function": get_at_grade_options_res_mapping,
@@ -436,7 +436,7 @@ def create_new_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_at_grade_req_mapping,
         "response_mapping_function": create_at_grade_res_mapping,
@@ -472,7 +472,7 @@ def update_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": update_at_grade_req_mapping,
         "response_mapping_function": update_at_grade_res_mapping,
@@ -509,7 +509,7 @@ def update_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": update_in_category_req_mapping,
         "response_mapping_function": update_in_category_res_mapping,
@@ -543,7 +543,7 @@ def delete_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_delauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": delete_at_grade_req_mapping,
         "response_mapping_function": delete_at_grade_res_mapping,
@@ -575,7 +575,7 @@ def delete_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_delauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": delete_in_category_req_mapping,
         "response_mapping_function": delete_in_category_res_mapping,

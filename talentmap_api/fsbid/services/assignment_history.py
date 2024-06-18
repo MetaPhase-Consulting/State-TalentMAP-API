@@ -170,7 +170,7 @@ def get_assignments_separations(id, jwt_token):
     '''
     args = {
         "proc_name": 'qry_lstAsgsSeps',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": get_assignments_separations_req_mapping,
         "response_mapping_function": get_assignments_separations_res_mapping,
         "jwt_token": jwt_token,
@@ -202,7 +202,7 @@ def get_alt_assignment(data, jwt_token):
     '''
     args = {
         "proc_name": 'qry_getAsgDtl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": get_alt_assignment_req_mapping,
         "response_mapping_function": get_alt_assignment_separation_res_mapping,
         "jwt_token": jwt_token,
@@ -239,7 +239,7 @@ def get_alt_separation(data, jwt_token):
     '''
     args = {
         "proc_name": 'qry_getSepDtl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": get_alt_separation_req_mapping,
         "response_mapping_function": get_alt_assignment_separation_res_mapping,
         "jwt_token": jwt_token,
@@ -293,7 +293,7 @@ def update_alt_assignment(query, jwt_token):
     hru_id = jwt.decode(jwt_token, verify=False).get('sub')
     args = {
         "proc_name": 'act_modasgdtl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": partial(update_alt_assignment_req_mapping, hru_id=hru_id),
         "response_mapping_function": update_alt_assignment_res_mapping,
         "jwt_token": jwt_token,
@@ -343,7 +343,7 @@ def update_alt_separation(query, jwt_token):
     hru_id = jwt.decode(jwt_token, verify=False).get('sub')
     args = {
         "proc_name": 'act_modSepDtl',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": partial(update_alt_separation_req_mapping, hru_id=hru_id),
         "response_mapping_function": update_alt_separation_res_mapping,
         "jwt_token": jwt_token,
@@ -375,7 +375,7 @@ def create_alt_assignment(query, jwt_token):
     '''
     args = {
         "proc_name": 'qry_addasg',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": create_alt_assignment_req_mapping,
         "response_mapping_function": create_alt_assignment_res_mapping,
         "jwt_token": jwt_token,
@@ -404,7 +404,7 @@ def create_alt_separation(query, jwt_token):
     '''
     args = {
         "proc_name": 'act_addsep',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": create_alt_separation_req_mapping,
         "response_mapping_function": create_alt_separation_res_mapping,
         "jwt_token": jwt_token,

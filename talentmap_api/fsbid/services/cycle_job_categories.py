@@ -13,7 +13,7 @@ def get_cycle_categories(jwt_token):
     '''
     args = {
         "proc_name": "qry_lstcyclejobs",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": {},
         "request_mapping_function": cycle_categories_req_mapping,
         "response_mapping_function": cycle_categories_res_mapping,
@@ -47,7 +47,7 @@ def get_cycle_job_categories(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_getcyclejob",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_mapping_function": cycle_job_categories_req_mapping,
         "response_mapping_function": cycle_job_categories_res_mapping,
         "jwt_token": jwt_token,
@@ -85,7 +85,7 @@ def get_cycle_job_categories_statuses(jwt_token):
     '''
     args = {
         "proc_name": "qry_lstjobcats",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": {},
         "request_mapping_function": cycle_categories_req_mapping,
         "response_mapping_function": cycle_job_categories_statuses_res_mapping,
@@ -114,7 +114,7 @@ def edit_cycle_job_categories(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modcyclejob',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_cycle_job_categories_req_mapping,
         "response_mapping_function": edit_cycle_job_categories_res_mapping,
         "jwt_token": jwt_token,
