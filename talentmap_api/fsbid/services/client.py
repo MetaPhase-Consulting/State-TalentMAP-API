@@ -190,10 +190,14 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Name"),
         smart_str(u"Email"),
         smart_str(u"Skill"),
-        smart_str(u"Grade"),
+        smart_str(u"PP/Grade"),
         smart_str(u"Employee ID"),
+        smart_str(u"Position Code"),
+        smart_str(u"Location (Org)"),
+        smart_str(u"Languages"),
         # smart_str(u"Role Code"), Might not be useful to users
-        smart_str(u"Position Location Code"),
+        smart_str(u"TED"),
+        smart_str(u"Status"),
     ])
 
     for record in data:
@@ -203,10 +207,15 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str(record["name"]),
             email,
             smart_str(record["skills"]),
-            smart_str("=\"%s\"" % record["grade"]),
+            smart_str("=\"%s\"" % record["combined_pp_grade"]),
             smart_str("=\"%s\"" % record["employee_id"]),
+            smart_str("=\"%s\"" % record["position_code"]),
+            smart_str("=\"%s\"" % record["location"]),
+            smart_str("=\"%s\"" % record["languages"]),
+            smart_str(ensure_date(record["ted"])),
+            smart_str("=\"%s\"" % record["status"])
             # smart_str(record["role_code"]), Might not be useful to users
-            smart_str("=\"%s\"" % record["pos_location"]),
+
         ])
     return response
 
@@ -305,6 +314,10 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     current_assignment = employee.get('currentAssignment', None)
     pos_location = None
     middle_name = get_middle_name(employee)
+    pp = employee.get("per_pay_plan_code")
+    grade = employee.get("per_grade_code")
+    combined_pp_grade = combine_pp_grade(pp, grade)
+
     if current_assignment is not None:
         position = current_assignment.get('currentPosition', None)
         if position is not None:
@@ -319,7 +332,12 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "skills": ' , '.join(map_skill_codes_for_csv(employee)),
         "employee_id": employee.get("pert_external_id", None),
         "role_code": data.get("rl_cd", None),
-        "pos_location": pos_location,
+        "location": pos_location,
+        "position_code": position.get("pos_location_code", None),
+        "combined_pp_grade": combined_pp_grade,
+        "languages": fsbid_languages_to_tmap(data.get("languages") or []),
+        "ted": ensure_date(current_assignment.get("asgd_etd_ted_date", None)),
+        "status": current_assignment.get("asgs_code", None),
         # not exposed in FSBid yet
         # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
         # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
