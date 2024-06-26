@@ -207,12 +207,12 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str(record["name"]),
             email,
             smart_str(record["skills"]),
-            smart_str("=\"%s\"" % record["combined_pp_grade"]),
+            # smart_str("=\"%s\"" % record["combined_pp_grade"]),
             smart_str("=\"%s\"" % record["employee_id"]),
-            smart_str("=\"%s\"" % record["position_code"]),
-            smart_str("=\"%s\"" % record["location"]),
-            smart_str("=\"%s\"" % record["languages"]),
-            smart_str(ensure_date(record["ted"])),
+            # smart_str("=\"%s\"" % record["position_code"]),
+            # smart_str("=\"%s\"" % record["location"]),
+            # smart_str("=\"%s\"" % record["languages"]),
+            # smart_str(ensure_date(record["ted"])),
             smart_str("=\"%s\"" % record["status"])
             # smart_str(record["role_code"]), Might not be useful to users
 
