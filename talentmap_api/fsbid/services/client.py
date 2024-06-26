@@ -207,13 +207,13 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str(record["name"]),
             email,
             smart_str(record["skills"]),
-            smart_str("=\"%s\"" % record["combined_pp_grade"]),
+            # smart_str("=\"%s\"" % record["combined_pp_grade"]),
             smart_str("=\"%s\"" % record["employee_id"]),
             smart_str("=\"%s\"" % record["position_code"]),
             smart_str("=\"%s\"" % record["location"]),
-            smart_str("=\"%s\"" % record["languages"]),
-            smart_str(ensure_date(record["ted"])),
-            smart_str("=\"%s\"" % record["status"])
+            # smart_str("=\"%s\"" % record["languages"]),
+            # smart_str(ensure_date(record["ted"])),
+            # smart_str("=\"%s\"" % record["status"])
             # smart_str(record["role_code"]), Might not be useful to users
 
         ])
@@ -335,10 +335,10 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "role_code": data.get("rl_cd", None),
         "location": pos_location,
         "position_code": data.get("rl_cd", None),
-        "combined_pp_grade": combined_pp_grade,
-        "languages": fsbid_languages_to_tmap(data.get("languages") or []),
-        "ted": ensure_date(current_assignment.get("asgd_etd_ted_date", None)),
-        "status": current_assignment.get("asgs_code", None),
+        # "combined_pp_grade": combined_pp_grade,
+        # "languages": fsbid_languages_to_tmap(data.get("languages") or []),
+        # "ted": ensure_date(current_assignment.get("asgd_etd_ted_date", None)),
+        # "status": current_assignment.get("asgs_code", None),
         # not exposed in FSBid yet
         # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
         # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
