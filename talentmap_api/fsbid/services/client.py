@@ -319,9 +319,10 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     grade = employee.get("per_grade_code")
     combined_pp_grade = combine_pp_grade(pp, grade)
 
-
-    if position is not None:
-        pos_location = map_location(position.get("currentLocation", None))
+    if current_assignment is not None:
+        position = current_assignment.get('currentPosition', None)
+        if position is not None:
+            pos_location = map_location(position.get("currentLocation", None))
 
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
@@ -333,7 +334,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "employee_id": employee.get("pert_external_id", None),
         "role_code": data.get("rl_cd", None),
         "location": pos_location,
-        "position_code": position.get("pos_location_code", None),
+        "position_code": data.get("rl_cd", None),
         "combined_pp_grade": combined_pp_grade,
         "languages": fsbid_languages_to_tmap(data.get("languages") or []),
         "ted": ensure_date(current_assignment.get("asgd_etd_ted_date", None)),
