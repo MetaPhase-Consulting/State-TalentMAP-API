@@ -65,6 +65,7 @@ class AvailablePositionsFilter():
         "isEFMOutside",
         "position__cpn_codes__in",
         "htf_indicator",
+        "cn_indicator",
     ]
 
     use_api = True
