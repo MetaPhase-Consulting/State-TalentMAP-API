@@ -403,7 +403,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False):
         f"{prefix}us_codes": services.convert_multi_value(query.get("position__us_codes__in")),
         f"{prefix}cpn_codes": services.convert_multi_value(query.get("position__cpn_codes__in")),
         f"{prefix}htf_ind": services.convert_multi_value(query.get("htf_indicator")),
-        f"{prefix}cn_ind": services.convert_multi_value(query.get("cn_indicator")),
+        f"{prefix}cp_critical_need_ind": services.convert_multi_value(query.get("cn_indicator")),
         f"{prefix}freeText": query.get("q", None),
 
     }
@@ -437,7 +437,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False):
         values[f"{prefix}tod_codes2"] = services.convert_multi_value(query.get("position__post__tour_of_duty__code__in-tandem"))
         values[f"{prefix}skills2"] = services.convert_multi_value(query.get("position__skill__code__in-tandem"))
         values[f"{prefix}htf_ind2"] = services.convert_multi_value(query.get("htf_indicator-tandem"))
-        values[f"{prefix}cn_ind2"] = services.convert_multi_value(query.get("cn_indicator-tandem"))
+        values[f"{prefix}cp_critical_need_ind2"] = services.convert_multi_value(query.get("cn_indicator-tandem"))
 
     if isinstance(values[f"{prefix}order_by"], list):
         values[f"{prefix}order_by"] = pydash.compact(values[f"{prefix}order_by"])
