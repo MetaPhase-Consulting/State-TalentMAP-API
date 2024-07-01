@@ -21,6 +21,8 @@ class FSBidClientListView(BaseView):
             openapi.Parameter("page", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='A page number within the paginated result set.'),
             openapi.Parameter("limit", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Number of results to return per page.'),
             openapi.Parameter("all_count", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Returns default value 99999 for front-end'),
+            openapi.Parameter("email", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Email of the agent'),
+            openapi.Parameter("comments", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Comments of the agent'),
         ])
 
     def get(self, request):
@@ -28,6 +30,13 @@ class FSBidClientListView(BaseView):
         Gets all clients for a CDO
         '''
         return Response(services.client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
+    
+    def post(self, request):
+        '''
+        Create a new client
+        '''
+        return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+    
 
 
 class FSBidClientView(BaseView):
