@@ -9,6 +9,7 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
+from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
@@ -59,6 +60,89 @@ def client(jwt_token, query, host=None):
 
     return response
 
+def update_client(data, jwt_token, host=None):
+    '''
+    Update current client
+    '''
+    update_client_email(data, jwt_token, host)
+    update_client_comments(data, jwt_token, host)
+
+def update_client_email(data, jwt_token, host=None):
+    '''
+    Update current client email
+    '''
+    args = {
+        "proc_name": 'prc_mod_alt_email',
+        "package_name": 'PKG_CDO_WEB_TM',
+        "request_mapping_function": update_client_email_req_mapping,
+        "response_mapping_function": update_user_client_email_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def update_client_email_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_WL_CODE_I": "CL",
+        "PV_PER_SEQ_NUM_I": request.get('per_seq_number'),
+        "PV_BSN_ID_I": request.get('bid_seasons'),
+        "PV_CAE_EMAIL_ADDRESS_TEXT_I": request.get('email'),
+        "PV_CAE_UPDATE_ID_I": null,
+        "PV_CAE_UPDATE_DATE_I": "",
+        "PV_DETAIL_O": "",
+        "O_RETURN_CODE": "",
+        "QRY_ERROR_DATA": ""
+    }
+    
+def update_user_client_email_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for Updating current client failed.')
+        return None
+
+    return data
+
+def update_client_comments(data, jwt_token, host=None):
+    '''
+    Update current client comments
+    '''
+    args = {
+        "proc_name": 'prc_mod_client_comments',
+        "package_name": 'PKG_CDO_WEB_TM',
+        "request_mapping_function": update_client_comments_req_mapping,
+        "response_mapping_function": update_user_client_comments_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def update_client_comments_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_WL_CODE_I": "",
+        "PV_BSCC_ID_I": null,
+        "PV_PER_SEQ_NUM_I": request.get('per_seq_number'),
+        "PV_BSN_ID_I": request.get('bid_seasons'),
+        "PV_BSCC_COMMENT_TEXT_I": request.get('comments'),
+        "PV_BSCC_UPDATE_ID_I": null,
+        "PV_BSCC_UPDATE_DATE_I": "",
+        "PV_DETAIL_O": "",
+        "O_RETURN_CODE": "",
+        "QRY_ERROR_DATA": ""
+    }
+
+def update_user_client_comments_res_mapping(data):
+    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+        logger.error('FSBid call for Updating current client comments failed.')
+        return None
+
+    return data
 
 def get_clients_count(query, jwt_token, host=None):
     '''
