@@ -327,7 +327,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})"
     cdo = data.get('cdos', None)
-
+    ted_conversion = dateFormat(current_assignment.get("asgd_etd_ted_date", None))
     return {
         "id": employee.get("perdet_seq_num", None),
         "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
@@ -340,7 +340,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "combined_pp_grade": combined_pp_grade,
         "cdo": cdo[0].get('cdo_fullname', None),
         "languages": fsbid_language_only_to_tmap(data.get("languages") or []),
-        "ted": dateFormat(current_assignment.get("asgd_etd_ted_date", None)),
+        "ted": ted_conversion,
         "status": current_assignment.get("asgs_code", None),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications", []))
     }
