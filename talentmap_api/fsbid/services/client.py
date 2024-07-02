@@ -309,9 +309,10 @@ def fsbid_clients_to_talentmap_clients(data):
 
 
 def fsbid_clients_to_talentmap_clients_for_csv(data):
+    print(data)
     employee = data.get('employee', None)
     current_assignment = employee.get('currentAssignment', None)
-    # position = current_assignment.get('currentPosition', None)
+    position = None
     pos_location = None
     middle_name = get_middle_name(employee)
     pp = employee.get("per_pay_plan_code")
