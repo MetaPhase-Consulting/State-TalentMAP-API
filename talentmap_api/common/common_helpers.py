@@ -251,11 +251,18 @@ def ensure_date(date, utc_offset=0):
 
 def dateFormat(date):
     from datetime import datetime
-    # Example String: "2024-06-27T19:39:28.055Z turns into 2024-06-27"
-    # Parse the date string
-    parsed_date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
-    # Format the date as desired
-    formatted_date = parsed_date.strftime("%Y-%m-%d")
+
+    if date is None:
+        return None
+    
+    # Remove the colon in the timezone offset
+    date_str = date[:-3] + date[-2:]
+
+    # Parse the date string to a datetime object
+    date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S%z")
+
+    # Format the datetime object to the desired format
+    formatted_date = date_obj.strftime("%Y-%m-%d")
     return formatted_date
 
 def validate_filters_exist(filter_list, filter_class):
