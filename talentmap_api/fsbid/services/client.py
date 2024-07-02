@@ -11,7 +11,7 @@ import pydash
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, dateFormat, ensure_date
 from talentmap_api.fsbid.requests import requests
 
 
@@ -190,10 +190,14 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Name"),
         smart_str(u"Email"),
         smart_str(u"Skill"),
-        smart_str(u"Grade"),
+        smart_str(u"PP/Grade"),
+        smart_str(u"CDO"),
         smart_str(u"Employee ID"),
-        # smart_str(u"Role Code"), Might not be useful to users
-        smart_str(u"Position Location Code"),
+        smart_str(u"Position Code"),
+        smart_str(u"Location (Org)"),
+        smart_str(u"Languages"),
+        smart_str(u"TED"),
+        smart_str(u"Status"),
     ])
 
     for record in data:
@@ -203,10 +207,14 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str(record["name"]),
             email,
             smart_str(record["skills"]),
-            smart_str("=\"%s\"" % record["grade"]),
+            smart_str("=\"%s\"" % record["combined_pp_grade"]),
+            smart_str("=\"%s\"" % record["cdo"]),
             smart_str("=\"%s\"" % record["employee_id"]),
-            # smart_str(record["role_code"]), Might not be useful to users
-            smart_str("=\"%s\"" % record["pos_location"]),
+            smart_str("=\"%s\"" % record["position_code"]),
+            smart_str("=\"%s\"" % record["location"]),
+            smart_str("=\"%s\"" % record["languages"]),
+            smart_str("=\"%s\"" % record["ted"]),
+            smart_str("=\"%s\"" % record["status"]),
         ])
     return response
 
@@ -303,14 +311,21 @@ def fsbid_clients_to_talentmap_clients(data):
 def fsbid_clients_to_talentmap_clients_for_csv(data):
     employee = data.get('employee', None)
     current_assignment = employee.get('currentAssignment', None)
+    # position = current_assignment.get('currentPosition', None)
     pos_location = None
     middle_name = get_middle_name(employee)
+    pp = employee.get("per_pay_plan_code")
+    grade = employee.get("per_grade_code")
+    combined_pp_grade = combine_pp_grade(pp, grade)
+
     if current_assignment is not None:
         position = current_assignment.get('currentPosition', None)
         if position is not None:
             pos_location = map_location(position.get("currentLocation", None))
 
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
+    combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})"
+    cdo = data.get('cdos', None)
 
     return {
         "id": employee.get("perdet_seq_num", None),
@@ -319,11 +334,13 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "skills": ' , '.join(map_skill_codes_for_csv(employee)),
         "employee_id": employee.get("pert_external_id", None),
         "role_code": data.get("rl_cd", None),
-        "pos_location": pos_location,
-        # not exposed in FSBid yet
-        # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
-        # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
-        # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
+        "location": combined_location,
+        "position_code": current_assignment.get("pos_seq_num", None),
+        "combined_pp_grade": combined_pp_grade,
+        "cdo": cdo[0].get('cdo_fullname', None),
+        "languages": fsbid_language_only_to_tmap(data.get("languages") or []),
+        "ted": dateFormat(current_assignment.get("asgd_etd_ted_date", None)),
+        "status": current_assignment.get("asgs_code", None),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications", []))
     }
 
@@ -390,6 +407,8 @@ def map_skill_codes_for_csv(data, prefix='per'):
         code = data.get(f'{prefix}_skill{index}_code', None)
         desc = data.get(f'{prefix}_skill{index}_code_desc', None)
         skill = f'({code}) {desc}'
+        if code is None:
+            continue
         skills.append(skill)
     return filter(lambda x: x is not None, skills)
 
@@ -564,6 +583,18 @@ def fsbid_languages_to_tmap(languages):
             "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
         })
     return tmap_languages
+
+def fsbid_language_only_to_tmap(languages):
+    tmap_language_only = []
+    for x in languages:
+        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+            continue
+
+        tmap_language_only.append(
+            str(x.get('empl_language')).strip() if x.get('empl_language') else x.get('empl_language') or None,
+        )
+
+    return ", ".join(str(x) for x in tmap_language_only)
 
 def get_available_bidders(jwt_token, isCDO, query, host=None):
     from talentmap_api.fsbid.services.common import send_get_request
