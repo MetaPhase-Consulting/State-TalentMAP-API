@@ -251,7 +251,7 @@ def ensure_date(date, utc_offset=0):
 
 def dateFormat(date):
     from datetime import datetime
-    # Example String: "2024-06-27T19:39:28.055Z"
+    # Example String: "2024-06-27T19:39:28.055Z turns into 2024-06-27 19:39:28"
     # Parse the date string
     parsed_date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
     # Format the date as desired
