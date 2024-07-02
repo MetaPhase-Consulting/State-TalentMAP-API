@@ -251,6 +251,10 @@ def ensure_date(date, utc_offset=0):
 
 def dateFormat(date):
     from datetime import datetime
+
+    if date is None:
+        return None
+    
     # Remove the colon in the timezone offset
     date_str = date[:-3] + date[-2:]
 
