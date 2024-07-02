@@ -213,7 +213,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str("=\"%s\"" % record["position_code"]),
             smart_str("=\"%s\"" % record["location"]),
             smart_str("=\"%s\"" % record["languages"]),
-            smart_str(ensure_date(record["ted"])),
+            smart_str("=\"%s\"" % record["ted"]),
             smart_str("=\"%s\"" % record["status"]),
         ])
     return response
