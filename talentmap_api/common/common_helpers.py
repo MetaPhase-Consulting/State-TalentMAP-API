@@ -253,7 +253,7 @@ def dateFormat(date):
     from datetime import datetime
     # Example String: "2024-06-27T19:39:28.055Z turns into 2024-06-27"
     # Parse the date string
-    parsed_date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    parsed_date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
     # Format the date as desired
     formatted_date = parsed_date.strftime("%Y-%m-%d")
     return formatted_date
