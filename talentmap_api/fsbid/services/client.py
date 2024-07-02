@@ -11,7 +11,7 @@ import pydash
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, dateFormat, ensure_date
 from talentmap_api.fsbid.requests import requests
 
 
@@ -191,6 +191,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Email"),
         smart_str(u"Skill"),
         smart_str(u"PP/Grade"),
+        smart_str(u"CDO"),
         smart_str(u"Employee ID"),
         smart_str(u"Position Code"),
         smart_str(u"Location (Org)"),
@@ -207,6 +208,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             email,
             smart_str(record["skills"]),
             smart_str("=\"%s\"" % record["combined_pp_grade"]),
+            smart_str("=\"%s\"" % record["cdo"]),
             smart_str("=\"%s\"" % record["employee_id"]),
             smart_str("=\"%s\"" % record["position_code"]),
             smart_str("=\"%s\"" % record["location"]),
@@ -323,6 +325,8 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
             pos_location = map_location(position.get("currentLocation", None))
 
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
+    combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})"
+    cdo = data.get('cdos', None)
 
     return {
         "id": employee.get("perdet_seq_num", None),
@@ -331,11 +335,12 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "skills": ' , '.join(map_skill_codes_for_csv(employee)),
         "employee_id": employee.get("pert_external_id", None),
         "role_code": data.get("rl_cd", None),
-        "location": pos_location,
+        "location": combined_location,
         "position_code": current_assignment.get("pos_seq_num", None),
         "combined_pp_grade": combined_pp_grade,
+        "cdo": cdo[0].get('cdo_fullname', None),
         "languages": fsbid_language_only_to_tmap(data.get("languages") or []),
-        "ted": ensure_date(current_assignment.get("asgd_etd_ted_date", None)),
+        "ted": dateFormat(current_assignment.get("asgd_etd_ted_date", None)),
         "status": current_assignment.get("asgs_code", None),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications", []))
     }
