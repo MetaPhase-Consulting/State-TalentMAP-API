@@ -257,7 +257,7 @@ def dateFormat(date):
     # parsed_date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
     # # Format the date as desired
     # formatted_date = parsed_date.strftime("%Y-%m-%d")
-    return formatted_date
+    return date
 
 def validate_filters_exist(filter_list, filter_class):
     for filter in filter_list.keys():
