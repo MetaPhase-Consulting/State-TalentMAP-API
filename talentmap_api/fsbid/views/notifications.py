@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class FSBidNoteCableView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter('I_ASG_SEQ_NUM', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Asg Seq Num'),
@@ -38,7 +38,7 @@ class FSBidNoteCableView(APIView):
 
 class FSBidCableView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
     
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter('I_NM_SEQ_NUM', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='NM Seq Num'),
@@ -56,7 +56,7 @@ class FSBidCableView(APIView):
 
 class FSBidNoteCableReferenceView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(manual_parameters=[
         openapi.Parameter('I_NM_SEQ_NUM', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='NM Seq Num'),
