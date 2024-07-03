@@ -73,7 +73,7 @@ class FSBidNoteCableReferenceView(APIView):
 
 class FSBidNoteCableEditView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -98,7 +98,7 @@ class FSBidNoteCableEditView(APIView):
     
 class FSBidNoteCableRebuildView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -121,7 +121,7 @@ class FSBidNoteCableRebuildView(APIView):
     
 class FSBidNoteCableStoreView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -141,7 +141,7 @@ class FSBidNoteCableStoreView(APIView):
     
 class FSBidNoteCableSendView(APIView):
 
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
