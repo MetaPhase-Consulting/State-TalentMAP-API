@@ -50,7 +50,7 @@ class FSBidBiddingToolView(APIView):
 
     # ======================== Get Bidding Tool ========================
 
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('cdo'), isDjangoGroupMember('bidder'),) ]
 
     def get(self, request, pk):
         '''
@@ -67,7 +67,7 @@ class FSBidBiddingToolActionsView(APIView):
 
     # ======================== Get Bidding Tool List ========================
 
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('cdo'), isDjangoGroupMember('bidder'),) ]
 
     def get(self, request):
         '''
