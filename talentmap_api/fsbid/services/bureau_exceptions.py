@@ -9,7 +9,7 @@ def get_bureau_exceptions(query, jwt_token):
     '''
     args = {
         "proc_name": 'qry_lstbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": bureau_exceptions_req_mapping,
         "response_mapping_function": bureau_exceptions_res_mapping,
         "jwt_token": jwt_token,
@@ -59,7 +59,7 @@ def get_bureau_exceptions_ref_data_bureaus(query, jwt_token):
     '''
     args = {
         "proc_name": 'qry_addbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": bureau_exceptions_ref_data_bureaus_req_mapping,
         "response_mapping_function": bureau_exceptions_ref_data_bureaus_res_mapping,
         "jwt_token": jwt_token,
@@ -94,7 +94,7 @@ def get_user_bureau_exceptions_and_metadata(data, jwt_token):
     '''
     args = {
         "proc_name": 'qry_getbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": user_bureau_exceptions_and_metadata_req_mapping,
         "response_mapping_function": user_bureau_exceptions_and_metadata_res_mapping,
         "jwt_token": jwt_token,
@@ -135,7 +135,7 @@ def add_user_bureau_exceptions(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_addbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": add_user_bureau_exceptions_req_mapping,
         "response_mapping_function": add_user_bureau_exceptions_res_mapping,
         "jwt_token": jwt_token,
@@ -166,7 +166,7 @@ def update_user_bureau_exceptions(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": update_user_bureau_exceptions_req_mapping,
         "response_mapping_function": update_user_bureau_exceptions_res_mapping,
         "jwt_token": jwt_token,
@@ -200,7 +200,7 @@ def delete_user_bureau_exceptions(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_delbureauex',
-        "package_name": 'PKG_WEBAPI_WRAP',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": delete_user_bureau_exceptions_req_mapping,
         "response_mapping_function": delete_user_bureau_exceptions_res_mapping,
         "jwt_token": jwt_token,
