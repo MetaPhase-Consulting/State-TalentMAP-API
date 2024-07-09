@@ -33,10 +33,10 @@ def bureau_exceptions_res_mapping(data):
         if x.get('HRU_ID') is None:
             return {}
 
-        userBureauNames = x.get('BUREAU_NAME_LIST', '').strip() or ''
+        userBureauNames = (x.get('BUREAU_NAME_LIST') or '').strip()
         userBureauNames = userBureauNames.split(',') if userBureauNames else []
 
-        userBureauCodes = x.get('PARM_VALUES', '').strip() or ''
+        userBureauCodes = (x.get('PARM_VALUES') or '').strip()
         userBureauCodes = userBureauCodes.split(',') if userBureauCodes else []
 
         return {
