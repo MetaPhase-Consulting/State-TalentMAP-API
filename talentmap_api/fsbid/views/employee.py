@@ -111,7 +111,7 @@ class FSBidAssignmentSeparationsBidsView(BaseView):
 
 
 class FSBidEmployeeProfileReportView(APIView):
-    permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('bureau_user'), isDjangoGroupMember('cdo'))]
+    permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('bureau_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('cdo'))]
 
     def get(self, request, pk):
         '''
