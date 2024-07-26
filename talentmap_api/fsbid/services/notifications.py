@@ -265,32 +265,3 @@ def send_note_cable_req_mapping(request):
 
 def send_note_cable_res_mapping(data):
     return service_response(data, 'Send Note Cable')
-
-# ======================== Email Note Cable ========================
-
-def email_note_cable(data, jwt_token):
-    '''
-    Email Note Cable
-    '''
-    args = {
-        "proc_name": "act_storeTMOne",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
-        "request_body": data,
-        "request_mapping_function": email_note_cable_req_mapping,
-        "response_mapping_function": email_note_cable_res_mapping,
-        "jwt_token": jwt_token,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def email_note_cable_req_mapping(request):
-    return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "I_NM_SEQ_NUM": request.get("I_NM_SEQ_NUM"),
-        "I_NOTE_TYPE": "",
-    }
-
-def email_note_cable_res_mapping(response):
-    return service_response(response, 'Email Note Cable')
