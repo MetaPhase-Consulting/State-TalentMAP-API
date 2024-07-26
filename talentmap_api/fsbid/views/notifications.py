@@ -91,7 +91,7 @@ class FSBidNoteCableEditView(APIView):
         '''
         Edits Note Cable
         '''
-        result = services.get_note_cable_ref(request.data, request.META['HTTP_JWT'])
+        result = services.edit_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -114,12 +114,12 @@ class FSBidNoteCableRebuildView(APIView):
         '''
         Rebuilds Note Cable (Whole/Tab)
         '''
-        result = services.get_note_cable_ref(request.data, request.META['HTTP_JWT'])
+        result = services.rebuild_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class FSBidNoteCableStoreView(APIView):
+class FSBidNoteCableEmailView(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
@@ -130,31 +130,11 @@ class FSBidNoteCableStoreView(APIView):
         }
     ))
 
-    def put(self, request):
-        '''
-        Stores Note Cable
-        '''
-        result = services.get_note_cable_ref(request.data, request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-class FSBidNoteCableSendView(APIView):
-
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
-        }
-    ))
-
-    def put(self, request):
+    def post(self, request):
         '''
         Sends Note Cable
         '''
-        result = services.get_note_cable_ref(request.data, request.META['HTTP_JWT'])
+        result = services.email_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -11,8 +11,7 @@ urlpatterns = [
     url(r'^cable/$', views.FSBidCableView.as_view(), name='FSBid-cable'),
     url(r'^cable/edit/$', views.FSBidNoteCableEditView.as_view(), name='FSBid-cable-edit'),
     url(r'^rebuild/$', views.FSBidNoteCableRebuildView.as_view(), name='FSBid-rebuild'),
-    url(r'^store/$', views.FSBidNoteCableStoreView.as_view(), name='FSBid-store'),
-    url(r'^send/$', views.FSBidNoteCableSendView.as_view(), name='FSBid-send'),
+    url(r'^email/$', views.FSBidNoteCableEmailView.as_view(), name='FSBid-email'),
 ]
 
 urlpatterns += router.urls
