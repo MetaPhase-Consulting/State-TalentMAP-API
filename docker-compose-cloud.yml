@@ -17,9 +17,6 @@ services:
     environment:
       - TNS_ADMIN=./
       - DJANGO_SECRET_KEY=development_secret_key
-      # - DATABASE_URL=talentmap.cfq3tdmsh2ty.us-east-1.rds.amazonaws.com:1521/MPCTMDEV
-      # - DATABASE_USER=talentmap
-      # - DATABASE_PW=talentmap
       - DATABASE_URL=${ORACLE_URL}
       - DATABASE_USER=${ORACLE_USER}
       - DATABASE_PW=${ORACLE_PW}

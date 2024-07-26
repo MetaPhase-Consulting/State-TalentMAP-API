@@ -480,12 +480,9 @@ WSGI_APPLICATION = 'talentmap_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'talentmap.cfq3tdmsh2ty.us-east-1.rds.amazonaws.com:1521/MPCTMDEV',
-        'USER': 'talentmap',
-        'PASSWORD': 'talentmap',
-        # 'NAME': get_delineated_environment_variable("DATABASE_URL"),
-        # 'USER': get_delineated_environment_variable("DATABASE_USER"),
-        # 'PASSWORD': get_delineated_environment_variable("DATABASE_PW"),
+        'NAME': get_delineated_environment_variable("DATABASE_URL"),
+        'USER': get_delineated_environment_variable("DATABASE_USER"),
+        'PASSWORD': get_delineated_environment_variable("DATABASE_PW"),
         # 'CONN_MAX_AGE': 300,
         # 'OPTIONS': {'threaded': True}
     }
