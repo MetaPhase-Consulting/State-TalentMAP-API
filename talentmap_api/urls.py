@@ -99,6 +99,9 @@ urlpatterns = [
 
     # Remark
     url(r'^api/v1/fsbid/remark/', include('talentmap_api.fsbid.urls.remark')),
+
+    # TMOne Notification 
+    url(r'^api/v1/fsbid/notification/', include('talentmap_api.fsbid.urls.notifications')),
  
     # Bidding
     url(r'^api/v1/bidding/', include('talentmap_api.bidding.urls.bidding')),
