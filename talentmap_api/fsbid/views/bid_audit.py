@@ -265,3 +265,19 @@ class FSBidBidAuditDeleteCategoryListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidBidAuditDataListView(BaseView):
+    '''
+    Gets the Bid Audit Data
+    '''
+
+    def post(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_audited_data(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for Bid Audit, Audit Data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
