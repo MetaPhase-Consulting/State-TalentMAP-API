@@ -68,13 +68,11 @@ def bidder_type_req_mapping(request):
     }
 
 def bidder_type_res_mapping(data):
-    print("DATA", data)
-
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error('FSBid call for Bidder Type failed.')
         return None
-
-    return data
+    print("DATA", list(map(data.get('PV_DETAIL_O'))))
+    return list(map(data.get('PV_DETAIL_O')))
 
 def convert_bidder_type_query(type):
     if type.get('noBids'): 
