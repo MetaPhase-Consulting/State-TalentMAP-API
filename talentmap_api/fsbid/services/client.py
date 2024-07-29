@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.utils.encoding import smart_str
 import jwt
 import pydash
+from talentmap_api.fsbid.services import common as services
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
@@ -38,6 +39,50 @@ def get_user_information(jwt_token, perdet_seq_num):
         }
     except:
         return {}
+
+def get_bidder_type(jwt_token, query, host=None):
+    print("QUERY", query)
+    '''
+    Get Bidder Type
+    '''
+    args = {
+        "proc_name": "prc_lst_cdo_wl_clients",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
+        "request_body": query,
+        "request_mapping_function": bidder_type_req_mapping,
+        "response_mapping_function": bidder_type_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def bidder_type_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_SUBTRAN_I": "",
+        "PV_CDO_WL_CODE_I": convert_bidder_type_query(request),
+        "PV_CDO_HRU_ID_I": request.get("hru_id__in", None),
+        "PV_CDO_BSN_ID_I": request.get("bid_seasons", None) 
+    }
+
+def bidder_type_res_mapping(data):
+    print("DATA", data)
+
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Bidder Type failed.')
+        return None
+
+    return data
+
+def convert_bidder_type_query(type):
+    if type.get('noBids'): 
+        return 'NB'
+    if type.get('noPanel'): 
+        return 'NP'
+
+    return None
 
 
 def client(jwt_token, query, host=None):
