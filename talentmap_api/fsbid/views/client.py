@@ -27,10 +27,13 @@ class FSBidClientListView(BaseView):
         '''
         Gets all clients for a CDO
         '''
-        if request.query_params.get('noBids') or request.query_params.get('noPanel'):
-            return Response(services.get_bidder_type(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
         return Response(services.client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
-
+    
+    def post(self, request):
+        '''
+        Creates a new client
+        '''
+        return Response(services.get_bidder_type(request.META['HTTP_JWT'], request.data))
 
 class FSBidClientView(BaseView):
 

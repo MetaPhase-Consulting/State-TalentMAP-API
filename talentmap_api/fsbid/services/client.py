@@ -41,7 +41,7 @@ def get_user_information(jwt_token, perdet_seq_num):
         return {}
 
 def get_bidder_type(jwt_token, query, host=None):
-    print("QUERY", query)
+    print("QUWRRY", query)
     '''
     Get Bidder Type
     '''
@@ -67,12 +67,14 @@ def bidder_type_req_mapping(request):
         "PV_CDO_BSN_ID_I": request.get("bid_seasons", None) 
     }
 
-def bidder_type_res_mapping(data):
+def bidder_type_res_mapping(jwt_token, data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error('FSBid call for Bidder Type failed.')
         return None
-    print("DATA", list(map(data.get('PV_DETAIL_O'))))
-    return list(map(data.get('PV_DETAIL_O')))
+
+    return client(jwt_token, {
+        "PER_SEQ_NUM": [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
+    })
 
 def convert_bidder_type_query(type):
     if type.get('noBids'): 
