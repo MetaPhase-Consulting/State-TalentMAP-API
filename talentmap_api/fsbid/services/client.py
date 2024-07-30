@@ -41,7 +41,6 @@ def get_user_information(jwt_token, perdet_seq_num):
         return {}
 
 def get_bidder_type(jwt_token, query, host=None):
-    print("QUWRRY", query)
     '''
     Get Bidder Type
     '''
