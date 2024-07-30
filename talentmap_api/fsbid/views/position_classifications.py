@@ -34,7 +34,7 @@ class FSBidPositionClassificationsView(APIView):
 
 class FSBidPositionClassificationsActionView(APIView):
 
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), ) ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
