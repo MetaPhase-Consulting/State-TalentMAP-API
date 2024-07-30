@@ -31,7 +31,7 @@ class FSBidClientListView(BaseView):
     
     def post(self, request):
         '''
-        Creates a new client
+        Get bidder type for a client
         '''
         return Response(services.get_bidder_type(request.META['HTTP_JWT'], request.data))
 
