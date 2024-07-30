@@ -40,7 +40,7 @@ def get_user_information(jwt_token, perdet_seq_num):
     except:
         return {}
 
-def get_bidder_type(jwt_token, query, host=None):
+def get_unassigned_bidder_type(jwt_token, query, host=None):
     '''
     Get Bidder Type
     '''
@@ -48,34 +48,34 @@ def get_bidder_type(jwt_token, query, host=None):
         "proc_name": "prc_lst_cdo_wl_clients",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
         "request_body": query,
-        "request_mapping_function": bidder_type_req_mapping,
-        "response_mapping_function": bidder_type_res_mapping,
+        "request_mapping_function": unassigned_bidder_type_req_mapping,
+        "response_mapping_function": unassigned_bidder_type_res_mapping,
         "jwt_token": jwt_token,
     }
     return services.send_post_back_office(
         **args
     )
 
-def bidder_type_req_mapping(request):
+def unassigned_bidder_type_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
         "PV_SUBTRAN_I": "",
-        "PV_CDO_WL_CODE_I": convert_bidder_type_query(request),
+        "PV_CDO_WL_CODE_I": convert_unassigned_bidder_type_query(request),
         "PV_CDO_HRU_ID_I": request.get("hru_id__in", None),
         "PV_CDO_BSN_ID_I": request.get("bid_seasons", None) 
     }
 
-def bidder_type_res_mapping(jwt_token, data):
+def unassigned_bidder_type_res_mapping(jwt_token, data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-        logger.error('FSBid call for Bidder Type failed.')
+        logger.error('FSBid call for Unassigned Bidder Type failed.')
         return None
 
     return client(jwt_token, {
         "PER_SEQ_NUM": [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
     })
 
-def convert_bidder_type_query(type):
+def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
         return 'NB'
     if type.get('noPanel'): 
