@@ -39,7 +39,7 @@ panel_dates_mapping = {
 }
 
 panel_cols_mapping = {
-    'pmseqnum': 'pm_seq_num',
+    'pmipmseqnum': 'pmi_pm_seq_num',
     'pmdpmseqnum': 'pm_seq_num',
     'pmddttm': 'pmd_dttm',
     'pmvirtualind': 'pm_virtual',
@@ -55,6 +55,10 @@ panel_cols_mapping = {
     'pmsdesctext': 'pms_desc_text',
     'miccode': 'mic_code',
     'micdesctext': 'mic_desc_text',
+    'allRemarks': {
+        'nameMap': 'allRemarks',
+        'listMap': panel_remarks_mapping,
+    },
     'panelMeetingDates': {
         'nameMap': 'panelMeetingDates',
         'listMap': panel_dates_mapping,
@@ -216,9 +220,9 @@ def get_panel_meetings(query, jwt_token):
     Get panel meetings
     '''
     expected_keys = [
-        'pmseqnum', 'pmvirtualind', 'pmcreateid', 'pmcreatedate',
+        'pmipmseqnum', 'pmvirtualind', 'pmcreateid', 'pmcreatedate',
         'pmupdateid', 'pmupdatedate', 'pmpmscode', 'pmpmtcode',
-        'pmtdesctext', 'pmsdesctext', 'panelMeetingDates'
+        'pmtdesctext', 'pmsdesctext', 'allRemarks','panelMeetingDates'
     ]
 
     mapping_subset = pydash.pick(panel_cols_mapping, *expected_keys)
