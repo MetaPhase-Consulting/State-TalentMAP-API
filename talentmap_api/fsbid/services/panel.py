@@ -18,8 +18,11 @@ PANEL_API_ROOT = settings.PANEL_API_URL
 logger = logging.getLogger(__name__)
 
 panel_remarks_mapping = {
-    # @TODO - This is a placeholder, replace with actual mapping
-    'test': 'test',
+    'pmipmseqnum': 'pmi_pm_seq_num',
+    'airremarktext': 'air_remark_text',
+    'rmrkseqnum': 'rmrk_seq_num',
+    'rmrkrccode': 'rmrk_rc_code',
+    "rmrkshortdesctext": "Other"
 }
 
 panel_dates_mapping = {
