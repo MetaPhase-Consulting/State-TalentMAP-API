@@ -621,6 +621,7 @@ def get_audited_data(jwt_token, request):
 def get_audit_data_req_mapping(request):
     # return all of the bidding data by passing in every grade code
     # since we are not using a search page to fetch more specific data
+    # frontend will do all the filtering, on the data returned here
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
@@ -633,37 +634,58 @@ def get_audit_data_req_mapping(request):
 
 def get_audit_data_res_mapping(data):
     def results_mapping(x):
-        return {
-            'cycle_name': x.get('CYCLE_NM_TXT') or None,
-            'org_short_desc': x.get('ORGS_SHORT_DESC') or None,
-            'org_code': x.get('ORG_CODE') or None,
-            'position_number': x.get('POS_NUM_TXT') or None,
-            'position_title': x.get('POS_PTITLE') or None,
-            'position_grade': x.get('POS_GRD_CD') or None,
-            'position_skill': x.get('POS_SKL_CODE_POS') or None,
-            'position_lang': x.get('POSLTEXT') or None,
-            'position_incumbent_name': x.get('POS_INCUMBENT_NAME') or None,
-            'position_incumbent_ted': x.get('ACP_INCUMBENT_TED') or None,
-            'audit_cycle_position_id': x.get('ACP_ID') or None,
-            'count_total_bidders': x.get('ACP_TTL_BIDDER_QTY') or None,
-            'count_at_grade': x.get('ACP_AT_GRD_QTY') or None,
-            'count_in_category': x.get('ACP_IN_CATEGORY_QTY') or None,
-            'count_at_grade_in_category': x.get('ACP_AT_GRD_IN_CATEGORY_QTY') or None,
-            'count_total_group_members': x.get('ACP_TTL_GROUP_MEMBERS_QTY') or None,
-            'hard_to_fill_ind': x.get('ACP_HARD_TO_FILL_IND') or None,
-            'bidder_name': x.get('BIDDER_FULL_NAME') or None,
-            'bidder_org_desc': x.get('BIDDER_ORG_SHORT_DESC') or None,
-            'bidder_position_number': x.get('BIDDER_POS_NUM_TXT') or None,
-            'bidder_position_title': x.get('BIDDER_PTITLE') or None,
-            'bidder_grade': x.get('BIDDER_GRADE_CODE') or None,
-            'bidder_skill': x.get('BIDDER_SKL_1_CODE') or None,
-            'bidder_lang': x.get('BIDDER_EMPLTEXT') or None,
-            'bidder_ted': x.get('BIDDER_TED_DT') or None,
-            'bidder_is_at_grade': x.get('BIDDER_AT_GRADE_IND') or None,
-            'bidder_is_in_category': x.get('BIDDER_IN_CATEGORY_IND') or None,
-            'bidder_cats': x.get('BIDDER_CATS') or None,
-            'ae_stretch_ind': x.get('AE_STRETCH_IND') or None,
-        }
+        result = []
+        filtered_data = {}
+
+        for item in x:
+            position_num = item.get('POS_NUM_TXT')
+            position_info = {
+                'org_short_desc': item.get('ORGS_SHORT_DESC') or None,
+                'org_code': item.get('ORG_CODE') or None,
+                'position_number': item.get('POS_NUM_TXT') or None,
+                'position_title': item.get('POS_PTITLE') or None,
+                'position_grade': item.get('POS_GRD_CD') or None,
+                'position_skill': item.get('POS_SKL_CODE_POS') or None,
+                'position_lang': item.get('POSLTEXT') or None,
+                'position_incumbent_name': item.get('POS_INCUMBENT_NAME') or None,
+                'position_incumbent_ted': item.get('ACP_INCUMBENT_TED') or None,
+                'audit_cycle_position_id': item.get('ACP_ID') or None,
+                'count_total_bidders': item.get('ACP_TTL_BIDDER_QTY') or None,
+                'count_at_grade': item.get('ACP_AT_GRD_QTY') or None,
+                'count_in_category': item.get('ACP_IN_CATEGORY_QTY') or None,
+                'count_at_grade_in_category': item.get('ACP_AT_GRD_IN_CATEGORY_QTY') or None,
+                'count_total_group_members': item.get('ACP_TTL_GROUP_MEMBERS_QTY') or None,
+                'hard_to_fill_ind': item.get('ACP_HARD_TO_FILL_IND') or None,
+            }
+            bidder_info = {
+                'bidder_name': item.get('BIDDER_FULL_NAME') or None,
+                'bidder_org_desc': item.get('BIDDER_ORG_SHORT_DESC') or None,
+                'bidder_position_number': item.get('BIDDER_POS_NUM_TXT') or None,
+                'bidder_position_title': item.get('BIDDER_PTITLE') or None,
+                'bidder_grade': item.get('BIDDER_GRADE_CODE') or None,
+                'bidder_skill': item.get('BIDDER_SKL_1_CODE') or None,
+                'bidder_lang': item.get('BIDDER_EMPLTEXT') or None,
+                'bidder_ted': item.get('BIDDER_TED_DT') or None,
+                'bidder_is_at_grade': item.get('BIDDER_AT_GRADE_IND') or None,
+                'bidder_is_in_category': item.get('BIDDER_IN_CATEGORY_IND') or None,
+                'bidder_cats': item.get('BIDDER_CATS') or None,
+                'ae_stretch_ind': item.get('AE_STRETCH_IND') or None,
+            }
+
+            if position_num is not None and bidder_info['bidder_name'] is not None:
+                if position_num in filtered_data:
+                    filtered_data[position_num]['bidders'].append(bidder_info)
+                else:
+                    filtered_data[position_num] = {
+                        'position_info': position_info,
+                        'bidders': [bidder_info]
+                    }
+
+        for key, value in filtered_data.items():
+            result.append(value)
+
+        return result
+
 
     def reference_mapping(x):
         return {
@@ -680,7 +702,7 @@ def get_audit_data_res_mapping(data):
 
     def success_mapping(x):
         results = {
-            'audit_data': list(map(results_mapping, x.get('QRY_LSTBIDBOOK_REF', {}))),
+            'audit_data': results_mapping(x.get('QRY_LSTBIDBOOK_REF')),
             'ref_data': reference_mapping(x['QRY_GETCYCLE_REF'][0]),
         }
         return results
