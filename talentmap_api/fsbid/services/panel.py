@@ -268,7 +268,7 @@ def convert_panel_query(query={}):
     filters = [
         {'col': 'pmpmtcode', 'val': services.if_str_upper(query.get('type')), 'com': 'IN'},
         {'col': 'pmscode', 'val': services.if_str_upper(query.get('status')), 'com': 'IN'},
-        {'col': 'pmseqnum', 'val': query.get('id')},
+        {'col': 'pmipmseqnum', 'val': query.get('id')},
     ]
 
     try:
