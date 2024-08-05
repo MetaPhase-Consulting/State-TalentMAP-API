@@ -271,7 +271,9 @@ def publishable_positions_filter_res_mapping(data):
         }
     def bureau_map(x):
         return {
-            'description': x.get('ORGS_SHORT_DESC'),
+            'code': x.get('BUREAU_CD'),
+            'short_description': x.get('ORGS_SHORT_DESC'),
+            'description': x.get('ORGS_LONG_DESC'),
         }
     def org_map(x):
         return {
