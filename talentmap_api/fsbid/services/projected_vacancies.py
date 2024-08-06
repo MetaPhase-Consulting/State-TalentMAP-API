@@ -246,6 +246,7 @@ def fsbid_pv_to_talentmap_pv(pv):
         "isDifficultToStaff": pv.get("bt_most_difficult_to_staff_flg", None) == "Y",
         "isEFMInside": pv.get("bt_inside_efm_employment_flg", None) == "Y",
         "isEFMOutside": pv.get("bt_outside_efm_employment_flg", None) == "Y",
+        "isPublishable": pv.get("pubsdescrtxt", None),
     }
 
 

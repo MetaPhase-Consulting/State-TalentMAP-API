@@ -251,7 +251,6 @@ def fsbid_ap_to_talentmap_ap(ap):
         ted = ensure_date(ap.get("ted", None), utc_offset=-5)
 
     skill2 = services.get_secondary_skill(ap)
-
     return {
         "id": ap.get("cp_id", None),
         "status": None,
