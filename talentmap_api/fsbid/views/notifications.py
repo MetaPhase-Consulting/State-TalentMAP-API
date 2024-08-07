@@ -31,7 +31,7 @@ class FSBidNoteCableView(APIView):
         '''
         Gets Note Cable
         '''
-        result = services.get_note_cable(request.data, request.META['HTTP_JWT'])
+        result = services.get_note_cable(request.query_params, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
@@ -49,7 +49,7 @@ class FSBidCableView(APIView):
         '''
         Gets Cable
         '''
-        result = services.get_cable(request.data, request.META['HTTP_JWT'])
+        result = services.get_cable(request.query_params, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
@@ -66,7 +66,7 @@ class FSBidNoteCableReferenceView(APIView):
         '''
         Gets Note Cable Reference
         '''
-        result = services.get_note_cable_ref(request.data, request.META['HTTP_JWT'])
+        result = services.get_note_cable_ref(request.query_params, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
