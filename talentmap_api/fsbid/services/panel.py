@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 
 panel_remarks_mapping = {
     'pmipmseqnum': 'pmi_pm_seq_num',
-    'airremarktext': 'air_remark_text',
-    'rmrkseqnum': 'rmrk_seq_num',
-    'rmrkrccode': 'rmrk_rc_code',
-    "rmrkshortdesctext": "Other"
+    'airremarktext': 'text',
+    'rmrkseqnum': 'seq_num',
+    'rmrkrccode': 'rc_code',
+    "rmrkshortdesctext": "short_desc_text"
 }
 
 panel_dates_mapping = {
@@ -266,6 +266,7 @@ def convert_panel_query(query={}):
     panel_date_end = query.get("panel-date-end")
 
     filters = [
+        {'col': 'rmrkshortdesctext', 'val': services.if_str_upper(query.get('remark')), 'com': 'EQ'},
         {'col': 'pmpmtcode', 'val': services.if_str_upper(query.get('type')), 'com': 'IN'},
         {'col': 'pmscode', 'val': services.if_str_upper(query.get('status')), 'com': 'IN'},
         {'col': 'pmipmseqnum', 'val': query.get('id')},
