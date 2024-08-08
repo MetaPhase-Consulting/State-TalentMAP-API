@@ -66,14 +66,14 @@ def unassigned_bidder_type_req_mapping(request):
         "PV_CDO_BSN_ID_I": request.get("bid_seasons", None) 
     }
 
-def unassigned_bidder_type_res_mapping(jwt_token, data):
+def unassigned_bidder_type_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error('FSBid call for Unassigned Bidder Type failed.')
         return None
 
-    return client(jwt_token, {
+    return {
         "PER_SEQ_NUM": [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
-    })
+    }
 
 def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
