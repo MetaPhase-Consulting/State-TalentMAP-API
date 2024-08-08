@@ -71,9 +71,7 @@ def unassigned_bidder_type_res_mapping(data):
         logger.error('FSBid call for Unassigned Bidder Type failed.')
         return None
 
-    return {
-        "PER_SEQ_NUM": [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
-    }
+    return data
 
 def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
