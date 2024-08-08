@@ -599,3 +599,90 @@ def delete_in_category_req_mapping(request):
 
 def delete_in_category_res_mapping(data):
     return service_response(data, 'Delete In Category')
+
+
+def get_audited_data(jwt_token, request):
+    '''
+    Get Audit Data for a Specific bid Audit
+    '''
+    args = {
+        "proc_name": 'qry_lstBidBook',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_audit_data_req_mapping,
+        "response_mapping_function": get_audit_data_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_audit_data_req_mapping(request):
+    # return all of the bidding data by passing in every grade code
+    # since we are not using a search page to fetch more specific data
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_grd_cd': '00,01,02,03,04,05,06,07,MC,OC,OM',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditId'),
+    }
+    return mapped_request
+
+
+def get_audit_data_res_mapping(data):
+    def results_mapping(x):
+        return {
+            'cycle_name': x.get('CYCLE_NM_TXT') or None,
+            'org_short_desc': x.get('ORGS_SHORT_DESC') or None,
+            'org_code': x.get('ORG_CODE') or None,
+            'position_number': x.get('POS_NUM_TXT') or None,
+            'position_title': x.get('POS_PTITLE') or None,
+            'position_grade': x.get('POS_GRD_CD') or None,
+            'position_skill': x.get('POS_SKL_CODE_POS') or None,
+            'position_lang': x.get('POSLTEXT') or None,
+            'position_incumbent_name': x.get('POS_INCUMBENT_NAME') or None,
+            'position_incumbent_ted': x.get('ACP_INCUMBENT_TED') or None,
+            'audit_cycle_position_id': x.get('ACP_ID') or None,
+            'count_total_bidders': x.get('ACP_TTL_BIDDER_QTY') or None,
+            'count_at_grade': x.get('ACP_AT_GRD_QTY') or None,
+            'count_in_category': x.get('ACP_IN_CATEGORY_QTY') or None,
+            'count_at_grade_in_category': x.get('ACP_AT_GRD_IN_CATEGORY_QTY') or None,
+            'count_total_group_members': x.get('ACP_TTL_GROUP_MEMBERS_QTY') or None,
+            'hard_to_fill_ind': x.get('ACP_HARD_TO_FILL_IND') or None,
+            'bidder_name': x.get('BIDDER_FULL_NAME') or None,
+            'bidder_org_desc': x.get('BIDDER_ORG_SHORT_DESC') or None,
+            'bidder_position_number': x.get('BIDDER_POS_NUM_TXT') or None,
+            'bidder_position_title': x.get('BIDDER_PTITLE') or None,
+            'bidder_grade': x.get('BIDDER_GRADE_CODE') or None,
+            'bidder_skill': x.get('BIDDER_SKL_1_CODE') or None,
+            'bidder_lang': x.get('BIDDER_EMPLTEXT') or None,
+            'bidder_ted': x.get('BIDDER_TED_DT') or None,
+            'bidder_is_at_grade': x.get('BIDDER_AT_GRADE_IND') or None,
+            'bidder_is_in_category': x.get('BIDDER_IN_CATEGORY_IND') or None,
+            'bidder_cats': x.get('BIDDER_CATS') or None,
+            'ae_stretch_ind': x.get('AE_STRETCH_IND') or None,
+        }
+
+    def reference_mapping(x):
+        return {
+            'cycle_id': x.get('CYCLE_ID') or None,
+            'cycle_name': x.get('CYCLE_NM_TXT') or None,
+            'audit_number': x.get('AAC_AUDIT_NBR') or None,
+            'audit_desc': x.get('AAC_DESC_TXT') or None,
+            'audit_posted_by_date': x.get('AAC_POSTED_BY_DT') or None,
+            'audit_date': x.get('AAC_AUDIT_DT') or None,
+            'prev_audit_number': x.get('PREV_NBR') or None,
+            'next_audit_number': x.get('NEXT_NBR') or None,
+            'cycle_category': x.get('CC_CD') or None,
+        }
+
+    def success_mapping(x):
+        results = {
+            'audit_data': list(map(results_mapping, x.get('QRY_LSTBIDBOOK_REF', {}))),
+            'ref_data': reference_mapping(x['QRY_GETCYCLE_REF'][0]),
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get Audits', success_mapping)
