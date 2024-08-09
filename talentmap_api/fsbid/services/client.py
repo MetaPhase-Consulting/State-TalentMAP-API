@@ -318,8 +318,7 @@ def parse_date_string(date_string):
     # Try to handle the format with 'Z' for UTC
     # Ex: '2024-06-27T19:39:28.044Z'
     elif date_string.endswith('Z'):
-        # Remove the 'Z' and parse the date string as UTC
-        date_string = date_string[:-1]  # Remove 'Z'
+        date_string = date_string[:-1]  # Remove the 'Z'
         return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f')
     else:
         return date_string
@@ -359,7 +358,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
             pos_location = map_location(position.get("currentLocation", None))
 
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
-    combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})"
+    combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})" if position is not None else pos_location
     cdo = data.get('cdos', None)
     return {
         "id": employee.get("perdet_seq_num", None),
