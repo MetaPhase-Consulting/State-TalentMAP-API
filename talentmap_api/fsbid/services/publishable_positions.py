@@ -283,7 +283,7 @@ def publishable_positions_filter_res_mapping(data):
     def skills_map(x):
         return {
             'code': x.get('SKL_CODE'),
-            'description': x.get('SKL_DESC'),
+            'description': f"{x.get('SKL_DESC')} ({x.get('SKL_CODE')})",
         }
     def grade_map(x):
         return {
