@@ -33,7 +33,7 @@ class FSBidClientListView(BaseView):
         '''
         Get unassigned bidder type for a client
         '''
-        return Response(services.get_unassigned_bidder_type(request.META['HTTP_JWT'], request.data))
+        return Response(services.get_unassigned_bidder_type(request.META['HTTP_JWT'], request.query_params))
 
 class FSBidClientView(BaseView):
 
