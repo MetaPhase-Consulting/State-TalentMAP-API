@@ -12,7 +12,7 @@ from talentmap_api.fsbid.services import common as services
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import service_response, combine_pp_grade, dateFormat, ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, dateFormat, ensure_date
 from talentmap_api.fsbid.requests import requests
 
 SECREF_ROOT = settings.SECREF_URL
@@ -70,7 +70,7 @@ def unassigned_bidder_type_res_mapping(data):
         logger.error('FSBid call for Unassigned Bidder Type failed.')
         return None
 
-    return service_response(data)
+    return data
 
 def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
