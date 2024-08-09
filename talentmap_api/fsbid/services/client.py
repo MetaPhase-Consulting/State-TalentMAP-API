@@ -12,9 +12,8 @@ from talentmap_api.fsbid.services import common as services
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, dateFormat, ensure_date
+from talentmap_api.common.common_helpers import service_response, combine_pp_grade, dateFormat, ensure_date
 from talentmap_api.fsbid.requests import requests
-
 
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
@@ -40,17 +39,17 @@ def get_user_information(jwt_token, perdet_seq_num):
     except:
         return {}
 
-def get_unassigned_bidder_type(jwt_token, query, host=None):
+def get_unassigned_bidder_type(jwt_token, query):
     '''
     Get Bidder Type
     '''
     args = {
         "proc_name": "prc_lst_cdo_wl_clients",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
-        "request_body": query,
         "request_mapping_function": unassigned_bidder_type_req_mapping,
         "response_mapping_function": unassigned_bidder_type_res_mapping,
         "jwt_token": jwt_token,
+        "request_body": query,
     }
     return services.send_post_back_office(
         **args
@@ -62,8 +61,8 @@ def unassigned_bidder_type_req_mapping(request):
         "PV_AD_ID_I": "",
         "PV_SUBTRAN_I": "",
         "PV_CDO_WL_CODE_I": convert_unassigned_bidder_type_query(request),
-        "PV_CDO_HRU_ID_I": request.get("hru_id__in", None),
-        "PV_CDO_BSN_ID_I": request.get("bid_seasons", None) 
+        "PV_CDO_HRU_ID_I": request.get("hru_id__in"),
+        "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
     }
 
 def unassigned_bidder_type_res_mapping(data):
@@ -71,7 +70,7 @@ def unassigned_bidder_type_res_mapping(data):
         logger.error('FSBid call for Unassigned Bidder Type failed.')
         return None
 
-    return data
+    return service_response(data)
 
 def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
