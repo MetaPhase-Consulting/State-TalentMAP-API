@@ -308,14 +308,25 @@ def fsbid_clients_to_talentmap_clients(data):
     }
 
 
-def format_date_string(input_date):
-    if input_date == '' or input_date is None:
-        return input_date
-    if len(input_date) == 10:
-        return input_date
-    date_object = datetime.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
-    # Format the date as MM/dd/yyyy (unless it already is)
-    formatted_date = date_object.strftime("%m/%d/%Y")
+def format_date_string(date_string):
+    if date_string == '' or date_string is None or len(date_string) == 10:
+        return date_string
+    try:
+        # Try to parse the date string as an ISO 8601 format with timezone offset
+        # Ex: '2023-07-01T00:00:00-04:00'
+        dt = datetime.fromisoformat(date_string)
+    except ValueError:
+        # If parsing fails, try to handle the format with 'Z' for UTC
+        # Ex: '2024-06-27T19:39:28.044Z'
+        if date_string.endswith('Z'):
+            # Remove the 'Z' and parse the date string as UTC
+            dt = datetime.strptime(date_string[:-1], '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            return date_string
+
+    # Format the datetime object into the desired format
+    formatted_date = dt.strftime('%m/%d/%Y')
+
     return formatted_date
 
 
