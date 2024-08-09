@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 panel_remarks_mapping = {
     'pmipmseqnum': 'pmi_pm_seq_num',
-    'airremarktext': 'text',
+    'airremarktext': 'air_remark_text',
     'rmrkseqnum': 'seq_num',
     'rmrkrccode': 'rc_code',
     "rmrkshortdesctext": "short_desc_text"
