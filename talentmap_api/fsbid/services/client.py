@@ -11,7 +11,7 @@ import pydash
 
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, dateFormat, ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
 from talentmap_api.fsbid.requests import requests
 
 
@@ -308,11 +308,25 @@ def fsbid_clients_to_talentmap_clients(data):
     }
 
 
+def format_date_string(input_date):
+    if input_date == '' or input_date is None:
+        return input_date
+    if len(input_date) == 10:
+        return input_date
+    date_object = datetime.strptime(input_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # Format the date as MM/dd/yyyy (unless it already is)
+    formatted_date = date_object.strftime("%m/%d/%Y")
+    return formatted_date
+
+
 def fsbid_clients_to_talentmap_clients_for_csv(data):
     employee = data.get('employee', None)
     current_assignment = employee.get('currentAssignment', None)
     position = None
     pos_location = None
+    ted = None
+    position_code = None
+    status = None
     middle_name = get_middle_name(employee)
     pp = employee.get("per_pay_plan_code")
     grade = employee.get("per_grade_code")
@@ -320,13 +334,15 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
 
     if current_assignment is not None:
         position = current_assignment.get('currentPosition', None)
+        ted = format_date_string(current_assignment.get("asgd_etd_ted_date", None))
+        position_code = current_assignment.get("pos_seq_num", None)
+        status = current_assignment.get("asgs_code", None)
         if position is not None:
             pos_location = map_location(position.get("currentLocation", None))
 
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})"
     cdo = data.get('cdos', None)
-    ted_conversion = dateFormat(current_assignment.get("asgd_etd_ted_date", None))
     return {
         "id": employee.get("perdet_seq_num", None),
         "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
@@ -335,12 +351,12 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
         "employee_id": employee.get("pert_external_id", None),
         "role_code": data.get("rl_cd", None),
         "location": combined_location,
-        "position_code": current_assignment.get("pos_seq_num", None),
+        "ted": ted,
+        "status": status,
+        "position_code": position_code,
         "combined_pp_grade": combined_pp_grade,
         "cdo": cdo[0].get('cdo_fullname', None),
         "languages": fsbid_language_only_to_tmap(data.get("languages") or []),
-        "ted": ted_conversion,
-        "status": current_assignment.get("asgs_code", None),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications", []))
     }
 

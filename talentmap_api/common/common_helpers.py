@@ -249,21 +249,6 @@ def ensure_date(date, utc_offset=0):
             logger.warn(f"type(date): {type(date)}")
             return "Invalid date"
 
-def dateFormat(date):
-    from datetime import datetime
-
-    if date is None:
-        return None
-    
-    # Remove the colon in the timezone offset
-    date_str = date[:-3] + date[-2:]
-
-    # Parse the date string to a datetime object
-    date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S%z")
-
-    # Format the datetime object to the desired format
-    formatted_date = date_obj.strftime("%Y-%m-%d")
-    return formatted_date
 
 def validate_filters_exist(filter_list, filter_class):
     for filter in filter_list.keys():
