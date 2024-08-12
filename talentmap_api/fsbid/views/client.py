@@ -23,6 +23,8 @@ class FSBidClientListView(BaseView):
             openapi.Parameter("all_count", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Returns default value 99999 for front-end'),
             openapi.Parameter("email", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Email of the agent'),
             openapi.Parameter("comments", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Comments of the agent'),
+            openapi.Parameter("eligible_bidder", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='True or False filter for clients with eligible bidders'),
+            openapi.Parameter("cusp_bidder", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='True or False filter for clients with cusp bidders'),
         ])
 
     def get(self, request):
