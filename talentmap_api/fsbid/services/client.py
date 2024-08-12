@@ -92,7 +92,7 @@ def update_client_req_mapping(request):
     }
     
 def update_user_client_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error('FSBid call for Updating current client failed.')
         return None
 
@@ -405,6 +405,8 @@ def convert_client_query(query, isCount=None):
         "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
         "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
         "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
+        "request_params.eligible_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('eligible_bidder', None)),
+        "request_params.cusp_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('cusp_bidder', None)),
         "request_params.page_index": int(query.get("page", 1)),
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
@@ -503,6 +505,12 @@ def tmap_no_successful_panel_to_fsbid(panel):
     tmap_dictionary = {
         "true": "Y",
         "false": "N"
+    }
+    return tmap_dictionary.get(panel, None)
+
+def tmap_cusp_and_eligible_bidders_to_fsbid(panel):
+    tmap_dictionary = {
+        "true": "Y",
     }
     return tmap_dictionary.get(panel, None)
 
