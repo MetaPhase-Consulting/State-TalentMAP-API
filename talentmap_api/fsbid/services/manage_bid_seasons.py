@@ -14,7 +14,7 @@ def get_bid_seasons_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'prc_lst_bid_seasons',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": bid_seasons_data_req_mapping,
         "response_mapping_function": bid_seasons_data_res_mapping,
@@ -55,7 +55,7 @@ def update_bid_seasons_data(jwt_token, request):
     '''
     args = {
     "proc_name": 'prc_iud_bid_season',
-    "package_name": 'PKG_WEBAPI_WRAP_SPRINT98',
+    "package_name": 'PKG_WEBAPI_WRAP',
     "request_body": request,
     "request_mapping_function": update_bid_seasons_data_req_mapping,
     "response_mapping_function": update_bid_seasons_data_res_mapping,

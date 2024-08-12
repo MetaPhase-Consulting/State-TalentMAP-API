@@ -73,7 +73,7 @@ def convert_capsule_query(query):
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
 
-def get_publishable_positions(query, jwt_token):
+def get_publishable_positions(query, jwt_token, count_func=True):
     '''
     Gets Publishable Positions
     '''
@@ -83,7 +83,7 @@ def get_publishable_positions(query, jwt_token):
         "query_mapping_function": convert_ppos_query,
         "jwt_token": jwt_token,
         "mapping_function": publishable_positions_res_mapping,
-        "count_function": get_ppos_count,
+        "count_function": get_ppos_count if count_func else None,
         "base_url": "/api/v2/publishablepositions/",
         "api_root": PUBLISHABLE_POSITIONS_V2_ROOT,
     }
@@ -118,6 +118,8 @@ def publishable_positions_res_mapping(data):
         'combinedPPGrade': combine_pp_grade(data.get('pospayplancode'), data.get('posgradecode')),
         'positionDetails': data.get('pposcapsuledescrtxt'),
         # format_dates
+        'ORIGpposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
+        'pposcreatetmsmpdt': format_dates(data.get('pposcreatetmsmpdt')),
         'ORIGpositionDetailsLastUpdated': data.get('pposcapsulemodifydt'),
         'positionDetailsLastUpdated': format_dates(data.get('pposcapsulemodifydt')),
         'ORIGpositionLastUpdated': data.get('pposlastupdttmsmpdt'),
@@ -150,7 +152,6 @@ def publishable_positions_res_mapping(data):
         'poscreatedate': data.get('poscreatedate'),
         'pposposseqnum': data.get('pposposseqnum'),
         'pposaptsequencenum': data.get('pposaptsequencenum'),
-        'pposcreatetmsmpdt': data.get('pposcreatetmsmpdt'),
         'pposcreateuserid': data.get('pposcreateuserid'),
         'pubsdescrtxt': data.get('pubsdescrtxt'),
         'pubscreatetmsmpdt': data.get('pubscreatetmsmpdt'),
@@ -205,33 +206,31 @@ def edit_publishable_position(data, jwt_token):
     '''
     Edit Publishable Position
     '''
+    posseqnum = data.get("refData", {}).get("pos_seq_num")
     args = {
-        "proc_name": 'act_modCapsulePos',
-        "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": edit_publishable_position_req_mapping,
-        "response_mapping_function": edit_publishable_position_res_mapping,
+        "uri": f"v1/publishablePositions/{posseqnum}",
+        "query": data,
+        "query_mapping_function": edit_publishable_position_req_mapping,
         "jwt_token": jwt_token,
-        "request_body": data,
+        "mapping_function": None,
     }
-    return services.send_post_back_office(
+    return services.send_put_request(
         **args
     )
 
 def edit_publishable_position_req_mapping(request):
     return {
-      'PV_API_VERSION_I': '',
-      'PV_AD_ID_I': '',
-      'I_POS_SEQ_NUM': request.get('posSeqNum') or '',
-      'I_PPOS_CAPSULE_DESCR_TXT': request.get('positionDetails') or '',
-      'I_PPOS_LAST_UPDT_USER_ID': request.get('lastUpdatedUserID') or '',
-      'I_PPOS_LAST_UPDT_TMSMP_DT': request.get('lastUpdated') or '',
+      'pposposseqnum': request.get('posSeqNum') or '',
+      'ppospubscd': request.get('psCD') or '',
+      'pposaptsequencenum': request.get('aptSeqNum') or '',
+      'pposcreatetmsmpdt': request.get('created') or '',
+      'pposcreateuserid': request.get('createdUserID') or '',
+      'pposcapsulemodifydt': request.get('positionDetailsLastUpdated') or '',
+      'pposauditexclusionind': request.get('posAuditExclusionInd') or '',
+      'pposcapsuledescrtxt': request.get('positionDetails') or '',
+      'pposlastupdttmsmpdt': request.get('lastUpdated') or '',
+      'pposlastupdtuserid': request.get('lastUpdatedUserID') or '',
     }
-
-def edit_publishable_position_res_mapping(data):
-    if data.get('O_RETURN_CODE', -1) != 0:
-        logger.error(f"Publishable Positions Edit error return code.")
-        raise ValidationError('Publishable Positions Edit error return code.')
-
 
 def get_publishable_positions_filters(jwt_token):
     '''
@@ -271,10 +270,14 @@ def publishable_positions_filter_res_mapping(data):
             'description': x.get('CYCLE_NM_TXT'),
         }
     def bureau_map(x):
+        # Bureau org code and description
         return {
-            'description': x.get('ORGS_SHORT_DESC'),
+            'code': x.get('BUREAU_CD'),
+            'short_description': x.get('ORGS_SHORT_DESC'),
+            'description': x.get('ORGS_LONG_DESC'),
         }
     def org_map(x):
+        # Organization/Location org code and description
         return {
             'code': x.get('ORG_CODE'),
             'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
@@ -282,7 +285,7 @@ def publishable_positions_filter_res_mapping(data):
     def skills_map(x):
         return {
             'code': x.get('SKL_CODE'),
-            'description': x.get('SKL_DESC'),
+            'description': f"{x.get('SKL_DESC')} ({x.get('SKL_CODE')})",
         }
     def grade_map(x):
         return {
@@ -299,8 +302,8 @@ def publishable_positions_filter_res_mapping(data):
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
     }
 
-def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
-    data = get_publishable_positions(query, jwt_token)
+def get_publishable_positions_csv(query, jwt_token):
+    data = get_publishable_positions(query, jwt_token, False).get('results')
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=publishable_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
@@ -317,7 +320,7 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Organization"),
         smart_str(u"Pay Plan/Grade"),
         smart_str(u"Publishable Status"),
-        smart_str(u"Language"),
+        smart_str(u"Languages"),
         # smart_str(u"Bid Cycle"),
         # smart_str(u"TED"),
         # smart_str(u"Incumbent"),
@@ -329,15 +332,16 @@ def get_publishable_positions_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Position Details"),
     ])
     for x in data:
+        lang_str = services.parseLanguagesString(x.get('languages'))
         writer.writerow([
             smart_str(x.get('positionNumber')),
-            smart_str(x.get('skill').strip('()')),
+            smart_str(x.get('skill')),
             smart_str(x.get('positionTitle')),
             smart_str(x.get('bureau')),
             smart_str(x.get('org')),
             smart_str(combine_pp_grade(x.get('payPlan'), x.get('grade'))),
-            smart_str(x.get('status')),
-            smart_str(x.get('language')),
+            smart_str(x.get('psDesc')),
+            smart_str(lang_str),
             # smart_str(x.get('bidCycle')), # We are not receiving this data yet from here -
             # smart_str(x.get('ted')),
             # smart_str(x.get('incumbent')),

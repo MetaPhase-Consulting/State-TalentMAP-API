@@ -11,7 +11,7 @@ def run_bid_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_runauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": run_bid_audit_req_mapping,
         "response_mapping_function": run_bid_audit_res_mapping,
@@ -42,7 +42,7 @@ def get_bid_audit_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstauditassigncycles',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
         "response_mapping_function": get_bid_audit_res_mapping,
@@ -91,7 +91,7 @@ def get_cycles(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_addauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
         "response_mapping_function": get_cycles_res_mapping,
@@ -122,7 +122,7 @@ def create_new_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_new_audit_req_mapping,
         "response_mapping_function": create_new_audit_res_mapping,
@@ -161,7 +161,7 @@ def update_bid_audit(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modauditassigncycle',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_new_audit_req_mapping,
         "response_mapping_function": create_new_audit_res_mapping,
@@ -178,7 +178,7 @@ def update_bid_count(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_runauditdynamic',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_bid_audit_req_mapping,
         "response_mapping_function": update_bid_count_res_mapping,
@@ -199,7 +199,7 @@ def get_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstauditincategories',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_in_category_req_mapping,
         "response_mapping_function": get_in_category_res_mapping,
@@ -258,7 +258,7 @@ def get_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstauditatgrades',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_at_grade_req_mapping,
         "response_mapping_function": get_at_grade_res_mapping,
@@ -321,7 +321,7 @@ def get_in_category_options(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_addauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_in_category_req_mapping,
         "response_mapping_function": get_in_category_options_res_mapping,
@@ -355,7 +355,7 @@ def create_new_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_in_category_req_mapping,
         "response_mapping_function": create_in_category_res_mapping,
@@ -388,7 +388,7 @@ def get_at_grade_options(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_addauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_at_grade_req_mapping,
         "response_mapping_function": get_at_grade_options_res_mapping,
@@ -436,7 +436,7 @@ def create_new_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_addauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": create_at_grade_req_mapping,
         "response_mapping_function": create_at_grade_res_mapping,
@@ -472,7 +472,7 @@ def update_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": update_at_grade_req_mapping,
         "response_mapping_function": update_at_grade_res_mapping,
@@ -509,7 +509,7 @@ def update_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": update_in_category_req_mapping,
         "response_mapping_function": update_in_category_res_mapping,
@@ -543,7 +543,7 @@ def delete_at_grade(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_delauditatgrade',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": delete_at_grade_req_mapping,
         "response_mapping_function": delete_at_grade_res_mapping,
@@ -575,7 +575,7 @@ def delete_in_category(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_delauditincategory',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": delete_in_category_req_mapping,
         "response_mapping_function": delete_in_category_res_mapping,
@@ -599,3 +599,112 @@ def delete_in_category_req_mapping(request):
 
 def delete_in_category_res_mapping(data):
     return service_response(data, 'Delete In Category')
+
+
+def get_audited_data(jwt_token, request):
+    '''
+    Get Audit Data for a Specific bid Audit
+    '''
+    args = {
+        "proc_name": 'qry_lstBidBook',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_audit_data_req_mapping,
+        "response_mapping_function": get_audit_data_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_audit_data_req_mapping(request):
+    # return all of the bidding data by passing in every grade code
+    # since we are not using a search page to fetch more specific data
+    # frontend will do all the filtering, on the data returned here
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_grd_cd': '00,01,02,03,04,05,06,07,MC,OC,OM',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditId'),
+    }
+    return mapped_request
+
+
+def get_audit_data_res_mapping(data):
+    def results_mapping(x):
+        result = []
+        filtered_data = {}
+
+        for item in x:
+            position_num = item.get('POS_NUM_TXT')
+            position_info = {
+                'org_short_desc': item.get('ORGS_SHORT_DESC') or None,
+                'org_code': item.get('ORG_CODE') or None,
+                'position_number': item.get('POS_NUM_TXT') or None,
+                'position_title': item.get('POS_PTITLE') or None,
+                'position_grade': item.get('POS_GRD_CD') or None,
+                'position_skill': item.get('POS_SKL_CODE_POS') or None,
+                'position_lang': item.get('POSLTEXT') or None,
+                'position_incumbent_name': item.get('POS_INCUMBENT_NAME') or None,
+                'position_incumbent_ted': item.get('ACP_INCUMBENT_TED') or None,
+                'audit_cycle_position_id': item.get('ACP_ID') or None,
+                'count_total_bidders': item.get('ACP_TTL_BIDDER_QTY') or None,
+                'count_at_grade': item.get('ACP_AT_GRD_QTY') or None,
+                'count_in_category': item.get('ACP_IN_CATEGORY_QTY') or None,
+                'count_at_grade_in_category': item.get('ACP_AT_GRD_IN_CATEGORY_QTY') or None,
+                'count_total_group_members': item.get('ACP_TTL_GROUP_MEMBERS_QTY') or None,
+                'hard_to_fill_ind': item.get('ACP_HARD_TO_FILL_IND') or None,
+            }
+            bidder_info = {
+                'bidder_name': item.get('BIDDER_FULL_NAME') or None,
+                'bidder_org_desc': item.get('BIDDER_ORG_SHORT_DESC') or None,
+                'bidder_position_number': item.get('BIDDER_POS_NUM_TXT') or None,
+                'bidder_position_title': item.get('BIDDER_PTITLE') or None,
+                'bidder_grade': item.get('BIDDER_GRADE_CODE') or None,
+                'bidder_skill': item.get('BIDDER_SKL_1_CODE') or None,
+                'bidder_lang': item.get('BIDDER_EMPLTEXT') or None,
+                'bidder_ted': item.get('BIDDER_TED_DT') or None,
+                'bidder_is_at_grade': item.get('BIDDER_AT_GRADE_IND') or None,
+                'bidder_is_in_category': item.get('BIDDER_IN_CATEGORY_IND') or None,
+                'bidder_cats': item.get('BIDDER_CATS') or None,
+                'ae_stretch_ind': item.get('AE_STRETCH_IND') or None,
+            }
+
+            if position_num is not None and bidder_info['bidder_name'] is not None:
+                if position_num in filtered_data:
+                    filtered_data[position_num]['bidders'].append(bidder_info)
+                else:
+                    filtered_data[position_num] = {
+                        'position_info': position_info,
+                        'bidders': [bidder_info]
+                    }
+
+        for key, value in filtered_data.items():
+            result.append(value)
+
+        return result
+
+
+    def reference_mapping(x):
+        return {
+            'cycle_id': x.get('CYCLE_ID') or None,
+            'cycle_name': x.get('CYCLE_NM_TXT') or None,
+            'audit_number': x.get('AAC_AUDIT_NBR') or None,
+            'audit_desc': x.get('AAC_DESC_TXT') or None,
+            'audit_posted_by_date': x.get('AAC_POSTED_BY_DT') or None,
+            'audit_date': x.get('AAC_AUDIT_DT') or None,
+            'prev_audit_number': x.get('PREV_NBR') or None,
+            'next_audit_number': x.get('NEXT_NBR') or None,
+            'cycle_category': x.get('CC_CD') or None,
+        }
+
+    def success_mapping(x):
+        results = {
+            'audit_data': results_mapping(x.get('QRY_LSTBIDBOOK_REF')),
+            'ref_data': reference_mapping(x['QRY_GETCYCLE_REF'][0]),
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get Audits', success_mapping)
