@@ -64,18 +64,11 @@ def update_client(data, jwt_token, host=None):
     '''
     Update current client
     '''
-    update_client_email(data, jwt_token, host)
-    update_client_comments(data, jwt_token, host)
-
-def update_client_email(data, jwt_token, host=None):
-    '''
-    Update current client email
-    '''
     args = {
-        "proc_name": 'prc_mod_alt_email',
-        "package_name": 'PKG_CDO_WEB_TM',
-        "request_mapping_function": update_client_email_req_mapping,
-        "response_mapping_function": update_user_client_email_res_mapping,
+        "proc_name": 'prc_mod_alt_email_bscc',
+        "package_name": 'Pkg_Wrap_dev',
+        "request_mapping_function": update_client_req_mapping,
+        "response_mapping_function": update_user_client_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -83,66 +76,28 @@ def update_client_email(data, jwt_token, host=None):
         **args
     )
 
-def update_client_email_req_mapping(request):
+def update_client_req_mapping(request):
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "PV_WL_CODE_I": "CL",
-        "PV_PER_SEQ_NUM_I": request.get('per_seq_number'),
-        "PV_BSN_ID_I": request.get('bid_seasons'),
-        "PV_CAE_EMAIL_ADDRESS_TEXT_I": request.get('email'),
-        "PV_CAE_UPDATE_ID_I": null,
-        "PV_CAE_UPDATE_DATE_I": "",
-        "PV_DETAIL_O": "",
-        "O_RETURN_CODE": "",
-        "QRY_ERROR_DATA": ""
+        "PV_AD_ID_I":"",
+        "pv_subtran_i":0,
+        "PV_WL_CODE_I":"",
+        "pv_hru_id_i": request.get("hru_id"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
+        "PV_BSN_ID_I": request.get("bid_seasons"),
+        "PV_BSCC_ID_I":null,
+        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
+        "pv_cae_email_address_text_i": request.get("email"),
+        "PV_RETURN_CODE_O":"",
+        "PQRY_ERROR_DATA_O":"",
     }
     
-def update_user_client_email_res_mapping(data):
+def update_user_client_res_mapping(data):
     if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
         logger.error('FSBid call for Updating current client failed.')
         return None
 
     return data
 
-def update_client_comments(data, jwt_token, host=None):
-    '''
-    Update current client comments
-    '''
-    args = {
-        "proc_name": 'prc_mod_client_comments',
-        "package_name": 'PKG_CDO_WEB_TM',
-        "request_mapping_function": update_client_comments_req_mapping,
-        "response_mapping_function": update_user_client_comments_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def update_client_comments_req_mapping(request):
-    return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "PV_WL_CODE_I": "",
-        "PV_BSCC_ID_I": null,
-        "PV_PER_SEQ_NUM_I": request.get('per_seq_number'),
-        "PV_BSN_ID_I": request.get('bid_seasons'),
-        "PV_BSCC_COMMENT_TEXT_I": request.get('comments'),
-        "PV_BSCC_UPDATE_ID_I": null,
-        "PV_BSCC_UPDATE_DATE_I": "",
-        "PV_DETAIL_O": "",
-        "O_RETURN_CODE": "",
-        "QRY_ERROR_DATA": ""
-    }
-
-def update_user_client_comments_res_mapping(data):
-    if data is None or (data['O_RETURN_CODE'] and data['O_RETURN_CODE'] is not 0):
-        logger.error('FSBid call for Updating current client comments failed.')
-        return None
-
-    return data
 
 def get_clients_count(query, jwt_token, host=None):
     '''
