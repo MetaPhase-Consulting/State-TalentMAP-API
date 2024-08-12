@@ -29,6 +29,14 @@ class FSBidClientListView(BaseView):
         '''
         return Response(services.client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
 
+class FSBidUnassignedClientListView(BaseView):
+    def post(self, request):
+        '''
+        Gets all clients with no bids or no panels
+        '''
+        return Response(services.get_unassigned_bidder_type(request.META['HTTP_JWT'], request.query_params))
+
+
 
 class FSBidClientView(BaseView):
 
