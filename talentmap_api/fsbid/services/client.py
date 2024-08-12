@@ -508,11 +508,11 @@ def tmap_no_successful_panel_to_fsbid(panel):
     }
     return tmap_dictionary.get(panel, None)
 
-def tmap_cusp_and_eligible_bidders_to_fsbid(panel):
+def tmap_cusp_and_eligible_bidders_to_fsbid(bidder):
     tmap_dictionary = {
         "true": "Y",
     }
-    return tmap_dictionary.get(panel, None)
+    return tmap_dictionary.get(bidder, None)
 
 def fsbid_no_bids_to_tmap(bids):
     fsbid_dictionary = {
