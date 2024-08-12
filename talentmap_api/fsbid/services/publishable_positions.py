@@ -270,10 +270,14 @@ def publishable_positions_filter_res_mapping(data):
             'description': x.get('CYCLE_NM_TXT'),
         }
     def bureau_map(x):
+        # Bureau org code and description
         return {
-            'description': x.get('ORGS_SHORT_DESC'),
+            'code': x.get('BUREAU_CD'),
+            'short_description': x.get('ORGS_SHORT_DESC'),
+            'description': x.get('ORGS_LONG_DESC'),
         }
     def org_map(x):
+        # Organization/Location org code and description
         return {
             'code': x.get('ORG_CODE'),
             'description': f"{x.get('ORGS_SHORT_DESC')} ({x.get('ORG_CODE')})",
