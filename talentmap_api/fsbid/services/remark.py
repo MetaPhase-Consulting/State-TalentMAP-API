@@ -98,7 +98,7 @@ def convert_remark_query(query, is_edit=False):
 def convert_remark_insert_query(query):
     '''
     Converts TalentMap Remark Inserts into FSBid Remark Inserts
-    ''' 
+    '''
     return {
         'riseqnum': query.get('riseqnum'),
         'rirmrkseqnum': query.get('rirmrkseqnum'),
