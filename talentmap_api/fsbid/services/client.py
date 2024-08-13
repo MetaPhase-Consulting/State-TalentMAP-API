@@ -84,7 +84,8 @@ def update_client_req_mapping(request):
         "pv_hru_id_i": request.get("hru_id"),
         "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
         "PV_BSN_ID_I": request.get("bid_seasons"),
-        "PV_BSCC_ID_I":null,
+        # for now this will not be used to add but will be needed later
+        # "PV_BSCC_ID_I":null,
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
