@@ -265,3 +265,131 @@ def send_note_cable_req_mapping(request):
 
 def send_note_cable_res_mapping(data):
     return service_response(data, 'Send Note Cable')
+
+# ======================== prc_get_ops_parm_value ========================
+
+def get_ops(data, jwt_token):
+    '''
+    Get OPS
+    '''
+    args = {
+        "proc_name": 'prc_get_ops_parm_value',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_mapping_function": get_ops_req_mapping,
+        "response_mapping_function": get_ops_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def get_ops_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_PARM_NAME_I": request.get('PV_PARM_NAME_I'),
+        "PV_CIR_ID_I": request.get('PV_CIR_ID_I'),
+        "PV_PARM_VALUE_O": "",
+        "PV_RETURN_CD_O": "",
+        "PCUR_MESSAGE_O": ""
+    }
+
+def get_ops_res_mapping(data):
+    return service_response(data, 'Get OPS')
+
+# ======================== PRC_LIST_OPS_TM1_DATA ========================
+
+def list_ops(data, jwt_token):
+    '''
+    List OPS
+    '''
+    args = {
+        "proc_name": 'PRC_LIST_OPS_TM1_DATA',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_mapping_function": list_ops_req_mapping,
+        "response_mapping_function": list_ops_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def list_ops_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_NM_SEQ_NUM_I": request.get('PV_NM_SEQ_NUM_I'),
+        "PV_TM1_CABLE_I": " ",
+        "PQRY_OTL_LOG_TM1_O": ""
+    }
+
+def list_ops_res_mapping(data):
+    return service_response(data, 'List OPS')
+
+# ======================== PRC_INS_OPS_TM_LOG ========================
+
+def insert_ops(data, jwt_token):
+    '''
+    Insert OPS
+    '''
+    args = {
+        "proc_name": 'PRC_INS_OPS_TM_LOG',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_mapping_function": insert_ops_req_mapping,
+        "response_mapping_function": insert_ops_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def insert_ops_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_OTL_TM_TYPE_CODE_I": "",
+        "PV_OTL_TM_DATA_I": "",
+        "PV_OTL_SUBMIT_MESSAGE_I": "",
+        "PV_ETL_SEQ_NBR_I": "",
+        "PV_OTL_ID_O": "",
+        "PV_RETURN_O": "",
+        "PCUR_MESSAGE_O": ""
+    }
+
+def insert_ops_res_mapping(data):
+    return service_response(data, 'Insert OPS')
+
+# ======================== PRC_UPD_OPS_TM_LOG ========================
+
+def update_ops(data, jwt_token):
+    '''
+    Update OPS
+    '''
+    args = {
+        "proc_name": 'PRC_UPD_OPS_TM_LOG',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "request_mapping_function": update_ops_req_mapping,
+        "response_mapping_function": update_ops_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def update_ops_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_OTL_ID_I": "",
+        "PV_OTL_SUBMIT_RETURN_CODE_I": "",
+        "PV_OTL_SUBMIT_MESSAGE_I": "",
+        "PV_RETURN_O": "",
+        "PCUR_MESSAGE_O": ""
+    }
+
+def update_ops_res_mapping(data):
+    return service_response(data, 'Update OPS')
