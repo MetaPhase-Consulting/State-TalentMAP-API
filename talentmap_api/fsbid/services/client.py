@@ -76,18 +76,18 @@ def client(jwt_token, query, host=None):
 #         **args
 #     )
 
-# def update_client_req_mapping(request):
-#     return {
-#         "PV_AD_ID_I":"",
-#         "pv_subtran_i":0,
-#         "PV_WL_CODE_I":"",
-#         "pv_hru_id_i": request.get("hru_id"),
-#         "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
-#         "PV_BSN_ID_I": request.get("bid_seasons"),
-#         "PV_BSCC_ID_I":null,
-#         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
-#         "pv_cae_email_address_text_i": request.get("email"),
-#     }
+def update_client_req_mapping(request):
+    return {
+        "PV_AD_ID_I":"",
+        "pv_subtran_i":0,
+        "PV_WL_CODE_I":"",
+        "pv_hru_id_i": request.get("hru_id"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
+        "PV_BSN_ID_I": request.get("bid_seasons"),
+        # "PV_BSCC_ID_I":null,
+        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
+        "pv_cae_email_address_text_i": request.get("email"),
+    }
     
 def update_user_client_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
