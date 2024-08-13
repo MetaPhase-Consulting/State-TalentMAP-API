@@ -73,7 +73,7 @@ def client_suggestions(jwt_token, perdet_seq_num):
     Get a suggestion for a client
     '''
 
-    # if less than LOW, try broader query
+    # if less than LOW, try broader query. THIS IS A TEST
     LOW = 5
     # but also don't go too high
     HIGH = 100
