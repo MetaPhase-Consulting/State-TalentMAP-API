@@ -708,3 +708,88 @@ def get_audit_data_res_mapping(data):
         return results
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
+
+
+def get_htf_data(jwt_token, pk):
+    '''
+    Get HTF Data for a Position
+    '''
+    args = {
+        "proc_name": 'qry_getAuditCyclePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": pk,
+        "request_mapping_function": get_htf_req_mapping,
+        "response_mapping_function": get_htf_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_htf_req_mapping(pk):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_acp_id': pk
+    }
+    return mapped_request
+
+
+def get_htf_res_mapping(data):
+    def success_mapping(x):
+        return {
+            'id': x.get('O_ACP_ID') or None,
+            'total_bidders': x.get('O_ACP_TTL_BIDDER_QTY') or None,
+            'at_grade': x.get('O_ACP_AT_GRD_QTY') or None,
+            'in_category': x.get('O_ACP_IN_CATEGORY_QTY') or None,
+            'total_group_members': x.get('O_ACP_TTL_GROUP_MEMBERS_QTY') or None,
+            'at_grade_in_category': x.get('O_ACP_AT_GRD_IN_CATEGORY_QTY') or None,
+            'htf_calc_ind': x.get('O_ACP_HARD_TO_FILL_CALC_IND') or None,
+            'pp_ind': x.get('O_ACP_PUBL_POS_EXCLUSION_IND') or None,
+            'admin_excl_ind': x.get('O_ACP_ADMIN_EXCLUSION_IND') or None,
+            'pos_grade_code': x.get('O_ACP_POSITION_GRADE_CD') or None,
+            'pos_category_code': x.get('O_ACP_POSITION_SKILL_CD') or None,
+            'incumbent_ted': x.get('O_ACP_INCUMBENT_TED_DT') or None,
+            'incumbent_status': x.get('O_ACP_INCUMBENT_STATUS_CD') or None,
+            'ted_override': x.get('O_ACP_TED_OVRRD_DT') or None,
+            'ted_now_flag': x.get('O_ACP_NOW_TED_FLG') or None,
+            'htf_ind': x.get('O_ACP_HARD_TO_FILL_IND') or None,
+            'last_update_stamp': x.get('O_ACP_LAST_UPDT_TMSMP_DT') or None,  # make sure
+            'last_update_id': x.get('O_ACP_LAST_UPDT_USER_ID') or None,  # make sure
+        }
+
+    return service_response(data, 'Bid Audit Get HTF Data', success_mapping)
+
+
+def mod_htf_data(jwt_token, request):
+    '''
+     Update HTF Data for a Position
+    '''
+    args = {
+        "proc_name": 'qry_getAuditCyclePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": mod_htf_req_mapping,
+        "response_mapping_function": mod_htf_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def mod_htf_req_mapping(req):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_acp_id': req.get('id'),
+        'i_acp_hard_to_fill_ind': 'Y' if req.get('htf_ind') == 'N' else 'N',
+        'i_acp_last_updt_tmsmp_dt': req.get('last_update_stamp'),
+        'i_acp_last_updt_user_id': req.get('last_update_id')
+    }
+    return mapped_request
+
+
+def mod_htf_res_mapping(data):
+    return service_response(data, 'Update HTF')
