@@ -310,6 +310,9 @@ def get_panel_meetings_csv(query, jwt_token, rl_cd, host=None):
             'panelMeetingDates': {
                 'transformFn': services.panel_process_dates_csv,
             },
+            'allRemarks': {
+                'transformFn': services.panel_process_remarks_csv,
+            },
         }
     }
     args = {
@@ -345,6 +348,7 @@ def get_panel_meetings_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Post Panel Started"),
         smart_str(u"Post Panel Run Time"),
         smart_str(u"Agenda Completed Time"),
+        smart_str(u"All Remarks"),
     ])
 
     writer.writerows(data['results'])

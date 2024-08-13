@@ -1086,6 +1086,12 @@ def process_remarks_csv(remarks):
 
 # Panel Helper Functions
 
+def panel_process_remarks_csv(remarks):
+    if remarks:
+        return pydash.chain(remarks).map_('airremarktext').join('; ').value()
+    else:
+        return 'None listed'
+
 def panel_process_dates_csv(dates):
     columnOrdering = {
         'MEET': 'None Listed',
