@@ -766,38 +766,38 @@ def convert_available_bidder_query(query):
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
 
-def update_client(data, jwt_token, host=None):
-    '''
-    Update current client
-    '''
-    args = {
-        "proc_name": 'prc_mod_alt_email_bscc',
-        "package_name": 'Pkg_Wrap_dev',
-        "request_mapping_function": update_client_req_mapping,
-        "response_mapping_function": update_user_client_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
+# def update_client(data, jwt_token, host=None):
+#     '''
+#     Update current client
+#     '''
+#     args = {
+#         "proc_name": 'prc_mod_alt_email_bscc',
+#         "package_name": 'Pkg_Wrap_dev',
+#         "request_mapping_function": update_client_req_mapping,
+#         "response_mapping_function": update_user_client_res_mapping,
+#         "jwt_token": jwt_token,
+#         "request_body": data,
+#     }
+#     return services.send_post_back_office(
+#         **args
+#     )
 
-def update_client_req_mapping(request):
-    return {
-        "PV_AD_ID_I":"",
-        "pv_subtran_i":0,
-        "PV_WL_CODE_I":"",
-        "pv_hru_id_i": request.get("hru_id"),
-        "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
-        "PV_BSN_ID_I": request.get("bid_seasons"),
-        "PV_BSCC_ID_I":null,
-        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
-        "pv_cae_email_address_text_i": request.get("email"),
-    }
+# def update_client_req_mapping(request):
+#     return {
+#         "PV_AD_ID_I":"",
+#         "pv_subtran_i":0,
+#         "PV_WL_CODE_I":"",
+#         "pv_hru_id_i": request.get("hru_id"),
+#         "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
+#         "PV_BSN_ID_I": request.get("bid_seasons"),
+#         "PV_BSCC_ID_I":null,
+#         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
+#         "pv_cae_email_address_text_i": request.get("email"),
+#     }
     
-def update_user_client_res_mapping(data):
-    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-        logger.error('FSBid call for Updating current client failed.')
-        return None
+# def update_user_client_res_mapping(data):
+#     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+#         logger.error('FSBid call for Updating current client failed.')
+#         return None
 
-    return data
+#     return data
