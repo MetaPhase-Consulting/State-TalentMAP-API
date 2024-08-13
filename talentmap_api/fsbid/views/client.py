@@ -34,7 +34,7 @@ class FSBidUnassignedClientListView(BaseView):
         '''
         Gets all clients with no bids or no panels
         '''
-        return Response(services.get_unassigned_bidder_type(request.META['HTTP_JWT'], request.query_params))
+        return Response(services.get_unassigned_bidder(request.META['HTTP_JWT'], request.query_params))
 
 
 
