@@ -9,7 +9,6 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
-from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
@@ -60,42 +59,6 @@ def client(jwt_token, query, host=None):
 
     return response
 
-def update_client(data, jwt_token, host=None):
-    '''
-    Update current client
-    '''
-    args = {
-        "proc_name": 'prc_mod_alt_email_bscc',
-        "package_name": 'Pkg_Wrap_dev',
-        "request_mapping_function": update_client_req_mapping,
-        "response_mapping_function": update_user_client_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": data,
-    }
-    return services.send_post_back_office(
-        **args
-    )
-
-def update_client_req_mapping(request):
-    return {
-        "PV_AD_ID_I":"",
-        "pv_subtran_i":0,
-        "PV_WL_CODE_I":"",
-        "pv_hru_id_i": request.get("hru_id"),
-        "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
-        "PV_BSN_ID_I": request.get("bid_seasons"),
-        "PV_BSCC_ID_I":null,
-        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
-        "pv_cae_email_address_text_i": request.get("email"),
-    }
-    
-def update_user_client_res_mapping(data):
-    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-        logger.error('FSBid call for Updating current client failed.')
-        return None
-
-    return data
-
 
 def get_clients_count(query, jwt_token, host=None):
     '''
@@ -110,7 +73,7 @@ def client_suggestions(jwt_token, perdet_seq_num):
     Get a suggestion for a client
     '''
 
-    # if less than LOW, try broader query
+    # if less than LOW, try broader query. THIS IS A TEST
     LOW = 5
     # but also don't go too high
     HIGH = 100
@@ -453,8 +416,6 @@ def convert_client_query(query, isCount=None):
         "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
         "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
         "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
-        "request_params.eligible_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('eligible_bidder', None)),
-        "request_params.cusp_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('cusp_bidder', None)),
         "request_params.page_index": int(query.get("page", 1)),
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
@@ -557,12 +518,6 @@ def tmap_no_successful_panel_to_fsbid(panel):
         "false": "N"
     }
     return tmap_dictionary.get(panel, None)
-
-def tmap_cusp_and_eligible_bidders_to_fsbid(bidder):
-    tmap_dictionary = {
-        "true": "Y",
-    }
-    return tmap_dictionary.get(bidder, None)
 
 def fsbid_no_bids_to_tmap(bids):
     fsbid_dictionary = {
