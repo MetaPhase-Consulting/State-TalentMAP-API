@@ -87,8 +87,6 @@ def update_client_req_mapping(request):
         "PV_BSCC_ID_I":null,
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
-        "PV_RETURN_CODE_O":"",
-        "PQRY_ERROR_DATA_O":"",
     }
     
 def update_user_client_res_mapping(data):
