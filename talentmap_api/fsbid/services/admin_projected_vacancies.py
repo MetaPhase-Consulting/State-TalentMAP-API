@@ -1,6 +1,7 @@
 import logging
 import requests  # pylint: disable=unused-import
 import pydash
+import jwt
 from urllib.parse import urlencode, quote
 from talentmap_api.fsbid.services import common as services
 from talentmap_api.common.common_helpers import combine_pp_grade, service_response
@@ -195,7 +196,12 @@ def edit_admin_projected_vacancy(query, jwt_token):
     '''
     Edit Admin Projected Vacancy
     '''
+
     fvseqnum = query.get("data")
+
+    # Inject decoded hru
+    query['hru_id'] = jwt.decode(jwt_token, verify=False).get('sub')
+
     args = {
         "uri": f"v1/futureVacancies/{fvseqnum}",
         "query": query,
@@ -208,11 +214,11 @@ def edit_admin_projected_vacancy(query, jwt_token):
 
 def convert_admin_projected_vacancy_edit_query(query):
     values = {
-        "fvfvscode": query.get("future_vacancy_status_code"),
-        "fvoverrideteddate": query.get("future_vacancy_override_tour_end_date"),
-        "fvbsnid": int(query.get("future_vacancy_bid_season_code")),
-        "fvcommenttxt": query.get("future_vacancy_comment_text"),
-        "fvexclimportind": query.get("future_vacancy_exclude_import_indicator"),
+        "fvfvscode": query.get("fvfvscode"),
+        "fvoverrideteddate": query.get("fvoverrideteddate"),
+        "fvbsnid": int(query.get("fvbsnid")),
+        "fvcommenttxt": query.get("fvcommenttxt"),
+        "fvexclimportind": query.get("fvexclimportind"),
         "fvseqnum": query.get("fvseqnum"),
         "fvseqnumref": query.get("fvfvseqnumref"),
         "fvposseqnum": query.get("fvposseqnum"),
@@ -223,7 +229,7 @@ def convert_admin_projected_vacancy_edit_query(query):
         "fvsystemind": query.get("fvsystemind"),
         "fvcreateid": query.get("fvcreateid"),
         "fvcreatedate": query.get("fvcreatedate", "").replace("T", " "),
-        "fvupdateid": query.get("fvupdateid"),
+        "fvupdateid": query.get("hru_id"),
         "fvupdatedate": query.get("fvupdatedate", "").replace("T", " "),
         "fvmcind": query.get("fvmcind"),
     }
