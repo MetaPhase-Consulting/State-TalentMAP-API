@@ -158,3 +158,83 @@ class FSBidNoteCableSendView(APIView):
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class FSBidGetOpsView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
+        }
+    ))
+
+    def post(self, request):
+        '''
+        Sends Note Cable
+        '''
+        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class FSBidListOpsView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
+        }
+    ))
+
+    def post(self, request):
+        '''
+        Sends Note Cable
+        '''
+        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class FSBidInsertOpsView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
+        }
+    ))
+
+    def post(self, request):
+        '''
+        Sends Note Cable
+        '''
+        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class FSBidUpdateOpsView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
+        }
+    ))
+
+    def post(self, request):
+        '''
+        Sends Note Cable
+        '''
+        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
