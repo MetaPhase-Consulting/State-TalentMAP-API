@@ -766,21 +766,21 @@ def convert_available_bidder_query(query):
     return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
 
 
-# def update_client(data, jwt_token, host=None):
-#     '''
-#     Update current client
-#     '''
-#     args = {
-#         "proc_name": 'prc_mod_alt_email_bscc',
-#         "package_name": 'Pkg_Wrap_dev',
-#         "request_mapping_function": update_client_req_mapping,
-#         "response_mapping_function": update_user_client_res_mapping,
-#         "jwt_token": jwt_token,
-#         "request_body": data,
-#     }
-#     return services.send_post_back_office(
-#         **args
-#     )
+def update_client(data, jwt_token, host=None):
+    '''
+    Update current client
+    '''
+    args = {
+        "proc_name": 'prc_mod_alt_email_bscc',
+        "package_name": 'Pkg_Wrap_dev',
+        "request_mapping_function": update_client_req_mapping,
+        "response_mapping_function": update_user_client_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
 
 # def update_client_req_mapping(request):
 #     return {
