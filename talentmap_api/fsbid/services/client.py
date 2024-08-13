@@ -9,7 +9,6 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
-from talentmap_api.common.common_helpers import service_response
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
@@ -92,7 +91,7 @@ def unassigned_bidder_type_res_mapping(data):
         logger.error('FSBid call for Unassigned Bidder Type failed.')
         return None
 
-    return service_response(data, 'Unassigned Bidder Type')
+    return data
 
 def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
