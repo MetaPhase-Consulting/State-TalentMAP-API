@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^options/grade/$', views.FSBidBidAuditGradeOptionsListView.as_view(), name="FSBid-audit-grade-options-list"),
     url(r'^create/grade/$', views.FSBidBidAuditGradeCreateListView.as_view(), name="FSBid-audit-grade-create-list"),
     url(r'^data/$', views.FSBidBidAuditDataListView.as_view(), name="FSBid-audit-data-list"),
+    url(r'^htf/(?P<pk>[0-9]+)/$', views.FSBidBidAuditHTFListView.as_view(), name="FSBid-htf-data-list"),
 ]
 
 urlpatterns += router.urls
