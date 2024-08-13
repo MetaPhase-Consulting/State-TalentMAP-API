@@ -31,14 +31,22 @@ class FSBidPublishablePositionsView(APIView):
 
 class FSBidPublishablePositionsActionView(APIView):
     # perms TBD
-    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('superuser'), ) ]
+    # Todo: split up the edit action across the different roles to separate the permissions to edit each field
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('superuser'), )]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='pos_seq_num'),
-            'description': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_descr_txt'),
-            'updater_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_id'),
+            'posSeqNum': openapi.Schema(type=openapi.TYPE_INTEGER, description='pos_seq_num'),
+            'psCD': openapi.Schema(type=openapi.TYPE_STRING, description='ps_cd'),
+            'aptSeqNum': openapi.Schema(type=openapi.TYPE_STRING, description='apt_seq_num'),
+            'created': openapi.Schema(type=openapi.TYPE_STRING, description='create_date'),
+            'createdUserID': openapi.Schema(type=openapi.TYPE_STRING, description='create_id'),
+            'positionDetailsLastUpdated': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_desc_update_date'),
+            'posAuditExclusionInd': openapi.Schema(type=openapi.TYPE_STRING, description='exclusion_ind'),
+            'positionDetails': openapi.Schema(type=openapi.TYPE_STRING, description='capsule_descr_txt'),
+            'lastUpdated': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_date'),
+            'lastUpdatedUserID': openapi.Schema(type=openapi.TYPE_INTEGER, description='update_id'),
         }
     ))
 
@@ -70,12 +78,11 @@ class FSBidPublishablePositionsFiltersView(BaseView):
         return Response(result)
 
 class FSBidPublishablePositionsCSVView(BaseView):
-    permission_classes = [Or(isDjangoGroupMember('ao_user'), isDjangoGroupMember('bureau_user')), isDjangoGroupMember('superuser'), ]
-
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('superuser'), ) ]
 
     def get(self, request):
         '''
         Exports Publishable Positions to CSV format
         '''
-        return services.get_publishable_positions_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+        return services.get_publishable_positions_csv(request.query_params, request.META['HTTP_JWT'])
 

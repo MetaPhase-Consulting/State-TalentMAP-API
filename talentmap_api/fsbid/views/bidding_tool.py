@@ -12,8 +12,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 import talentmap_api.fsbid.services.bidding_tool as services
-
-from talentmap_api.common.permissions import isDjangoGroupMember
+from talentmap_api.common.common_helpers import view_result
+from talentmap_api.common.permissions import isDjangoGroupMember,isDjangoGroupMemberOrReadOnly
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class FSBidBiddingToolView(APIView):
 
     # ======================== Get Bidding Tool ========================
 
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('cdo'), isDjangoGroupMember('bidder'),) ]
 
     def get(self, request, pk):
         '''
@@ -63,11 +63,11 @@ class FSBidBiddingToolView(APIView):
         return Response(result)
     
 
-class FSBidBiddingToolActionsView(APIView):
+class FSBidBiddingToolListView(APIView):
 
     # ======================== Get Bidding Tool List ========================
 
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = [IsAuthenticated, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('bureau_user'), isDjangoGroupMember('ao_user'), isDjangoGroupMember('post_user'), isDjangoGroupMember('cdo'), isDjangoGroupMember('bidder'),) ]
 
     def get(self, request):
         '''
@@ -80,48 +80,8 @@ class FSBidBiddingToolActionsView(APIView):
         return Response(result)
 
 
-    # ======================== Delete Bidding Tool ========================
+class FSBidBiddingToolEditView(APIView):
 
-    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter("location", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='GSA Location Code'),
-            openapi.Parameter("updater_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Updater User ID'),
-            openapi.Parameter("updated_date", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Updated Date'),
-        ])
-
-    def delete(self, request):
-        '''
-        Deletes Bidding Tool
-        '''
-        result = services.delete_bidding_tool(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(result)
-
-
-    # ======================== Create Bidding Tool ========================
-
-    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties=actions_properties
-    ))
-    
-    def post(self, request):
-        '''
-        Create Bidding Tool
-        '''
-        result = services.create_bidding_tool(request.data, request.META['HTTP_JWT'])
-        if result is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    
     # ======================== Edit Bidding Tool ========================
 
     permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
@@ -145,6 +105,7 @@ class FSBidBiddingToolActionsView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class FSBidBiddingToolCreateView(APIView):
 
     # ======================== Get Bidding Tool Create Data ========================
@@ -160,3 +121,44 @@ class FSBidBiddingToolCreateView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+    
+    # ======================== Create Bidding Tool ========================
+
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties=actions_properties
+    ))
+    
+    def post(self, request):
+        '''
+        Create Bidding Tool
+        '''
+        result = services.create_bidding_tool(request.data, request.META['HTTP_JWT'])
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for creating Bidding Tool failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(result)
+    
+
+class FSBidBiddingToolDeleteView(APIView):
+
+    # ======================== Delete Bidding Tool ========================
+
+    permission_classes = [IsAuthenticated, isDjangoGroupMember('superuser'), ]
+
+    @swagger_auto_schema(
+    manual_parameters=[
+        openapi.Parameter("location", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='GSA Location Code'),
+        openapi.Parameter("updater_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Updater User ID'),
+        openapi.Parameter("updated_date", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Updated Date'),
+    ])
+
+    def post(self, request):
+        '''
+        Deletes Bidding Tool
+        '''
+        result = services.delete_bidding_tool(request.data, request.META['HTTP_JWT'])
+        return view_result(result)
