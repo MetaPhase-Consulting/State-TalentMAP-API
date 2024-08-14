@@ -323,6 +323,8 @@ def fsbid_clients_to_talentmap_clients(data):
 
     return {
         "id": str(employee.get("pert_external_id", None)),
+        "hru_id": data.get("hru_id", None),
+        "per_seq_num": employee.get("per_seq_num", None),
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
