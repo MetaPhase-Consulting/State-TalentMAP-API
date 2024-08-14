@@ -281,3 +281,29 @@ class FSBidBidAuditDataListView(BaseView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidBidAuditHTFListView(BaseView):
+    '''
+    Gets the Bid Audit Hard To Fill Data for a Position
+    '''
+
+    def get(self, request, pk):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_htf_data(jwt, pk)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to get HTF data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+    def post(self, request, pk):
+        jwt = request.META['HTTP_JWT']
+        result = services.mod_htf_data(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to update HTF data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
