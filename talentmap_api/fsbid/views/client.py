@@ -38,7 +38,7 @@ class FSBidClientListView(BaseView):
         Create a new client
         '''
         try:
-            services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+            services.update_client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}")
         except ValidationError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
