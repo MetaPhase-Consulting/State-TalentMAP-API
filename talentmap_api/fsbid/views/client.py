@@ -1,6 +1,8 @@
 import coreapi
+import logging
 
 from rest_framework.response import Response
+from rest_framework import status
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -8,7 +10,7 @@ from drf_yasg import openapi
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.client as services
 
-
+logger = logging.getLogger(__name__)
 class FSBidClientListView(BaseView):
     @swagger_auto_schema(
         manual_parameters=[
@@ -33,10 +35,14 @@ class FSBidClientListView(BaseView):
     
     def post(self, request):
         '''
-        Create a new client
+        Update client
         '''
-        return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
-    
+        result = services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for updating client failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(result)
     
 class FSBidClientView(BaseView):
 
