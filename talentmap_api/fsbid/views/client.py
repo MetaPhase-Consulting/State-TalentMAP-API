@@ -37,14 +37,8 @@ class FSBidClientListView(BaseView):
         '''
         Create a new client
         '''
-        try:
-            services.update_client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}")
-        except ValidationError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(services.update_client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}")
+)
     
 class FSBidClientView(BaseView):
 
