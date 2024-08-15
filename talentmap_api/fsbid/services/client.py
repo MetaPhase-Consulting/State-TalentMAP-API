@@ -91,7 +91,7 @@ def update_client_req_mapping(request):
     }
     
 def update_user_client_res_mapping(data):
-    if data is None or data['PV_RETURN_CODE_O'] is not 0:
+    if data is None or data.get('PV_RETURN_CODE_O', None) is not 0:
         logger.error('FSBid call for Updating current client failed.')
         return None
 
