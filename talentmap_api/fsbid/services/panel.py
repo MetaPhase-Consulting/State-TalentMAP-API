@@ -266,7 +266,7 @@ def convert_panel_query(query={}):
     panel_date_end = query.get("panel-date-end")
 
     filters = [
-        {'col': 'rmrkshortdesctext', 'val': services.if_str_upper(query.get('remark')), 'com': 'EQ'},
+        {'col': 'rmrkshortdesctext', 'val': query.get('remark'), 'com': 'EQ'},
         {'col': 'pmpmtcode', 'val': services.if_str_upper(query.get('type')), 'com': 'IN'},
         {'col': 'pmscode', 'val': services.if_str_upper(query.get('status')), 'com': 'IN'},
         {'col': 'pmipmseqnum', 'val': query.get('id')},
