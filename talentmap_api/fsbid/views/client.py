@@ -37,7 +37,7 @@ class FSBidClientListView(BaseView):
         '''
         Create a new client
         '''
-        return Response(services.update_client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}")
+        return Response(services.update_client(request.META['HTTP_JWT'], request.data, f"{request.scheme}://{request.get_host()}")
 )
     
 class FSBidClientView(BaseView):
