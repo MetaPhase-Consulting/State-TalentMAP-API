@@ -1,16 +1,16 @@
 import coreapi
-import logging
 
 from rest_framework.response import Response
-from rest_framework import status
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework import status
 
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.client as services
+from django.core.exceptions import ValidationError
 
-logger = logging.getLogger(__name__)
+
 class FSBidClientListView(BaseView):
     @swagger_auto_schema(
         manual_parameters=[
@@ -35,14 +35,16 @@ class FSBidClientListView(BaseView):
     
     def post(self, request):
         '''
-        Update client
+        Create a new client
         '''
-        result = services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            logger.error(f"Fsbid call for updating client failed.")
+        try:
+            services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+        except ValidationError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        return Response(result)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FSBidClientView(BaseView):
 

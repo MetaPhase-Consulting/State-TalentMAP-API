@@ -9,11 +9,10 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
-from talentmap_api.common.common_helpers import service_response
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date, service_response
 from talentmap_api.fsbid.requests import requests
 
 
@@ -68,10 +67,10 @@ def update_client(data, jwt_token, host=None):
     args = {
         "proc_name": 'prc_mod_alt_email_bscc',
         "package_name": 'Pkg_Wrap_dev',
+        "request_body": data,
         "request_mapping_function": update_client_req_mapping,
         "response_mapping_function": update_user_client_res_mapping,
         "jwt_token": jwt_token,
-        "request_body": data,
     }
     return services.send_post_back_office(
         **args
@@ -92,7 +91,7 @@ def update_client_req_mapping(request):
     }
     
 def update_user_client_res_mapping(data):
-    return service_response(data, 'user client update')
+    return service_response(data, 'Save User Client')
 
 
 def get_clients_count(query, jwt_token, host=None):
