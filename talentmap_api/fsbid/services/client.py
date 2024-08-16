@@ -79,7 +79,7 @@ def update_client(data, jwt_token, host=None):
     )
 
 def update_client_req_mapping(request):
-    mapped_request = {
+    return {
         "PV_AD_ID_I":"",
         "pv_subtran_i":0,
         "PV_WL_CODE_I":"",
@@ -91,7 +91,7 @@ def update_client_req_mapping(request):
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
-    return mapped_request
+
 
 def update_user_client_res_mapping(data):
     if data is None or not isinstance(data, dict) or data['PV_RETURN_CODE_O'] != 0:
