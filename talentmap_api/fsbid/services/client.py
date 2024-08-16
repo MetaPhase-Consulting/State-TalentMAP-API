@@ -87,7 +87,7 @@ def update_client_req_mapping(request):
         "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
         "PV_BSN_ID_I": request.get("bid_seasons"),
         # for now this will not be used, but will be needed later
-        # "PV_BSCC_ID_I":null,
+        # "PV_BSCC_ID_I":None,
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
