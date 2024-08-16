@@ -14,7 +14,7 @@ from rest_framework import status
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date, service_response
+from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
 from talentmap_api.fsbid.requests import requests
 
 
@@ -94,7 +94,51 @@ def update_client_req_mapping(request):
     return mapped_request
 
 def update_user_client_res_mapping(data):
-    return service_response(data, 'Updating Client')
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call for Search Post Access filters failed.")
+        return None
+
+    def bureau_map(x):
+        return {
+            'code': x.get('Bureau'),
+            'description': x.get('ORG_SHORT_DESC'),
+        }
+    def person_map(x):
+        return {
+            'code': x.get('PER_SEQ_NUM'),
+            'description': x.get('PER_FULL_NAME'),
+            'skillCode': x.get('SKL_CODE')
+        }
+    def role_map(x):
+        return {
+            'code': x.get('ROLE_CODE'),
+            'description': x.get('ROLE_DESC'),
+        }
+    def org_map(x):
+        return {
+            'code': x.get('Org'),
+            'description': x.get('ORG_DESC'),
+        }
+    def location_map(x):
+        return {
+            'code': x.get('COUNTRY_STATE_CODE'),
+            'description': x.get('COUNTRY_STATE_DESC'),
+        }
+    def position_map(x):
+        return {
+            'code': x.get('POS_SEQ_NUM'),
+            'description': x.get('POS_NUM_TEXT'),
+            'skillCode': x.get('POS_SKILL_CODE')
+        }
+
+    return {
+        'bureauFilters': list(map(bureau_map, data.get('PQRY_BUREAU_LEVEL_O'))),
+        'personFilters': list(map(person_map, data.get('PQRY_PERSON_LEVEL_O'))),
+        'roleFilters': list(map(role_map, data.get('PQRY_POST_ROLE_O'))),
+        'positionFilters': list(map(position_map, data.get('PQRY_POSITION_LEVEL_O'))),
+        'locationFilters': list(map(location_map, data.get('PQRY_COUNTRY_O'))),
+        'orgFilters': list(map(org_map, data.get('PQRY_ORG_LEVEL_O'))),
+    }
 
 
 def get_clients_count(query, jwt_token, host=None):
