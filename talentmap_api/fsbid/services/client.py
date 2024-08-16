@@ -94,13 +94,19 @@ def update_client_req_mapping(request):
     return mapped_request
 
 def update_user_client_res_mapping(data):
-    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-        error_message = data['PQRY_ERROR_DATA_O'][0]['MSG_TXT']
-        if error_message == 'The the current client cannot be updated.':
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to update/create this Bid Season. Please try again.')
+    if data is None:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='No data provided.')
+
+    if data.get('PV_RETURN_CODE_O') and data['PV_RETURN_CODE_O'] != 0:
+        if 'PQRY_ERROR_DATA_O' in data and isinstance(data['PQRY_ERROR_DATA_O'], list) and len(data['PQRY_ERROR_DATA_O']) > 0:
+            error_message = data['PQRY_ERROR_DATA_O'][0].get('MSG_LVL', '')
+            if error_message == 'F':
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to update/create this Bid Season. Please try again.')
+
     return Response(data)
+
 
 def get_clients_count(query, jwt_token, host=None):
     '''
