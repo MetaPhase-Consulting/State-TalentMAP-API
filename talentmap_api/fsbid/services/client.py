@@ -94,9 +94,8 @@ def update_client_req_mapping(request):
 
 def update_user_client_res_mapping(data):
     if data is None or not isinstance(data, dict) or data['PV_RETURN_CODE_O'] != 0:
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    else:
-        Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 def get_clients_count(query, jwt_token, host=None):
     '''
