@@ -9,6 +9,8 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
+from rest_framework.response import Response
+from rest_framework import status
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
@@ -92,12 +94,8 @@ def update_client_req_mapping(request):
     return mapped_request
 
 def update_user_client_res_mapping(data):
-    if data is None or not isinstance(data, dict) or (data.get('PV_RETURN_CODE_O') and data['PV_RETURN_CODE_O'] != 0):
-        logger.error('FSBid call for Updating current client failed.')
-        return None
-
-    return data
-
+    if data is None or not isinstance(data, dict) or data['PV_RETURN_CODE_O'] != 0:
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 def get_clients_count(query, jwt_token, host=None):
     '''
