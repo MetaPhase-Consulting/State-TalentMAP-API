@@ -14,7 +14,7 @@ from rest_framework import status
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
-from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
+from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date, service_response
 from talentmap_api.fsbid.requests import requests
 
 
@@ -94,18 +94,7 @@ def update_client_req_mapping(request):
     return mapped_request
 
 def update_user_client_res_mapping(data):
-    if data is None:
-        return Response(status=status.HTTP_400_BAD_REQUEST, data='No data provided.')
-
-    if data.get('PV_RETURN_CODE_O') and data['PV_RETURN_CODE_O'] != 0:
-        if 'PQRY_ERROR_DATA_O' in data and isinstance(data['PQRY_ERROR_DATA_O'], list) and len(data['PQRY_ERROR_DATA_O']) > 0:
-            error_message = data['PQRY_ERROR_DATA_O'][0].get('MSG_LVL', '')
-            if error_message == 'F':
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
-        
-        return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to update/create this Bid Season. Please try again.')
-
-    return Response(data)
+    return service_response(data, 'Updating Client')
 
 
 def get_clients_count(query, jwt_token, host=None):
