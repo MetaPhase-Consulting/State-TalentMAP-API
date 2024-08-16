@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from django.utils.encoding import smart_str
 import jwt
 import pydash
+from rest_framework.response import Response
+from rest_framework import status
 
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
@@ -60,14 +62,14 @@ def client(jwt_token, query, host=None):
 
     return response
 
-def update_client(data, jwt_token, host=None):
+def update_client(jwt_token, request):
     '''
     Update current client
     '''
     args = {
         "proc_name": 'prc_mod_alt_email_bscc',
         "package_name": 'Pkg_Wrap_dev',
-        "request_body": data,
+        "request_body": request,
         "request_mapping_function": update_client_req_mapping,
         "response_mapping_function": update_user_client_res_mapping,
         "jwt_token": jwt_token,
@@ -77,7 +79,7 @@ def update_client(data, jwt_token, host=None):
     )
 
 def update_client_req_mapping(request):
-    return {
+    mapped_request = {
         "PV_AD_ID_I":"",
         "pv_subtran_i":0,
         "PV_WL_CODE_I":"",
@@ -89,14 +91,16 @@ def update_client_req_mapping(request):
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
-    
+    return mapped_request
+
 def update_user_client_res_mapping(data):
-    if data is None or (data['PV_RETURN_CODE_O'] != 0):
-        logger.error('FSBid call for Updating current client failed.')
-        return None
-
-    return data
-
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        error_message = data['PQRY_ERROR_DATA_O'][0]['MSG_TXT']
+        if error_message == 'The the current client cannot be updated.':
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=error_message)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data='There was an error attempting to update/create this Bid Season. Please try again.')
+    return Response(data)
 
 def get_clients_count(query, jwt_token, host=None):
     '''
