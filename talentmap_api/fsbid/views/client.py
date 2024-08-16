@@ -4,9 +4,11 @@ from rest_framework.response import Response
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework import status
 
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.client as services
+from django.core.exceptions import ValidationError
 
 
 class FSBidClientListView(BaseView):
@@ -35,10 +37,10 @@ class FSBidClientListView(BaseView):
         '''
         Create a new client
         '''
-        return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+        jwt = request.META['HTTP_JWT']
+        result = services.update_client(jwt, request.data)
+        return result
     
-
-
 class FSBidClientView(BaseView):
 
     def get(self, request, pk):
