@@ -79,7 +79,7 @@ def update_client(jwt_token, request):
     )
 
 def update_client_req_mapping(request):
-    mapped_request = {
+    return {
         "PV_AD_ID_I":"",
         "pv_subtran_i":0,
         "PV_WL_CODE_I":"",
@@ -91,7 +91,6 @@ def update_client_req_mapping(request):
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
-    return mapped_request
 
 def update_user_client_res_mapping(data):
     if data is None or not isinstance(data, dict) or data['PV_RETURN_CODE_O'] != 0:
@@ -324,8 +323,8 @@ def fsbid_clients_to_talentmap_clients(data):
 
     return {
         "id": str(employee.get("pert_external_id", None)),
-        "hru_id": str(int(data.get("hru_id", None))),
-        "per_seq_num": str(int(employee.get("per_seq_num", None))),
+        "hru_id": data.get("hru_id", None),
+        "per_seq_num": employee.get("per_seq_num", None),
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
