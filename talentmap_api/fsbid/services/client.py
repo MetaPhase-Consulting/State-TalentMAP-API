@@ -650,7 +650,7 @@ def fsbid_assignments_to_tmap(assignments):
 def fsbid_languages_to_tmap(languages):
     tmap_languages = []
     empty_score = '--'
-    if not languages:
+    if  languages is None:
         return tmap_languages
     else:
         for x in languages:
