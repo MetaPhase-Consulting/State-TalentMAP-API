@@ -83,8 +83,8 @@ def update_client_req_mapping(request):
         "PV_AD_ID_I":"",
         "pv_subtran_i":0,
         "PV_WL_CODE_I":"",
-        "pv_hru_id_i": int(request.get("hru_id")),
-        "PV_PER_SEQ_NUM_I": int(request.get("per_seq_number")),
+        "pv_hru_id_i": request.get("hru_id"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
         "PV_BSN_ID_I": request.get("bid_seasons"),
         # for now this will not be used, but will be needed later
         # "PV_BSCC_ID_I":None,
