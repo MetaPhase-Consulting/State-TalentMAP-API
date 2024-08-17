@@ -33,13 +33,14 @@ class FSBidClientListView(BaseView):
         return Response(services.client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
     
 class FSBidClientUpdateListView(BaseView):
+    print("FSBidClientUpdateListView")
     @swagger_auto_schema(
     manual_parameters=[
         openapi.Parameter("hru_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='HRU id of the client'),
         openapi.Parameter("per_seq_number", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Perdet Seq Num of the client'),
         openapi.Parameter("bid_seasons", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Bid seasons of the client'),
         openapi.Parameter("comments", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Comments of the client'),
-        openapi.Parameter("email", openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='Email of the client'),
+        openapi.Parameter("email", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Email of the client'),
     ])
 
     def post(self, request):
