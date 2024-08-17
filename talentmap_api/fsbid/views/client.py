@@ -13,7 +13,6 @@ class FSBidClientListView(BaseView):
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter("hru_id", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='HRU id of the Agent'),
-            openapi.Parameter("per_seq_number", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Perdet Seq Num of the Agent'),
             openapi.Parameter("hru_id__in", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='HRU ids of the Agent (commma separated)'),
             openapi.Parameter("rl_cd", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Role code of the Agent'),
             openapi.Parameter("hasHandshake", openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN, description='True or False filter for clients with any offered handshakes'),
