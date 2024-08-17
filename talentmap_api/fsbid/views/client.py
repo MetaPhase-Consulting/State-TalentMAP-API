@@ -33,7 +33,6 @@ class FSBidClientListView(BaseView):
         return Response(services.client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
     
 class FSBidClientUpdateListView(BaseView):
-    print("FSBidClientUpdateListView")
     @swagger_auto_schema(
     manual_parameters=[
         openapi.Parameter("hru_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='HRU id of the client'),
