@@ -93,11 +93,12 @@ def update_client_req_mapping(request):
     }
 
 def update_user_client_res_mapping(data):
-    if data is not None and data['PV_RETURN_CODE_O'] == 0:
-         return Response(status=status.HTTP_204_NO_CONTENT)
-    else:
-        logger.error(f"Error updating client: {data}")
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    # if data is not None and data['PV_RETURN_CODE_O'] == 0:
+    #      return Response(status=status.HTTP_204_NO_CONTENT)
+    # else:
+    #     logger.error(f"Error updating client: {data}")
+    #     return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    return data
 
 def get_clients_count(query, jwt_token, host=None):
     '''
