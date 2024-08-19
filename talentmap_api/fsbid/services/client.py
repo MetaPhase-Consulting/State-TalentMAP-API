@@ -77,7 +77,6 @@ def update_client(data, jwt_token, host=None):
     )
 
 def update_client_req_mapping(request):
-    print("TESTING", request)
     return {
         "PV_AD_ID_I":"",
         "pv_subtran_i":0,

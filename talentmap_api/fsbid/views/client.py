@@ -51,10 +51,7 @@ class FSBidClientUpdateListView(BaseView):
         '''
         Create a new client
         '''
-        # return services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
-        jwt = request.META['HTTP_JWT']
-        result = services.update_client(request.data, jwt, f"{request.scheme}://{request.get_host()}")
-
+        result = services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
         # if result is None or result['PV_RETURN_CODE_O'] != 0:
             # logger.error(f"Fsbid call to Update client Failed.")
             # return Response(status=status.HTTP_404_NOT_FOUND)
