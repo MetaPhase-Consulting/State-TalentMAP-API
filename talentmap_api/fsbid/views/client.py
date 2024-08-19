@@ -36,9 +36,13 @@ class FSBidClientUpdateListView(BaseView):
     manual_parameters=[
         openapi.Parameter("hru_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='HRU id of the client'),
         openapi.Parameter("per_seq_number", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Perdet Seq Num of the client'),
-        openapi.Parameter("bid_seasons", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Bid seasons of the client'),
+        openapi.Parameter("bid_seasons", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Bid seasons of the client'),
         openapi.Parameter("comments", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Comments of the client'),
         openapi.Parameter("email", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Email of the client'),
+        openapi.Parameter("ordering", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Which field to use when ordering the results.'),
+        openapi.Parameter("page", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='A page number within the paginated result set.'),
+        openapi.Parameter("limit", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Number of results to return per page.'),
+
     ])
 
     def post(self, request):
