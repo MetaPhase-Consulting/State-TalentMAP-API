@@ -9,15 +9,13 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
-from rest_framework.response import Response
-from rest_framework import status
 from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
 from talentmap_api.fsbid.requests import requests
 
-logger = logging.getLogger(__name__)
+
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
@@ -84,16 +82,15 @@ def update_client_req_mapping(request):
         "pv_subtran_i":0,
         "PV_WL_CODE_I":"",
         "pv_hru_id_i": request.get("hru_id"),
-        "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
         "PV_BSN_ID_I": request.get("bid_seasons"),
-        # for now this will not be used, but will be needed later
-        # "PV_BSCC_ID_I":None,
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
-
+    
 def update_user_client_res_mapping(data):
-        return data
+    return data
+ 
 
 def get_clients_count(query, jwt_token, host=None):
     '''
@@ -338,7 +335,7 @@ def fsbid_clients_to_talentmap_clients(data):
         # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
         # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
-        "languages": fsbid_languages_to_tmap(data.get("languages", []) or []),
+        "languages": fsbid_languages_to_tmap(data.get("languages") or []),
         "cdos": data.get("cdos") or [],
         "current_assignment": current_assignment,
         "assignments": fsbid_assignments_to_tmap(assignments),
@@ -645,15 +642,10 @@ def fsbid_assignments_to_tmap(assignments):
 
 
 def fsbid_languages_to_tmap(languages):
-    if languages is None:
-        return []
-
     tmap_languages = []
     empty_score = '--'
     for x in languages:
-        if x is None or not isinstance(x, dict):
-            continue
-        if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
+        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
             continue
         r = str(x.get('empl_high_reading', '')).strip()
         s = str(x.get('empl_high_speaking', '')).strip()
@@ -663,7 +655,7 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": s or empty_score,
             "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
+            "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
         })
     return tmap_languages
 
