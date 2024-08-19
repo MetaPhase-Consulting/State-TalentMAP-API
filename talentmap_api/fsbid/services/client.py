@@ -338,7 +338,7 @@ def fsbid_clients_to_talentmap_clients(data):
         # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
         # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
-        "languages": fsbid_languages_to_tmap(data.get("languages") or []),
+        "languages": fsbid_languages_to_tmap(data.get("languages", []) or []),
         "cdos": data.get("cdos") or [],
         "current_assignment": current_assignment,
         "assignments": fsbid_assignments_to_tmap(assignments),
@@ -645,10 +645,15 @@ def fsbid_assignments_to_tmap(assignments):
 
 
 def fsbid_languages_to_tmap(languages):
+    if languages is None:
+        return []
+
     tmap_languages = []
     empty_score = '--'
     for x in languages:
-        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+        if x is None or not isinstance(x, dict):
+            continue
+        if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
             continue
         r = str(x.get('empl_high_reading', '')).strip()
         s = str(x.get('empl_high_speaking', '')).strip()
@@ -658,7 +663,7 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": s or empty_score,
             "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
+            "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
         })
     return tmap_languages
 
