@@ -17,7 +17,7 @@ import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
 from talentmap_api.fsbid.requests import requests
 
-
+logger = logging.getLogger(__name__)
 SECREF_ROOT = settings.SECREF_URL
 CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
@@ -93,12 +93,8 @@ def update_client_req_mapping(request):
     }
 
 def update_user_client_res_mapping(data):
-    # if data is not None and data['PV_RETURN_CODE_O'] == 0:
-    #      return Response(status=status.HTTP_204_NO_CONTENT)
-    # else:
-    #     logger.error(f"Error updating client: {data}")
-    #     return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    return data
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error(f"Fsbid call to Updata client failed.")
 
 def get_clients_count(query, jwt_token, host=None):
     '''
