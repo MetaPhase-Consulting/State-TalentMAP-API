@@ -48,7 +48,6 @@ class FSBidClientUpdateListView(BaseView):
     ])
 
     def post(self, request):
-        print('request.data', request.data)
         '''
         Create a new client
         '''
