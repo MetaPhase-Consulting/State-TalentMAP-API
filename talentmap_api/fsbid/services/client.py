@@ -60,19 +60,6 @@ def client(jwt_token, query, host=None):
 
     return response
 
-<<<<<<< HEAD
-def get_unassigned_bidder(jwt_token, query, host=None):
-    '''
-    Get Bidder Type
-    '''
-    args = {
-        "proc_name": "prc_lst_cdo_wl_clients",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
-        "request_mapping_function": unassigned_bidder_type_req_mapping,
-        "response_mapping_function": unassigned_bidder_type_res_mapping,
-        "jwt_token": jwt_token,
-        "request_body": query,
-=======
 def update_client(data, jwt_token, host=None):
     '''
     Update current client
@@ -84,37 +71,11 @@ def update_client(data, jwt_token, host=None):
         "response_mapping_function": update_user_client_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
->>>>>>> dev
     }
     return services.send_post_back_office(
         **args
     )
 
-<<<<<<< HEAD
-def unassigned_bidder_type_req_mapping(request):
-    return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "PV_SUBTRAN_I": "",
-        "PV_CDO_WL_CODE_I": convert_unassigned_bidder_type_query(request),
-        "PV_CDO_HRU_ID_I": request.get("hru_id__in"),
-        "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
-    }
-
-def unassigned_bidder_type_res_mapping(data):
-    # if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
-    #     logger.error('FSBid call for Unassigned Bidder Type failed.')
-    #     return None
-    return data
-
-def convert_unassigned_bidder_type_query(type):
-    if type.get('noBids'): 
-        return 'NB'
-    if type.get('noPanel'): 
-        return 'NP'
-
-    return None
-=======
 def update_client_req_mapping(request):
     return {
         "PV_AD_ID_I":"",
@@ -136,7 +97,6 @@ def update_user_client_res_mapping(data):
 
     return data
 
->>>>>>> dev
 
 def get_clients_count(query, jwt_token, host=None):
     '''
