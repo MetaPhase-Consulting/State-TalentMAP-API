@@ -84,7 +84,7 @@ def update_client_req_mapping(request):
         "PV_WL_CODE_I":"",
         "pv_hru_id_i": 12015,
         "PV_PER_SEQ_NUM_I": 6570,
-        "PV_BSN_ID_I": [48, 23, 33],
+        "PV_BSN_ID_I": request.get("bid_seasons"),
         "PV_BSCC_COMMENT_TEXT_I": "Test appless words",
         "pv_cae_email_address_text_i": "t24dddss@test.com",
         # "PV_AD_ID_I":"",
