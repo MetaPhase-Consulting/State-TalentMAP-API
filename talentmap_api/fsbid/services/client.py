@@ -77,15 +77,16 @@ def update_client(data, jwt_token, host=None):
     )
 
 def update_client_req_mapping(request):
+    print("REQUEST IN UPDATE CLIENT", request)
     return {
         "PV_AD_ID_I":"",
         "pv_subtran_i":0,
         "PV_WL_CODE_I":"",
-        "pv_hru_id_i": request.get("hru_id"),
-        "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
-        "PV_BSN_ID_I": request.get("bid_seasons"),
-        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
-        "pv_cae_email_address_text_i": request.get("email"),
+        "pv_hru_id_i": 12015,
+        "PV_PER_SEQ_NUM_I": 6570,
+        "PV_BSN_ID_I": 48,
+        "PV_BSCC_COMMENT_TEXT_I": "Test words",
+        "pv_cae_email_address_text_i": "test@test.com",
     }
 
 def update_user_client_res_mapping(data):
