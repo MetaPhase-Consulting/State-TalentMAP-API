@@ -60,6 +60,7 @@ def client(jwt_token, query, host=None):
 
     return response
 
+<<<<<<< HEAD
 def get_unassigned_bidder(jwt_token, query, host=None):
     '''
     Get Bidder Type
@@ -71,11 +72,25 @@ def get_unassigned_bidder(jwt_token, query, host=None):
         "response_mapping_function": unassigned_bidder_type_res_mapping,
         "jwt_token": jwt_token,
         "request_body": query,
+=======
+def update_client(data, jwt_token, host=None):
+    '''
+    Update current client
+    '''
+    args = {
+        "proc_name": 'prc_mod_alt_email_bscc',
+        "package_name": 'Pkg_Wrap_dev',
+        "request_mapping_function": update_client_req_mapping,
+        "response_mapping_function": update_user_client_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+>>>>>>> dev
     }
     return services.send_post_back_office(
         **args
     )
 
+<<<<<<< HEAD
 def unassigned_bidder_type_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
@@ -99,6 +114,29 @@ def convert_unassigned_bidder_type_query(type):
         return 'NP'
 
     return None
+=======
+def update_client_req_mapping(request):
+    return {
+        "PV_AD_ID_I":"",
+        "pv_subtran_i":0,
+        "PV_WL_CODE_I":"",
+        "pv_hru_id_i": request.get("hru_id"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_num"),
+        "PV_BSN_ID_I": request.get("bid_seasons"),
+        # for now this will not be used to add but will be needed later
+        # "PV_BSCC_ID_I":null,
+        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
+        "pv_cae_email_address_text_i": request.get("email"),
+    }
+    
+def update_user_client_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Updating current client failed.')
+        return None
+
+    return data
+
+>>>>>>> dev
 
 def get_clients_count(query, jwt_token, host=None):
     '''
@@ -325,6 +363,8 @@ def fsbid_clients_to_talentmap_clients(data):
 
     return {
         "id": str(employee.get("pert_external_id", None)),
+        "hru_id": data.get("hru_id", None),
+        "per_seq_num": employee.get("per_seq_num", None),
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
@@ -341,7 +381,7 @@ def fsbid_clients_to_talentmap_clients(data):
         # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
         # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
-        "languages": fsbid_languages_to_tmap(data.get("languages") or []),
+        "languages": fsbid_languages_to_tmap(data.get("languages", []) or []),
         "cdos": data.get("cdos") or [],
         "current_assignment": current_assignment,
         "assignments": fsbid_assignments_to_tmap(assignments),
@@ -456,6 +496,8 @@ def convert_client_query(query, isCount=None):
         "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
         "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
         "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
+        "request_params.eligible_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('eligible_bidder', None)),
+        "request_params.cusp_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('cusp_bidder', None)),
         "request_params.page_index": int(query.get("page", 1)),
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
@@ -559,6 +601,12 @@ def tmap_no_successful_panel_to_fsbid(panel):
     }
     return tmap_dictionary.get(panel, None)
 
+def tmap_cusp_and_eligible_bidders_to_fsbid(bidder):
+    tmap_dictionary = {
+        "true": "Y",
+    }
+    return tmap_dictionary.get(bidder, None)
+
 def fsbid_no_bids_to_tmap(bids):
     fsbid_dictionary = {
         "Y": True,
@@ -640,10 +688,15 @@ def fsbid_assignments_to_tmap(assignments):
 
 
 def fsbid_languages_to_tmap(languages):
+    if languages is None:
+        return []
+
     tmap_languages = []
     empty_score = '--'
     for x in languages:
-        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+        if x is None or not isinstance(x, dict):
+            continue
+        if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
             continue
         r = str(x.get('empl_high_reading', '')).strip()
         s = str(x.get('empl_high_speaking', '')).strip()
@@ -653,7 +706,7 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": s or empty_score,
             "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
+            "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
         })
     return tmap_languages
 

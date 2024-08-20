@@ -640,36 +640,36 @@ def get_audit_data_res_mapping(data):
         for item in x:
             position_num = item.get('POS_NUM_TXT')
             position_info = {
-                'org_short_desc': item.get('ORGS_SHORT_DESC') or None,
-                'org_code': item.get('ORG_CODE') or None,
-                'position_number': item.get('POS_NUM_TXT') or None,
-                'position_title': item.get('POS_PTITLE') or None,
-                'position_grade': item.get('POS_GRD_CD') or None,
-                'position_skill': item.get('POS_SKL_CODE_POS') or None,
-                'position_lang': item.get('POSLTEXT') or None,
-                'position_incumbent_name': item.get('POS_INCUMBENT_NAME') or None,
-                'position_incumbent_ted': item.get('ACP_INCUMBENT_TED') or None,
-                'audit_cycle_position_id': item.get('ACP_ID') or None,
-                'count_total_bidders': item.get('ACP_TTL_BIDDER_QTY') or None,
-                'count_at_grade': item.get('ACP_AT_GRD_QTY') or None,
-                'count_in_category': item.get('ACP_IN_CATEGORY_QTY') or None,
-                'count_at_grade_in_category': item.get('ACP_AT_GRD_IN_CATEGORY_QTY') or None,
-                'count_total_group_members': item.get('ACP_TTL_GROUP_MEMBERS_QTY') or None,
-                'hard_to_fill_ind': item.get('ACP_HARD_TO_FILL_IND') or None,
+                'org_short_desc': item.get('ORGS_SHORT_DESC'),
+                'org_code': item.get('ORG_CODE'),
+                'position_number': item.get('POS_NUM_TXT'),
+                'position_title': item.get('POS_PTITLE'),
+                'position_grade': item.get('POS_GRD_CD'),
+                'position_skill': item.get('POS_SKL_CODE_POS'),
+                'position_lang': item.get('POSLTEXT'),
+                'position_incumbent_name': item.get('POS_INCUMBENT_NAME'),
+                'position_incumbent_ted': item.get('ACP_INCUMBENT_TED'),
+                'audit_cycle_position_id': item.get('ACP_ID'),
+                'count_total_bidders': item.get('ACP_TTL_BIDDER_QTY'),
+                'count_at_grade': item.get('ACP_AT_GRD_QTY'),
+                'count_in_category': item.get('ACP_IN_CATEGORY_QTY'),
+                'count_at_grade_in_category': item.get('ACP_AT_GRD_IN_CATEGORY_QTY'),
+                'count_total_group_members': item.get('ACP_TTL_GROUP_MEMBERS_QTY'),
+                'hard_to_fill_ind': item.get('ACP_HARD_TO_FILL_IND'),
             }
             bidder_info = {
-                'bidder_name': item.get('BIDDER_FULL_NAME') or None,
-                'bidder_org_desc': item.get('BIDDER_ORG_SHORT_DESC') or None,
-                'bidder_position_number': item.get('BIDDER_POS_NUM_TXT') or None,
-                'bidder_position_title': item.get('BIDDER_PTITLE') or None,
-                'bidder_grade': item.get('BIDDER_GRADE_CODE') or None,
-                'bidder_skill': item.get('BIDDER_SKL_1_CODE') or None,
-                'bidder_lang': item.get('BIDDER_EMPLTEXT') or None,
-                'bidder_ted': item.get('BIDDER_TED_DT') or None,
-                'bidder_is_at_grade': item.get('BIDDER_AT_GRADE_IND') or None,
-                'bidder_is_in_category': item.get('BIDDER_IN_CATEGORY_IND') or None,
-                'bidder_cats': item.get('BIDDER_CATS') or None,
-                'ae_stretch_ind': item.get('AE_STRETCH_IND') or None,
+                'bidder_name': item.get('BIDDER_FULL_NAME'),
+                'bidder_org_desc': item.get('BIDDER_ORG_SHORT_DESC'),
+                'bidder_position_number': item.get('BIDDER_POS_NUM_TXT'),
+                'bidder_position_title': item.get('BIDDER_PTITLE'),
+                'bidder_grade': item.get('BIDDER_GRADE_CODE'),
+                'bidder_skill': item.get('BIDDER_SKL_1_CODE'),
+                'bidder_lang': item.get('BIDDER_EMPLTEXT'),
+                'bidder_ted': item.get('BIDDER_TED_DT'),
+                'bidder_is_at_grade': item.get('BIDDER_AT_GRADE_IND'),
+                'bidder_is_in_category': item.get('BIDDER_IN_CATEGORY_IND'),
+                'bidder_cats': item.get('BIDDER_CATS'),
+                'ae_stretch_ind': item.get('AE_STRETCH_IND'),
             }
 
             if position_num is not None and bidder_info['bidder_name'] is not None:
@@ -708,3 +708,88 @@ def get_audit_data_res_mapping(data):
         return results
 
     return service_response(data, 'Bid Audit Get Audits', success_mapping)
+
+
+def get_htf_data(jwt_token, pk):
+    '''
+    Get HTF Data for a Position
+    '''
+    args = {
+        "proc_name": 'qry_getAuditCyclePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": pk,
+        "request_mapping_function": get_htf_req_mapping,
+        "response_mapping_function": get_htf_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_htf_req_mapping(pk):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_acp_id': pk
+    }
+    return mapped_request
+
+
+def get_htf_res_mapping(data):
+    def success_mapping(x):
+        return {
+            'id': x.get('O_ACP_ID'),
+            'total_bidders': x.get('O_ACP_TTL_BIDDER_QTY'),
+            'at_grade': x.get('O_ACP_AT_GRD_QTY'),
+            'in_category': x.get('O_ACP_IN_CATEGORY_QTY'),
+            'total_group_members': x.get('O_ACP_TTL_GROUP_MEMBERS_QTY'),
+            'at_grade_in_category': x.get('O_ACP_AT_GRD_IN_CATEGORY_QTY'),
+            'htf_calc_ind': x.get('O_ACP_HARD_TO_FILL_CALC_IND'),
+            'pp_ind': x.get('O_ACP_PUBL_POS_EXCLUSION_IND'),
+            'admin_excl_ind': x.get('O_ACP_ADMIN_EXCLUSION_IND'),
+            'pos_grade_code': x.get('O_ACP_POSITION_GRADE_CD'),
+            'pos_category_code': x.get('O_ACP_POSITION_SKILL_CD'),
+            'incumbent_ted': x.get('O_ACP_INCUMBENT_TED_DT'),
+            'incumbent_status': x.get('O_ACP_INCUMBENT_STATUS_CD'),
+            'ted_override': x.get('O_ACP_TED_OVRRD_DT'),
+            'ted_now_flag': x.get('O_ACP_NOW_TED_FLG'),
+            'htf_ind': x.get('O_ACP_HARD_TO_FILL_IND'),
+            'last_update_stamp': x.get('O_ACP_LAST_UPDT_TMSMP_DT'),
+            'last_update_id': x.get('O_ACP_LAST_UPDT_USER_ID'),
+        }
+
+    return service_response(data, 'Bid Audit Get HTF Data', success_mapping)
+
+
+def mod_htf_data(jwt_token, request):
+    '''
+     Update HTF Data for a Position
+    '''
+    args = {
+        "proc_name": 'act_modAuditCyclePos',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": mod_htf_req_mapping,
+        "response_mapping_function": mod_htf_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def mod_htf_req_mapping(req):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_acp_id': req.get('id'),
+        'i_acp_hard_to_fill_ind': 'Y' if req.get('htf_ind') == 'N' else 'N',
+        'i_acp_last_updt_tmsmp_dt': req.get('last_update_stamp'),
+        'i_acp_last_updt_user_id': req.get('last_update_id')
+    }
+    return mapped_request
+
+
+def mod_htf_res_mapping(data):
+    return service_response(data, 'Update HTF')
