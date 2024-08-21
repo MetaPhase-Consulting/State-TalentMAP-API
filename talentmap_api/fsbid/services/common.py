@@ -433,8 +433,12 @@ def get_post_bidding_considerations_url(post_id):
 
 def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_function, base_url, host=None, ad_id=None, limit=None, use_post=False):
     '''
-    Gets items from FSBid
+    Gets items from FSBid (sending request directly to Web Services)
     '''
+
+    print("inside send_get_csv_request\n")
+    logger.info("inside send_get_csv_request\n")
+
     formattedQuery = query
     try:
         formattedQuery._mutable = True
@@ -453,6 +457,8 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
     else:
         url = f"{base_url}/{uri}?{query_mapping_function(formattedQuery)}"
         response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
+        print("response directly from web services: \n", response, "\n")
+        # logger.info("response directly from web services: \n", response, "\n")
 
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")

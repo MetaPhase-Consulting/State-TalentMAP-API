@@ -217,6 +217,20 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ad_id
     )
 
+    # print("\ndata brought in after remapping is: ", data, "\n")
+    # print("data[0]: ", next(data), "\n")
+
+    # logger.info("\ndata brought in after remapping is: ", data, "\n")
+    # data_0 = next(data)
+    # logger.info("data_0: ", data_0, "\n") 
+
+    print("\ndata brought in after remapping is: ", data, "\n")
+    data_0 = next(data)
+    print("data_0: ", data_0, "\n")
+
+    if "languages" in data_0:
+        print("languages in the first data record: ", data_0['languages'], "\n")
+
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=clients_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
@@ -254,6 +268,12 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str("=\"%s\"" % record["ted"]),
             smart_str("=\"%s\"" % record["status"]),
         ])
+
+    print("response before returning: \n")
+    print("response type: ", type(response), "\n")
+    print("response: ", response, "\n")
+    print("response content: ", response.content, "\n")
+
     return response
 
 
