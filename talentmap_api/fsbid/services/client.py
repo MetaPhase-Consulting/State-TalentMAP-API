@@ -90,7 +90,7 @@ def unassigned_bidder_type_res_mapping(data):
     # if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
     #     logger.error('FSBid call for Unassigned Bidder Type failed.')
     #     return None
-    return data
+    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 
 def convert_unassigned_bidder_type_query(type):
     if type.get('noBids'): 
