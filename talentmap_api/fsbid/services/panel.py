@@ -22,7 +22,8 @@ panel_remarks_mapping = {
     'airremarktext': 'air_remark_text',
     'rmrkseqnum': 'seq_num',
     'rmrkrccode': 'rc_code',
-    "rmrkshortdesctext": "short_desc_text"
+    'rmrkshortdesctext': 'short_desc_text',
+    'rmrkactiveind': 'active_ind'
 }
 
 panel_dates_mapping = {
