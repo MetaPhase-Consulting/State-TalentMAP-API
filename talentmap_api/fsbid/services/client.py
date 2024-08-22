@@ -692,6 +692,9 @@ def fsbid_languages_to_tmap(languages):
 
 def fsbid_language_only_to_tmap(languages):
     tmap_language_only = []
+    print("\n")
+    print("languages: ", languages, "\n")
+    print("\n")
     for x in languages:
         empl_language = x.get('empl_language', None)
         if not empl_language or not str(empl_language).strip():
