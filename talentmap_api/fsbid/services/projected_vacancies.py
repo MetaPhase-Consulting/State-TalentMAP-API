@@ -177,6 +177,7 @@ def fsbid_pv_to_talentmap_pv(pv):
         },
         "tandem_nbr": pv.get("tandem_nbr", None),  # Only appears in tandem searches
         "position": {
+            "avail_telework_pos": pv.get("avail_telework_pos", None),
             "grade": pv.get("pos_grade_code", None),
             "skill": f"{pv.get('pos_skill_desc', None)} ({pv.get('pos_skill_code')})",
             "skill_code": pv.get("pos_skill_code", None),
