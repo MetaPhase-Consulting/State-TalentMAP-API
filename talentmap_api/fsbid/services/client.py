@@ -220,9 +220,9 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
     # print("\ndata brought in after remapping is: ", data, "\n")
     # print("data[0]: ", next(data), "\n")
 
-    # logger.info("\ndata brought in after remapping is: ", data, "\n")
-    # data_0 = next(data)
-    # logger.info("data_0: ", data_0, "\n") 
+    logger.info("\ndata brought in after remapping is: ", data, "\n")
+    data_0 = next(data)
+    logger.info("data_0: ", data_0, "\n") 
 
     print("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
@@ -693,11 +693,12 @@ def fsbid_languages_to_tmap(languages):
 def fsbid_language_only_to_tmap(languages):
     tmap_language_only = []
     for x in languages:
-        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+        empl_language = x.get('empl_language', None)
+        if not empl_language or not str(empl_language).strip():
             continue
 
         tmap_language_only.append(
-            str(x.get('empl_language')).strip() if x.get('empl_language') else x.get('empl_language') or None,
+            str(empl_language).strip() if empl_language else empl_language or None,
         )
 
     return ", ".join(str(x) for x in tmap_language_only)
