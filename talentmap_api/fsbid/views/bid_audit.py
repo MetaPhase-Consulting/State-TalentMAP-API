@@ -272,9 +272,9 @@ class FSBidBidAuditDataListView(BaseView):
     Gets the Bid Audit Data
     '''
 
-    def post(self, request):
+    def get(self, request):
         jwt = request.META['HTTP_JWT']
-        result = services.get_audited_data(jwt, request.data)
+        result = services.get_audited_data(jwt, request.query_params)
 
         if result is None or 'return_code' in result and result['return_code'] != 0:
             logger.error(f"Fsbid call for Bid Audit, Audit Data failed.")
@@ -304,6 +304,22 @@ class FSBidBidAuditHTFListView(BaseView):
 
         if result is None or 'return_code' in result and result['return_code'] != 0:
             logger.error(f"Fsbid call to update HTF data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditMDSListView(BaseView):
+    '''
+    Gets the Bid Audit MDS Data
+    '''
+
+    def get(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_audited_mds_data(jwt, request.query_params)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for Bid Audit, MDS failed.")
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)

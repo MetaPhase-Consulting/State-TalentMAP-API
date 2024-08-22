@@ -402,11 +402,18 @@ def cycle_positions_filter_res_mapping(data):
             'description': x.get('GRD_DESCR_TXT'),
         }
 
+    def bureau_map(x):
+        return {
+            'code': x.get('ORGS_SHORT_DESC'),
+            'description': x.get('ORGS_LONG_DESC'),
+        }
+
     return {
         'statusFilters': list(map(status_map, data.get('QRY_LSTCYCLEPOSSTATUS_DD_REF'))),
         'orgFilters': list(map(org_map, data.get('QRY_LSTORGSHORT_DD_REF'))),
         'skillsFilters': list(map(skills_map, data.get('QRY_LSTSKILLCODES_DD_REF'))),
         'gradeFilters': list(map(grade_map, data.get('QRY_LSTGRADES_DD_REF'))),
+        'bureauFilters': list(map(bureau_map, data.get('QRY_LSTBUREAUS_DD_REF'))),
     }
 
 

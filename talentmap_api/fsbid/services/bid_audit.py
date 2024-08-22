@@ -619,13 +619,13 @@ def get_audited_data(jwt_token, request):
 
 
 def get_audit_data_req_mapping(request):
-    # return all of the bidding data by passing in every grade code
-    # since we are not using a search page to fetch more specific data
-    # frontend will do all the filtering, on the data returned here
     mapped_request = {
         'PV_API_VERSION_I': '',
         'PV_AD_ID_I': '',
-        'i_grd_cd': '00,01,02,03,04,05,06,07,MC,OC,OM',
+        'i_grd_cd': request.get('grades') or '',
+        'i_skl_code_pos': request.get('skills') or '',
+        'i_org_code': request.get('orgs') or '',
+        'i_bureau_cd': request.get('bureaus') or '',
         'i_cycle_id': request.get('cycleId'),
         'i_aac_audit_nbr': request.get('auditId'),
     }
@@ -793,3 +793,55 @@ def mod_htf_req_mapping(req):
 
 def mod_htf_res_mapping(data):
     return service_response(data, 'Update HTF')
+
+
+def get_audited_mds_data(jwt_token, request):
+    '''
+    Get Audit Data for a Specific bid Audit
+    '''
+    args = {
+        "proc_name": 'qry_lstOrgCount',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "request_body": request,
+        "request_mapping_function": get_audit_mds_data_req_mapping,
+        "response_mapping_function": get_audit_mds_data_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+
+def get_audit_mds_data_req_mapping(request):
+    mapped_request = {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+        'i_grd_cd': request.get('grades') or '',
+        'i_skl_code_pos': request.get('skills') or '',
+        'i_org_code': request.get('orgs') or '',
+        'i_bureau_cd': request.get('bureaus') or '',
+        'i_cycle_id': request.get('cycleId'),
+        'i_aac_audit_nbr': request.get('auditId'),
+    }
+    return mapped_request
+
+
+def get_audit_mds_data_res_mapping(data):
+
+    def mds_results_mapping(x):
+        return {
+            'cycle_name': x.get('CYCLE_NM_TXT'),
+            'duty_station': x.get('DSV_NAME'),
+            'positions': x.get('AO_TTL_POSITIONS_QTY'),
+            'quantity_htf': x.get('AO_HTF_POSITIONS_QTY'),
+            'mds_ind': x.get('AO_MDS_IND'),
+            'id': x.get('AO_ID'),
+        }
+
+    def success_mapping(x):
+        results = {
+            'mds_audit_data': list(map(mds_results_mapping, x.get('QRY_LSTORGCOUNT_REF', {}))),
+        }
+        return results
+
+    return service_response(data, 'Bid Audit Get Audits', success_mapping)
