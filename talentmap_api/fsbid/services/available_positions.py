@@ -265,6 +265,7 @@ def fsbid_ap_to_talentmap_ap(ap):
         "tandem_nbr": ap.get("tandem_nbr", None),  # Only appears in tandem searches
         "position": {
             "id": None,
+            "avail_telework_pos": ap.get("avail_telework_pos", None),
             "grade": ap.get("pos_grade_code", None),
             "skill": f"{ap.get('pos_skill_desc', None)} ({ap.get('pos_skill_code')})",
             "skill_code": ap.get("pos_skill_code", None),
