@@ -101,6 +101,7 @@ class PanelMeetingsView(BaseView):
             openapi.Parameter("ordering", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Sort Panel meetings'),
             openapi.Parameter("type", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting type.'),
             openapi.Parameter("status", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting status.'),
+            openapi.Parameter("remark", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting remark short description.'),
             openapi.Parameter("panel-date-start", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting date start.'),
             openapi.Parameter("panel-date-end", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting date end.'),
             openapi.Parameter("id", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Panel meeting seq num.'),

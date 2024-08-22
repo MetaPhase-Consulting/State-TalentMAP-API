@@ -17,6 +17,15 @@ PANEL_API_ROOT = settings.PANEL_API_URL
 
 logger = logging.getLogger(__name__)
 
+panel_remarks_mapping = {
+    'pmipmseqnum': 'pmi_pm_seq_num',
+    'airremarktext': 'air_remark_text',
+    'rmrkseqnum': 'seq_num',
+    'rmrkrccode': 'rc_code',
+    'rmrkshortdesctext': 'short_desc_text',
+    'rmrkactiveind': 'active_ind'
+}
+
 panel_dates_mapping = {
     'pmdpmseqnum': 'pm_seq_num',
     'pmdupdatedate': 'pmd_update_date',
@@ -31,7 +40,7 @@ panel_dates_mapping = {
 }
 
 panel_cols_mapping = {
-    'pmseqnum': 'pm_seq_num',
+    'pmipmseqnum': 'pmi_pm_seq_num',
     'pmdpmseqnum': 'pm_seq_num',
     'pmddttm': 'pmd_dttm',
     'pmvirtualind': 'pm_virtual',
@@ -47,6 +56,10 @@ panel_cols_mapping = {
     'pmsdesctext': 'pms_desc_text',
     'miccode': 'mic_code',
     'micdesctext': 'mic_desc_text',
+    'allRemarks': {
+        'nameMap': 'allRemarks',
+        'listMap': panel_remarks_mapping,
+    },
     'panelMeetingDates': {
         'nameMap': 'panelMeetingDates',
         'listMap': panel_dates_mapping,
@@ -208,9 +221,9 @@ def get_panel_meetings(query, jwt_token):
     Get panel meetings
     '''
     expected_keys = [
-        'pmseqnum', 'pmvirtualind', 'pmcreateid', 'pmcreatedate',
+        'pmipmseqnum', 'pmvirtualind', 'pmcreateid', 'pmcreatedate',
         'pmupdateid', 'pmupdatedate', 'pmpmscode', 'pmpmtcode',
-        'pmtdesctext', 'pmsdesctext', 'panelMeetingDates'
+        'pmtdesctext', 'pmsdesctext', 'allRemarks','panelMeetingDates'
     ]
 
     mapping_subset = pydash.pick(panel_cols_mapping, *expected_keys)
@@ -254,9 +267,10 @@ def convert_panel_query(query={}):
     panel_date_end = query.get("panel-date-end")
 
     filters = [
+        {'col': 'rmrkshortdesctext', 'val': query.get('remark'), 'com': 'IN'},
         {'col': 'pmpmtcode', 'val': services.if_str_upper(query.get('type')), 'com': 'IN'},
         {'col': 'pmscode', 'val': services.if_str_upper(query.get('status')), 'com': 'IN'},
-        {'col': 'pmseqnum', 'val': query.get('id')},
+        {'col': 'pmipmseqnum', 'val': query.get('id')},
     ]
 
     try:
@@ -297,6 +311,9 @@ def get_panel_meetings_csv(query, jwt_token, rl_cd, host=None):
             'panelMeetingDates': {
                 'transformFn': services.panel_process_dates_csv,
             },
+            'allRemarks': {
+                'transformFn': services.panel_process_remarks_csv,
+            },
         }
     }
     args = {
@@ -332,6 +349,7 @@ def get_panel_meetings_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"Post Panel Started"),
         smart_str(u"Post Panel Run Time"),
         smart_str(u"Agenda Completed Time"),
+        smart_str(u"All Remarks"),
     ])
 
     writer.writerows(data['results'])
