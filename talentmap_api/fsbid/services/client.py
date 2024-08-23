@@ -21,7 +21,6 @@ CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 
 logger = logging.getLogger(__name__)
-logger.info("Logger being used: ", __name__)
 
 def get_user_information(jwt_token, perdet_seq_num):
     '''
