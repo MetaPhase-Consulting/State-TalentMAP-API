@@ -707,7 +707,8 @@ def get_audit_data_res_mapping(data):
         }
         return results
 
-    return service_response(data, 'Bid Audit Get Audits', success_mapping)
+    # dont use the service_response since we are OK with a -1 error here, to get the reference data back
+    return success_mapping(data)
 
 
 def get_htf_data(jwt_token, pk):
