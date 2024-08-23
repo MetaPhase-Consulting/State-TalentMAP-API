@@ -458,8 +458,8 @@ def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_
         url = f"{base_url}/{uri}?{query_mapping_function(formattedQuery)}"
         response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
         # print("response directly from web services: \n", response, "\n")
-        logger.debug("url: ", url, "\n")
-        logger.debug("response directly from web services: \n", response, "\n")
+        logger.debug(f"url: {url}\n")
+        logger.debug(f"response directly from web services: \n{response}\n")
 
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
