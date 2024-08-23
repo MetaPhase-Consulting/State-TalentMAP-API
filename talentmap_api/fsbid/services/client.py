@@ -217,12 +217,9 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ad_id
     )
 
-    # print("\ndata brought in after remapping is: ", data, "\n")
-    # print("data[0]: ", next(data), "\n")
-
-    logger.info("\ndata brought in after remapping is: ", data, "\n")
+    logger.debug("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
-    logger.info("data_0: ", data_0, "\n") 
+    logger.debug("data_0: ", data_0, "\n") 
 
     print("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
@@ -274,7 +271,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
     print("response: ", response, "\n")
     print("response content: ", response.content, "\n")
 
-    return data
+    return response
 
 
 def fsbid_clients_to_talentmap_clients(data):
@@ -692,9 +689,9 @@ def fsbid_languages_to_tmap(languages):
 
 def fsbid_language_only_to_tmap(languages):
     tmap_language_only = []
-    print("\n")
-    print("languages: ", languages, "\n")
-    print("\n")
+    logger.debug("\n")
+    logger.debug("languages: ", languages, "\n")
+    logger.debug("\n")
     for x in languages:
         if not isinstance(x, dict):
             print('Invalid item in languages:', x)
