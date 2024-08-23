@@ -274,7 +274,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
     print("response: ", response, "\n")
     print("response content: ", response.content, "\n")
 
-    return response
+    return data
 
 
 def fsbid_clients_to_talentmap_clients(data):
@@ -696,6 +696,10 @@ def fsbid_language_only_to_tmap(languages):
     print("languages: ", languages, "\n")
     print("\n")
     for x in languages:
+        if not isinstance(x, dict):
+            print('Invalid item in languages:', x)
+            logger.error(f'Invalid item in languages: {x}')
+            continue
         empl_language = x.get('empl_language', None)
         if not empl_language or not str(empl_language).strip():
             continue
