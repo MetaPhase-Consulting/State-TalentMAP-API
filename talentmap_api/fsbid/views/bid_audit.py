@@ -5,6 +5,7 @@ from rest_framework.response import Response
 # from rest_framework.permissions import IsAuthenticated
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.bid_audit as services
+from talentmap_api.common.common_helpers import in_group_or_403
 
 # from talentmap_api.common.permissions import isDjangoGroupMember
 # double check permissions
@@ -268,6 +269,7 @@ class FSBidBidAuditDeleteCategoryListView(APIView):
 
 
 class FSBidBidAuditDataListView(BaseView):
+    # If user has the Bureau Role, this call will fail
     '''
     Gets the Bid Audit Data
     '''
@@ -275,6 +277,10 @@ class FSBidBidAuditDataListView(BaseView):
     def get(self, request):
         jwt = request.META['HTTP_JWT']
         result = services.get_audited_data(jwt, request.query_params)
+
+        if in_group_or_403(request.user, 'bureau_user'):
+            logger.error(f"Bureau User cannot access this Data.")
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         # the -1 error code still returns the reference data, so only check for -2
         if result is None or 'return_code' in result and result['return_code'] == -2:
@@ -285,6 +291,7 @@ class FSBidBidAuditDataListView(BaseView):
 
 
 class FSBidBidAuditHTFListView(BaseView):
+    # If user has the Bureau Role, this call will fail
     '''
     Gets the Bid Audit Hard To Fill Data for a Position
     '''
@@ -311,6 +318,7 @@ class FSBidBidAuditHTFListView(BaseView):
 
 
 class FSBidBidAuditMDSListView(BaseView):
+    # If user has the Bureau Role, this call will fail
     '''
     Gets the Bid Audit MDS Data
     '''
