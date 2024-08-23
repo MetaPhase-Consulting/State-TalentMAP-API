@@ -660,8 +660,9 @@ def fsbid_languages_to_tmap(languages):
     tmap_languages = []
     empty_score = '--'
     for x in languages:
-        if x is None:
-            logger.warning(f"Skipping None value in languages: {languages}\n")
+        if x is None or not isinstance(x, dict):
+            if x is None:
+                logger.warning(f"Skipping None value in languages: {languages}\n")
             continue
         if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
             continue
@@ -678,18 +679,26 @@ def fsbid_languages_to_tmap(languages):
     return tmap_languages
 
 def fsbid_language_only_to_tmap(languages):
+    if not languages:
+        return "None"
+    
     tmap_language_only = []
     for x in languages:
-        if x is None:
+        # checks for non-dict elements such as [numbers, strings, etc]
+        if not isinstance(x, dict):
+            continue
+
+        # if element is None (or if its passed in as null), we just skip this element.
+        if x is None or str(x) == "null":
             logger.warning(f"Skipping None value in languages: {languages}\n")
             continue
+
+        # get the value for empl_language key, if its not present, give back None
         empl_language = x.get('empl_language', None)
         if not empl_language or not str(empl_language).strip():
             continue
 
-        tmap_language_only.append(
-            str(empl_language).strip() if empl_language else empl_language or None,
-        )
+        tmap_language_only.append(empl_language.strip())
 
     return ", ".join(str(x) for x in tmap_language_only)
 
