@@ -702,7 +702,7 @@ def get_audit_data_res_mapping(data):
 
     def success_mapping(x):
         results = {
-            'audit_data': results_mapping(x.get('QRY_LSTBIDBOOK_REF')),
+            'audit_data': results_mapping(x.get('QRY_LSTBIDBOOK_REF')) if x.get('QRY_LSTBIDBOOK_REF') else [],
             'ref_data': reference_mapping(x['QRY_GETCYCLE_REF'][0]),
         }
         return results
