@@ -417,7 +417,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     # Check if None is in languages and print employee
     languages = data.get("languages") or []
     if None in languages:
-        logger.debug(f"Employee with None in languages: {employee}")
+        logger.error(f"Employee with None in languages: {employee}")
 
     return {
         "id": employee.get("perdet_seq_num", None),
@@ -692,11 +692,14 @@ def fsbid_languages_to_tmap(languages):
 def fsbid_language_only_to_tmap(languages):
     tmap_language_only = []
     for x in languages:
-        if not isinstance(x, dict):
-            print('Invalid item in languages:', x)
-            logger.info(f"languages: {languages}\n")
-            logger.error(f'Invalid item in languages: {x}')
+        if x is None:
+            logger.info(f"Skipping None value in languages: {languages}\n")
             continue
+        # if not isinstance(x, dict):
+        #     print('Invalid item in languages:', x)
+        #     logger.info(f"languages: {languages}\n")
+        #     logger.error(f'Invalid item in languages: {x}')
+        #     continue
         empl_language = x.get('empl_language', None)
         if not empl_language or not str(empl_language).strip():
             continue
