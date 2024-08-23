@@ -216,16 +216,13 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ad_id
     )
 
-    logger.debug("\ndata brought in after remapping is: ", data, "\n")
+    logger.warning("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
-    logger.debug("data_0: ", data_0, "\n") 
+    logger.warning("data_0: ", data_0, "\n") 
 
     print("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
     print("data_0: ", data_0, "\n")
-
-    if "languages" in data_0:
-        print("languages in the first data record: ", data_0['languages'], "\n")
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=clients_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"

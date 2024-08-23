@@ -422,7 +422,7 @@ LOGGING = {
             'formatter': 'simple',
         },
         'generic': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.handlers.WatchedFileHandler',
             'filename': get_delineated_environment_variable('DJANGO_LOG_DIRECTORY', '/var/log/talentmap/') + get_delineated_environment_variable('DJANGO_LOG_GENERIC_NAME', 'talentmap.log'),
             'formatter': 'simple',
@@ -446,7 +446,7 @@ LOGGING = {
         },
         'talentmap_api': {
             'handlers': ['console', 'generic'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': False,
         },
         'talentmap_api.permission': {
