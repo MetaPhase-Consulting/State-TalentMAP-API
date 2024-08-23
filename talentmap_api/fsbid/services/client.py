@@ -216,14 +216,6 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ad_id
     )
 
-    # logger.warning(f"\ndata brought in after remapping is: {data}\n")
-    # data_0 = next(data)
-    # logger.warning(f"data_0: {data_0}\n") 
-
-    print("\ndata brought in after remapping is: ", data, "\n")
-    data_0 = next(data)
-    print("data_0: ", data_0, "\n")
-
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=clients_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
@@ -413,12 +405,6 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})" if position is not None else pos_location
     cdo = data.get('cdos', None)
-
-    # Check if None is in languages and print employee
-    languages = data.get("languages") or []
-    if None in languages:
-        logger.info(f"Languages: {languages}")
-        logger.error(f"Employee with None in languages: {employee.get('per_last_name', None)}, {employee.get('per_first_name', None)} {middle_name['full']}")
 
     return {
         "id": employee.get("perdet_seq_num", None),
@@ -674,7 +660,8 @@ def fsbid_languages_to_tmap(languages):
     tmap_languages = []
     empty_score = '--'
     for x in languages:
-        if x is None or not isinstance(x, dict):
+        if x is None:
+            logger.warning(f"Skipping None value in languages: {languages}\n")
             continue
         if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
             continue
