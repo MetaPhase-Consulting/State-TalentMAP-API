@@ -654,12 +654,14 @@ def fsbid_assignments_to_tmap(assignments):
 
 
 def fsbid_languages_to_tmap(languages):
+    # if no languages present (languages: [])
     if languages is None:
         return []
 
     tmap_languages = []
     empty_score = '--'
     for x in languages:
+        # if x is None or not a dict, skip
         if x is None or not isinstance(x, dict):
             if x is None:
                 logger.warning(f"Skipping None value in languages: {languages}\n")
@@ -679,25 +681,28 @@ def fsbid_languages_to_tmap(languages):
     return tmap_languages
 
 def fsbid_language_only_to_tmap(languages):
+    # if no languages present (languages: [])
     if not languages:
         return "None"
     
     tmap_language_only = []
     for x in languages:
-        # checks for non-dict elements such as [numbers, strings, etc]
-        if not isinstance(x, dict):
+        # checks for non-dict elements such as [numbers, strings, None, etc] or
+        # if the "empl_language" key is not present, skip
+        if not isinstance(x, dict) or "empl_language" not in x:
+            logger.warning(f"Skipping invalid language: {x}\n")
             continue
 
-        # if element is None (or if its passed in as null), we just skip this element.
-        if x is None or str(x) == "null":
-            logger.warning(f"Skipping None value in languages: {languages}\n")
+        # checks if the value for empl_language key is not a string, skip
+        if not isinstance(x.get('empl_language'), str):
             continue
 
         # get the value for empl_language key, if its not present, give back None
-        empl_language = x.get('empl_language', None)
-        if not empl_language or not str(empl_language).strip():
+        # strip the value to remove any leading/trailing whitespace
+        empl_language = str(x.get('empl_language', None)).strip()
+        if not empl_language:
             continue
-
+        
         tmap_language_only.append(empl_language.strip())
 
     return ", ".join(str(x) for x in tmap_language_only)
