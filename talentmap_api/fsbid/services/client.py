@@ -21,7 +21,7 @@ CLIENTS_ROOT = settings.CLIENTS_API_URL
 CLIENTS_ROOT_V2 = settings.CLIENTS_API_V2_URL
 
 logger = logging.getLogger(__name__)
-
+logger.info("Logger being used: ", __name__)
 
 def get_user_information(jwt_token, perdet_seq_num):
     '''
@@ -217,9 +217,9 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ad_id
     )
 
-    logger.info("\ndata brought in after remapping is: ", data, "\n")
+    logger.debug("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
-    logger.info("data_0: ", data_0, "\n") 
+    logger.debug("data_0: ", data_0, "\n") 
 
     print("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
@@ -689,12 +689,10 @@ def fsbid_languages_to_tmap(languages):
 
 def fsbid_language_only_to_tmap(languages):
     tmap_language_only = []
-    logger.info("\n")
-    logger.info("languages: ", languages, "\n")
-    logger.info("\n")
     for x in languages:
         if not isinstance(x, dict):
             print('Invalid item in languages:', x)
+            logger.info("languages: ", languages, "\n")
             logger.error(f'Invalid item in languages: {x}')
             continue
         empl_language = x.get('empl_language', None)
