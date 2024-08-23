@@ -413,6 +413,12 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})" if position is not None else pos_location
     cdo = data.get('cdos', None)
+
+    # Check if None is in languages and print employee
+    languages = data.get("languages") or []
+    if None in languages:
+        logger.debug(f"Employee with None in languages: {employee}")
+
     return {
         "id": employee.get("perdet_seq_num", None),
         "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
