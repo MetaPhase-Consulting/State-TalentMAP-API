@@ -217,9 +217,9 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ad_id
     )
 
-    logger.debug("\ndata brought in after remapping is: ", data, "\n")
+    logger.info("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
-    logger.debug("data_0: ", data_0, "\n") 
+    logger.info("data_0: ", data_0, "\n") 
 
     print("\ndata brought in after remapping is: ", data, "\n")
     data_0 = next(data)
@@ -689,9 +689,9 @@ def fsbid_languages_to_tmap(languages):
 
 def fsbid_language_only_to_tmap(languages):
     tmap_language_only = []
-    logger.debug("\n")
-    logger.debug("languages: ", languages, "\n")
-    logger.debug("\n")
+    logger.info("\n")
+    logger.info("languages: ", languages, "\n")
+    logger.info("\n")
     for x in languages:
         if not isinstance(x, dict):
             print('Invalid item in languages:', x)
