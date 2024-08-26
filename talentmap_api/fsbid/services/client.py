@@ -83,9 +83,9 @@ def update_client_req_mapping(request):
         "PV_WL_CODE_I":"",
         "pv_hru_id_i": 12015,
         "PV_PER_SEQ_NUM_I": 6570,
-        "PV_BSN_ID_I": "48, 54, 29",
-        "PV_BSCC_COMMENT_TEXT_I": "i",
-        "pv_cae_email_address_text_i": "i@i.com",
+        "PV_BSN_ID_I": "48,54,29",
+        "PV_BSCC_COMMENT_TEXT_I": "k",
+        "pv_cae_email_address_text_i": "k@k.com",
     }
 
 def update_user_client_res_mapping(data):
