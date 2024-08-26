@@ -433,7 +433,7 @@ def get_post_bidding_considerations_url(post_id):
 
 def send_get_csv_request(uri, query, query_mapping_function, jwt_token, mapping_function, base_url, host=None, ad_id=None, limit=None, use_post=False):
     '''
-    Gets items from FSBid (sending request directly to Web Services)
+    Gets items from FSBid
     '''
     formattedQuery = query
     try:

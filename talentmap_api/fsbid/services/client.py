@@ -254,11 +254,6 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str("=\"%s\"" % record["status"]),
         ])
 
-    print("response before returning: \n")
-    print("response type: ", type(response), "\n")
-    print("response: ", response, "\n")
-    print("response content: ", response.content, "\n")
-
     return response
 
 
