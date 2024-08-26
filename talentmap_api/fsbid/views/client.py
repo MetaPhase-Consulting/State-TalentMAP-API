@@ -49,7 +49,7 @@ class FSBidClientUpdateListView(BaseView):
 
     def post(self, request):
         '''
-        Create a new client
+        Update a client
         '''
         result = services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
         if result is None or result['PV_RETURN_CODE_O'] != 0:
