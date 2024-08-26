@@ -216,6 +216,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str("=\"%s\"" % record["ted"]),
             smart_str("=\"%s\"" % record["status"]),
         ])
+
     return response
 
 
@@ -360,6 +361,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})" if position is not None else pos_location
     cdo = data.get('cdos', None)
+
     return {
         "id": employee.get("perdet_seq_num", None),
         "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
@@ -600,10 +602,19 @@ def fsbid_assignments_to_tmap(assignments):
 
 
 def fsbid_languages_to_tmap(languages):
+    # if no languages present (languages: [])
+    if languages is None:
+        return []
+
     tmap_languages = []
     empty_score = '--'
     for x in languages:
-        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+        # if x is None or not a dict, skip
+        if x is None or not isinstance(x, dict):
+            if x is None:
+                logger.warning(f"Skipping None value in languages: {languages}\n")
+            continue
+        if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
             continue
         r = str(x.get('empl_high_reading', '')).strip()
         s = str(x.get('empl_high_speaking', '')).strip()
@@ -613,19 +624,35 @@ def fsbid_languages_to_tmap(languages):
             "test_date": ensure_date(x.get('empl_high_test_date', None)),
             "speaking_score": s or empty_score,
             "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language_code')).strip()} {s or empty_score}/{r or empty_score}"
+            "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
         })
+        
     return tmap_languages
 
 def fsbid_language_only_to_tmap(languages):
+    # if no languages present (languages: [])
+    if not languages:
+        return "None"
+    
     tmap_language_only = []
     for x in languages:
-        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+        # checks for non-dict elements such as [numbers, strings, None, etc] or
+        # if the "empl_language" key is not present, skip
+        if not isinstance(x, dict) or "empl_language" not in x:
+            logger.warning(f"Skipping invalid language: {x}\n")
             continue
 
-        tmap_language_only.append(
-            str(x.get('empl_language')).strip() if x.get('empl_language') else x.get('empl_language') or None,
-        )
+        # checks if the value for empl_language key is not a string, skip
+        if not isinstance(x.get('empl_language'), str):
+            continue
+
+        # get the value for empl_language key, if its not present, give back None
+        # strip the value to remove any leading/trailing whitespace
+        empl_language = str(x.get('empl_language', None)).strip()
+        if not empl_language:
+            continue
+        
+        tmap_language_only.append(empl_language.strip())
 
     return ", ".join(str(x) for x in tmap_language_only)
 
