@@ -702,12 +702,13 @@ def get_audit_data_res_mapping(data):
 
     def success_mapping(x):
         results = {
-            'audit_data': results_mapping(x.get('QRY_LSTBIDBOOK_REF')),
+            'audit_data': results_mapping(x.get('QRY_LSTBIDBOOK_REF')) if x.get('QRY_LSTBIDBOOK_REF') else [],
             'ref_data': reference_mapping(x['QRY_GETCYCLE_REF'][0]),
         }
         return results
 
-    return service_response(data, 'Bid Audit Get Audits', success_mapping)
+    # dont use the service_response since we are OK with a -1 error here, to get the reference data back
+    return success_mapping(data)
 
 
 def get_htf_data(jwt_token, pk):

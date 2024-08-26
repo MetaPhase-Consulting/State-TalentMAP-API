@@ -268,6 +268,7 @@ class FSBidBidAuditDeleteCategoryListView(APIView):
 
 
 class FSBidBidAuditDataListView(BaseView):
+    # If user has the Bureau Role, this call will fail
     '''
     Gets the Bid Audit Data
     '''
@@ -276,7 +277,8 @@ class FSBidBidAuditDataListView(BaseView):
         jwt = request.META['HTTP_JWT']
         result = services.get_audited_data(jwt, request.query_params)
 
-        if result is None or 'return_code' in result and result['return_code'] != 0:
+        # the -1 error code still returns the reference data, so only check for -2
+        if result is None or 'return_code' in result and result['return_code'] == -2:
             logger.error(f"Fsbid call for Bid Audit, Audit Data failed.")
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -284,6 +286,7 @@ class FSBidBidAuditDataListView(BaseView):
 
 
 class FSBidBidAuditHTFListView(BaseView):
+    # If user has the Bureau Role, this call will fail
     '''
     Gets the Bid Audit Hard To Fill Data for a Position
     '''
@@ -310,6 +313,7 @@ class FSBidBidAuditHTFListView(BaseView):
 
 
 class FSBidBidAuditMDSListView(BaseView):
+    # If user has the Bureau Role, this call will fail
     '''
     Gets the Bid Audit MDS Data
     '''
