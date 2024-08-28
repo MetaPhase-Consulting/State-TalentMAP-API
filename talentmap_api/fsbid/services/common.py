@@ -240,6 +240,9 @@ def sorting_values(sort, use_post=False):
                 s = sort_dict.get(s, None)
             if s is not None:
                 results.append(f"{s} {direction}")
+        print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
+        print(results)
+        logger.info(f"Testing Assignment History: {results}\n")
         return results
 
 

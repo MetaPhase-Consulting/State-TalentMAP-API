@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 # ======== Get Assignment History ========
 
 def get_assignments(query, jwt_token):
+    print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
+    print(query)
+    logger.info(f"Testing Assignment History: {query}\n")
     '''
     Get assignments
     '''
@@ -36,6 +39,9 @@ def get_assignments(query, jwt_token):
     return response
 
 def assignment_history_to_client_format(data):
+    print('🐥🐥🐥🐥🐥🐥🐥🐥🐥🐥️')
+    print(data)
+    logger.info(f"Testing Assignment History: {data}\n")
     # needs to be updated once fully integrated
     from talentmap_api.fsbid.services.common import get_post_overview_url, get_post_bidding_considerations_url, get_obc_id
     assignmentsCopy = []
