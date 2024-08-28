@@ -177,7 +177,6 @@ def fsbid_pv_to_talentmap_pv(pv):
         },
         "tandem_nbr": pv.get("tandem_nbr", None),  # Only appears in tandem searches
         "position": {
-            "avail_telework_pos": pv.get("avail_telework_pos", None),
             "grade": pv.get("pos_grade_code", None),
             "skill": f"{pv.get('pos_skill_desc', None)} ({pv.get('pos_skill_code')})",
             "skill_code": pv.get("pos_skill_code", None),
@@ -284,7 +283,6 @@ def convert_pv_query(query, isTandem=False):
         f"{prefix}us_codes": services.convert_multi_value(query.get("position__us_codes__in")),
         f"{prefix}cpn_codes": services.convert_multi_value(query.get("position__cpn_codes__in")),
         f"{prefix}freeText": query.get("q", None),
-        f"{prefix}avail_telework_pos": services.convert_multi_value(query.get("avail_telework_pos")),
     }
 
     if not isTandem:
@@ -313,7 +311,6 @@ def convert_pv_query(query, isTandem=False):
         values[f"{prefix}pos_numbers2"] = services.convert_multi_value(query.get("position__position_number__in-tandem", None))
         values[f"{prefix}tod_codes2"] = services.convert_multi_value(query.get("position__post__tour_of_duty__code__in-tandem"))
         values[f"{prefix}skills2"] = services.convert_multi_value(query.get("position__skill__code__in-tandem"))
-        values[f"{prefix}avail_telework_pos2"] = services.convert_multi_value(query.get("avail_telework_pos-tandem"))
 
     if isinstance(values[f"{prefix}order_by"], list):
         values[f"{prefix}order_by"] = pydash.compact(values[f"{prefix}order_by"])
