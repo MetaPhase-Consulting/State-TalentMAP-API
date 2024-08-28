@@ -468,7 +468,8 @@ def convert_agenda_item_query(query):
         "rp.orderBy": services.sorting_values(query.get("ordering", "agenda_id")),
         "rp.filter": services.convert_to_fsbid_ql([
             {'col': 'aiperdetseqnum', 'val': query.get("perdet", None)},
-            {'col': 'aiseqnum', 'val': query.get("aiseqnum", None)}
+            {'col': 'aiseqnum', 'val': query.get("aiseqnum", None)},
+            {'col': 'pmipmseqnum', 'val': query.get("pmipmseqnum", None), 'com': 'IN' },
         ]),
     }
 
