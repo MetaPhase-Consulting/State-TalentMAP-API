@@ -323,9 +323,6 @@ def fsbid_clients_to_talentmap_clients(data):
     pp = employee.get("per_pay_plan_code")
     grade = employee.get("per_grade_code")
     combined_pp_grade = combine_pp_grade(pp, grade)
-    numbers = str(int(employee.get("perdet_seq_num", None)))
-    number_list = numbers.split(',')
-    numbers_result = "\n".join(number_list)
 
     return {
         "id": str(employee.get("pert_external_id", None)),
@@ -334,7 +331,7 @@ def fsbid_clients_to_talentmap_clients(data):
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
-        "perdet_seq_number": numbers_result,
+        "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "pay_plan": pp,
         "grade": grade,
         "combined_pp_grade": combined_pp_grade,
