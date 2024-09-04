@@ -90,7 +90,9 @@ def update_client_req_mapping(request):
     }
 
 def update_user_client_res_mapping(data):
-    return data
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Updating current client failed.')
+        return None
  
 def get_clients_count(query, jwt_token, host=None):
     '''
