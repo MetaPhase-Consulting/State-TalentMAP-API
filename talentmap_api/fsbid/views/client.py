@@ -1,5 +1,4 @@
 import coreapi
-import logging
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,7 +8,6 @@ from drf_yasg import openapi
 
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.client as services
-logger = logging.getLogger(__name__)
 
 class FSBidClientListView(BaseView):
     @swagger_auto_schema(
@@ -51,8 +49,7 @@ class FSBidClientUpdateListView(BaseView):
         '''
         Update a client
         '''
-        result = services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
-        return Response(result)
+        return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
 
 class FSBidClientView(BaseView):
 
