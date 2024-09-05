@@ -98,7 +98,22 @@ def convert_unassigned_bidder_type_query(type):
         return 'NB'
     if type.get('noPanel'): 
         return 'NP'
-
+    if type.get('handshake'):
+        return 'HS'
+    if type.get('noHandshake'):
+        return 'NH'
+    if type.get('eligible_bidders'):
+        return 'EB'
+    if type.get('cusp_bidders'):
+        return 'CU'
+    if type.get('languages'):
+        return 'LA'
+    if type.get('separations'):
+        return 'SB'
+    if type.get('classification'):
+        return 'BC'
+    if type.get('panel_clients'):
+        return 'BU'
     return None
 
 def get_clients_count(query, jwt_token, host=None):
