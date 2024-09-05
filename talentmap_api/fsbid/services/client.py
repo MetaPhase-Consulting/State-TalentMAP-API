@@ -107,11 +107,7 @@ def convert_bidder_type_query(type):
         'panel_clients': 'BU'
     }
 
-    for key, value in type_mapping.items():
-        if type.get(key):
-            return value
-    
-    return None
+    return type_mapping.get(type, None)
 
 def get_clients_count(query, jwt_token, host=None):
     '''
