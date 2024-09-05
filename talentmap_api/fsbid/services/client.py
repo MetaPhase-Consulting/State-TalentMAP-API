@@ -98,7 +98,6 @@ def convert_bidder_type_query(type):
         'noBids': 'NB',
         'noPanel': 'NP',
         'handshake': 'HS',
-        'noHandshake': 'NH',
         'eligible_bidders': 'EB',
         'cusp_bidders': 'CU',
         'languages': 'LA',
