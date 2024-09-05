@@ -579,7 +579,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
         "status_full": statusFull,
         "status_short": agendaStatusAbbrev.get(statusFull, None),
         "report_category": reportCategory,
-        "perdet": str(int(data.get("aiperdetseqnum"))) or None,
+        "perdet": data.get("aiperdetseqnum") or None,
         "assignment": assignment,
         "legs": legsToReturn,
         "update_date": data.get("update_date"),  # TODO - find this date
