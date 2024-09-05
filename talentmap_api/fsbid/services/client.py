@@ -81,7 +81,7 @@ def unassigned_bidder_type_req_mapping(request):
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
         "PV_SUBTRAN_I": "",
-        "PV_CDO_WL_CODE_I": convert_unassigned_bidder_type_query(request),
+        "PV_CDO_WL_CODE_I": convert_bidder_type_query(request),
         "PV_CDO_HRU_ID_I": request.get("hru_id__in"),
         "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
     }
@@ -93,7 +93,7 @@ def unassigned_bidder_type_res_mapping(data):
     return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 
 
-def convert_unassigned_bidder_type_query(type):
+def convert_bidder_type_query(type):
     if type.get('noBids'): 
         return 'NB'
     if type.get('noPanel'): 
