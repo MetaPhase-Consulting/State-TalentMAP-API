@@ -94,26 +94,23 @@ def unassigned_bidder_type_res_mapping(data):
 
 
 def convert_bidder_type_query(type):
-    if type.get('noBids'): 
-        return 'NB'
-    if type.get('noPanel'): 
-        return 'NP'
-    if type.get('handshake'):
-        return 'HS'
-    if type.get('noHandshake'):
-        return 'NH'
-    if type.get('eligible_bidders'):
-        return 'EB'
-    if type.get('cusp_bidders'):
-        return 'CU'
-    if type.get('languages'):
-        return 'LA'
-    if type.get('separations'):
-        return 'SB'
-    if type.get('classification'):
-        return 'BC'
-    if type.get('panel_clients'):
-        return 'BU'
+    type_mapping = {
+        'noBids': 'NB',
+        'noPanel': 'NP',
+        'handshake': 'HS',
+        'noHandshake': 'NH',
+        'eligible_bidders': 'EB',
+        'cusp_bidders': 'CU',
+        'languages': 'LA',
+        'separations': 'SB',
+        'classification': 'BC',
+        'panel_clients': 'BU'
+    }
+
+    for key, value in type_mapping.items():
+        if type.get(key):
+            return value
+    
     return None
 
 def get_clients_count(query, jwt_token, host=None):
