@@ -284,7 +284,7 @@ def convert_pv_query(query, isTandem=False):
         f"{prefix}us_codes": services.convert_multi_value(query.get("position__us_codes__in")),
         f"{prefix}cpn_codes": services.convert_multi_value(query.get("position__cpn_codes__in")),
         f"{prefix}freeText": query.get("q", None),
-        f"{prefix}avail_telework_pos": services.convert_multi_value(query.get("avail_telework_pos")),
+        f"{prefix}pv_ele_telework": services.convert_multi_value(query.get("pv_ele_telework")),
     }
 
     if not isTandem:

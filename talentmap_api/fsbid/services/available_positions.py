@@ -406,9 +406,10 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False):
         f"{prefix}htf_ind": services.convert_multi_value(query.get("htf_indicator")),
         f"{prefix}cp_critical_need_ind": services.convert_multi_value(query.get("cn_indicator")),
         f"{prefix}freeText": query.get("q", None),
-        f"{prefix}avail_telework_pos": services.convert_multi_value(query.get("avail_telework_pos")),
+        f"{prefix}pv_ele_telework": services.convert_multi_value(query.get("pv_ele_telework")),
 
     }
+    print(values)
 
     if not isTandem:
         values[f"{prefix}get_count"] = query.get("getCount", 'false')
