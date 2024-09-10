@@ -71,7 +71,7 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
     Get agenda items
     '''
     from talentmap_api.fsbid.services.agenda_employees import get_agenda_employees
-
+    logger.info(f"Getting agenda items with query: {query}")
     args = {
         "uri": "",
         "query": query,
@@ -474,11 +474,12 @@ def convert_agenda_item_query(query):
     }
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
-
+    logger.info(f"Converted query: {valuesToReturn}")
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
 def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}):
+    logger.info(f"Converting agenda item: ...")
     agendaStatusAbbrev = {
         "Approved": "APR",
         "Deferred - Proposed Position": "XXX",
@@ -563,7 +564,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
         "aihHoldNum": data.get("aihholdnum") or None,
         "aihHoldComment": data.get("aihholdcommenttext") or None,
         "remarks": services.parse_agenda_remarks(data.get("remarks") or []),
-        "pmd_dttm": panel.get("pmddttm") or None,
+        "pmd_dttm": panel.get("pmd_dttm") or None,
         "pmt_code": panel.get("pmtcode") or None,
         "pmi_pm_seq_num": panel.get("pmipmseqnum"),
         "pmi_seq_num": panel.get("pmiseqnum"),

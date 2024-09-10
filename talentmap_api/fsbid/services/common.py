@@ -48,6 +48,9 @@ def get_pagination(query, count, base_url, host=None):
     '''
     Figures out all the pagination
     '''
+    logger.info(f"Getting pagination for {count} items")
+    logger.info(f"Query: {query}")
+
     page = int(query.get("page", 0))
     limit = int(query.get("limit", 25))
     next_query = query.copy()
@@ -254,6 +257,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{url}' failed.")
         return None
+    logger.info("Data revieced from FSBid")
     if mapping_function:
         return list(map(mapping_function, response.get("Data", {})))
     else:
