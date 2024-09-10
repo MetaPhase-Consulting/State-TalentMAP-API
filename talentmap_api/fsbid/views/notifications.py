@@ -243,12 +243,9 @@ class FSBIDGalLookupView(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'PV_LAST_NAME_I': openapi.Schema(type=openapi.TYPE_STRING, description='Last Name'),
-        }
-    ))
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('PV_LAST_NAME_I', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Last Name'),
+    ])
 
     def get(self, request):
         '''
