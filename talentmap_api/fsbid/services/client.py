@@ -87,45 +87,30 @@ def unassigned_bidder_type_req_mapping(request):
     }
 
 def unassigned_bidder_type_res_mapping(data):
-    if data is None and data['PV_RETURN_CODE_O'] is not 0:
-        logger.error('FSBid call for Unassigned Bidder Type failed.')
-        return None
-    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
+    # if data is None and data['PV_RETURN_CODE_O'] is not 0:
+    #     logger.error('FSBid call for Unassigned Bidder Type failed.')
+    #     return None
+    # return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
+    return data
 
 
 def convert_bidder_type_query(type):
-    if type.get('noBids'):
-        return 'NB'
-    if type.get('noPanel'):
-        return 'NP'
-    if type.get('handshake'):
-        return 'HS'
-    if type.get('eligible_bidders'):
-        return 'EB'
-    if type.get('cusp_bidders'):
-        return 'CU'
-    if type.get('languages'):
-        return 'LA'
-    if type.get('separations'):
-        return 'SB'
-    if type.get('classification'):
-        return 'BC'
-    if type.get('panel_clients'):
-        return 'BU'
+    type_mapping = {
+        'noBids': 'NB',
+        'noPanel': 'NP',
+        'handshake': 'HS',
+        'eligible_bidders': 'EB',
+        'cusp_bidders': 'CU',
+        'languages': 'LA',
+        'separations': 'SB',
+        'classification': 'BC',
+        'panel_clients': 'BU'
+    }
+    
+    for key, code in type_mapping.items():
+        if type.get(key):
+            return code
     return None
-    # type_mapping = {
-    #     'noBids': 'NB',
-    #     'noPanel': 'NP',
-    #     'handshake': 'HS',
-    #     'eligible_bidders': 'EB',
-    #     'cusp_bidders': 'CU',
-    #     'languages': 'LA',
-    #     'separations': 'SB',
-    #     'classification': 'BC',
-    #     'panel_clients': 'BU'
-    # }
-
-    # return type_mapping.get(type, None)
 
 def get_clients_count(query, jwt_token, host=None):
     '''
