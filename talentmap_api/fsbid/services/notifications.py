@@ -137,39 +137,39 @@ def edit_note_cable_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_NM_SEQ_NUM": "",
+        "I_NM_SEQ_NUM": request.get('I_NM_SEQ_NUM'),
         "I_HDR_NME_SEQ_NUM": request.get('I_HDR_NME_SEQ_NUM'),
         "I_HDR_CLOB_LENGTH": request.get('I_HDR_CLOB_LENGTH'),
         "I_HDR_NME_OVERRIDE_CLOB": request.get('I_HDR_NME_OVERRIDE_CLOB'),
         "I_HDR_NME_UPDATE_ID": request.get('I_HDR_NME_UPDATE_ID'),
         "I_HDR_NME_UPDATE_DATE": request.get('I_HDR_NME_UPDATE_DATE'),
         "I_HDR_NME_CLEAR_IND": request.get('I_HDR_NME_CLEAR_IND'),
-        "I_ASG_NME_SEQ_NUM": "",
-        "I_ASG_NMAS_SEQ_NUM": "",
-        "I_ASG_NMAS_UPDATE_ID": "",
-        "I_ASG_NMAS_UPDATE_DT": "",
-        "I_PARA_NME_SEQ_NUM": "",
-        "I_PARA_NOTP_CODE": "",
-        "I_PARA_NME_UPDATE_ID": "",
-        "I_PARA_NME_UPDATE_DATE": "",
-        "I_DIST_NME_SEQ_NUM": "",
-        "I_DIST_NME_UPDATE_ID": "",
-        "I_DIST_NME_UPDATE_DATE": "",
-        "I_ACT_NME_SEQ_NUM": "",
-        "I_ACT_NME_UPDATE_ID": "",
-        "I_ACT_NME_UPDATE_DATE": "",
-        "I_INFO_NME_SEQ_NUM": "",
-        "I_INFO_NME_UPDATE_ID": "",
-        "I_INFO_NME_UPDATE_DATE": "",
-        "I_INC_IND": "",
-        "I_NMD_SEQ_NUM": "",
-        "I_DT_CODE": "",
-        "I_PT_CODE": "",
-        "I_ORG_CODE": "",
-        "I_CP_SEQ_NUM": "",
-        "I_NMD_SLUG_TEXT": "",
-        "I_NMD_UPDATE_ID": "",
-        "I_NMD_UPDATE_DATE": "",
+        "I_ASG_NME_SEQ_NUM": request.get('I_ASG_NME_SEQ_NUM'),
+        "I_ASG_NMAS_SEQ_NUM": request.get('I_ASG_NMAS_SEQ_NUM'),
+        "I_ASG_NMAS_UPDATE_ID": request.get('I_ASG_NMAS_UPDATE_ID'),
+        "I_ASG_NMAS_UPDATE_DT": request.get('I_ASG_NMAS_UPDATE_DT'),
+        "I_PARA_NME_SEQ_NUM": request.get('I_PARA_NME_SEQ_NUM'),
+        "I_PARA_NOTP_CODE": request.get('I_PARA_NOTP_CODE'),
+        "I_PARA_NME_UPDATE_ID": request.get('I_PARA_NME_UPDATE_ID'),
+        "I_PARA_NME_UPDATE_DATE": request.get('I_PARA_NME_UPDATE_DATE'),
+        "I_DIST_NME_SEQ_NUM": request.get('I_DIST_NME_SEQ_NUM'),
+        "I_DIST_NME_UPDATE_ID": request.get('I_DIST_NME_UPDATE_ID'),
+        "I_DIST_NME_UPDATE_DATE": request.get('I_DIST_NME_UPDATE_DATE'),
+        "I_ACT_NME_SEQ_NUM": request.get('I_ACT_NME_SEQ_NUM'),
+        "I_ACT_NME_UPDATE_ID": request.get('I_ACT_NME_UPDATE_ID'),
+        "I_ACT_NME_UPDATE_DATE": request.get('I_ACT_NME_UPDATE_DATE'),
+        "I_INFO_NME_SEQ_NUM": request.get('I_INFO_NME_SEQ_NUM'),
+        "I_INFO_NME_UPDATE_ID": request.get('I_INFO_NME_UPDATE_ID'),
+        "I_INFO_NME_UPDATE_DATE": request.get('I_INFO_NME_UPDATE_DATE'),
+        "I_INC_IND": request.get('I_INC_IND'),
+        "I_NMD_SEQ_NUM": request.get('I_NMD_SEQ_NUM'),
+        "I_DT_CODE": request.get('I_DT_CODE'),
+        "I_PT_CODE": request.get('I_PT_CODE'),
+        "I_ORG_CODE": request.get('I_ORG_CODE'),
+        "I_CP_SEQ_NUM": request.get('I_CP_SEQ_NUM'),
+        "I_NMD_SLUG_TEXT": request.get('I_NMD_SLUG_TEXT'),
+        "I_NMD_UPDATE_ID": request.get('I_NMD_UPDATE_ID'),
+        "I_NMD_UPDATE_DATE": request.get('I_NMD_UPDATE_DATE'),
     }
 
 def edit_note_cable_res_mapping(data):
@@ -194,10 +194,15 @@ def rebuild_note_cable(data, jwt_token):
     )
 
 def rebuild_note_cable_req_mapping(request):
+    if request.get('I_NM_SEQ_NUM'):
+        return {
+            "PV_API_VERSION_I": "",
+            "PV_AD_ID_I": "",
+            "I_NM_SEQ_NUM": request.get('I_NM_SEQ_NUM'),
+        }
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_NM_SEQ_NUM": request.get('I_NM_SEQ_NUM'),
         "I_NME_SEQ_NUM": request.get('I_NME_SEQ_NUM'),
         "I_NME_UPDATE_ID": request.get('I_NME_UPDATE_ID'),
         "I_NME_UPDATE_DATE": request.get('I_NME_UPDATE_DATE'),
@@ -228,8 +233,10 @@ def store_note_cable_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "I_NM_SEQ_NUM": request.get('I_NM_SEQ_NUM'),
-        "I_NOTE_TYPE": "",
+        "PV_NM_SEQ_NUM_I": request.get('PV_NM_SEQ_NUM_I'),
+        "PV_FILE_NAME_I": request.get('PV_FILE_NAME_I'),
+        "PV_NOTE_TYPE_I": request.get('PV_NOTE_TYPE_I'),
+        "PV_RETURN_CODE_O": "",
     }
 
 def store_note_cable_res_mapping(data):
@@ -257,10 +264,8 @@ def send_note_cable_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "PV_NM_SEQ_NUM_I": request.get('PV_NM_SEQ_NUM_I'),
-        "PV_FILE_NAME_I": "",
-        "PV_NOTE_TYPE_I": "",
-        "PV_RETURN_CODE_O": "",
+        "I_NM_SEQ_NUM": request.get('I_NM_SEQ_NUM'),
+        "I_NOTE_TYPE": request.get('I_NOTE_TYPE'),
     }
 
 def send_note_cable_res_mapping(data):
@@ -289,7 +294,7 @@ def get_ops_req_mapping(request):
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
         "PV_PARM_NAME_I": request.get('PV_PARM_NAME_I'),
-        "PV_CIR_ID_I": request.get('PV_CIR_ID_I'),
+        "PV_CIR_ID_I": "33",
         "PV_PARM_VALUE_O": "",
         "PV_RETURN_CD_O": "",
         "PCUR_MESSAGE_O": ""
@@ -393,3 +398,33 @@ def update_ops_req_mapping(request):
 
 def update_ops_res_mapping(data):
     return service_response(data, 'Update OPS')
+
+# ======================== GAL Lookup ========================
+
+def gal_lookup(data, jwt_token):
+    '''
+    GAL Lookup
+    '''
+    args = {
+        "proc_name": "qry_lstgal",
+        "package_name": "pkg_wrap_dev",
+        "request_body": data,
+        "request_mapping_function": gal_lookup_req_mapping,
+        "response_mapping_function": gal_lookup_res_mapping,
+        "jwt_token": jwt_token,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def gal_lookup_req_mapping(request):
+    return {
+        "pv_api_version_i": "",
+        "pv_ad_id_i": "",
+        "pv_last_name_i": request.get("pv_last_name_i"),
+    }
+
+def gal_lookup_res_mapping(response):
+    def success_mapping(x):
+        return list(x.get("QRY_LSTGAL_REF"))
+    return service_response(response, 'GAL Lookup', success_mapping)
