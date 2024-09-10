@@ -249,7 +249,7 @@ def send_note_cable(data, jwt_token):
     Send Note Cable
     '''
     args = {
-        "proc_name": 'act_mod_sendcable',
+        "proc_name": 'act_modsendcable',
         "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
         "request_mapping_function": send_note_cable_req_mapping,
         "response_mapping_function": send_note_cable_res_mapping,
@@ -293,7 +293,7 @@ def get_ops_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "PV_PARM_NAME_I": request.get('PV_PARM_NAME_I'),
+        "PV_PARM_NAME_I": "TEMS_OPS_WS_URL",
         "PV_CIR_ID_I": "33",
         "PV_PARM_VALUE_O": "",
         "PV_RETURN_CD_O": "",
@@ -407,7 +407,7 @@ def gal_lookup(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_lstgal",
-        "package_name": "pkg_wrap_dev",
+        "package_name": "PKG_WRAP_DEV",
         "request_body": data,
         "request_mapping_function": gal_lookup_req_mapping,
         "response_mapping_function": gal_lookup_res_mapping,
@@ -419,9 +419,9 @@ def gal_lookup(data, jwt_token):
 
 def gal_lookup_req_mapping(request):
     return {
-        "pv_api_version_i": "",
-        "pv_ad_id_i": "",
-        "pv_last_name_i": request.get("pv_last_name_i"),
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_LAST_NAME_I": request.get("PV_LAST_NAME_I"),
     }
 
 def gal_lookup_res_mapping(response):

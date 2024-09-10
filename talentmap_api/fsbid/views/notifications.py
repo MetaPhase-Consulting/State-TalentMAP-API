@@ -246,7 +246,7 @@ class FSBIDGalLookupView(APIView):
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'pv_last_name_i': openapi.Schema(type=openapi.TYPE_STRING, description='Last Name'),
+            'PV_LAST_NAME_I': openapi.Schema(type=openapi.TYPE_STRING, description='Last Name'),
         }
     ))
 
