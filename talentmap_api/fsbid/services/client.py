@@ -254,6 +254,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
             smart_str("=\"%s\"" % record["ted"]),
             smart_str("=\"%s\"" % record["status"]),
         ])
+
     return response
 
 
@@ -668,17 +669,33 @@ def fsbid_languages_to_tmap(languages):
             "reading_score": r or empty_score,
             "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
         })
+        
     return tmap_languages
 
 def fsbid_language_only_to_tmap(languages):
+    # if no languages present (languages: [])
+    if not languages:
+        return "None"
+    
     tmap_language_only = []
     for x in languages:
-        if not x.get('empl_language', None) or not str(x.get('empl_language')).strip():
+        # checks for non-dict elements such as [numbers, strings, None, etc] or
+        # if the "empl_language" key is not present, skip
+        if not isinstance(x, dict) or "empl_language" not in x:
+            logger.warning(f"Skipping invalid language: {x}\n")
             continue
 
-        tmap_language_only.append(
-            str(x.get('empl_language')).strip() if x.get('empl_language') else x.get('empl_language') or None,
-        )
+        # checks if the value for empl_language key is not a string, skip
+        if not isinstance(x.get('empl_language'), str):
+            continue
+
+        # get the value for empl_language key, if its not present, give back None
+        # strip the value to remove any leading/trailing whitespace
+        empl_language = str(x.get('empl_language', None)).strip()
+        if not empl_language:
+            continue
+        
+        tmap_language_only.append(empl_language.strip())
 
     return ", ".join(str(x) for x in tmap_language_only)
 
