@@ -49,6 +49,7 @@ def get_pagination(query, count, base_url, host=None):
     Figures out all the pagination
     '''
     logger.info(f"Getting pagination for {count} items")
+    logger.info(f"Base URL: {base_url}")
     logger.info(f"Query: {query}")
 
     page = int(query.get("page", 0))
@@ -322,15 +323,14 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
     '''
     Gets items from FSBid
     '''
-    logger.info(f"Getting items from {uri}")
+    logger.info(f"Getting items from {uri} -- base url: {base_url}")
     logger.info(f"Query: {query}")
     logger.info(f"Count Function: {count_function}")
     logger.info(f"Call pagination")
     pagination = get_pagination(query, count_function(query, jwt_token)['count'], base_url, host) if count_function else {}
     logger.info(f"Pagination: {pagination}")
-    logger.info(f"Call feetch method")
+    logger.info(f"Call fetch method -- use_post: {use_post}")
     fetch_method = get_results_with_post if use_post else get_results
-    logger.info('Send Get Request completed')
     return {
         **pagination,
         "results": fetch_method(uri, query, query_mapping_function, jwt_token, mapping_function, api_root)
@@ -373,7 +373,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     Gets the total number of items for a filterset
     '''
     args = {}
-
+    logger.info(f"Getting count for {uri}")
     newQuery = query.copy()
     if api_root == CLIENTS_ROOT_V2 and not uri:
         newQuery['getCount'] = 'true'
@@ -383,7 +383,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         newQuery['getCount'] = 'true'
     if is_template:
         newQuery['getCount'] = 'true'
-
+    logger.info(f"Query: {newQuery}")
     if use_post:
         url = f"{api_root}/{uri}"
         args['json'] = query_mapping_function(newQuery)
@@ -391,10 +391,12 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     else:
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
-
+    logger.info(f"URL: {url}")
     response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args).json()
     countObj = pydash.get(response, "Data[0]")
     if pydash.keys(countObj):
+        logger.info(f"Count Object: {countObj}")
+        logger.info(f"Count: {pydash.get(countObj, pydash.keys(countObj)[0])}")
         count = pydash.get(countObj, pydash.keys(countObj)[0])
         return {"count": count}
     else:

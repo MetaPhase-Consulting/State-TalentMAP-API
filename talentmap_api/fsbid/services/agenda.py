@@ -88,9 +88,11 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
     agenda_items = services.send_get_request(
         **args
     )
-
+    logger.info('Send Get Request completed')
     employeeQuery = QueryDict(f"limit=1&page=1&perdet={query.get('perdet', None)}")
+    logger.info(f"Getting emploee with perdet: {query.get('perdet', None)}")
     employee = get_agenda_employees(employeeQuery, jwt_token, host)
+    logger.info('Get agenda employees completed')
     return {
         "employee": employee,
         "results": agenda_items,

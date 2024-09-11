@@ -31,7 +31,7 @@ def get_agenda_employees(query, jwt_token=None, host=None):
         cdos = list(cdo(jwt_token))
     except:
         cdos = []
-
+    logger.info(f"Getting agenda employees...")
     args = {
         "uri": "v1/tm-persons",
         "query": query,
@@ -54,6 +54,8 @@ def get_agenda_employees_count(query, jwt_token, host=None, use_post=False):
     '''
     Get total number of employees for agenda search
     '''
+    logger.info(f"Getting agenda employees count...")
+    logger.info(f"Query: {query}")
     args = {
         "uri": "v1/tm-persons",
         "query": query,
@@ -140,6 +142,7 @@ def convert_agenda_employees_query(query):
     '''
     Convert TalentMAP filters into FSBid filters
     '''
+    logger.info(f"Converting agenda employees query...")
 
     tedStart = query.get("ted-start")
     tedEnd = query.get("ted-end")
@@ -200,6 +203,7 @@ def convert_agenda_employees_query(query):
         values["rp.columns"] = "ROWCOUNT"
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+    logger.info(f"Converted agenda employees query: {valuesToReturn}")
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 def fsbid_agenda_employee_to_talentmap_agenda_employee(data, cdos=[]):
