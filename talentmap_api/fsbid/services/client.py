@@ -649,13 +649,17 @@ def fsbid_assignments_to_tmap(assignments):
 
 
 def fsbid_languages_to_tmap(languages):
+    # if no languages present (languages: [])
     if languages is None:
         return []
 
     tmap_languages = []
     empty_score = '--'
     for x in languages:
+        # if x is None or not a dict, skip
         if x is None or not isinstance(x, dict):
+            if x is None:
+                logger.warning(f"Skipping None value in languages: {languages}\n")
             continue
         if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
             continue
@@ -669,14 +673,14 @@ def fsbid_languages_to_tmap(languages):
             "reading_score": r or empty_score,
             "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
         })
-        
+
     return tmap_languages
 
 def fsbid_language_only_to_tmap(languages):
     # if no languages present (languages: [])
     if not languages:
         return "None"
-    
+
     tmap_language_only = []
     for x in languages:
         # checks for non-dict elements such as [numbers, strings, None, etc] or
@@ -694,7 +698,7 @@ def fsbid_language_only_to_tmap(languages):
         empl_language = str(x.get('empl_language', None)).strip()
         if not empl_language:
             continue
-        
+
         tmap_language_only.append(empl_language.strip())
 
     return ", ".join(str(x) for x in tmap_language_only)
