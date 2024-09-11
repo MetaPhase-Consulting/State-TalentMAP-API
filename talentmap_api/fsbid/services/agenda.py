@@ -89,14 +89,21 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         **args
     )
     logger.info('Send Get Request completed')
-    employeeQuery = QueryDict(f"limit=1&page=1&perdet={query.get('perdet', None)}")
+
+    # perdet will be none if coming from Panel Meeting Agendas, else coming from Agenda Items History
+    perdet = query.get('perdet', None)
     logger.info(f"Getting emploee with perdet: {query.get('perdet', None)}")
-    employee = get_agenda_employees(employeeQuery, jwt_token, host)
-    logger.info('Get agenda employees completed')
-    return {
-        "employee": employee,
-        "results": agenda_items,
-    }
+    if perdet is not None:
+        employeeQuery = QueryDict(f"limit=1&page=1&perdet={query.get('perdet', None)}")
+        employee = get_agenda_employees(employeeQuery, jwt_token, host)
+        logger.info('Get agenda employees completed')
+        
+        return {
+            "employee": employee,
+            "results": agenda_items,
+        }
+    
+    return agenda_items
 
 def modify_agenda(query={}, jwt_token=None, host=None):
     '''
