@@ -71,7 +71,6 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
     Get agenda items
     '''
     from talentmap_api.fsbid.services.agenda_employees import get_agenda_employees
-    logger.info(f"Getting agenda items with query: {query}")
     args = {
         "uri": "",
         "query": query,
@@ -88,16 +87,12 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
     agenda_items = services.send_get_request(
         **args
     )
-    logger.info('Send Get Request completed')
 
-    # perdet will be none if coming from Panel Meeting Agendas, else coming from Agenda Items History
+    # if perdet is none, don't get employee data
     perdet = query.get('perdet', None)
-    logger.info(f"Getting emploee with perdet: {query.get('perdet', None)}")
     if perdet is not None:
         employeeQuery = QueryDict(f"limit=1&page=1&perdet={query.get('perdet', None)}")
-        employee = get_agenda_employees(employeeQuery, jwt_token, host)
-        logger.info('Get agenda employees completed')
-        
+        employee = get_agenda_employees(employeeQuery, jwt_token, host)        
         return {
             "employee": employee,
             "results": agenda_items,
@@ -483,7 +478,6 @@ def convert_agenda_item_query(query):
     }
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
-    logger.info(f"Converted query: {valuesToReturn}")
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
