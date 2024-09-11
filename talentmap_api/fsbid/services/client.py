@@ -60,57 +60,42 @@ def client(jwt_token, query, host=None):
 
     return response
 
-def get_unassigned_bidder(jwt_token, query, host=None):
+def update_client(data, jwt_token, host=None):
     '''
-    Get Bidder Type
+    Update current client
     '''
     args = {
-        "proc_name": "prc_lst_cdo_wl_clients",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
-        "request_mapping_function": unassigned_bidder_type_req_mapping,
-        "response_mapping_function": unassigned_bidder_type_res_mapping,
+        "proc_name": 'prc_mod_alt_email_bscc',
+        "package_name": 'Pkg_Wrap_dev',
+        "request_mapping_function": update_client_req_mapping,
+        "response_mapping_function": update_user_client_res_mapping,
         "jwt_token": jwt_token,
-        "request_body": query,
+        "request_body": data,
     }
     return services.send_post_back_office(
         **args
     )
 
-def unassigned_bidder_type_req_mapping(request):
+def update_client_req_mapping(request):
+    bidSeasons = ",".join([str(x) for x in request.get("bid_seasons")])
     return {
-        "PV_API_VERSION_I": "",
-        "PV_AD_ID_I": "",
-        "PV_SUBTRAN_I": "",
-        "PV_CDO_WL_CODE_I": convert_bidder_type_query(request),
-        "PV_CDO_HRU_ID_I": request.get("hru_id__in"),
-        "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
+        "PV_AD_ID_I":"",
+        "pv_subtran_i":0,
+        "PV_WL_CODE_I":"",
+        "pv_hru_id_i": request.get("hru_id"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
+        "PV_BSN_ID_I": bidSeasons,
+        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
+        "pv_cae_email_address_text_i": request.get("email"),
     }
 
-def unassigned_bidder_type_res_mapping(data):
-    if data is None and data['PV_RETURN_CODE_O'] is not 0:
-        logger.error('FSBid call for Unassigned Bidder Type failed.')
+def update_user_client_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Updating current client failed.')
         return None
-    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
-
-
-def convert_bidder_type_query(type):
-    type_mapping = {
-        'noBids': 'NB',
-        'noPanel': 'NP',
-        'handshake': 'HS',
-        'eligible_bidders': 'EB',
-        'cusp_bidders': 'CU',
-        'languages': 'LA',
-        'separations': 'SB',
-        'classification': 'BC',
-        'panel_clients': 'BU'
-    }
     
-    for key, code in type_mapping.items():
-        if type.get(key):
-            return code
-    return None
-
+    return data
+ 
 def get_clients_count(query, jwt_token, host=None):
     '''
     Gets the total number of available positions for a filterset
@@ -467,15 +452,15 @@ def convert_client_query(query, isCount=None):
         "request_params.freeText": query.get("q", None),
         "request_params.bsn_id": convert_multi_value(query.get("bid_seasons")),
         "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
-        "request_params.no_successful_panel": "",
-        "request_params.no_bids": "",
-        "request_params.eligible_bidder": "",
-        "request_params.cusp_bidder": "",
+        "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
+        "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
+        "request_params.eligible_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('eligible_bidder', None)),
+        "request_params.cusp_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('cusp_bidder', None)),
         "request_params.page_index": int(query.get("page", 1)),
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
         "request_params.get_count": query.get("getCount", 'false'),
-        "request_params.perdet_seq_num": query.get("perdet_seq_num__in", None),
+        "request_params.perdet_seq_num": query.get("perdet_seq_num", None),
     }
     if isCount:
         values['request_params.page_size'] = None
