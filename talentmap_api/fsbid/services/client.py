@@ -84,7 +84,7 @@ def update_client_req_mapping(request):
         "PV_WL_CODE_I":"",
         "pv_hru_id_i": request.get("hru_id"),
         "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
-        "PV_BSN_ID_I": 31,
+        "PV_BSN_ID_I": '31',
         "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
         "pv_cae_email_address_text_i": request.get("email"),
     }
