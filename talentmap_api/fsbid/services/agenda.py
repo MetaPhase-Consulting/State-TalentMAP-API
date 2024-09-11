@@ -479,7 +479,6 @@ def convert_agenda_item_query(query):
 
 
 def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}):
-    logger.info(f"Converting agenda item: ...")
     agendaStatusAbbrev = {
         "Approved": "APR",
         "Deferred - Proposed Position": "XXX",
