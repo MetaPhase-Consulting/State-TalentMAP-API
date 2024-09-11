@@ -238,3 +238,20 @@ class FSBidUpdateOpsView(APIView):
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class FSBIDGalLookupView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('PV_LAST_NAME_I', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Last Name'),
+    ])
+
+    def get(self, request):
+        '''
+        GAL Lookup
+        '''
+        result = services.gal_lookup(request.query_params, request.META['HTTP_JWT'])
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(result)

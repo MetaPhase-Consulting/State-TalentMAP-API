@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^ops/list/$', views.FSBidListOpsView.as_view(), name='FSBid-list-ops'),
     url(r'^ops/insert/$', views.FSBidInsertOpsView.as_view(), name='FSBid-insert-ops'),
     url(r'^ops/update/$', views.FSBidUpdateOpsView.as_view(), name='FSBid-update-ops'),
+    url(r'^gal/$', views.FSBIDGalLookupView.as_view(), name='FSBid-gal-lookup'),
 ]
 
 urlpatterns += router.urls
