@@ -324,8 +324,10 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
     '''
     logger.info(f"Getting items from {uri}")
     logger.info(f"Query: {query}")
+    logger.info(f"Count Function: {count_function}")
     logger.info(f"Call pagination")
     pagination = get_pagination(query, count_function(query, jwt_token)['count'], base_url, host) if count_function else {}
+    logger.info(f"Pagination: {pagination}")
     logger.info(f"Call feetch method")
     fetch_method = get_results_with_post if use_post else get_results
     logger.info('Send Get Request completed')
