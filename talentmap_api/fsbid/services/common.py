@@ -901,45 +901,47 @@ def parse_agenda_remarks(remarks=[]):
     remarks_values = []
     if remarks:
         for remark in remarks:
-            remark['remarkRefData'][0]['airaiseqnum'] = remark.get('airaiseqnum')
-            remark['remarkRefData'][0]['airrmrkseqnum'] = remark.get('airrmrkseqnum')
-            remark['remarkRefData'][0]['airremarktext'] = remark.get('airremarktext')
-            remark['remarkRefData'][0]['aircompleteind'] = remark.get('aircompleteind')
-            remark['remarkRefData'][0]['aircreateid'] = remark.get('aircreateid')
-            remark['remarkRefData'][0]['aircreatedate'] = remark.get('aircreatedate')
-            remark['remarkRefData'][0]['airupdateid'] = remark.get('airupdateid')
-            remark['remarkRefData'][0]['airupdatedate'] = remark.get('airupdatedate')
-            if pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']:
-                if not pydash.get(remark, 'remarkInserts'):
-                    continue
-                remark['remarkRefData'][0]['rmrktext'] = pydash.get(remark, 'remarkInserts')[0]['airiinsertiontext']
-                pydash.unset(remark, 'remarkRefData[0].RemarkInserts')
-                remarks_values.append(agendaservices.fsbid_to_talentmap_agenda_remarks(remark['remarkRefData'][0]))
-                continue
-
-            # Have to handle {BlankTextBox} remarks without any insertions since they
-            # are loaded on every agenda
-            if (pydash.get(remark, 'remarkRefData[0].rmrktext') == "{BlankTextBox}") and not pydash.get(remark, 'remarkInserts'):
-                continue
-            remarkInsertions = pydash.get(remark, 'remarkInserts')
-            refRemarkText = pydash.get(remark, 'remarkRefData[0].rmrktext')
-            remark['remarkRefData'][0]['refrmrkinsertions'] = remarkInsertions
-            remark['remarkRefData'][0]['refrmrktext'] = refRemarkText
-            refInsertionsText = pydash.get(remark, 'remarkRefData[0].RemarkInserts')
-
-            if remarkInsertions:
-                for insertion in remarkInsertions:
-                    matchText = pydash.find(refInsertionsText, {'riseqnum': insertion['aiririseqnum']})
-                    if matchText:
-                        refRemarkText = refRemarkText.replace(matchText['riinsertiontext'], insertion['airiinsertiontext'])
-                    else:
+            logger.info(f"Remark Ref: {remark['remarkRefData']}")
+            if 'remarkRefData' in remark and len(remark['remarkRefData']) > 0:
+                remark['remarkRefData'][0]['airaiseqnum'] = remark.get('airaiseqnum')
+                remark['remarkRefData'][0]['airrmrkseqnum'] = remark.get('airrmrkseqnum')
+                remark['remarkRefData'][0]['airremarktext'] = remark.get('airremarktext')
+                remark['remarkRefData'][0]['aircompleteind'] = remark.get('aircompleteind')
+                remark['remarkRefData'][0]['aircreateid'] = remark.get('aircreateid')
+                remark['remarkRefData'][0]['aircreatedate'] = remark.get('aircreatedate')
+                remark['remarkRefData'][0]['airupdateid'] = remark.get('airupdateid')
+                remark['remarkRefData'][0]['airupdatedate'] = remark.get('airupdatedate')
+                if pydash.get(remark, 'remarkRefData[0].rmrktext') in [None, '']:
+                    if not pydash.get(remark, 'remarkInserts'):
                         continue
+                    remark['remarkRefData'][0]['rmrktext'] = pydash.get(remark, 'remarkInserts')[0]['airiinsertiontext']
+                    pydash.unset(remark, 'remarkRefData[0].RemarkInserts')
+                    remarks_values.append(agendaservices.fsbid_to_talentmap_agenda_remarks(remark['remarkRefData'][0]))
+                    continue
 
-            remark['remarkRefData'][0]['rmrktext'] = refRemarkText
-            if remark['remarkRefData'][0]['rmrkactiveind'] == 'N':
-                remark['remarkRefData'][0]['refrmrktext'] = remark['remarkRefData'][0]['rmrktext']
+                # Have to handle {BlankTextBox} remarks without any insertions since they
+                # are loaded on every agenda
+                if (pydash.get(remark, 'remarkRefData[0].rmrktext') == "{BlankTextBox}") and not pydash.get(remark, 'remarkInserts'):
+                    continue
+                remarkInsertions = pydash.get(remark, 'remarkInserts')
+                refRemarkText = pydash.get(remark, 'remarkRefData[0].rmrktext')
+                remark['remarkRefData'][0]['refrmrkinsertions'] = remarkInsertions
+                remark['remarkRefData'][0]['refrmrktext'] = refRemarkText
+                refInsertionsText = pydash.get(remark, 'remarkRefData[0].RemarkInserts')
 
-            remarks_values.append(agendaservices.fsbid_to_talentmap_agenda_remarks(remark['remarkRefData'][0]))
+                if remarkInsertions:
+                    for insertion in remarkInsertions:
+                        matchText = pydash.find(refInsertionsText, {'riseqnum': insertion['aiririseqnum']})
+                        if matchText:
+                            refRemarkText = refRemarkText.replace(matchText['riinsertiontext'], insertion['airiinsertiontext'])
+                        else:
+                            continue
+
+                remark['remarkRefData'][0]['rmrktext'] = refRemarkText
+                if remark['remarkRefData'][0]['rmrkactiveind'] == 'N':
+                    remark['remarkRefData'][0]['refrmrktext'] = remark['remarkRefData'][0]['rmrktext']
+
+                remarks_values.append(agendaservices.fsbid_to_talentmap_agenda_remarks(remark['remarkRefData'][0]))
 
     return remarks_values
 
