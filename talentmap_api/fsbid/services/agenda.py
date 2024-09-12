@@ -478,7 +478,6 @@ def convert_agenda_item_query(query):
     }
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
-    logger.info(f"Converted query: {valuesToReturn}")
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
@@ -555,8 +554,6 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
     combined_pp_grade = combine_pp_grade(pp, grade)
 
     panel = data.get("Panel")[0]
-
-    remarks = pydash.get(data, "remarks") or []
 
     return {
         "id": data.get("aiseqnum") or None,
