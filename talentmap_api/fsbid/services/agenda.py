@@ -478,6 +478,8 @@ def convert_agenda_item_query(query):
     }
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+    logger.info(f"Converted query: {valuesToReturn}")
+    print(f"Converted query: {valuesToReturn}")
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
@@ -559,6 +561,7 @@ def fsbid_single_agenda_item_to_talentmap_single_agenda_item(data, ref_skills={}
     if not remarks:
         logger.info("Remarks is empty")
         logger.info(f"aiseqnum: {data.get('aiseqnum')}")
+    logger.info(f"aiseqnum: {data.get('aiseqnum')}")
     logger.info(f"Remarks BEFORE parsing: {remarks}")
     return {
         "id": data.get("aiseqnum") or None,
