@@ -901,10 +901,6 @@ def parse_agenda_remarks(remarks=[]):
     remarks_values = []
     if remarks:
         for remark in remarks:
-            if not remark:
-                logger.info("Remark is empty")
-            if not pydash.get(remark, 'remarkRefData'):
-                logger.info("RemarkRefData is empty")
             if 'remarkRefData' in remark and len(remark['remarkRefData']) > 0:
                 remark['remarkRefData'][0]['airaiseqnum'] = remark.get('airaiseqnum')
                 remark['remarkRefData'][0]['airrmrkseqnum'] = remark.get('airrmrkseqnum')
