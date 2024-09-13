@@ -31,7 +31,6 @@ def get_agenda_employees(query, jwt_token=None, host=None):
         cdos = list(cdo(jwt_token))
     except:
         cdos = []
-
     args = {
         "uri": "v1/tm-persons",
         "query": query,
@@ -140,7 +139,6 @@ def convert_agenda_employees_query(query):
     '''
     Convert TalentMAP filters into FSBid filters
     '''
-
     tedStart = query.get("ted-start")
     tedEnd = query.get("ted-end")
 

@@ -252,7 +252,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
-        logger.error(f"Fsbid call to '{url}' failed.")
+        logger.error(f"Fsbid call to '{uri}' failed.")
         return None
     if mapping_function:
         return list(map(mapping_function, response.get("Data", {})))
@@ -362,7 +362,6 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     Gets the total number of items for a filterset
     '''
     args = {}
-
     newQuery = query.copy()
     if api_root == CLIENTS_ROOT_V2 and not uri:
         newQuery['getCount'] = 'true'
@@ -372,7 +371,6 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         newQuery['getCount'] = 'true'
     if is_template:
         newQuery['getCount'] = 'true'
-
     if use_post:
         url = f"{api_root}/{uri}"
         args['json'] = query_mapping_function(newQuery)
@@ -387,7 +385,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         count = pydash.get(countObj, pydash.keys(countObj)[0])
         return {"count": count}
     else:
-        logger.error(f"No count property could be found. {response}")
+        logger.error(f"No count property could be found from {uri}")
         raise KeyError('No count property could be found')
 
 
