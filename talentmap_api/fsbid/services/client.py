@@ -486,7 +486,7 @@ def convert_client_query(query, isCount=None):
         "request_params.order_by": sorting_values(query.get("ordering", None)),
         "request_params.freeText": query.get("q", None),
         "request_params.bsn_id": convert_multi_value(query.get("bid_seasons")),
-        # "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
+        "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
         "request_params.no_successful_panel": "",
         "request_params.no_bids": "",
         "request_params.eligible_bidder": "",
