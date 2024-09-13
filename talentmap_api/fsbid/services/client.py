@@ -60,15 +60,15 @@ def client(jwt_token, query, host=None):
 
     return response
 
-def get_unassigned_bidder(jwt_token, query, host=None):
+def get_client_perdets(jwt_token, query, host=None):
     '''
     Get Bidder Type
     '''
     args = {
         "proc_name": "prc_lst_cdo_wl_clients",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
-        "request_mapping_function": unassigned_bidder_type_req_mapping,
-        "response_mapping_function": unassigned_bidder_type_res_mapping,
+        "request_mapping_function": get_client_perdets_req_mapping,
+        "response_mapping_function": get_client_perdets_res_mapping,
         "jwt_token": jwt_token,
         "request_body": query,
     }
@@ -76,7 +76,7 @@ def get_unassigned_bidder(jwt_token, query, host=None):
         **args
     )
 
-def unassigned_bidder_type_req_mapping(request):
+def get_client_perdets_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -86,9 +86,9 @@ def unassigned_bidder_type_req_mapping(request):
         "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
     }
 
-def unassigned_bidder_type_res_mapping(data):
+def get_client_perdets_res_mapping(data):
     if data is None and data['PV_RETURN_CODE_O'] is not 0:
-        logger.error('FSBid call for Unassigned Bidder Type failed.')
+        logger.error('FSBid call for client perdets failed.')
         return None
     return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 

@@ -52,12 +52,12 @@ class FSBidClientUpdateListView(BaseView):
         return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
     
 
-class FSBidUnassignedClientListView(BaseView):
+class FSBidClientPerdetListView(BaseView):
     def post(self, request):
         '''
-        Gets all clients with no bids or no panels
+        Gets all clients based on perdet seq num
         '''
-        return Response(services.get_unassigned_bidder(request.META['HTTP_JWT'], request.query_params))
+        return Response(services.get_client_perdets(request.META['HTTP_JWT'], request.query_params))
 
 
 class FSBidClientView(BaseView):
