@@ -87,5 +87,5 @@ class FSBidEntryLevelPositionsActionView(BaseView):
     '''
     def post(self, request):
         jwt = request.META['HTTP_JWT']
-        result = services.edit_el_position(jwt, request.data)
+        result = services.edit_el_positions(jwt, request.data)
         return Response(result)

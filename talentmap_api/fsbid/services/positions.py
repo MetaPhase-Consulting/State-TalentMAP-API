@@ -396,6 +396,7 @@ def el_postions_res_mapping(data):
             'incumbentTED': x.get('INCUMBENT_TED'),
             'assignee': x.get('ASSIGNEE'),
             'assigneeTED': x.get('ASSIGNEE_TED'),
+            'ELTOML': x.get('ELTOML'),
             'EL': x.get('EL'),
             'MC': x.get('MC'),
             'LNA': x.get('LNA'),
