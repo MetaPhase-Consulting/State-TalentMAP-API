@@ -475,7 +475,7 @@ def convert_client_query(query, isCount=None):
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
         "request_params.get_count": query.get("getCount", 'false'),
-        "request_params.perdet_seq_num": query.get("perdet_seq_num__in", None),
+        "request_params.perdet_seq_num": query.get("perdet_seq_num", None),
     }
     if isCount:
         values['request_params.page_size'] = None
