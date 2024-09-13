@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/$', views.FSBidClientView.as_view(), name='FSBid-client'),
     url(r'^$', views.FSBidClientListView.as_view(), name='FSBid-client_list'),
     url(r'^unassigned/$', views.FSBidUnassignedClientListView.as_view(), name='FSBid-unassigned-bidders'),
+    url(r'^update/$', views.FSBidClientUpdateListView.as_view(), name='FSBid-client_update'),
 ]
 
 urlpatterns += router.urls
