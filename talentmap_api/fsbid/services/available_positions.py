@@ -409,7 +409,6 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False):
         f"{prefix}pv_elig_tele_ind": query.get("pv_elig_tele_ind"),
 
     }
-    print(values)
 
     if not isTandem:
         values[f"{prefix}get_count"] = query.get("getCount", 'false')
