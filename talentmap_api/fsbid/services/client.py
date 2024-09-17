@@ -485,7 +485,7 @@ def convert_client_query(query, isCount=None):
     if value is not None and isinstance(value, str):
         perdet = value.split(', ')
     else:
-        perdet = []
+        perdet = None
     values = {
         "request_params.hru_id": hru_id_filter(query),
         "request_params.rl_cd": query.get("rl_cd", None),
