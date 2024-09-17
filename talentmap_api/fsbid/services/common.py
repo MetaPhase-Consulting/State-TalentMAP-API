@@ -385,7 +385,8 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         count = pydash.get(countObj, pydash.keys(countObj)[0])
         return {"count": count}
     else:
-        return response
+        logger.error(f"No count property could be found from {uri}")
+        raise KeyError('No count property could be found')
 
 
 # pre-load since this data rarely changes
