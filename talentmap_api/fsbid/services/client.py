@@ -480,7 +480,7 @@ def convert_client_query(query, isCount=None):
     '''
     from talentmap_api.fsbid.services.common import sorting_values, convert_multi_value
     perdet_seq_nums = query.get("perdet_seq_num", [])
-    perdetNums = ",".join([str(x) for x in perdet_seq_nums]) if perdet_seq_nums else ""
+    perdetNums = [str(x) for x in perdet_seq_nums] if perdet_seq_nums else ""
 
     values = {
         "request_params.hru_id": hru_id_filter(query),
