@@ -479,13 +479,6 @@ def convert_client_query(query, isCount=None):
     The TalentMap filters align with the client search filter naming
     '''
     from talentmap_api.fsbid.services.common import sorting_values, convert_multi_value
-    perdet = None
-
-    value = query.get("perdet_seq_num", None)
-    if value is not None and isinstance(value, str):
-        perdet = value.split(', ')
-    else:
-        perdet = None
     values = {
         "request_params.hru_id": hru_id_filter(query),
         "request_params.rl_cd": query.get("rl_cd", None),
@@ -502,7 +495,7 @@ def convert_client_query(query, isCount=None):
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
         "request_params.get_count": query.get("getCount", 'false'),
-        "request_params.perdet_seq_num": perdet,
+        "request_params.perdet_seq_num": query.get("perdet_seq_num", None),
     }
     if isCount:
         values['request_params.page_size'] = None
