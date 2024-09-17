@@ -480,9 +480,12 @@ def convert_client_query(query, isCount=None):
     '''
     from talentmap_api.fsbid.services.common import sorting_values, convert_multi_value
     perdet = None
-    if query.get("perdet_seq_num", None) is not None:
-        perdet = query.get("perdet_seq_num").split(', ')
 
+    value = query.get("perdet_seq_num", None)
+    if value is not None and isinstance(value, str):
+        perdet = value.split(', ')
+    else:
+        perdet = []
     values = {
         "request_params.hru_id": hru_id_filter(query),
         "request_params.rl_cd": query.get("rl_cd", None),
