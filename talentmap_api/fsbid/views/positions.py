@@ -81,11 +81,42 @@ class FSBidEntryLevelPositionsFiltersView(BaseView):
         return Response(services.get_el_positions_filters(request.query_params, request.META['HTTP_JWT']))
 
 class FSBidEntryLevelPositionsActionView(BaseView):
+    
+    print("inside FSBidEntryLevelPositionsActionView\n")
+
     permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
     '''
     Edit and save an EL Position
     '''
+
+    # json_body is a dictionary that will be passed in from the front end when UI calls the 
+    # Django endpoint associated with this view. Hard coding it here for testing.
+    # This dictionary will be used to update the EL position in the database.
+
+    json_body1={
+                    "PV_API_VERSION_I": "",
+                    "PV_AD_ID_I": "",
+                    "PV_ACTION_I": "D",
+                    "PTYP_CUST_TD_POS_TAB_I": {"Data":[{"POS_SEQ_NUM":774, "EL": "false", "LNA": "false", 
+                                                        "FICA": "false", "ELTOML": "true", 
+                                                        "MC": "false", "MC_END_DATE": None}]}
+    }
+
+    json_body ={
+                    "PV_API_VERSION_I": "\"\"",
+                    "PV_AD_ID_I": "\"\"",
+                    "PV_ACTION_I": "D",
+                    "PTYP_CUST_TD_POS_TAB_I": "{\"Data\":[{\"POS_SEQ_NUM\":\"774\",\"EL\": \"false\",\"LNA\": \"false\",\"FICA\": \"false\", \"ELTOML\":\"true\"}, \"MC\": \"false\", \"MC_END_DATE\": null}]}"
+        }
+
     def post(self, request):
+        print("inside FSBidEntryLevelPositionsActionView post\n")
+        print("request: ", request, "\n")
+        print("request.data: ", request.data, "\n")
+        print("request.META ('HTTP_JWT will be the jwt token): ", request.META, "\n")
         jwt = request.META['HTTP_JWT']
-        result = services.edit_el_positions(jwt, request.data)
+        # jwt is passed in first when edit_el_positions takes request first and jwt_token as second arg.
+        # this is leading to jwt being null and request being the jwt token
+        # result = services.edit_el_positions(jwt, request.data)
+        result = services.edit_el_positions(data=self.json_body, jwt_token=jwt)
         return Response(result)

@@ -26,6 +26,7 @@ from talentmap_api.fsbid.services import projected_vacancies as pvservices
 from talentmap_api.fsbid.services import employee as empservices
 from talentmap_api.fsbid.services import agenda as agendaservices
 from talentmap_api.fsbid.requests import requests
+# import requests # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -301,9 +302,8 @@ def get_individual(uri, query, query_mapping_function, jwt_token, mapping_functi
     return pydash.get(response, '[0]') or None
 
 
-
 # for calls to BackOffice CRUD POST EP
-def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
+def send_post_back_office_og(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
     url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
     json_body = request_mapping_function(request_body)
     try:
@@ -313,6 +313,81 @@ def send_post_back_office(proc_name, package_name, request_body, request_mapping
         raise Exception('Error at FSBid call')
 
     return response_mapping_function(response)
+
+
+# for calls to BackOffice CRUD POST EP
+def send_post_back_office_one(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
+
+    print("inside send_post_back_office\n")
+    """
+    request_body, request_mapping_function, response_mapping_function are functions that are passed in from the calling 
+    function but never actually used here otherwise 
+    """
+    # should the input be the JSON object instead of pk? What is the pk needed for?
+
+    url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
+    if response_mapping_function is not None:
+        json_body = request_mapping_function(request_body)
+    else:
+        json_body = request_body
+
+    try:
+        print("json_body that will be sent to WS: ", json_body, "\n")
+        # response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
+        headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
+        req = requests.Request('POST', url, headers=headers, json=json_body)
+        prepared = req.prepare()
+
+        print("Prepared request\n")
+        print("prepared: ", prepared, "\n")
+        print(f"URL: {prepared.url}")
+        print(f"Headers: {prepared.headers}")
+        print(f"Body: {prepared.body}")
+
+        # taking a look at the cURL version of this POST command
+        # Generate the curl command
+        curl_command = f"curl -X POST '{prepared.url}'"
+        for k, v in prepared.headers.items():
+            curl_command += f" -H '{k}: {v}'"
+        if prepared.body:
+            curl_command += f" -d '{prepared.body.decode('utf-8')}'"
+
+        print("\nGenerated curl command:\n", curl_command)
+
+        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json', 'Accept': 'application/json'}, json=json_body).json()
+    except requests.exceptions.HTTPError as http_err:
+        if response.status_code == 502:
+            logger.error(f"502 Bad Gateway error for procedure {proc_name} failed.")
+        else:
+            logger.error(f"HTTP error occured: {http_err}")
+    except:
+        logger.error(f"FSBid backoffice call for procedure {proc_name} failed.")
+        raise Exception('Error at FSBid call')
+    
+    print("response: ", response, "/n")
+
+    # TO - DO: replace return with the original return since many functions call this common function
+    return response
+
+
+def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
+    url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
+    json_body = request_body
+
+    print("url: ", url, "\n")
+    print("json_body: ", json_body, "\n")
+
+    try:
+        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json', 'Accept': 'application/json'}, json=json_body)
+    except:
+        logger.error(f"FSBid backoffice call for procedure {proc_name} failed.")
+        raise Exception('Error at FSBid call')
+
+    if response_mapping_function:
+        return response_mapping_function(response.json())
+    else:
+        return response
+
 
 def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_function, count_function, base_url, host=None, api_root=API_ROOT, use_post=False):
     '''
