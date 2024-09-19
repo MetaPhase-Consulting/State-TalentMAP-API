@@ -60,21 +60,56 @@ def client(jwt_token, query, host=None):
 
     return response
 
-def update_client(data, jwt_token, host=None):
+def get_client_perdets(jwt_token, query, host=None):
     '''
-    Update current client
+    Get Bidder Type
     '''
     args = {
-        "proc_name": 'prc_mod_alt_email_bscc',
-        "package_name": 'Pkg_Wrap_dev',
-        "request_mapping_function": update_client_req_mapping,
-        "response_mapping_function": update_user_client_res_mapping,
+        "proc_name": "prc_lst_cdo_wl_clients",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
+        "request_mapping_function": get_client_perdets_req_mapping,
+        "response_mapping_function": get_client_perdets_res_mapping,
         "jwt_token": jwt_token,
-        "request_body": data,
+        "request_body": query,
     }
     return services.send_post_back_office(
         **args
     )
+
+def get_client_perdets_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_SUBTRAN_I": "",
+        "PV_CDO_WL_CODE_I": convert_bidder_type_query(request),
+        "PV_CDO_HRU_ID_I": request.get("hru_id__in"),
+        "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
+    }
+
+def get_client_perdets_res_mapping(data):
+    if data is None and data['PV_RETURN_CODE_O'] is not 0:
+        logger.error('FSBid call for client perdets failed.')
+        return None
+    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
+
+
+def convert_bidder_type_query(type):
+    type_mapping = {
+        'noBids': 'NB',
+        'noPanel': 'NP',
+        'handshake': 'HS',
+        'eligible_bidders': 'EB',
+        'cusp_bidders': 'CU',
+        'languages': 'LA',
+        'separations': 'SB',
+        'classification': 'BC',
+        'panel_clients': 'BU'
+    }
+    
+    for key, code in type_mapping.items():
+        if type.get(key):
+            return code
+    return None
 
 def update_client_req_mapping(request):
     bidSeasons = ",".join([str(x) for x in request.get("bid_seasons")])
@@ -451,11 +486,11 @@ def convert_client_query(query, isCount=None):
         "request_params.order_by": sorting_values(query.get("ordering", None)),
         "request_params.freeText": query.get("q", None),
         "request_params.bsn_id": convert_multi_value(query.get("bid_seasons")),
-        "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
-        "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
-        "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
-        "request_params.eligible_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('eligible_bidder', None)),
-        "request_params.cusp_bidder": tmap_cusp_and_eligible_bidders_to_fsbid(query.get('cusp_bidder', None)),
+        "request_params.hs_cd": "",
+        "request_params.no_successful_panel": "",
+        "request_params.no_bids": "",
+        "request_params.eligible_bidder": "",
+        "request_params.cusp_bidder": "",
         "request_params.page_index": int(query.get("page", 1)),
         "request_params.page_size": query.get("limit", 25),
         "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),

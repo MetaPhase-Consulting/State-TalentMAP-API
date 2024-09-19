@@ -50,6 +50,15 @@ class FSBidClientUpdateListView(BaseView):
         Update a client
         '''
         return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+    
+
+class FSBidClientPerdetListView(BaseView):
+    def post(self, request):
+        '''
+        Gets all clients based on perdet seq num
+        '''
+        return Response(services.get_client_perdets(request.META['HTTP_JWT'], request.query_params))
+
 
 class FSBidClientView(BaseView):
 
