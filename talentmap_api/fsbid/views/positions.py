@@ -87,6 +87,19 @@ class FSBidEntryLevelPositionsActionView(BaseView):
     permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
 
     def post(self, request):
+
+        example_input = {
+                        "data": {
+                            "POS_SEQ_NUM": 774,
+                            "EL": "false",
+                            "LNA": "false",
+                            "FICA": "false",
+                            "ELTOML": "false",
+                            "MC": "true",
+                            "MC_END_DATE": "2026-07-18T04:00:00.000Z"
+                        }
+                    }
+
         logger.info("inside FSBidEntryLevelPositionsActionView post\n")
         logger.warning("request: ", request, "\n")
         logger.info("request: ", request, "\n")
@@ -103,7 +116,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
                             "PV_API_VERSION_I": "",
                             "PV_AD_ID_I": "",
                             "PV_ACTION_I": "D",
-                            "PTYP_CUST_TD_POS_TAB_I": {"Data":ui_json}
+                            "PTYP_CUST_TD_POS_TAB_I": {request.data}
                         }
         
         jwt = request.META['HTTP_JWT']
