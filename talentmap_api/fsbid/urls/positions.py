@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^el_positions/$', views.FSBidEntryLevelPositionsView.as_view(), name="FSBid-el-positions"),
     url(r'^el_positions/filters/$', views.FSBidEntryLevelPositionsFiltersView.as_view(), name='FSBid-el-positions-filters'),
     # url(r'^el_positions/save/(?P<pk>[0-9]+)/$', views.FSBidEntryLevelPositionsActionView.as_view(), name='FSBid-el-positions-edit'),
-    url(r'^el_positions/save/', views.FSBidEntryLevelPositionsActionView.as_view(), name='FSBid-el-positions-edit'),
+    url(r'^el_positions/save/$', views.FSBidEntryLevelPositionsActionView.as_view(), name='FSBid-el-positions-edit'),
 ]
 
 urlpatterns += router.urls
