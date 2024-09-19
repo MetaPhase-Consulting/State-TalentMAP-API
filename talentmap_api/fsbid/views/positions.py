@@ -88,6 +88,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
 
     def post(self, request):
         logger.info("inside FSBidEntryLevelPositionsActionView post\n")
+        logger.warning("request: ", request, "\n")
         logger.info("request: ", request, "\n")
         logger.info("request.data: ", request.data, "\n")
         logger.info("request.META ('HTTP_JWT will be the jwt token): ", request.META, "\n")
@@ -95,6 +96,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
         # json data passed in from UI. Web Service JSONInput requires "Data" key to be a list of
         # json objects thus the append below
         ui_json = [].append(request.data)
+        logger.info("ui_json: ", ui_json, "\n")
 
         # Web Service JSON Input for EL Position edit
         ws_json_input = {
