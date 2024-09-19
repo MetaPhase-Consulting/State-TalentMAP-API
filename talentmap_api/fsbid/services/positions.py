@@ -485,55 +485,28 @@ def el_positions_filter_res_mapping(data):
 
 def edit_el_positions(data, jwt_token):
     '''
-    Edit and save an Entry Level Position
+    Edit and save an Entry Level Position. Utilize common functionality send_post_back_office(...) in commons.py
+    to make an edit POST to Web Services BackOfficeCRUD
     '''
-    print("inside edit_el_positions\n")
-    print("data send into edit_el_positions is: ", data, "\n")
-    print("jwt_token send in is: ", jwt_token, "\n")
-
-    """request_body needs to eventually just contain the data we are sending back to the API"""
-    # the following 3 lines were a part of the args dictionary
-    # "request_body": request,
-    # "request_mapping_function": edit_el_positions_req_mapping,
-    # "response_mapping_function": edit_el_positions_res_mapping,
-    """
-        the edit_el_positions_req_mapping OR the edit_el_positions_res_mapping don't even seem to be defined
-        making both keys request_mapping_function and response_mapping_function to None in the send_post_back_office call
-
-        Are they necessary for the part of UI that is meant to use them ? 
-    """
+    logger.info("inside edit_el_positions\n")
+    logger.info("data send into edit_el_positions is: ", data, "\n")
+    logger.info("jwt_token send in is: ", jwt_token, "\n")
 
     args = {
-        # og proc_name = "prc_iud_tracking_details_grid"
-        # og "proc_name": "prc_iud_tracking_details_pos",
         "proc_name": "prc_iud_tracking_details_pos",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT101", # should be changed to PKG_WEBAPI_WRAP
         "request_body": data,
         "request_mapping_function": None,
         "response_mapping_function": None,
         "jwt_token": jwt_token,
     }
 
-    print("args in edit_el_positions: ", args, "\n")
+    logger.info("args in edit_el_positions: ", args, "\n")
 
     try:
         response = services.send_post_back_office(**args)
-        print("Response send back from send_post_back_office: ", response, "\n")
+        logger.info("Response send back from send_post_back_office: ", response, "\n")
         return response
     except Exception as e:
-        print("An error occurred in edit_el_positions: ", e, "\n")
+        logger.info("An error occurred in edit_el_positions: ", e, "\n")
         return None
-
-
-    # return services.send_post_back_office(
-    #     **args
-    # )
-
-
-"""
-curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'JWTAuthorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbIkFPIiwiQnVyZWF1IiwiQ0RPIiwiRlNCSURfU0EiLCJGU0JpZF9PcmdfQmlkZGVycyIsImZzb2ZmaWNlciJdLCJ1bmlxdWVfbmFtZSI6IkRPU0RFVlxcU2hhaE0xIiwiZGlzcGxheV9uYW1lIjoiU0hBSCwgTUFOU0kgIiwiZW1haWwiOiJzaGFobTFAc3RhdGUuZ292Iiwic3ViIjoiMTAwNjc4IiwianRpIjoiZGJlNmYxZTgtMTMzOC00NTdlLTg0MDYtMDg2Yzc2MzRhMTcwIiwic3lzdGVtIjoiMzIiLCJpc3MiOiJIUi9FWC9TREQiLCJhdWQiOiJodHRwczovL2d0bWRldjFocm9ubGluZS5oci5kb3NkZXYudXMvZGV2MS9IUkRhdGEiLCJleHAiOjE3MjY3NTU2MzcsIm5iZiI6MTcyNjY2OTIzN30.i3IJ3VN57JUIImE5mRlddPk_G8xVzNJQ1EO0VfJmhEo' -d '{ \ 
-   "PV_API_VERSION_I": "", \ 
-   "PV_AD_ID_I": "", \ 
-   "PV_ACTION_I": "D", \ 
-   "PTYP_CUST_TD_POS_TAB_I": {"Data":[{"POS_SEQ_NUM":774, "EL": "false", "LNA": "false", "FICA": "false", "ELTOML": "true", "MC": "false", "MC_END_DATE": null}]}}' 'https://gtmdev1hronline.hr.dosdev.us/Dev1/HRTMAPData/api/v1/backoffice/BackOfficeCRUD?procName=prc_iud_tracking_details_pos&packageName=PKG_WEBAPI_WRAP_SPRINT101'
-"""
