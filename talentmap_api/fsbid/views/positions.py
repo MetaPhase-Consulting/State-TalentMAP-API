@@ -116,7 +116,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
                             "PV_API_VERSION_I": "",
                             "PV_AD_ID_I": "",
                             "PV_ACTION_I": "D",
-                            "PTYP_CUST_TD_POS_TAB_I": {request.data}
+                            "PTYP_CUST_TD_POS_TAB_I": {ui_json}
                         }
         
         jwt = request.META['HTTP_JWT']
