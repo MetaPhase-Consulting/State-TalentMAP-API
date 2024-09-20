@@ -289,6 +289,32 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         ])
     return response
 
+def client_panel(jwt_token, query, host=None):
+    '''
+    Get Clients by CDO
+    '''
+    args = {
+        "proc_name": 'prc_cdo_grid_select_lst',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99_PJD',
+        "request_mapping_function": client_panel_req_mapping,
+        "response_mapping_function": client_panel_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+def client_panel_req_mapping(request):
+    return {
+        'pv_api_version_i': '',
+        'pv_ad_id_i': '',
+    }
+def client_panel_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Panel Client failed.')
+        return None
+        
+    return data.get('PV_PM_LST_O')
 
 def fsbid_clients_to_talentmap_clients(data):
     employee = data.get('employee', None)
