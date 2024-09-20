@@ -88,35 +88,38 @@ class FSBidEntryLevelPositionsActionView(BaseView):
 
     def post(self, request):
 
-        example_input = {
-                        "data": {
-                            "POS_SEQ_NUM": 774,
-                            "EL": "false",
-                            "LNA": "false",
-                            "FICA": "false",
-                            "ELTOML": "false",
-                            "MC": "true",
-                            "MC_END_DATE": "2026-07-18T04:00:00.000Z"
-                        }
-                    }
+        example_input = [
+                            {
+                                "POS_SEQ_NUM": 774,
+                                "EL": "true",
+                                "LNA": "false",
+                                "FICA": "false",
+                                "ELTOML": "true",
+                                "MC": "false",
+                                "MC_END_DATE": "2026-07-18T04:00:00.000Z"
+                            }
+                        ]
 
         logger.info("inside FSBidEntryLevelPositionsActionView post\n")
-        logger.warning("request: ", request, "\n")
-        logger.info("request: ", request, "\n")
-        logger.info("request.data: ", request.data, "\n")
-        logger.info("request.META ('HTTP_JWT will be the jwt token): ", request.META, "\n")
+        # logger.warning("request: ", request, "\n")
+        # logger.info("request: ", request, "\n")
+        logger.info(f"request.data: {request.data}")
+        # logger.info(f"turning request.data into a list: {list(request.data)}\n")
+        #logger.info("request.META ('HTTP_JWT will be the jwt token): ", request.META, "\n")
 
         # json data passed in from UI. Web Service JSONInput requires "Data" key to be a list of
         # json objects thus the append below
-        ui_json = [].append(request.data)
-        logger.info("ui_json: ", ui_json, "\n")
+        # ui_json = [].append(request.data)
+        # ui_json = []
+        # ui_json.append(request.data)
+        # logger.info("ui_json: ", ui_json, "\n")
 
         # Web Service JSON Input for EL Position edit
         ws_json_input = {
                             "PV_API_VERSION_I": "",
                             "PV_AD_ID_I": "",
                             "PV_ACTION_I": "D",
-                            "PTYP_CUST_TD_POS_TAB_I": {ui_json}
+                            "PTYP_CUST_TD_POS_TAB_I": {"Data": request.data}
                         }
         
         jwt = request.META['HTTP_JWT']
