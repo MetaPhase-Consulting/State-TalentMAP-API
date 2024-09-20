@@ -306,8 +306,8 @@ def client_panel(jwt_token, query, host=None):
     )
 def client_panel_req_mapping(request):
     return {
-        'pv_api_version_i': '',
-        'pv_ad_id_i': '',
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
     }
 def client_panel_res_mapping(data):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):

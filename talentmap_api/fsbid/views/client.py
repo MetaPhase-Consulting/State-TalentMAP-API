@@ -93,7 +93,6 @@ class FSBidClientCSVView(BaseView):
         return services.get_client_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
 
 class FSBidClientPanelView(BaseView):
-    print("FSBidClientPanelView DOUBE UP")
     def get(self, request):
         '''
         Gets the panel date for a client
