@@ -100,7 +100,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
                             }
                         ]
 
-        logger.info("inside FSBidEntryLevelPositionsActionView post\n")
+        logger.info(f"inside FSBidEntryLevelPositionsActionView post\n")
         # logger.warning("request: ", request, "\n")
         # logger.info("request: ", request, "\n")
         logger.info(f"request.data: {request.data}")
@@ -119,7 +119,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
                             "PV_API_VERSION_I": "",
                             "PV_AD_ID_I": "",
                             "PV_ACTION_I": "D",
-                            "PTYP_CUST_TD_POS_TAB_I": {"Data": request.data}
+                            "PTYP_CUST_TD_POS_TAB_I": {"Data": example_input}
                         }
         
         jwt = request.META['HTTP_JWT']
