@@ -479,13 +479,11 @@ def convert_agenda_item_query(query):
     }
 
     if query.get("getCount") == 'true':
-        logger.info('GETTING COUNT')
         values["rp.pageNum"] = 0
         values["rp.pageRows"] = 0
         values["rp.columns"] = "ROWCOUNT"
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
-    logger.info(f'convert query: {valuesToReturn}')
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
