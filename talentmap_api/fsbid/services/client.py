@@ -314,7 +314,7 @@ def client_panel_res_mapping(data):
         logger.error('FSBid call for Panel Client failed.')
         return None
         
-    return data.get('PV_PM_LST_O')
+    return data
 
 def fsbid_clients_to_talentmap_clients(data):
     employee = data.get('employee', None)
