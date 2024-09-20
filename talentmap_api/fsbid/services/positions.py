@@ -485,12 +485,9 @@ def el_positions_filter_res_mapping(data):
 
 def edit_el_positions(data, jwt_token):
     '''
-    Edit and save an Entry Level Position. Utilize common functionality send_post_back_office(...) in commons.py
-    to make an edit POST to Web Services BackOfficeCRUD
+    Edit and save an Entry Level Position. Utilize common functionality send_post_back_office(...) 
+    in commons.py to make an edit POST to Web Services BackOfficeCRUD
     '''
-    logger.info(f"inside edit_el_positions\n")
-    logger.info(f"data send into edit_el_positions is: {data}")
-    logger.info(f"jwt_token send in is: {jwt_token}")
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
@@ -501,11 +498,9 @@ def edit_el_positions(data, jwt_token):
         "jwt_token": jwt_token,
     }
 
-    logger.info("args in edit_el_positions: ", args, "\n")
 
     try:
         response = services.send_post_back_office(**args)
-        logger.info(f"Response send back from send_post_back_office: {response}")
         return response
     except Exception as e:
         logger.info(f"An error occurred in edit_el_positions: {e}")
