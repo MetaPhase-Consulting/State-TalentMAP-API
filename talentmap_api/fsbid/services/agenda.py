@@ -77,7 +77,7 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
         "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
-        "count_function": None,
+        "count_function": get_agenda_items_count,
         "base_url": "/api/v1/agendas/",
         "host": host,
         "use_post": False,
@@ -454,7 +454,8 @@ def get_agenda_items_count(query, jwt_token, host=None, use_post=False):
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
         "host": host,
-        "use_post": False,
+        "use_post": use_post,
+        "is_template": True,
         "api_root": AGENDA_API_ROOT,
     }
     return services.send_count_request(**args)
@@ -477,7 +478,14 @@ def convert_agenda_item_query(query):
         ]),
     }
 
+    if query.get("getCount") == 'true':
+        logger.info('GETTING COUNT')
+        values["rp.pageNum"] = 0
+        values["rp.pageRows"] = 0
+        values["rp.columns"] = "ROWCOUNT"
+
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+    logger.info(f'convert query: {valuesToReturn}')
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
