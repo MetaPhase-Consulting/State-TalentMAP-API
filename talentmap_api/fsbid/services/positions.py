@@ -330,6 +330,7 @@ def get_el_positions(query, jwt_token):
         "response_mapping_function": el_postions_res_mapping,
         "jwt_token": jwt_token,
     }
+
     return services.send_post_back_office(
         **args
     )
@@ -410,7 +411,12 @@ def el_postions_res_mapping(data):
             'mcEndDate': x.get('MC_END_DATE'),
         }
 
-    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)]))
+    final = {
+        "count": data.get('PV_TOTAL_ROWS_O') or 0,
+        "results": list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)])),
+    }
+    
+    return final
 
 def get_el_positions_filters(request, jwt_token):
     '''
@@ -503,7 +509,6 @@ def edit_el_positions(data, jwt_token):
         "response_mapping_function": None,
         "jwt_token": jwt_token,
     }
-
 
     try:
         response = services.send_post_back_office(**args)
