@@ -341,7 +341,11 @@ def el_postions_req_mapping(request):
     }
     for key in request:
         values_formatted = []
-        if key == 'el-tps':
+        if key == 'page':
+            result['PV_PAGE_I'] = request[key]
+        elif key == 'limit':
+            result['PV_PAGE_ROWS_I'] = request[key]
+        elif key == 'el-tps':
             for tp in request[key].split(','):
                 values_formatted.append(f"{{\"TP_CODE\": \"{tp}\"}}")
             result['PTYP_TP_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
@@ -373,6 +377,8 @@ def el_postions_req_mapping(request):
             result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"O\"}}}}"
         elif key == 'el-domestic':
             result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"D\"}}}}"
+        elif key == 'text':
+            result['PV_FREETEXT_I'] = request[key]
         
     return result
 
