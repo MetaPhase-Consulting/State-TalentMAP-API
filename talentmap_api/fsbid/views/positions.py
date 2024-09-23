@@ -97,5 +97,6 @@ class FSBidEntryLevelPositionsActionView(BaseView):
                         }
         
         jwt = request.META['HTTP_JWT']
-        result = services.edit_el_positions(data=ws_json_input, jwt_token=jwt)
+        # result = services.edit_el_positions(data=ws_json_input, jwt_token=jwt)
+        result = services.edit_el_positions(data=request.data, jwt_token=jwt)
         return Response(result)
