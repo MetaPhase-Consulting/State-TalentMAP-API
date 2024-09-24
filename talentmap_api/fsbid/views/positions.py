@@ -87,15 +87,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
     permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
 
     def post(self, request):
-
-        # Web Service JSON Input for EL Position edit
-        ws_json_input = {
-                            "PV_API_VERSION_I": "",
-                            "PV_AD_ID_I": "",
-                            "PV_ACTION_I": "",
-                            "PTYP_CUST_TD_POS_TAB_I": {"Data": request.data}
-                        }
         
         jwt = request.META['HTTP_JWT']
-        result = services.edit_el_positions(data=ws_json_input, jwt_token=jwt)
+        result = services.edit_el_positions(data=request.data, jwt_token=jwt)
         return Response(result)
