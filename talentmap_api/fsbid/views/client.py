@@ -95,12 +95,12 @@ class FSBidClientCSVView(BaseView):
 class FSBidClientPanelView(BaseView):
     def get(self, request):
         '''
-        Gets the panel date for a client
+        Gets the panel dates for a client
         '''
         return Response(services.client_panel(request.META['HTTP_JWT'], request.query_params))
     
 class FSBidClientPanelUpdateView(BaseView):
-    def post(self, request):
+    def get(self, request):
         '''
         Updates the panel date for a client
         '''
