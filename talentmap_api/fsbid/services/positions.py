@@ -412,10 +412,10 @@ def el_postions_res_mapping(data):
         }
 
     final = {
-        "count": data.get('PV_TOTAL_ROWS_O') or 0,
+        "count": data.get('PV_ROWCOUNT_O') or 0,
         "results": list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)])),
     }
-    
+
     return final
 
 def get_el_positions_filters(request, jwt_token):

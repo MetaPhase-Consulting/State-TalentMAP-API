@@ -92,7 +92,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
         ws_json_input = {
                             "PV_API_VERSION_I": "",
                             "PV_AD_ID_I": "",
-                            "PV_ACTION_I": "D",
+                            "PV_ACTION_I": "",
                             "PTYP_CUST_TD_POS_TAB_I": {"Data": request.data}
                         }
         
