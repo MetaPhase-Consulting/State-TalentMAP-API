@@ -98,3 +98,10 @@ class FSBidClientPanelView(BaseView):
         Gets the panel date for a client
         '''
         return Response(services.client_panel(request.META['HTTP_JWT'], request.query_params))
+    
+class FSBidClientPanelUpdateView(BaseView):
+    def get(self, request):
+        '''
+        Updates the panel date for a client
+        '''
+        return Response(services.client_panel_update(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))

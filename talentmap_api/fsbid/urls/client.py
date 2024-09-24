@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^client_perdets/$', views.FSBidClientPerdetListView.as_view(), name='FSBid-client_perdets'),
     url(r'^update/$', views.FSBidClientUpdateListView.as_view(), name='FSBid-client_update'),
     url(r'^panel/$', views.FSBidClientPanelView.as_view(), name='FSBid-client_panel'),
+    url(r'^panel_update/$', views.FSBidClientPanelUpdateView.as_view(), name='FSBid-client_panel_update'),
 ]
 
 urlpatterns += router.urls
