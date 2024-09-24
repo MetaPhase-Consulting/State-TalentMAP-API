@@ -1,3 +1,4 @@
+import json
 import logging
 from urllib.parse import urlencode, quote
 
@@ -502,17 +503,18 @@ def edit_el_positions(data, jwt_token):
     '''
 
     # Web Service JSON Input for EL Position edit
-    ws_json_input = {
+    payload = {
                         "PV_API_VERSION_I": "",
                         "PV_AD_ID_I": "",
                         "PV_ACTION_I": "",
                         "PTYP_CUST_TD_POS_TAB_I": {"Data": data}
                     }
-
+    # convert payload to json string
+    json_input = json.dumps(payload)
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
         "package_name": "PKG_WEBAPI_WRAP_SPRINT101", # should be changed to PKG_WEBAPI_WRAP in the future 
-        "request_body": ws_json_input,
+        "request_body": json_input,
         "request_mapping_function": None,
         "response_mapping_function": None,
         "jwt_token": jwt_token,
