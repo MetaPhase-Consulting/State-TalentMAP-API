@@ -545,6 +545,7 @@ def export_el_positions(query, jwt_token, host=None):
     }
 
     data = services.send_post_back_office(**args)
+    json_data = json.dumps(data)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=el_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
@@ -573,6 +574,6 @@ def export_el_positions(query, jwt_token, host=None):
         smart_str(u"Assignee TED"),
     ])
 
-    writer.writerows(data['results'])
+    writer.writerows(json_data['results'])
 
     return response
