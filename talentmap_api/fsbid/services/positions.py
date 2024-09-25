@@ -540,7 +540,8 @@ def export_el_positions(query, jwt_token, host=None):
         "package_name": "PKG_WEBAPI_WRAP",
         "request_body": query,
         "request_mapping_function": el_postions_req_mapping,
-        "response_mapping_function": el_postions_res_mapping,
+        # need to add csv mapping function
+        "response_mapping_function": el_postions_res_mapping, 
         "jwt_token": jwt_token,
     }
 
