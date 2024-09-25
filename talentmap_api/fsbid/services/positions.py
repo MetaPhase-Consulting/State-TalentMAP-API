@@ -6,6 +6,7 @@ import csv
 import pydash
 from django.http import HttpResponse
 from django.conf import settings
+from django.utils.encoding import smart_str
 from datetime import datetime
 from talentmap_api.fsbid.services import common as services
 
