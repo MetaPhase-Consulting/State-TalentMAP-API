@@ -309,7 +309,7 @@ def send_post_back_office(proc_name, package_name, request_body, request_mapping
         json_body = request_mapping_function(request_body)
     else:
         json_body = request_body
-    logger.info(f"FSBid backoffice call for procedure {proc_name} with body {json_body}")
+
     try:
         response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
     except:
