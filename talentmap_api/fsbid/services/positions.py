@@ -6,7 +6,7 @@ import csv
 import pydash
 from django.http import HttpResponse
 from django.conf import settings
-
+from datetime import datetime
 from talentmap_api.fsbid.services import common as services
 
 POSITIONS_V2_ROOT = settings.POSITIONS_API_V2_URL
@@ -546,7 +546,7 @@ def export_el_positions(query, jwt_token, host=None):
     data = services.send_post_back_office(**args)
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f"attachment; filename=panel_meeting_agendas_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+    response['Content-Disposition'] = f"attachment; filename=el_positions_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
 
     writer = csv.writer(response, csv.excel)
     response.write(u'\ufeff'.encode('utf8'))
