@@ -2,7 +2,9 @@ import json
 import logging
 from urllib.parse import urlencode, quote
 
+import csv
 import pydash
+from django.http import HttpResponse
 from django.conf import settings
 
 from talentmap_api.fsbid.services import common as services
@@ -527,3 +529,49 @@ def edit_el_positions(data, jwt_token):
     except Exception as e:
         logger.info(f"An error occurred in edit_el_positions: {e}")
         return None
+
+def export_el_positions(query, jwt_token, host=None):
+    '''
+    Export EL Positions to CSV
+    '''
+    args = {
+        "proc_name": "prc_lst_tracking_details_grid",
+        "package_name": "PKG_WEBAPI_WRAP",
+        "request_body": query,
+        "request_mapping_function": el_postions_req_mapping,
+        "response_mapping_function": el_postions_res_mapping,
+        "jwt_token": jwt_token,
+    }
+
+    data = services.send_post_back_office(**args)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f"attachment; filename=panel_meeting_agendas_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
+
+    writer = csv.writer(response, csv.excel)
+    response.write(u'\ufeff'.encode('utf8'))
+
+    writer.writerow([
+        smart_str(u"EL Managed"),
+        smart_str(u"LNA"),
+        smart_str(u"FICA"),
+        smart_str(u"EL to ML OTO"),
+        smart_str(u"ML to EL OTO"),
+        smart_str(u"Cede End Data"),
+        smart_str(u"Bureau"),
+        smart_str(u"Overseas/Domestic"),
+        smart_str(u"Location/Org"),
+        smart_str(u"Position Number"),
+        smart_str(u"Skill"),
+        smart_str(u"Position Title"),
+        smart_str(u"Grade"),
+        smart_str(u"Languages"),
+        smart_str(u"Incumbent"),
+        smart_str(u"Incumbent TED"),
+        smart_str(u"Assignee"),
+        smart_str(u"Assignee TED"),
+    ])
+
+    writer.writerows(data['results'])
+
+    return response

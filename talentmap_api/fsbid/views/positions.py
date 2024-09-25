@@ -91,3 +91,17 @@ class FSBidEntryLevelPositionsActionView(BaseView):
         jwt = request.META['HTTP_JWT']
         result = services.edit_el_positions(data=request.data, jwt_token=jwt)
         return Response(result)
+
+class FSBidEntryLevelPositionsCSVView(BaseView):
+    '''
+    Export EL Positions to CSV
+    '''
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+
+    def get(self, request):
+        '''
+        Export EL Positions to CSV
+        '''
+        jwt = request.META['HTTP_JWT']
+        result = services.export_el_positions(request.query_params, jwt), f"{request.scheme}://{request.get_host()}"
+        return Response(result)
