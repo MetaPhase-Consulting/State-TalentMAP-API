@@ -387,40 +387,42 @@ def el_postions_req_mapping(request):
         
     return result
 
-def el_postions_res_mapping(data):
+def el_postions_res_mapping(data, needCSV=False):
     if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
         logger.error(f"Fsbid call for Entry Level filters failed.")
         return None
 
     def el_pos_map(x):
         return {
-            'positionNumber': x.get('POS_SEQ_NUM'),
-            'skill': x.get('POS_SKILL_CODE'),
-            'positionTitle': x.get('POS_TITLE_DESC'),
-            'bureau': x.get('BUREAU_SHORT_DESC'),
-            'org': x.get('ORG_SHORT_DESC'),
-            'grade': x.get('POS_GRADE_CODE'),
-            'jobCategory': x.get('POS_JOB_CATEGORY'),
-            'languages': x.get('POS_POSITION_LANG_PROF_CODE'),
-            'OD': x.get('POS_OVERSEAS_DESC'),
-            'incumbent': x.get('INCUMBENT'),
-            'incumbentTED': x.get('INCUMBENT_TED'),
-            'assignee': x.get('ASSIGNEE'),
-            'assigneeTED': x.get('ASSIGNEE_TED'),
-            'ELTOML': x.get('ELTOML'),
-            'EL': x.get('EL'),
-            'MC': x.get('MC'),
+            'EL Managed': x.get('EL'),
             'LNA': x.get('LNA'),
             'FICA': x.get('FICA'),
-            'mcEndDate': x.get('MC_END_DATE'),
+            'EL to ML OTO': x.get('ELTOML'),
+            'ML to EL OTO': x.get('MC'),
+            'Cede End Data': x.get('MC_END_DATE'),
+            'Bureau': x.get('BUREAU_SHORT_DESC'),
+            'Overseas/Domestic': x.get('POS_OVERSEAS_DESC'),
+            'Location/Org': x.get('ORG_SHORT_DESC'),
+            'Position Number': x.get('POS_SEQ_NUM'),
+            'Skill': x.get('POS_SKILL_CODE'),
+            'Position Title': x.get('POS_TITLE_DESC'),
+            'Grade': x.get('POS_GRADE_CODE'),
+            'Languages': x.get('POS_POSITION_LANG_PROF_CODE'),
+            'Incumbent': x.get('INCUMBENT'),
+            'Incumbent TED': x.get('INCUMBENT_TED'),
+            'Assignee': x.get('ASSIGNEE'),
+            'Assignee TED': x.get('ASSIGNEE_TED'),
+
+        }
+    
+    if needCSV:
+        return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)]))
+    
+    return {
+            "count": data.get('PV_ROWCOUNT_O') or 0,
+            "results": list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)])),
         }
 
-    final = {
-        "count": data.get('PV_ROWCOUNT_O') or 0,
-        "results": list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)])),
-    }
-
-    return final
 
 def get_el_positions_filters(request, jwt_token):
     '''
@@ -546,6 +548,7 @@ def export_el_positions(query, jwt_token, host=None):
     }
 
     data = services.send_post_back_office(**args)
+    logger.info("data inside export_el_positions is: ", data, "\n")
     json_data = json.dumps(data)
 
     response = HttpResponse(content_type='text/csv')
