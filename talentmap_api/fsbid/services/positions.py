@@ -394,25 +394,24 @@ def el_postions_res_mapping(data, needCSV=False):
 
     def el_pos_map(x):
         return {
-            'EL Managed': x.get('EL'),
+            'EL': x.get('EL'),
             'LNA': x.get('LNA'),
             'FICA': x.get('FICA'),
-            'EL to ML OTO': x.get('ELTOML'),
-            'ML to EL OTO': x.get('MC'),
-            'Cede End Data': x.get('MC_END_DATE'),
-            'Bureau': x.get('BUREAU_SHORT_DESC'),
-            'Overseas/Domestic': x.get('POS_OVERSEAS_DESC'),
-            'Location/Org': x.get('ORG_SHORT_DESC'),
-            'Position Number': x.get('POS_SEQ_NUM'),
-            'Skill': x.get('POS_SKILL_CODE'),
-            'Position Title': x.get('POS_TITLE_DESC'),
-            'Grade': x.get('POS_GRADE_CODE'),
-            'Languages': x.get('POS_POSITION_LANG_PROF_CODE'),
-            'Incumbent': x.get('INCUMBENT'),
-            'Incumbent TED': x.get('INCUMBENT_TED'),
-            'Assignee': x.get('ASSIGNEE'),
-            'Assignee TED': x.get('ASSIGNEE_TED'),
-
+            'ELTOML': x.get('ELTOML'),
+            'MC': x.get('MC'),
+            'mcEndDate': x.get('MC_END_DATE'),
+            'bureau': x.get('BUREAU_SHORT_DESC'),
+            'O/D': x.get('POS_OVERSEAS_DESC'),
+            'org': x.get('ORG_SHORT_DESC'),
+            'positionNumber': x.get('POS_SEQ_NUM'),
+            'skill': x.get('POS_SKILL_CODE'),
+            'positionTitle': x.get('POS_TITLE_DESC'),
+            'grade': x.get('POS_GRADE_CODE'),
+            'languages': x.get('POS_POSITION_LANG_PROF_CODE'),
+            'incumbent': x.get('INCUMBENT'),
+            'incumbentTED': x.get('INCUMBENT_TED'),
+            'assignee': x.get('ASSIGNEE'),
+            'assigneeTED': x.get('ASSIGNEE_TED'),
         }
     
     if needCSV:
