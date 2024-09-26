@@ -579,6 +579,8 @@ def export_el_positions(query, jwt_token, host=None):
         smart_str(u"Assignee TED"),
     ])
 
+    logger.info(f"json_data inside export_el_positions is: \n{json_data}\n")
+    logger.info(f"json_data['results']\n {json_data['results']}\n")
     writer.writerows(json_data['results'])
 
     return response
