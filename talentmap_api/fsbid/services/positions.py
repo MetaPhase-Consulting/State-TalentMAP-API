@@ -543,11 +543,12 @@ def export_el_positions(query, jwt_token, host=None):
         "request_body": query,
         "request_mapping_function": el_postions_req_mapping,
         # need to add csv mapping function
-        "response_mapping_function": el_postions_res_mapping, 
+        "response_mapping_function": None, 
         "jwt_token": jwt_token,
     }
 
     data = services.send_post_back_office(**args)
+    data = el_postions_res_mapping(data, needCSV=True)
     logger.info("data inside export_el_positions is: ", data, "\n")
     json_data = json.dumps(data)
 
