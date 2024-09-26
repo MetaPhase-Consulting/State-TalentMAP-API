@@ -580,7 +580,7 @@ def export_el_positions(query, jwt_token, host=None):
     ])
 
     logger.info(f"json_data inside export_el_positions is: \n{json_data}\n")
-    logger.info(f"json_data['results']\n {json_data['results']}\n")
-    writer.writerows(json_data['results'])
+
+    writer.writerows(json_data)
 
     return response
