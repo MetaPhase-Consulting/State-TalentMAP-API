@@ -88,6 +88,7 @@ ROLE_MAPPING = {
     "fsofficer": "bidder",
     "FSBidCycleAdministrator": "bidcycle_admin",
     "CDO": "cdo",
+    "EL_CDO": "el_cdo",
     "CDO3": "cdo",
     "Bureau": "bureau_user",
     "AO": "ao_user",
