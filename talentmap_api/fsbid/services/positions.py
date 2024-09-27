@@ -511,7 +511,6 @@ def edit_el_positions(data, jwt_token):
                 }
     # convert payload to json string
     json_input = json.dumps(payload)
-    logger.info(f"Edit EL Position JSON Input: {json_input}")
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
@@ -524,7 +523,6 @@ def edit_el_positions(data, jwt_token):
 
     try:
         response = services.send_post_back_office(**args)
-        logger.info(f"Edit EL Position Mapped Response: {response}")
         return response
     except Exception as e:
         logger.info(f"An error occurred in edit_el_positions: {e}")
