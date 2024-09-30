@@ -514,7 +514,7 @@ def edit_el_positions(data, jwt_token):
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT",
         "request_body": json_input,
         "request_mapping_function": None,
         "response_mapping_function": None,
