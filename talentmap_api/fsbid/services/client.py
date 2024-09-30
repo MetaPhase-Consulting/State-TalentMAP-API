@@ -168,16 +168,22 @@ def single_client(jwt_token, perdet_seq_num, host=None):
 def get_client_csv(query, jwt_token, rl_cd, host=None):
     from talentmap_api.fsbid.services.common import send_get_csv_request
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
-    data = send_get_csv_request(
-        "",
-        query,
-        convert_client_query,
-        jwt_token,
-        fsbid_clients_to_talentmap_clients_for_csv,
-        CLIENTS_ROOT_V2,
-        host,
-        ad_id
-    )
+    try:
+        data = send_get_csv_request(
+            "",
+            query,
+            convert_client_query,
+            jwt_token,
+            fsbid_clients_to_talentmap_clients_for_csv,
+            CLIENTS_ROOT_V2,
+            host,
+            ad_id
+        )
+        logger.info(f"Got {len(data)} records for CSV\n")
+        logger.info(f"Data: {data}\n")
+    except Exception as e:
+        logger.error(f"Error getting client CSV: {e}\n")
+        return None
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f"attachment; filename=clients_{datetime.now().strftime('%Y_%m_%d_%H%M%S')}.csv"
@@ -199,23 +205,28 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"TED"),
         smart_str(u"Status"),
     ])
-
-    for record in data:
-        email_response = get_user_information(jwt_token, record['id'])
-        email = pydash.get(email_response, 'email') or 'None listed'
-        writer.writerow([
-            smart_str(record["name"]),
-            email,
-            smart_str(record["skills"]),
-            smart_str("=\"%s\"" % record["combined_pp_grade"]),
-            smart_str("=\"%s\"" % record["cdo"]),
-            smart_str("=\"%s\"" % record["employee_id"]),
-            smart_str("=\"%s\"" % record["position_code"]),
-            smart_str("=\"%s\"" % record["location"]),
-            smart_str("=\"%s\"" % record["languages"]),
-            smart_str("=\"%s\"" % record["ted"]),
-            smart_str("=\"%s\"" % record["status"]),
-        ])
+    try:
+        logger.info(f"Writing {len(data)} records to CSV\n\n")
+        for record in data:
+            email_response = get_user_information(jwt_token, record['id'])
+            email = pydash.get(email_response, 'email') or 'None listed'
+            writer.writerow([
+                smart_str(record["name"]),
+                email,
+                smart_str(record["skills"]),
+                smart_str("=\"%s\"" % record["combined_pp_grade"]),
+                smart_str("=\"%s\"" % record["cdo"]),
+                smart_str("=\"%s\"" % record["employee_id"]),
+                smart_str("=\"%s\"" % record["position_code"]),
+                smart_str("=\"%s\"" % record["location"]),
+                smart_str("=\"%s\"" % record["languages"]),
+                smart_str("=\"%s\"" % record["ted"]),
+                smart_str("=\"%s\"" % record["status"]),
+            ])
+    except Exception as e:
+        logger.error(f"Shit didn't write to CSV correctly. Woops\n FIX IT\n")
+        logger.error(f"exception caught: {e}\n")
+        return None
 
     return response
 
