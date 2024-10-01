@@ -510,10 +510,11 @@ def edit_el_positions(data, jwt_token):
     '''
 
     # Web Service JSON Input for EL Position edit
+    # previous - "PTYP_CUST_TD_POS_TAB_I": {"Data": json.dumps(data)}
     payload = {
                     "PV_API_VERSION_I": "",
                     "PV_AD_ID_I": "",
-                    "PTYP_CUST_TD_POS_TAB_I": {"Data": json.dumps(data)}
+                    "PTYP_CUST_TD_POS_TAB_I": data
                 }
     # convert payload to json string
     json_input = json.dumps(payload)
