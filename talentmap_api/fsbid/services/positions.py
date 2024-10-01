@@ -524,6 +524,7 @@ def edit_el_positions(data, jwt_token):
                     "PV_AD_ID_I": "",
                     "PTYP_CUST_TD_POS_TAB_I": formatted_PTYP_CUST_TD_POS_TAB_I
                 }
+    
     # convert payload to json string
     json_input = json.dumps(payload)
     logger.info(f"Edit EL Position JSON Input: {json_input}")
