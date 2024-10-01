@@ -87,8 +87,8 @@ ROLE_MAPPING = {
     "FSBid_Org_Capsule": "post_user",
     "fsofficer": "bidder",
     "FSBidCycleAdministrator": "bidcycle_admin",
-    "CDO": "cdo",
     "ELCDO": "el_cdo", # Secref role - EL Career Development Officer (CDA only)
+    "CDO": "cdo",
     "CDO3": "cdo",
     "Bureau": "bureau_user",
     "AO": "ao_user",
