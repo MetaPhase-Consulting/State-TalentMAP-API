@@ -502,15 +502,23 @@ def edit_el_positions(data, jwt_token):
     in commons.py to make an edit POST to Web Services BackOfficeCRUD
     '''
 
+
+    '''
+    So we are turning two things into a JSON string - the value of Data which contains the 
+    things we will be changing for a specific EL position, and then the whole jsonInput (which CONTAINS the 
+    aforementioned Data) which is the whole payload that will be sent to the Web Service.
+    '''
+
     # Web Service JSON Input for EL Position edit
     payload = {
                     "PV_API_VERSION_I": "",
                     "PV_AD_ID_I": "",
-                    "PTYP_CUST_TD_POS_TAB_I": {"Data": data}
+                    "PTYP_CUST_TD_POS_TAB_I": {"Data": json.dumps(data)}
                 }
     # convert payload to json string
     json_input = json.dumps(payload)
     logger.info(f"Edit EL Position JSON Input: {json_input}")
+    logger.info(f"json_input type: {type(json_input)}")
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
