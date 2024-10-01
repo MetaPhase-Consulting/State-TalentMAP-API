@@ -73,10 +73,11 @@ def map_group_to_fsbid_role(jwt_token):
 
     # For developer testing
     if 'developer' in roles:
-        developerRoles = ['fsofficer', 'CDO', 'Bureau', 'AO']
+        developerRoles = ['fsofficer', 'ELCDO', 'CDO', 'Bureau', 'AO']
         mappedDeveloperRoles = list(map(lambda z: ROLE_MAPPING.get(z), developerRoles))
         tm_roles += mappedDeveloperRoles
         tm_roles = pydash.uniq(tm_roles)
+        logger.info(f"Developer Roles: {tm_roles}")
 
     return Group.objects.filter(name__in=tm_roles).all()
 
