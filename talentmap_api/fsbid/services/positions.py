@@ -517,12 +517,20 @@ def edit_el_positions(data, jwt_token):
     #             "PV_ACTION_I": "",
     #             "PTYP_CUST_TD_POS_TAB_I": {"Data": data}
     #             }
+
     payload = {
-        "PV_API_VERSION_I": "", 
-        "PV_AD_ID_I": "", 
-        "PV_ACTION_I": "", 
-        "PTYP_CUST_TD_POS_TAB_I": {"Data": "[{'POS_SEQ_NUM': 11, 'EL': 'true', 'LNA': 'false', 'FICA': 'false', 'ELTOML': 'false', 'MC': 'false'}]"}
-        }
+        'PV_API_VERSION_I': '', 
+        'PV_AD_ID_I': '', 
+        'PV_ACTION_I': '', 
+        'PTYP_CUST_TD_POS_TAB_I': f'{{"Data": {json.dumps(data)}}}'
+    }
+    
+    # payload = {
+    #     "PV_API_VERSION_I": "", 
+    #     "PV_AD_ID_I": "", 
+    #     "PV_ACTION_I": "", 
+    #     "PTYP_CUST_TD_POS_TAB_I": {"Data": "[{'POS_SEQ_NUM': 11, 'EL': 'true', 'LNA': 'false', 'FICA': 'false', 'ELTOML': 'false', 'MC': 'false'}]"}
+    #     }
     logger.info(f"Edit EL Position Payload: {payload}")
     # previous - "PTYP_CUST_TD_POS_TAB_I": {"Data": json.dumps(data)}
 
@@ -548,7 +556,8 @@ def edit_el_positions(data, jwt_token):
     #         }
     
     # convert payload to json string
-    json_input = json.dumps(payload)
+    # json_input = json.dumps(payload)
+    json_input = payload
     logger.info(f"Edit EL Position JSON Input: {json_input}")
     logger.info(f"json_input type: {type(json_input)}")
 
