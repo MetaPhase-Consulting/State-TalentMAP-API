@@ -516,7 +516,7 @@ def edit_el_positions(data, jwt_token):
     # VALUE of Data key. 2 version - 1st one will print out the string with 
     # the souble quotes surrounding it, the second will make all of it a string 
     # but not print out the double quotes
-    formatted_PTYP_CUST_TD_POS_TAB_I = f"\"{"Data": {data}}\""
+    formatted_PTYP_CUST_TD_POS_TAB_I = f"\"{{\"Data\": {data}}}\""
     logger.info(f"formatted_PTYP_CUST_TD_POS_TAB_I: {formatted_PTYP_CUST_TD_POS_TAB_I}\n")
     logger.info(f"type of formatted_PTYP_CUST_TD_POS_TAB_I: {type(formatted_PTYP_CUST_TD_POS_TAB_I)}\n")
 
