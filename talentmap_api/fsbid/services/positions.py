@@ -517,7 +517,7 @@ def edit_el_positions(data, jwt_token):
     # the souble quotes surrounding it, the second will make all of it a string 
     # but not print out the double quotes
     # formatted_PTYP_CUST_TD_POS_TAB_I = f"\"{{\"Data\": {data}}}\""
-    formatted_PTYP_CUST_TD_POS_TAB_I = f"{{\"Data\": {data}}}"
+    formatted_PTYP_CUST_TD_POS_TAB_I = f"{"Data": {data}}"
     logger.info(f"formatted_PTYP_CUST_TD_POS_TAB_I: {formatted_PTYP_CUST_TD_POS_TAB_I}\n")
     logger.info(f"type of formatted_PTYP_CUST_TD_POS_TAB_I: {type(formatted_PTYP_CUST_TD_POS_TAB_I)}\n")
 
@@ -528,14 +528,14 @@ def edit_el_positions(data, jwt_token):
                 }
     
     # convert payload to json string
-    json_input = json.dumps(payload)
-    logger.info(f"Edit EL Position JSON Input: {json_input}")
-    logger.info(f"json_input type: {type(json_input)}")
+    # json_input = json.dumps(payload)
+    # logger.info(f"Edit EL Position JSON Input: {json_input}")
+    # logger.info(f"json_input type: {type(json_input)}")
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
         "package_name": "PKG_WEBAPI_WRAP",
-        "request_body": json_input,
+        "request_body": payload,
         "request_mapping_function": None,
         "response_mapping_function": None,
         "jwt_token": jwt_token,
