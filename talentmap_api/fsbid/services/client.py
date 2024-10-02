@@ -595,67 +595,95 @@ def map_location(location):
 
 def fsbid_handshake_to_tmap(hs):
     # Maps FSBid Y/N value for handshakes to expected TMap Front end response for handshake
-    fsbid_dictionary = {
-        "Y": True,
-        "N": False
-    }
-    return fsbid_dictionary.get(hs, None)
+    try:
+        fsbid_dictionary = {
+            "Y": True,
+            "N": False
+        }
+        return fsbid_dictionary.get(hs, None)
+    except Exception as e:
+        logger.error(f"Error in fsbid_handskake: {e}\n")
+        return None
 
 
 def tmap_handshake_to_fsbid(hs):
     # Maps TMap true/false value to acceptable fsbid api params for handshake
-    tmap_dictionary = {
-        "true": "Y",
-        "false": "N"
-    }
-    return tmap_dictionary.get(hs, None)
+    try:
+        tmap_dictionary = {
+            "true": "Y",
+            "false": "N"
+        }
+        return tmap_dictionary.get(hs, None)
+    except Exception as e:
+        logger.error(f"Error in tmap_handshake_to_fsbid: {e}\n")
+        return None
 
 
 def fsbid_no_successful_panel_to_tmap(panel):
-    fsbid_dictionary = {
-        "Y": True,
-        "N": False
-    }
-    return fsbid_dictionary.get(panel, None)
+    try:
+        fsbid_dictionary = {
+            "Y": True,
+            "N": False
+        }
+        return fsbid_dictionary.get(panel, None)
+    except Exception as e:
+        logger.error(f"Error in fsbid_no_successful_panel_to_tmap: {e}\n")
+        return None
 
 
 def tmap_no_successful_panel_to_fsbid(panel):
-    tmap_dictionary = {
-        "true": "Y",
-        "false": "N"
-    }
-    return tmap_dictionary.get(panel, None)
+    try:
+        tmap_dictionary = {
+            "true": "Y",
+            "false": "N"
+        }
+        return tmap_dictionary.get(panel, None)
+    except Exception as e:  
+        logger.error(f"Error in tmap_no_successful_panel_to_fsbid: {e}\n")
+        return None
 
 
 def fsbid_no_bids_to_tmap(bids):
-    fsbid_dictionary = {
-        "Y": True,
-        "N": False
-    }
-    return fsbid_dictionary.get(bids, None)
+    try:
+        fsbid_dictionary = {
+            "Y": True,
+            "N": False
+        }
+        return fsbid_dictionary.get(bids, None)
+    except Exception as e: 
+        logger.error(f"Error in fsbid_no_bids_to_tmap: {e}\n")
+        return None
 
 
 def tmap_no_bids_to_fsbid(bids):
-    tmap_dictionary = {
-        "true": "Y",
-        "false": "N"
-    }
-    return tmap_dictionary.get(bids, None)
+    try:
+        tmap_dictionary = {
+            "true": "Y",
+            "false": "N"
+        }
+        return tmap_dictionary.get(bids, None)
+    except Exception as e: 
+        logger.error(f"Error in tmap_no_bids_to_fsbid: {e}\n")
+        return None
 
 
 def fsbid_classifications_to_tmap(cs):
     tmap_classifications = []
-    if type(cs) is list:
-        for x in cs:
+    try:
+        if type(cs) is list:
+            for x in cs:
+                tmap_classifications.append(
+                    # resolves disrepancy between string and number comparison
+                    pydash.to_number(x.get('te_id', None))
+                )
+        else:
             tmap_classifications.append(
                 # resolves disrepancy between string and number comparison
-                pydash.to_number(x.get('te_id', None))
+                pydash.to_number(cs.get('te_id', None))
             )
-    else:
-        tmap_classifications.append(
-            # resolves disrepancy between string and number comparison
-            pydash.to_number(cs.get('te_id', None))
-        )
+    except Exception as e:
+        logger.error(f"Error in fsbid_classifications_to_tmap: {e}\n")
+        return None
     return tmap_classifications
 
 
