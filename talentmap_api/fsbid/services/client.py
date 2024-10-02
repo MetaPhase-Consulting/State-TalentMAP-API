@@ -45,17 +45,21 @@ def client(jwt_token, query, host=None):
     Get Clients by CDO
     '''
     from talentmap_api.fsbid.services.common import send_get_request
-    response = send_get_request(
-        "",
-        query,
-        convert_client_query,
-        jwt_token,
-        fsbid_clients_to_talentmap_clients,
-        get_clients_count,
-        "/api/v2/clients/",
-        host,
-        CLIENTS_ROOT_V2,
-    )
+    try:
+        response = send_get_request(
+            "",
+            query,
+            convert_client_query,
+            jwt_token,
+            fsbid_clients_to_talentmap_clients,
+            get_clients_count,
+            "/api/v2/clients/",
+            host,
+            CLIENTS_ROOT_V2,
+        )
+    except Exception as e:
+        logger.error(f"Error getting clients: {e}\n")
+        return None
 
     return response
 
@@ -65,7 +69,11 @@ def get_clients_count(query, jwt_token, host=None):
     Gets the total number of available positions for a filterset
     '''
     from talentmap_api.fsbid.services.common import send_count_request
-    return send_count_request("", query, convert_client_count_query, jwt_token, host, CLIENTS_ROOT_V2)
+    try:
+        return send_count_request("", query, convert_client_count_query, jwt_token, host, CLIENTS_ROOT_V2)
+    except Exception as e:
+        logger.error(f"Error getting clients count: {e}\n")
+        return None
 
 
 def client_suggestions(jwt_token, perdet_seq_num):
@@ -80,11 +88,15 @@ def client_suggestions(jwt_token, perdet_seq_num):
     # but going over HIGH is preferred over FLOOR
     FLOOR = 0
 
-    CLIENT = single_client(jwt_token, perdet_seq_num)
-    grade = CLIENT.get("grade")
-    skills = CLIENT.get("skills")
-    skills = deepcopy(skills)
-    mappedSkills = ','.join([str(x.get("code")) for x in skills])
+    try: 
+        CLIENT = single_client(jwt_token, perdet_seq_num)
+        grade = CLIENT.get("grade")
+        skills = CLIENT.get("skills")
+        skills = deepcopy(skills)
+        mappedSkills = ','.join([str(x.get("code")) for x in skills])
+    except Exception as e:
+        logger.error(f"Error getting client suggestions: {e}\n")
+        return None
 
     values = {
         "position__grade__code__in": grade,
@@ -101,8 +113,12 @@ def client_suggestions(jwt_token, perdet_seq_num):
         "02": "01",
     }
 
-    count = services_ap.get_available_positions_count(values, jwt_token)
-    count = int(count.get("count"))
+    try:
+        count = services_ap.get_available_positions_count(values, jwt_token)
+        count = int(count.get("count"))
+    except Exception as e:
+        logger.error(f"Error getting client suggestions count: {e}\n")
+        return None
 
     # If we get too few results, try a broader query
     if count < LOW and nextGrades.get(grade) is not None:
@@ -124,37 +140,52 @@ def single_client(jwt_token, perdet_seq_num, host=None):
     Get a single client for a CDO
     '''
     from talentmap_api.fsbid.services.common import send_get_request
+    
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
+
     query = {
         "ad_id": ad_id,
         "perdet_seq_num": perdet_seq_num,
         "currentAssignmentOnly": "false",
     }
-    responseAllAssignments = send_get_request(
-        "",
-        query,
-        convert_client_query,
-        jwt_token,
-        fsbid_clients_to_talentmap_clients,
-        get_clients_count,
-        "/api/v2/clients/",
-        host,
-        CLIENTS_ROOT_V2,
-    )
+
+    try:
+        responseAllAssignments = send_get_request(
+            "",
+            query,
+            convert_client_query,
+            jwt_token,
+            fsbid_clients_to_talentmap_clients,
+            get_clients_count,
+            "/api/v2/clients/",
+            host,
+            CLIENTS_ROOT_V2,
+        )
+    except Exception as e:
+        logger.error(f"Error getting responseAllAssignments: {e}\n")
+        return None
+    
     query["currentAssignmentOnly"] = "true"
-    responseCurrentAssignment = send_get_request(
-        "",
-        query,
-        convert_client_query,
-        jwt_token,
-        fsbid_clients_to_talentmap_clients,
-        get_clients_count,
-        "/api/v2/clients/",
-        host,
-        CLIENTS_ROOT_V2,
-    )
+
+    try:
+        responseCurrentAssignment = send_get_request(
+            "",
+            query,
+            convert_client_query,
+            jwt_token,
+            fsbid_clients_to_talentmap_clients,
+            get_clients_count,
+            "/api/v2/clients/",
+            host,
+            CLIENTS_ROOT_V2,
+        )
+    except Exception as e:
+        logger.error(f"Error getting responseCurrentAssignment: {e}\n")
+        return None
+
     cdo = cdo_services.single_cdo(jwt_token, perdet_seq_num)
     user_info = get_user_information(jwt_token, perdet_seq_num)
+    
     try:
         CLIENT = list(responseAllAssignments['results'])[0]
         CLIENT['cdo'] = cdo
@@ -166,8 +197,13 @@ def single_client(jwt_token, perdet_seq_num, host=None):
 
 
 def get_client_csv(query, jwt_token, rl_cd, host=None):
+    """
+    Create a CSV containing the clients' information
+    """
     from talentmap_api.fsbid.services.common import send_get_csv_request
+    
     ad_id = jwt.decode(jwt_token, verify=False).get('unique_name')
+
     try:
         data = send_get_csv_request(
             "",
@@ -205,6 +241,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         smart_str(u"TED"),
         smart_str(u"Status"),
     ])
+
     try:
         logger.info(f"Writing {len(data)} records to CSV\n\n")
         for record in data:
@@ -323,25 +360,32 @@ def fsbid_clients_to_talentmap_clients(data):
 def parse_date_string(date_string):
     # Try to parse the date string as an ISO 8601 format with timezone offset
     # Ex: '2023-07-01T00:00:00-04:00'
-    if date_string[-6] in ['+', '-']:
-        date_string = date_string[:-6]  # Remove timezone information for parsing
-        return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S')
+    try:
+        if date_string[-6] in ['+', '-']:
+            date_string = date_string[:-6]  # Remove timezone information for parsing
+            return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S')
 
-    # Try to handle the format with 'Z' for UTC
-    # Ex: '2024-06-27T19:39:28.044Z'
-    elif date_string.endswith('Z'):
-        date_string = date_string[:-1]  # Remove the 'Z'
-        return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f')
-    else:
-        return date_string
+        # Try to handle the format with 'Z' for UTC
+        # Ex: '2024-06-27T19:39:28.044Z'
+        elif date_string.endswith('Z'):
+            date_string = date_string[:-1]  # Remove the 'Z'
+            return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S.%f')
+        else:
+            return date_string
+    except ValueError:
+        logger.error(f"Error parsing this date string: {date_string}\n")
+        return None
 
 
 def format_date_string(date_string):
+    """Formats a date string to MM/DD/YYYY"""
+
     if date_string == '' or date_string is None or len(date_string) == 10:
         return date_string
     try:
         dt = parse_date_string(date_string)
     except ValueError:
+        logger.error(f"Error formatting this date string: {date_string}\n")
         return date_string
 
     formatted_date = dt.strftime('%m/%d/%Y')
@@ -349,6 +393,7 @@ def format_date_string(date_string):
 
 
 def fsbid_clients_to_talentmap_clients_for_csv(data):
+
     employee = data.get('employee', None)
     current_assignment = employee.get('currentAssignment', None)
     position = None
@@ -373,33 +418,51 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})" if position is not None else pos_location
     cdo = data.get('cdos', None)
 
-    return {
-        "id": employee.get("perdet_seq_num", None),
-        "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
-        "grade": employee.get("per_grade_code", None),
-        "skills": ' , '.join(map_skill_codes_for_csv(employee)),
-        "employee_id": employee.get("pert_external_id", None),
-        "role_code": data.get("rl_cd", None),
-        "location": combined_location,
-        "ted": ted,
-        "status": status,
-        "position_code": position_code,
-        "combined_pp_grade": combined_pp_grade,
-        "cdo": cdo[0].get('cdo_fullname', None),
-        "languages": fsbid_language_only_to_tmap(data.get("languages") or []),
-        "classifications": fsbid_classifications_to_tmap(employee.get("classifications", []))
-    }
+    try:
+        client = {
+            "id": employee.get("perdet_seq_num", None),
+            "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['full']}",
+            "grade": employee.get("per_grade_code", None),
+            "skills": ' , '.join(map_skill_codes_for_csv(employee)),
+            "employee_id": employee.get("pert_external_id", None),
+            "role_code": data.get("rl_cd", None),
+            "location": combined_location,
+            "ted": ted,
+            "status": status,
+            "position_code": position_code,
+            "combined_pp_grade": combined_pp_grade,
+            "cdo": cdo[0].get('cdo_fullname', None),
+            "languages": fsbid_language_only_to_tmap(data.get("languages") or []),
+            "classifications": fsbid_classifications_to_tmap(employee.get("classifications", []))
+        }
+    except Exception as e:
+        logger.error(f"Error mapping client for CSV: {e}\n")
+        return None
+
+    return client
 
 
 def get_middle_name(employee, prop='per_middle_name'):
-    middle_name = employee.get(prop, None) or ''
-    middle_initial = ''
-    if middle_name == 'NMN':
-        middle_name = ''
-    if middle_name:
-        middle_name = middle_name + ' '
-        middle_initial = middle_name[:1] + ' '
-    return {"full": middle_name, "initial": middle_initial}
+    """
+    Parsing clients' middle name
+    """
+
+    try:
+        middle_name = employee.get(prop, None) or ''
+
+        middle_initial = ''
+
+        if middle_name == 'NMN':
+            middle_name = ''
+
+        if middle_name:
+            middle_name = middle_name + ' '
+            middle_initial = middle_name[:1] + ' '
+            
+        return {"full": middle_name, "initial": middle_initial}
+    except Exception as e:
+        logger.error(f"Error getting middle name: {e}\n")
+        return ''
 
 
 def hru_id_filter(query):
@@ -419,56 +482,77 @@ def convert_client_query(query, isCount=None):
     The TalentMap filters align with the client search filter naming
     '''
     from talentmap_api.fsbid.services.common import sorting_values, convert_multi_value
-    values = {
-        "request_params.hru_id": hru_id_filter(query),
-        "request_params.rl_cd": query.get("rl_cd", None),
-        "request_params.ad_id": query.get("ad_id", None),
-        "request_params.order_by": sorting_values(query.get("ordering", None)),
-        "request_params.freeText": query.get("q", None),
-        "request_params.bsn_id": convert_multi_value(query.get("bid_seasons")),
-        "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
-        "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
-        "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
-        "request_params.page_index": int(query.get("page", 1)),
-        "request_params.page_size": query.get("limit", 25),
-        "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
-        "request_params.get_count": query.get("getCount", 'false'),
-        "request_params.perdet_seq_num": query.get("perdet_seq_num", None),
-    }
-    if isCount:
-        values['request_params.page_size'] = None
-    return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+    try:
+        values = {
+            "request_params.hru_id": hru_id_filter(query),
+            "request_params.rl_cd": query.get("rl_cd", None),
+            "request_params.ad_id": query.get("ad_id", None),
+            "request_params.order_by": sorting_values(query.get("ordering", None)),
+            "request_params.freeText": query.get("q", None),
+            "request_params.bsn_id": convert_multi_value(query.get("bid_seasons")),
+            "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
+            "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
+            "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
+            "request_params.page_index": int(query.get("page", 1)),
+            "request_params.page_size": query.get("limit", 25),
+            "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
+            "request_params.get_count": query.get("getCount", 'false'),
+            "request_params.perdet_seq_num": query.get("perdet_seq_num", None),
+        }
+        if isCount:
+            values['request_params.page_size'] = None
+        return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+    except Exception as e:
+        logger.error(f"Error converting client query: {e}\n")
+        return None
 
 
 def convert_client_count_query(query):
-    return convert_client_query(query, True)
+    try:
+        return convert_client_query(query, True)
+    except Exception as e:
+        logger.error(f"Error converting client count query: {e}\n")
+        return None
 
 
 def map_skill_codes_for_csv(data, prefix='per'):
+    """
+    Mapping skill codes for csv export
+    """
     skills = []
-    for i in range(1, 4):
-        index = f'_{i}'
-        if i == 1:
-            index = ''
-        code = data.get(f'{prefix}_skill{index}_code', None)
-        desc = data.get(f'{prefix}_skill{index}_code_desc', None)
-        skill = f'({code}) {desc}'
-        if code is None:
-            continue
-        skills.append(skill)
-    return filter(lambda x: x is not None, skills)
+    try:
+        for i in range(1, 4):
+            index = f'_{i}'
+            if i == 1:
+                index = ''
+            code = data.get(f'{prefix}_skill{index}_code', None)
+            desc = data.get(f'{prefix}_skill{index}_code_desc', None)
+            skill = f'({code}) {desc}'
+            if code is None:
+                continue
+            skills.append(skill)
+
+        return filter(lambda x: x is not None, skills)
+    except Exception as e:
+        logger.error(f"Error mapping skill codes for CSV in map_skill_codes_for_csv:\n {e}\n")
+        return None
 
 
 def map_skill_codes(data):
     skills = []
-    for i in range(1, 4):
-        index = f'_{i}'
-        if i == 1:
-            index = ''
-        code = pydash.get(data, f'per_skill{index}_code', None)
-        desc = pydash.get(data, f'per_skill{index}_code_desc', None) # Not coming through with /Persons
-        skills.append({'code': code, 'description': desc})
-    return filter(lambda x: x.get('code', None) is not None, skills)
+    try:
+        for i in range(1, 4):
+            index = f'_{i}'
+            if i == 1:
+                index = ''
+            code = pydash.get(data, f'per_skill{index}_code', None)
+            desc = pydash.get(data, f'per_skill{index}_code_desc', None) # Not coming through with /Persons
+            skills.append({'code': code, 'description': desc})
+
+        return filter(lambda x: x.get('code', None) is not None, skills)
+    except Exception as e:
+        logger.error(f"Error mapping skill codes: {e}\n")
+        return None
 
 
 def map_skill_codes_additional(skills, employeeSkills):
@@ -484,19 +568,28 @@ def map_skill_codes_additional(skills, employeeSkills):
                 for x in foundSkillsByCone:
                     employeeCodesAdd.append(x['skl_code'])
     except Exception as e:
+        logger.error(f"Error in map_skill_codes_additional: {e}\n")
         logger.error(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
     return set(employeeCodesAdd)
 
 
 def map_location(location):
-    city = location.get('city')
-    country = location.get('country')
-    state = location.get('state')
-    result = city
+
+    try:
+        city = location.get('city')
+        country = location.get('country')
+        state = location.get('state')
+        result = city
+    except Exception as e:
+        logger.error(f"Error extracting location pieces from argument: {e}\n")
+        return None
+    
     if country and country.strip():
         result = f"{city}, {country}"
+
     if state and state.strip():
         result = f"{city}, {state}"
+    
     return result
 
 
@@ -517,6 +610,7 @@ def tmap_handshake_to_fsbid(hs):
     }
     return tmap_dictionary.get(hs, None)
 
+
 def fsbid_no_successful_panel_to_tmap(panel):
     fsbid_dictionary = {
         "Y": True,
@@ -531,6 +625,7 @@ def tmap_no_successful_panel_to_fsbid(panel):
         "false": "N"
     }
     return tmap_dictionary.get(panel, None)
+
 
 def fsbid_no_bids_to_tmap(bids):
     fsbid_dictionary = {
@@ -640,32 +735,39 @@ def fsbid_languages_to_tmap(languages):
         
     return tmap_languages
 
+
 def fsbid_language_only_to_tmap(languages):
     # if no languages present (languages: [])
     if not languages:
         return "None"
     
     tmap_language_only = []
-    for x in languages:
-        # checks for non-dict elements such as [numbers, strings, None, etc] or
-        # if the "empl_language" key is not present, skip
-        if not isinstance(x, dict) or "empl_language" not in x:
-            logger.warning(f"Skipping invalid language: {x}\n")
-            continue
 
-        # checks if the value for empl_language key is not a string, skip
-        if not isinstance(x.get('empl_language'), str):
-            continue
+    try:
+        for x in languages:
+            # checks for non-dict elements such as [numbers, strings, None, etc] or
+            # if the "empl_language" key is not present, skip
+            if not isinstance(x, dict) or "empl_language" not in x:
+                logger.warning(f"Skipping invalid language: {x}\n")
+                continue
 
-        # get the value for empl_language key, if its not present, give back None
-        # strip the value to remove any leading/trailing whitespace
-        empl_language = str(x.get('empl_language', None)).strip()
-        if not empl_language:
-            continue
-        
-        tmap_language_only.append(empl_language.strip())
+            # checks if the value for empl_language key is not a string, skip
+            if not isinstance(x.get('empl_language'), str):
+                continue
 
-    return ", ".join(str(x) for x in tmap_language_only)
+            # get the value for empl_language key, if its not present, give back None
+            # strip the value to remove any leading/trailing whitespace
+            empl_language = str(x.get('empl_language', None)).strip()
+            if not empl_language:
+                continue
+            
+            tmap_language_only.append(empl_language.strip())
+
+        return ", ".join(str(x) for x in tmap_language_only)
+    except Exception as e:
+        logger.error(f"Error mapping language in fsbid_language_only_to_tmap:\n {e}\n")
+        return None
+
 
 def get_available_bidders(jwt_token, isCDO, query, host=None):
     from talentmap_api.fsbid.services.common import send_get_request
@@ -783,6 +885,7 @@ def fsbid_available_bidder_to_talentmap(data):
         }
     }
     return res
+
 
 def convert_available_bidder_query(query):
     sort_asc = query.get("ordering", "name")[0] != "-"
