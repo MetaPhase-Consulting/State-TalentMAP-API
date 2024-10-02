@@ -524,17 +524,17 @@ def edit_el_positions(data, jwt_token):
     payload = {
                     "PV_API_VERSION_I": "",
                     "PV_AD_ID_I": "",
-                    "PTYP_CUST_TD_POS_TAB_I": {"Data": json.dumps(data)}
-                }
+                    "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'ELTOML':'true'}]"
+        }
     
     # convert payload to json string
     json_input = json.dumps(payload)
-    # logger.info(f"Edit EL Position JSON Input: {json_input}")
-    # logger.info(f"json_input type: {type(json_input)}")
+    logger.info(f"Edit EL Position JSON Input: {json_input}")
+    logger.info(f"json_input type: {type(json_input)}")
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101", # "PKG_WEBAPI_WRAP",
+        "package_name": "PKG_WEBAPI_WRAP", # "PKG_WEBAPI_WRAP",
         "request_body": json_input,
         "request_mapping_function": None,
         "response_mapping_function": None,
