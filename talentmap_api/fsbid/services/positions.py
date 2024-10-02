@@ -391,7 +391,7 @@ def el_postions_res_mapping(data):
 
     def el_pos_map(x):
         return {
-            'positionNumber': x.get('POS_SEQ_NUM'),
+            'positionNumber': x.get('POS_NUM_TEXT'),
             'skill': x.get('POS_SKILL_CODE'),
             'positionTitle': x.get('POS_TITLE_DESC'),
             'bureau': x.get('BUREAU_SHORT_DESC'),
@@ -516,8 +516,13 @@ def edit_el_positions(data, jwt_token):
     # VALUE of Data key. 2 version - 1st one will print out the string with 
     # the souble quotes surrounding it, the second will make all of it a string 
     # but not print out the double quotes
-    formatted_PTYP_CUST_TD_POS_TAB_I = f"\"{"Data": data}\""
-    # formatted_PTYP_CUST_TD_POS_TAB_I = f"{"Data": {data}}"
+    formatted_PTYP_CUST_TD_POS_TAB_I = f"\"{"Data": {data}}\""
+    logger.info(f"formatted_PTYP_CUST_TD_POS_TAB_I: {formatted_PTYP_CUST_TD_POS_TAB_I}\n")
+    logger.info(f"type of formatted_PTYP_CUST_TD_POS_TAB_I: {type(formatted_PTYP_CUST_TD_POS_TAB_I)}\n")
+
+    formatted_second = f"{"Data": {data}}"
+    logger.info(f"formatted_second: {formatted_second}\n")
+    logger.info(f"type of formatted_second: {type(formatted_second)}\n")
 
     payload = {
                     "PV_API_VERSION_I": "",
