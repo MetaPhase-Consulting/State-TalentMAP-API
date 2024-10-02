@@ -520,10 +520,6 @@ def edit_el_positions(data, jwt_token):
     logger.info(f"formatted_PTYP_CUST_TD_POS_TAB_I: {formatted_PTYP_CUST_TD_POS_TAB_I}\n")
     logger.info(f"type of formatted_PTYP_CUST_TD_POS_TAB_I: {type(formatted_PTYP_CUST_TD_POS_TAB_I)}\n")
 
-    formatted_second = f"{"Data": {data}}"
-    logger.info(f"formatted_second: {formatted_second}\n")
-    logger.info(f"type of formatted_second: {type(formatted_second)}\n")
-
     payload = {
                     "PV_API_VERSION_I": "",
                     "PV_AD_ID_I": "",
