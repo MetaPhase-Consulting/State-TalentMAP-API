@@ -522,7 +522,7 @@ def edit_el_positions(data, jwt_token):
         'PV_API_VERSION_I': '', 
         'PV_AD_ID_I': '', 
         'PV_ACTION_I': '', 
-        'PTYP_CUST_TD_POS_TAB_I': f'{{"Data": {json.dumps(data)}}}'
+        'PTYP_CUST_TD_POS_TAB_I': f"{{\"Data\": {json.dumps(data)}}}"
     }
     
     # payload = {
