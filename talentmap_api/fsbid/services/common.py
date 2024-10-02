@@ -311,7 +311,7 @@ def send_post_back_office(proc_name, package_name, request_body, request_mapping
         json_body = request_body
 
     try:
-        response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
+        response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
     except:
         logger.error(f"FSBid backoffice call for procedure {proc_name} failed.")
         raise Exception('Error at FSBid call')
