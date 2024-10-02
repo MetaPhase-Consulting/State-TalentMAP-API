@@ -521,11 +521,17 @@ def edit_el_positions(data, jwt_token):
     logger.info(f"formatted_PTYP_CUST_TD_POS_TAB_I: {formatted_PTYP_CUST_TD_POS_TAB_I}\n")
     logger.info(f"type of formatted_PTYP_CUST_TD_POS_TAB_I: {type(formatted_PTYP_CUST_TD_POS_TAB_I)}\n")
 
+    # payload = {
+    #                 "PV_API_VERSION_I": "",
+    #                 "PV_AD_ID_I": "",
+    #                 "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'ELTOML':'true'}]"
+    #     }
+
     payload = {
-                    "PV_API_VERSION_I": "",
-                    "PV_AD_ID_I": "",
-                    "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'ELTOML':'true'}]"
-        }
+                "PV_API_VERSION_I": "",
+                "PV_AD_ID_I": "",
+                "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'MC':'false','MC_END_DATE':'07/28/2024'}]"
+            }
     
     # convert payload to json string
     json_input = json.dumps(payload)
