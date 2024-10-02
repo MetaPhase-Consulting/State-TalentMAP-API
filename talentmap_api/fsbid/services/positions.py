@@ -511,6 +511,13 @@ def edit_el_positions(data, jwt_token):
     '''
 
     # Web Service JSON Input for EL Position edit
+    payload = {
+                "PV_API_VERSION_I": "",
+                "PV_AD_ID_I": "",
+                "PV_ACTION_I": "",
+                "PTYP_CUST_TD_POS_TAB_I": {"Data": data}
+                }
+
     # previous - "PTYP_CUST_TD_POS_TAB_I": {"Data": json.dumps(data)}
 
     # this will only be if what we are passed from the ActionView is just the 
@@ -528,11 +535,11 @@ def edit_el_positions(data, jwt_token):
     #                 "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'ELTOML':'true'}]"
     #     }
 
-    payload = {
-                "PV_API_VERSION_I": "",
-                "PV_AD_ID_I": "",
-                "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'MC':'false','MC_END_DATE':'07/28/2024'}]"
-            }
+    # payload = {
+    #             "PV_API_VERSION_I": "",
+    #             "PV_AD_ID_I": "",
+    #             "PTYP_CUST_TD_POS_TAB_I": "{Data:[{'POS_SEQ_NUM':'11', 'MC':'false','MC_END_DATE':'07/28/2024'}]"
+    #         }
     
     # convert payload to json string
     json_input = json.dumps(payload)
