@@ -391,6 +391,7 @@ def el_postions_res_mapping(data):
 
     def el_pos_map(x):
         return {
+            'POS_SEQ_NUM': x.get('POS_SEQ_NUM'),
             'positionNumber': x.get('POS_NUM_TEXT'),
             'skill': x.get('POS_SKILL_CODE'),
             'positionTitle': x.get('POS_TITLE_DESC'),
