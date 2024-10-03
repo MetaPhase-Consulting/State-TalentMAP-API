@@ -113,15 +113,15 @@ def client_panel_update_req_mapping(request):
       'PV_API_VERSION_I': '',
       'PV_AD_ID_I': '',
       'PV_CDO_WL_CODE_I': 'PC',
-      'PV_CDO_HRU_ID_I': '24924',
+      'PV_CDO_HRU_ID_I': 24924,
       'PV_CDO_PM_SEQ_NUM_I': 2869
     }
 
 def client_panel_update_res_mapping(data):
-    # if data is None and data['PV_RETURN_CODE_O'] is not 0:
-    #     logger.error('FSBid call for client perdets failed.')
-    #     return None
-    return data
+    if data is None and data['PV_RETURN_CODE_O'] is not 0:
+        logger.error('FSBid call for client perdets failed.')
+        return None
+    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 
 def convert_bidder_type_query(type):
     type_mapping = {
