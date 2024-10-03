@@ -519,7 +519,6 @@ def edit_el_positions(data, jwt_token):
 
     try:
         response = services.send_post_back_office(**args)
-        logger.info(f"Edit EL Position Response: {response}")
         return response
     except Exception as e:
         logger.info(f"An error occurred in edit_el_positions: {e}")
