@@ -41,7 +41,7 @@ class FSBidEmployeePerdetSeqNumActionView(BaseView):
 
         # Get the valid and mapped roles from the token
         user_roles = services.map_group_to_fsbid_role(jwt)
-        # logger.info(f"PERDET User roles: {user_roles}")
+        logger.info(f"PERDET User roles: {user_roles}")
 
         # Add roles
         for current_role in user_roles:
