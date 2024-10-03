@@ -691,47 +691,56 @@ def fsbid_assignments_to_tmap(assignments):
     from talentmap_api.fsbid.services.common import get_post_overview_url, get_post_bidding_considerations_url, get_obc_id
     assignmentsCopy = []
     tmap_assignments = []
-    if type(assignments) is type(dict()):
-        assignmentsCopy.append(assignments)
-    else:
-        assignmentsCopy = assignments
+    try:
+        if type(assignments) is type(dict()):
+            assignmentsCopy.append(assignments)
+        else:
+            assignmentsCopy = assignments
+    except Exception as e:
+        logger.error(f"Error creating assignmentsCopy: {e}\n")
+        return None
+    
     if type(assignmentsCopy) is type([]):
         for x in assignmentsCopy:
             pos = x.get('position', {})
             loc = pos.get('location', {})
-            tmap_assignments.append(
-                {
-                    "id": x.get('asg_seq_num', None),
-                    "asg_seq_num": x.get('asg_seq_num', None),
-                    "position_id": x.get('pos_seq_num', None),
-                    "start_date": ensure_date(x.get('asgd_eta_date', None)),
-                    "end_date": ensure_date(x.get('asgd_etd_ted_date', None)),
-                    "position": {
-                        "grade": pos.get("pos_grade_code", None),
-                        "skill": f"{pos.get('pos_skill_desc', None)} ({pos.get('pos_skill_code')})",
-                        "skill_code": pos.get("pos_skill_code", None),
-                        "bureau": f"({pos.get('pos_bureau_short_desc', None)}) {pos.get('pos_bureau_long_desc', None)}",
-                        "bureau_code": pydash.get(pos, 'pos_bureau_short_desc'), # only comes through for available bidders
-                        "organization": pos.get('pos_org_short_desc', None),
-                        "position_number": pos.get('pos_num_text', None),
+            try:
+                tmap_assignments.append(
+                    {
+                        "id": x.get('asg_seq_num', None),
+                        "asg_seq_num": x.get('asg_seq_num', None),
                         "position_id": x.get('pos_seq_num', None),
-                        "title": pos.get("pos_title_desc", None),
-                        "post": {
-                            "code": loc.get("gvt_geoloc_cd", None),
-                            "post_overview_url": get_post_overview_url(loc.get("gvt_geoloc_cd", None)),
-                            "post_bidding_considerations_url": get_post_bidding_considerations_url(loc.get("gvt_geoloc_cd", None)),
-                            "obc_id": get_obc_id(loc.get("gvt_geoloc_cd", None)),
-                            "location": {
-                                "country": loc.get("country", None),
+                        "start_date": ensure_date(x.get('asgd_eta_date', None)),
+                        "end_date": ensure_date(x.get('asgd_etd_ted_date', None)),
+                        "position": {
+                            "grade": pos.get("pos_grade_code", None),
+                            "skill": f"{pos.get('pos_skill_desc', None)} ({pos.get('pos_skill_code')})",
+                            "skill_code": pos.get("pos_skill_code", None),
+                            "bureau": f"({pos.get('pos_bureau_short_desc', None)}) {pos.get('pos_bureau_long_desc', None)}",
+                            "bureau_code": pydash.get(pos, 'pos_bureau_short_desc'), # only comes through for available bidders
+                            "organization": pos.get('pos_org_short_desc', None),
+                            "position_number": pos.get('pos_num_text', None),
+                            "position_id": x.get('pos_seq_num', None),
+                            "title": pos.get("pos_title_desc", None),
+                            "post": {
                                 "code": loc.get("gvt_geoloc_cd", None),
-                                "city": loc.get("city", None),
-                                "state": loc.get("state", None),
-                            }
+                                "post_overview_url": get_post_overview_url(loc.get("gvt_geoloc_cd", None)),
+                                "post_bidding_considerations_url": get_post_bidding_considerations_url(loc.get("gvt_geoloc_cd", None)),
+                                "obc_id": get_obc_id(loc.get("gvt_geoloc_cd", None)),
+                                "location": {
+                                    "country": loc.get("country", None),
+                                    "code": loc.get("gvt_geoloc_cd", None),
+                                    "city": loc.get("city", None),
+                                    "state": loc.get("state", None),
+                                }
+                            },
+                            "language": pos.get("pos_position_lang_prof_desc", None)
                         },
-                        "language": pos.get("pos_position_lang_prof_desc", None)
-                    },
-                }
-            )
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Error creating object for tmap_assignments: {e}\n")
+                return None
     return tmap_assignments
 
 
@@ -742,25 +751,29 @@ def fsbid_languages_to_tmap(languages):
 
     tmap_languages = []
     empty_score = '--'
-    for x in languages:
-        # if x is None or not a dict, skip
-        if x is None or not isinstance(x, dict):
-            if x is None:
-                logger.warning(f"Skipping None value in languages: {languages}\n")
-            continue
-        if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
-            continue
-        r = str(x.get('empl_high_reading', '')).strip()
-        s = str(x.get('empl_high_speaking', '')).strip()
-        tmap_languages.append({
-            "code": str(x.get('empl_language_code')).strip() if x.get('empl_language_code') else x.get('empl_language_code') or None,
-            "language": str(x.get('empl_language')).strip() if x.get('empl_language') else x.get('empl_language') or None,
-            "test_date": ensure_date(x.get('empl_high_test_date', None)),
-            "speaking_score": s or empty_score,
-            "reading_score": r or empty_score,
-            "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
-        })
-        
+    try:
+        for x in languages:
+            # if x is None or not a dict, skip
+            if x is None or not isinstance(x, dict):
+                if x is None:
+                    logger.warning(f"Skipping None value in languages: {languages}\n")
+                continue
+            if not x.get('empl_language', None) or not str(x.get('empl_language', None)).strip():
+                continue
+            r = str(x.get('empl_high_reading', '')).strip()
+            s = str(x.get('empl_high_speaking', '')).strip()
+            tmap_languages.append({
+                "code": str(x.get('empl_language_code')).strip() if x.get('empl_language_code') else x.get('empl_language_code') or None,
+                "language": str(x.get('empl_language')).strip() if x.get('empl_language') else x.get('empl_language') or None,
+                "test_date": ensure_date(x.get('empl_high_test_date', None)),
+                "speaking_score": s or empty_score,
+                "reading_score": r or empty_score,
+                "custom_description": f"{str(x.get('empl_language_code', None)).strip()} {s or empty_score}/{r or empty_score}"
+            })
+    except Exception as e:
+        logger.error(f"Error mapping language in fsbid_languages_to_tmap:\n {e}\n")
+        return None
+    
     return tmap_languages
 
 
@@ -802,22 +815,32 @@ def get_available_bidders(jwt_token, isCDO, query, host=None):
     from talentmap_api.cdo.services.available_bidders import get_available_bidders_stats
     cdo = 'cdo' if isCDO else 'bureau'
     uri = f"availablebidders/{cdo}"
-    response = send_get_request(
-        uri,
-        query,
-        convert_available_bidder_query,
-        jwt_token,
-        fsbid_available_bidder_to_talentmap,
-        False, # No count function
-        f"/api/v1/clients/availablebidders/{cdo}",
-        host,
-        CLIENTS_ROOT,
-    )
-    stats = get_available_bidders_stats(response)
-    return {
-        **stats,
-        "results": list({v['perdet_seq_number']:v for v in response.get('results')}.values()),
-    }
+
+    try:
+        response = send_get_request(
+            uri,
+            query,
+            convert_available_bidder_query,
+            jwt_token,
+            fsbid_available_bidder_to_talentmap,
+            False, # No count function
+            f"/api/v1/clients/availablebidders/{cdo}",
+            host,
+            CLIENTS_ROOT,
+        )
+    except Exception as e:
+        logger.error(f"Error getting response from GET call in get_available_bidders: {e}\n")
+        return None
+    
+    try:
+        stats = get_available_bidders_stats(response)
+        return {
+            **stats,
+            "results": list({v['perdet_seq_number']:v for v in response.get('results')}.values()),
+        }
+    except Exception as e:
+        logger.error(f"Error getting stats in get_available_bidders: {e}\n")
+        return None
 
 # Can update to reuse client mapping once client v2 is updated and released with all the new fields
 def fsbid_available_bidder_to_talentmap(data):
@@ -880,48 +903,56 @@ def fsbid_available_bidder_to_talentmap(data):
     middle_name = get_middle_name(employee)
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
-    res = {
-        "id": str(employee.get("pert_external_id", None)),
-        "cdo": {
-            "full_name": data.get('cdo_fullname', None),
-            "last_name": data.get('cdo_last_name', None),
-            "first_name": data.get('cdo_first_name', None),
-            "email": data.get('cdo_email', None),
-            "hru_id": data.get("hru_id", None),
-        },
-        "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
-        "shortened_name": f"{employee.get('per_first_name', None)} {middle_name['initial']}{employee.get('per_last_name', None)}{suffix_name}",
-        "initials": initials,
-        "perdet_seq_number": str(employee.get("perdet_seq_num", None)),
-        "grade": employee.get("per_grade_code", None),
-        "skills": map_skill_codes(employee),
-        "employee_id": str(employee.get("pert_external_id", None)),
-        "role_code": data.get("rl_cd", None),
-        "pos_location": map_location(location),
-        # not exposed in FSBid yet
-        # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
-        # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
-        # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
-        "classifications": fsbid_classifications_to_tmap(employee.get("classifications", [])),
-        "current_assignment": current_assignment,
-        "assignments": fsbid_assignments_to_tmap(assignments),
-        "languages": fsbid_languages_to_tmap(data.get('languages', []) or []),
-        "available_bidder_details": {
-            **data.get("details", {}),
-            "is_shared": pydash.get(data, 'details.is_shared') == '1',
-            "archived": pydash.get(data, 'details.archived') == '1',
+    try:
+        res = {
+            "id": str(employee.get("pert_external_id", None)),
+            "cdo": {
+                "full_name": data.get('cdo_fullname', None),
+                "last_name": data.get('cdo_last_name', None),
+                "first_name": data.get('cdo_first_name', None),
+                "email": data.get('cdo_email', None),
+                "hru_id": data.get("hru_id", None),
+            },
+            "name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
+            "shortened_name": f"{employee.get('per_first_name', None)} {middle_name['initial']}{employee.get('per_last_name', None)}{suffix_name}",
+            "initials": initials,
+            "perdet_seq_number": str(employee.get("perdet_seq_num", None)),
+            "grade": employee.get("per_grade_code", None),
+            "skills": map_skill_codes(employee),
+            "employee_id": str(employee.get("pert_external_id", None)),
+            "role_code": data.get("rl_cd", None),
+            "pos_location": map_location(location),
+            # not exposed in FSBid yet
+            # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
+            # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
+            # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
+            "classifications": fsbid_classifications_to_tmap(employee.get("classifications", [])),
+            "current_assignment": current_assignment,
+            "assignments": fsbid_assignments_to_tmap(assignments),
+            "languages": fsbid_languages_to_tmap(data.get('languages', []) or []),
+            "available_bidder_details": {
+                **data.get("details", {}),
+                "is_shared": pydash.get(data, 'details.is_shared') == '1',
+                "archived": pydash.get(data, 'details.archived') == '1',
+            }
         }
-    }
-    return res
+        return res
+    except Exception as e:
+        logger.error(f"Error creating res object in fsbid_available_bidder_to_talentmap: {e}\n")
+        return None
 
 
 def convert_available_bidder_query(query):
-    sort_asc = query.get("ordering", "name")[0] != "-"
-    ordering = query.get("ordering", "name").lstrip("-")
-    values = {
-        "order_by": ordering,
-        "is_asc": 'true' if sort_asc else 'false',
-        "ad_id": query.get("ad_id", None),
-    }
+    try:
+        sort_asc = query.get("ordering", "name")[0] != "-"
+        ordering = query.get("ordering", "name").lstrip("-")
+        values = {
+            "order_by": ordering,
+            "is_asc": 'true' if sort_asc else 'false',
+            "ad_id": query.get("ad_id", None),
+        }
 
-    return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+        return urlencode({i: j for i, j in values.items() if j is not None}, doseq=True, quote_via=quote)
+    except Exception as e:
+        logger.error(f"Error in convert_available_bidder_query: {e}\n")
+        return None
