@@ -78,6 +78,8 @@ def map_group_to_fsbid_role(jwt_token):
         tm_roles += mappedDeveloperRoles
         tm_roles = pydash.uniq(tm_roles)
         logger.info(f"Developer Roles: {tm_roles}")
+    logger.info(f"FINAL TM Roles: {tm_roles}")
+    logger.info(f"Filtered Roles: {Group.objects.filter(name__in=tm_roles).all()}")
 
     return Group.objects.filter(name__in=tm_roles).all()
 
