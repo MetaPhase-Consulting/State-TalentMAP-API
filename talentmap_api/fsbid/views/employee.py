@@ -37,21 +37,17 @@ class FSBidEmployeePerdetSeqNumActionView(BaseView):
             user.save()
 
         auth_user = request.user
-        logger.info(f"PERDET User: {auth_user}")
 
         # Get the valid and mapped roles from the token
         user_roles = services.map_group_to_fsbid_role(jwt)
-        logger.info(f"PERDET User roles: {user_roles}")
 
         # Add roles
         for current_role in user_roles:
             auth_user.groups.add(current_role)
-        logger.info(f"PERDET User roles added: {auth_user.groups.all()}")
 
         # Remove any roles that the user has lost since the last time they logged in
         for role in services.ROLE_MAPPING.values():
             if role not in user_roles.values_list('name', flat=True):
-                logger.info(f"PERDET Removing role: {role}")
                 auth_user.groups.remove(Group.objects.filter(name=role).first())
 
         auth_user.save()

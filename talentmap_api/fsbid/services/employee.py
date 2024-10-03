@@ -61,11 +61,9 @@ def map_group_to_fsbid_role(jwt_token):
     Updates a user roles based on what we get back from FSBid
     '''
     roles = jwt.decode(jwt_token, verify=False).get('role')
-    logger.info(f"Roles: {roles}")
     if isinstance(roles, str):
         roles = [roles]
     tm_roles = list(map(lambda z: ROLE_MAPPING.get(z), roles))
-    logger.info(f"TM Roles: {tm_roles}")
 
     orgPermissions = list(get_org_permissions(jwt_token))
     if len(orgPermissions) >= 1:
@@ -77,14 +75,12 @@ def map_group_to_fsbid_role(jwt_token):
         mappedDeveloperRoles = list(map(lambda z: ROLE_MAPPING.get(z), developerRoles))
         tm_roles += mappedDeveloperRoles
         tm_roles = pydash.uniq(tm_roles)
-        logger.info(f"Developer Roles: {tm_roles}")
-    logger.info(f"FINAL TM Roles: {tm_roles}")
-    logger.info(f"Filtered Roles: {Group.objects.filter(name__in=tm_roles).all()}")
 
     return Group.objects.filter(name__in=tm_roles).all()
 
 
 # Mapping of FSBid roles (keys) to TalentMap permissions (values)
+# Make sure role exists in our DB, TALENTMAP_API_USER -> AUTH_GROUP table
 ROLE_MAPPING = {
     # post_user gets manually mapped, but we still include it here so it can be removed if necessary
     "post_user": "post_user",
