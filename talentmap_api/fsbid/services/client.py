@@ -103,7 +103,8 @@ def convert_bidder_type_query(type):
         'languages': 'LA',
         'separations': 'SB',
         'classification': 'BC',
-        'panel_clients': 'BU'
+        'panel_clients': 'PC',
+        'clients': 'CL',
     }
     
     for key, code in type_mapping.items():
