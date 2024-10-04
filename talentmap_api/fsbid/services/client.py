@@ -353,6 +353,16 @@ def fsbid_clients_to_talentmap_clients(data):
     pp = employee.get("per_pay_plan_code")
     grade = employee.get("per_grade_code")
     combined_pp_grade = combine_pp_grade(pp, grade)
+    altEmail = data.get("alternateEmails", None)
+    comment = data.get("bidSeasonComments", None)
+    alternative_email = None
+    comments = None
+
+    if altEmail is not None:
+        alternative_email = altEmail.get('caeemailaddresstext', None)
+        
+    if comment is not None:
+        comments = comment.get('bscccommenttext', None)
 
     return {
         "id": str(employee.get("pert_external_id", None)),
@@ -363,6 +373,8 @@ def fsbid_clients_to_talentmap_clients(data):
         "initials": initials,
         "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "pay_plan": pp,
+        "alt_email": alternative_email,
+        "comments": comments,
         "grade": grade,
         "combined_pp_grade": combined_pp_grade,
         "skills": map_skill_codes(employee),
