@@ -16,7 +16,7 @@ class Command(BaseCommand):
     USERS = [
         ("guest", "guest@state.gov", "guestpassword", "Guest", "McGuestson", False, False, ["bidder"]),
         ("admin", "admin@talentmap.us", "admin", "Administrator", "TalentMAP", False, False, ["superuser", "bidder",
-            "glossary_editors", "helppage_editor", "cdo", "bureau_user", "post_user", "ao_user"]),
+            "glossary_editors", "helppage_editor", "cdo", "el_cdo", "bureau_user", "post_user", "ao_user"]),
         ("doej", "doej@talentmap.us", "password", "John", "Doe", False, False, ["bidder"]),
         ("townpostj", "townpostj@state.gov", "password", "Jenny", "Townpost", False, False, ["glossary_editors"]),
         ("batisak", "batisak@state.gov", "password", "Kara", "Batisak", False, False, ["bidder"]),
