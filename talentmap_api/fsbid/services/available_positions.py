@@ -265,6 +265,7 @@ def fsbid_ap_to_talentmap_ap(ap):
         "tandem_nbr": ap.get("tandem_nbr", None),  # Only appears in tandem searches
         "position": {
             "id": None,
+            "avail_telework_pos": ap.get("avail_telework_pos", None),
             "grade": ap.get("pos_grade_code", None),
             "skill": f"{ap.get('pos_skill_desc', None)} ({ap.get('pos_skill_code')})",
             "skill_code": ap.get("pos_skill_code", None),
@@ -405,6 +406,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False):
         f"{prefix}htf_ind": services.convert_multi_value(query.get("htf_indicator")),
         f"{prefix}cp_critical_need_ind": services.convert_multi_value(query.get("cn_indicator")),
         f"{prefix}freeText": query.get("q", None),
+        f"{prefix}pv_elig_tele_ind": query.get("pv_elig_tele_ind"),
 
     }
 
@@ -438,7 +440,7 @@ def convert_ap_query(query, allowed_status_codes=["HS", "OP"], isTandem=False):
         values[f"{prefix}skills2"] = services.convert_multi_value(query.get("position__skill__code__in-tandem"))
         values[f"{prefix}htf_ind2"] = services.convert_multi_value(query.get("htf_indicator-tandem"))
         values[f"{prefix}cp_critical_need_ind2"] = services.convert_multi_value(query.get("cn_indicator-tandem"))
-
+        values[f"{prefix}pv_elig_tele_ind2"] = query.get("pv_elig_tele_ind-tandem")
     if isinstance(values[f"{prefix}order_by"], list):
         values[f"{prefix}order_by"] = pydash.compact(values[f"{prefix}order_by"])
 

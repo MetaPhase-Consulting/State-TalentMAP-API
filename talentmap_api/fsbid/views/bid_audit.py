@@ -265,3 +265,65 @@ class FSBidBidAuditDeleteCategoryListView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(result)
+
+
+class FSBidBidAuditDataListView(BaseView):
+    # If user has the Bureau Role, this call will fail
+    '''
+    Gets the Bid Audit Data
+    '''
+
+    def get(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_audited_data(jwt, request.query_params)
+
+        # the -1 error code still returns the reference data, so only check for -2
+        if result is None or 'return_code' in result and result['return_code'] == -2:
+            logger.error(f"Fsbid call for Bid Audit, Audit Data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditHTFListView(BaseView):
+    # If user has the Bureau Role, this call will fail
+    '''
+    Gets the Bid Audit Hard To Fill Data for a Position
+    '''
+
+    def get(self, request, pk):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_htf_data(jwt, pk)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to get HTF data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+    def post(self, request, pk):
+        jwt = request.META['HTTP_JWT']
+        result = services.mod_htf_data(jwt, request.data)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call to update HTF data failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)
+
+
+class FSBidBidAuditMDSListView(BaseView):
+    # If user has the Bureau Role, this call will fail
+    '''
+    Gets the Bid Audit MDS Data
+    '''
+
+    def get(self, request):
+        jwt = request.META['HTTP_JWT']
+        result = services.get_audited_mds_data(jwt, request.query_params)
+
+        if result is None or 'return_code' in result and result['return_code'] != 0:
+            logger.error(f"Fsbid call for Bid Audit, MDS failed.")
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(result)

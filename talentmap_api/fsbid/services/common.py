@@ -26,6 +26,7 @@ from talentmap_api.fsbid.services import projected_vacancies as pvservices
 from talentmap_api.fsbid.services import employee as empservices
 from talentmap_api.fsbid.services import agenda as agendaservices
 from talentmap_api.fsbid.requests import requests
+# import requests # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -220,6 +221,7 @@ sort_dict = {
     "bidlist_create_date": "create_date",
     "bidlist_location": "position_info.position.post.location.city",
     "panel_date": "pmddttm",
+    "pmipmseqnum": "pmipmseqnum",
     # Assignments
     "assignment_start_date": "asgdetadate",
 }
@@ -252,7 +254,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     response = requests.get(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}).json()
 
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
-        logger.error(f"Fsbid call to '{url}' failed.")
+        logger.error(f"Fsbid call to '{uri}' failed.")
         return None
     if mapping_function:
         return list(map(mapping_function, response.get("Data", {})))
@@ -301,18 +303,25 @@ def get_individual(uri, query, query_mapping_function, jwt_token, mapping_functi
     return pydash.get(response, '[0]') or None
 
 
-
 # for calls to BackOffice CRUD POST EP
 def send_post_back_office(proc_name, package_name, request_body, request_mapping_function, response_mapping_function, jwt_token):
     url = f"{BACKOFFICE_CRUD_URL}?procName={proc_name}&packageName={package_name}"
-    json_body = request_mapping_function(request_body)
+    if request_mapping_function:
+        json_body = request_mapping_function(request_body)
+    else:
+        json_body = request_body
+
     try:
         response = requests.post(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, json=json_body).json()
     except:
         logger.error(f"FSBid backoffice call for procedure {proc_name} failed.")
         raise Exception('Error at FSBid call')
 
-    return response_mapping_function(response)
+    if response_mapping_function:
+        return response_mapping_function(response)
+    else:
+        return response
+
 
 def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_function, count_function, base_url, host=None, api_root=API_ROOT, use_post=False):
     '''
@@ -324,6 +333,7 @@ def send_get_request(uri, query, query_mapping_function, jwt_token, mapping_func
         **pagination,
         "results": fetch_method(uri, query, query_mapping_function, jwt_token, mapping_function, api_root)
     }
+
 
 def send_put_request(uri, query, query_mapping_function, jwt_token, mapping_function, api_root=API_ROOT):
     mappedQuery = pydash.omit_by(query_mapping_function(query), lambda o: o is None)
@@ -362,7 +372,6 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
     Gets the total number of items for a filterset
     '''
     args = {}
-
     newQuery = query.copy()
     if api_root == CLIENTS_ROOT_V2 and not uri:
         newQuery['getCount'] = 'true'
@@ -372,7 +381,6 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         newQuery['getCount'] = 'true'
     if is_template:
         newQuery['getCount'] = 'true'
-
     if use_post:
         url = f"{api_root}/{uri}"
         args['json'] = query_mapping_function(newQuery)
@@ -387,7 +395,7 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         count = pydash.get(countObj, pydash.keys(countObj)[0])
         return {"count": count}
     else:
-        logger.error(f"No count property could be found. {response}")
+        logger.error(f"No count property could be found from {uri}")
         raise KeyError('No count property could be found')
 
 
@@ -939,7 +947,6 @@ def parse_agenda_remarks(remarks=[]):
 
             remark['remarkRefData'][0]['rmrktext'] = refRemarkText
             if remark['remarkRefData'][0]['rmrkactiveind'] == 'N':
-                remark['remarkRefData'][0]['rmrktext'] = '(Legacy) ' + remark['remarkRefData'][0]['rmrktext']
                 remark['remarkRefData'][0]['refrmrktext'] = remark['remarkRefData'][0]['rmrktext']
 
             remarks_values.append(agendaservices.fsbid_to_talentmap_agenda_remarks(remark['remarkRefData'][0]))
@@ -1085,6 +1092,12 @@ def process_remarks_csv(remarks):
 
 
 # Panel Helper Functions
+
+def panel_process_remarks_csv(remarks):
+    if remarks:
+        return pydash.chain(remarks).map_('airremarktext').join('; ').value()
+    else:
+        return 'None listed'
 
 def panel_process_dates_csv(dates):
     columnOrdering = {

@@ -9,6 +9,7 @@ from django.utils.encoding import smart_str
 import jwt
 import pydash
 
+from talentmap_api.fsbid.services import common as services
 import talentmap_api.fsbid.services.cdo as cdo_services
 import talentmap_api.fsbid.services.available_positions as services_ap
 from talentmap_api.common.common_helpers import combine_pp_grade, ensure_date
@@ -63,7 +64,93 @@ def client(jwt_token, query, host=None):
 
     return response
 
+def get_client_perdets(jwt_token, query, host=None):
+    '''
+    Get Bidder Type
+    '''
+    args = {
+        "proc_name": "prc_lst_cdo_wl_clients",
+        "package_name": "PKG_WEBAPI_WRAP_SPRINT99_PJD",
+        "request_mapping_function": get_client_perdets_req_mapping,
+        "response_mapping_function": get_client_perdets_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
 
+def get_client_perdets_req_mapping(request):
+    return {
+        "PV_API_VERSION_I": "",
+        "PV_AD_ID_I": "",
+        "PV_SUBTRAN_I": "",
+        "PV_CDO_WL_CODE_I": convert_bidder_type_query(request),
+        "PV_CDO_HRU_ID_I": request.get("hru_id__in"),
+        "PV_CDO_BSN_ID_I": request.get("bid_seasons") 
+    }
+
+def get_client_perdets_res_mapping(data):
+    if data is None and data['PV_RETURN_CODE_O'] is not 0:
+        logger.error('FSBid call for client perdets failed.')
+        return None
+    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
+
+
+def convert_bidder_type_query(type):
+    type_mapping = {
+        'noBids': 'NB',
+        'noPanel': 'NP',
+        'handshake': 'HS',
+        'eligible_bidders': 'EB',
+        'cusp_bidders': 'CU',
+        'languages': 'LA',
+        'separations': 'SB',
+        'classification': 'BC',
+        'panel_clients': 'PC',
+    }
+    
+    for key, code in type_mapping.items():
+        if type.get(key):
+            return code
+    return None
+
+def update_client(data, jwt_token, host=None):
+    '''
+    Update current client
+    '''
+    args = {
+        "proc_name": 'prc_mod_alt_email_bscc',
+        "package_name": 'Pkg_Wrap_dev',
+        "request_mapping_function": update_client_req_mapping,
+        "response_mapping_function": update_user_client_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def update_client_req_mapping(request):
+    bidSeasons = ",".join([str(x) for x in request.get("bid_seasons")])
+    return {
+        "PV_AD_ID_I":"",
+        "pv_subtran_i":0,
+        "PV_WL_CODE_I":"",
+        "pv_hru_id_i": request.get("hru_id"),
+        "PV_PER_SEQ_NUM_I": request.get("per_seq_number"),
+        "PV_BSN_ID_I": bidSeasons,
+        "PV_BSCC_COMMENT_TEXT_I": request.get("comments"),
+        "pv_cae_email_address_text_i": request.get("email"),
+    }
+
+def update_user_client_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Updating current client failed.')
+        return None
+    
+    return data
+ 
 def get_clients_count(query, jwt_token, host=None):
     '''
     Gets the total number of available positions for a filterset
@@ -331,14 +418,28 @@ def fsbid_clients_to_talentmap_clients(data):
     pp = employee.get("per_pay_plan_code")
     grade = employee.get("per_grade_code")
     combined_pp_grade = combine_pp_grade(pp, grade)
+    altEmail = data.get("alternateEmails", None)
+    comment = data.get("bidSeasonComments", None)
+    alternative_email = None
+    comments = None
+
+    if altEmail is not None:
+        alternative_email = altEmail.get('caeemailaddresstext', None)
+
+    if comment is not None:
+        comments = comment.get('bscccommenttext', None)
 
     return {
         "id": str(employee.get("pert_external_id", None)),
+        "hru_id": data.get("hru_id", None),
+        "per_seq_num": employee.get("per_seq_num", None),
         "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
         "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
         "initials": initials,
         "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "pay_plan": pp,
+        "alt_email": alternative_email,
+        "comments": comments,
         "grade": grade,
         "combined_pp_grade": combined_pp_grade,
         "skills": map_skill_codes(employee),
@@ -350,7 +451,7 @@ def fsbid_clients_to_talentmap_clients(data):
         # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
         # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
         "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
-        "languages": fsbid_languages_to_tmap(data.get("languages") or []),
+        "languages": fsbid_languages_to_tmap(data.get("languages", []) or []),
         "cdos": data.get("cdos") or [],
         "current_assignment": current_assignment,
         "assignments": fsbid_assignments_to_tmap(assignments),
@@ -379,7 +480,6 @@ def parse_date_string(date_string):
 
 def format_date_string(date_string):
     """Formats a date string to MM/DD/YYYY"""
-
     if date_string == '' or date_string is None or len(date_string) == 10:
         return date_string
     try:
@@ -417,7 +517,7 @@ def fsbid_clients_to_talentmap_clients_for_csv(data):
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
     combined_location = f"{pos_location} ({position.get('pos_org_short_desc', None)})" if position is not None else pos_location
     cdo = data.get('cdos', None)
-
+    
     try:
         client = {
             "id": employee.get("perdet_seq_num", None),
@@ -643,6 +743,12 @@ def tmap_no_successful_panel_to_fsbid(panel):
         return None
 
 
+def tmap_cusp_and_eligible_bidders_to_fsbid(bidder):
+    tmap_dictionary = {
+        "true": "Y",
+    }
+    return tmap_dictionary.get(bidder, None)
+
 def fsbid_no_bids_to_tmap(bids):
     try:
         fsbid_dictionary = {
@@ -773,7 +879,7 @@ def fsbid_languages_to_tmap(languages):
     except Exception as e:
         logger.error(f"Error mapping language in fsbid_languages_to_tmap:\n {e}\n")
         return None
-    
+
     return tmap_languages
 
 

@@ -1,13 +1,13 @@
 import coreapi
 
 from rest_framework.response import Response
+from rest_framework import status
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from talentmap_api.fsbid.views.base import BaseView
 import talentmap_api.fsbid.services.client as services
-
 
 class FSBidClientListView(BaseView):
     @swagger_auto_schema(
@@ -21,6 +21,8 @@ class FSBidClientListView(BaseView):
             openapi.Parameter("page", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='A page number within the paginated result set.'),
             openapi.Parameter("limit", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Number of results to return per page.'),
             openapi.Parameter("all_count", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Returns default value 99999 for front-end'),
+            openapi.Parameter("eligible_bidder", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='True or False filter for clients with eligible bidders'),
+            openapi.Parameter("cusp_bidder", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='True or False filter for clients with cusp bidders'),
         ])
 
     def get(self, request):
@@ -28,6 +30,34 @@ class FSBidClientListView(BaseView):
         Gets all clients for a CDO
         '''
         return Response(services.client(request.META['HTTP_JWT'], request.query_params, f"{request.scheme}://{request.get_host()}"))
+    
+class FSBidClientUpdateListView(BaseView):
+    @swagger_auto_schema(
+    manual_parameters=[
+        openapi.Parameter("hru_id", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='HRU id of the client'),
+        openapi.Parameter("per_seq_number", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Perdet Seq Num of the client'),
+        openapi.Parameter("bid_seasons", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Bid seasons of the client'),
+        openapi.Parameter("comments", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Comments of the client'),
+        openapi.Parameter("email", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Email of the client'),
+        openapi.Parameter("ordering", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Which field to use when ordering the results.'),
+        openapi.Parameter("page", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='A page number within the paginated result set.'),
+        openapi.Parameter("limit", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Number of results to return per page.'),
+
+    ])
+
+    def post(self, request):
+        '''
+        Update a client
+        '''
+        return Response(services.update_client(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+    
+
+class FSBidClientPerdetListView(BaseView):
+    def post(self, request):
+        '''
+        Gets all clients based on perdet seq num
+        '''
+        return Response(services.get_client_perdets(request.META['HTTP_JWT'], request.query_params))
 
 
 class FSBidClientView(BaseView):
