@@ -1,3 +1,4 @@
+import json
 import logging
 from urllib.parse import urlencode, quote
 
@@ -330,6 +331,7 @@ def get_el_positions(query, jwt_token):
         "response_mapping_function": el_postions_res_mapping,
         "jwt_token": jwt_token,
     }
+
     return services.send_post_back_office(
         **args
     )
@@ -341,7 +343,11 @@ def el_postions_req_mapping(request):
     }
     for key in request:
         values_formatted = []
-        if key == 'el-tps':
+        if key == 'page':
+            result['PV_PAGE_I'] = request[key]
+        elif key == 'limit':
+            result['PV_PAGE_ROWS_I'] = request[key]
+        elif key == 'el-tps':
             for tp in request[key].split(','):
                 values_formatted.append(f"{{\"TP_CODE\": \"{tp}\"}}")
             result['PTYP_TP_TAB_I'] = f"{{\"Data\": [{','.join(values_formatted)}]}}"
@@ -373,6 +379,8 @@ def el_postions_req_mapping(request):
             result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"O\"}}}}"
         elif key == 'el-domestic':
             result['PTYP_OVERSEAS_TAB_I'] = f"{{\"Data\": {{\"POS_OVERSEAS_IND\": \"D\"}}}}"
+        elif key == 'text':
+            result['PV_FREETEXT_I'] = request[key]
         
     return result
 
@@ -383,7 +391,8 @@ def el_postions_res_mapping(data):
 
     def el_pos_map(x):
         return {
-            'positionNumber': x.get('POS_SEQ_NUM'),
+            'POS_SEQ_NUM': x.get('POS_SEQ_NUM'),
+            'positionNumber': x.get('POS_NUM_TEXT'),
             'skill': x.get('POS_SKILL_CODE'),
             'positionTitle': x.get('POS_TITLE_DESC'),
             'bureau': x.get('BUREAU_SHORT_DESC'),
@@ -396,6 +405,7 @@ def el_postions_res_mapping(data):
             'incumbentTED': x.get('INCUMBENT_TED'),
             'assignee': x.get('ASSIGNEE'),
             'assigneeTED': x.get('ASSIGNEE_TED'),
+            'ELTOML': x.get('ELTOML'),
             'EL': x.get('EL'),
             'MC': x.get('MC'),
             'LNA': x.get('LNA'),
@@ -403,7 +413,12 @@ def el_postions_res_mapping(data):
             'mcEndDate': x.get('MC_END_DATE'),
         }
 
-    return list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)]))
+    final = {
+        "count": data.get('PV_ROWCOUNT_O') or 0,
+        "results": list(map(el_pos_map, data.get('PQRY_TRACKING_DETAIL_O')[:int(RESULTS_CAP)])),
+    }
+
+    return final
 
 def get_el_positions_filters(request, jwt_token):
     '''
@@ -440,7 +455,8 @@ def el_positions_filter_res_mapping(data):
     def bureau_map(x):
         return {
             'code': x.get('BUREAU_ORG_CODE'),
-            'description': x.get('BUREAU_SHORT_DESC'),
+            'short_description': x.get('BUREAU_SHORT_DESC'),
+            'description': x.get('BUREAU_LONG_DESC'),
         }
     def org_map(x):
         # WS payload does not include ORG_CODE, only ORG_SHORT_DESC
@@ -481,18 +497,29 @@ def el_positions_filter_res_mapping(data):
         'languageFilters': list(map(languages_map, data.get('PTYP_LANGUAGE_TAB_O'))),
     }
 
-def edit_el_positions(request, jwt_token):
+def edit_el_positions(data, jwt_token):
     '''
-    Edit and save an Entry Level Position
+    Edit and save an Entry Level Position. Utilize common functionality send_post_back_office(...) 
+    in commons.py to make an edit POST to Web Services BackOfficeCRUD
     '''
+
+
+    payload = {
+        'PTYP_CUST_TD_POS_TAB_I': f"{{'Data': {data}}}"
+    }
+
     args = {
-        "proc_name": "prc_iud_tracking_details_grid",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT101",
-        "request_body": {},
-        # "request_mapping_function": edit_el_positions_req_mapping,
-        # "response_mapping_function": edit_el_positions_res_mapping,
+        "proc_name": "prc_iud_tracking_details_pos",
+        "package_name": "PKG_WEBAPI_WRAP",
+        "request_body": payload,
+        "request_mapping_function": None,
+        "response_mapping_function": None,
         "jwt_token": jwt_token,
     }
-    return services.send_post_back_office(
-        **args
-    )
+
+    try:
+        response = services.send_post_back_office(**args)
+        return response
+    except Exception as e:
+        logger.info(f"An error occurred in edit_el_positions: {e}")
+        return None

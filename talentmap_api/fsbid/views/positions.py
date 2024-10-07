@@ -81,11 +81,13 @@ class FSBidEntryLevelPositionsFiltersView(BaseView):
         return Response(services.get_el_positions_filters(request.query_params, request.META['HTTP_JWT']))
 
 class FSBidEntryLevelPositionsActionView(BaseView):
-    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
     '''
     Edit and save an EL Position
     '''
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+
     def post(self, request):
+        
         jwt = request.META['HTTP_JWT']
-        result = services.edit_el_position(jwt, request.data)
+        result = services.edit_el_positions(data=request.data, jwt_token=jwt)
         return Response(result)
