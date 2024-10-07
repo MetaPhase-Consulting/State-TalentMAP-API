@@ -568,11 +568,15 @@ def get_middle_name(employee, prop='per_middle_name'):
 def hru_id_filter(query):
     from talentmap_api.fsbid.services.common import convert_multi_value
     results = []
-    hru_id = query.get("hru_id", None)
-    results += [hru_id] if hru_id is not None else []
-    hru_ids = convert_multi_value(query.get("hru_id__in", None))
-    results += hru_ids if hru_ids is not None else []
-    return results if len(results) > 0 else None
+    hru_id = query.get("hru_id")
+    if hru_id:
+        results.append(hru_id)
+    
+    hru_ids = convert_multi_value(query.get("hru_id__in"))
+    if hru_ids:
+        results.extend(hru_ids)
+    
+    return results or None
 
 
 def convert_client_query(query, isCount=None):
@@ -589,10 +593,10 @@ def convert_client_query(query, isCount=None):
             "request_params.ad_id": query.get("ad_id", None),
             "request_params.order_by": sorting_values(query.get("ordering", None)),
             "request_params.freeText": query.get("q", None),
-            "request_params.bsn_id": convert_multi_value(query.get("bid_seasons", 0)),
+            "request_params.bsn_id": convert_multi_value(query.get("bid_seasons")),
             "request_params.hs_cd": tmap_handshake_to_fsbid(query.get('hasHandshake', None)),
-            "request_params.no_successful_panel": tmap_no_successful_panel_to_fsbid(query.get('noPanel', None)),
-            "request_params.no_bids": tmap_no_bids_to_fsbid(query.get('noBids', None)),
+            "request_params.no_successful_panel": "",
+            "request_params.no_bids": "",
             "request_params.page_index": int(query.get("page", 1)),
             "request_params.page_size": query.get("limit", 25),
             "request_params.currentAssignmentOnly": query.get("currentAssignmentOnly", 'true'),
