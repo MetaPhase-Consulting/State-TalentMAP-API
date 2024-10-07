@@ -71,7 +71,7 @@ def map_group_to_fsbid_role(jwt_token):
 
     # For developer testing
     if 'developer' in roles:
-        developerRoles = ['fsofficer', 'CDO', 'Bureau', 'AO']
+        developerRoles = ['fsofficer', 'ELCDO', 'CDO', 'Bureau', 'AO']
         mappedDeveloperRoles = list(map(lambda z: ROLE_MAPPING.get(z), developerRoles))
         tm_roles += mappedDeveloperRoles
         tm_roles = pydash.uniq(tm_roles)
@@ -80,6 +80,7 @@ def map_group_to_fsbid_role(jwt_token):
 
 
 # Mapping of FSBid roles (keys) to TalentMap permissions (values)
+# Make sure role exists in our DB, TALENTMAP_API_USER -> AUTH_GROUP table
 ROLE_MAPPING = {
     # post_user gets manually mapped, but we still include it here so it can be removed if necessary
     "post_user": "post_user",
@@ -87,6 +88,7 @@ ROLE_MAPPING = {
     "FSBid_Org_Capsule": "post_user",
     "fsofficer": "bidder",
     "FSBidCycleAdministrator": "bidcycle_admin",
+    "ELCDO": "el_cdo", # Secref role - EL Career Development Officer (CDA only)
     "CDO": "cdo",
     "CDO3": "cdo",
     "Bureau": "bureau_user",
