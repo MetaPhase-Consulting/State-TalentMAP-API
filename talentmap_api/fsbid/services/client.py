@@ -104,7 +104,6 @@ def convert_bidder_type_query(type):
         'separations': 'SB',
         'classification': 'BC',
         'panel_clients': 'PC',
-        'clients': 'CL',
     }
     
     for key, code in type_mapping.items():
