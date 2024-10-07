@@ -348,7 +348,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
                 smart_str("=\"%s\"" % record["status"]),
             ])
     except Exception as e:
-        logger.error(f"Shit didn't write to CSV correctly. Woops\n FIX IT\n")
+        logger.error(f"Didn't write to CSV correctly. Woops\n FIX IT\n")
         logger.error(f"exception caught: {e}\n")
         return None
 
