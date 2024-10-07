@@ -103,13 +103,29 @@ def convert_bidder_type_query(type):
         'languages': 'LA',
         'separations': 'SB',
         'classification': 'BC',
-        'panel_clients': 'BU'
+        'panel_clients': 'PC',
     }
     
     for key, code in type_mapping.items():
         if type.get(key):
             return code
     return None
+
+def update_client(data, jwt_token, host=None):
+    '''
+    Update current client
+    '''
+    args = {
+        "proc_name": 'prc_mod_alt_email_bscc',
+        "package_name": 'Pkg_Wrap_dev',
+        "request_mapping_function": update_client_req_mapping,
+        "response_mapping_function": update_user_client_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": data,
+    }
+    return services.send_post_back_office(
+        **args
+    )
 
 def update_client_req_mapping(request):
     bidSeasons = ",".join([str(x) for x in request.get("bid_seasons")])
@@ -353,6 +369,16 @@ def fsbid_clients_to_talentmap_clients(data):
     pp = employee.get("per_pay_plan_code")
     grade = employee.get("per_grade_code")
     combined_pp_grade = combine_pp_grade(pp, grade)
+    altEmail = data.get("alternateEmails", None)
+    comment = data.get("bidSeasonComments", None)
+    alternative_email = None
+    comments = None
+
+    if altEmail is not None:
+        alternative_email = altEmail.get('caeemailaddresstext', None)
+
+    if comment is not None:
+        comments = comment.get('bscccommenttext', None)
 
     return {
         "id": str(employee.get("pert_external_id", None)),
@@ -363,6 +389,8 @@ def fsbid_clients_to_talentmap_clients(data):
         "initials": initials,
         "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
         "pay_plan": pp,
+        "alt_email": alternative_email,
+        "comments": comments,
         "grade": grade,
         "combined_pp_grade": combined_pp_grade,
         "skills": map_skill_codes(employee),
