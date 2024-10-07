@@ -118,7 +118,7 @@ def client_panel_update_req_mapping(request):
       'PV_AD_ID_I': '',
       'PV_CDO_WL_CODE_I': 'PC',
       'PV_CDO_HRU_ID_I': request.get('hru_id__in'),
-      'PV_CDO_PM_SEQ_NUM_I': request.get('panelClientID')
+      'PV_CDO_PM_SEQ_NUM_I': request.get('cdo_pm_seq_num')
     }
 
 def client_panel_update_res_mapping(data):
