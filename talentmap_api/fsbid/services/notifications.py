@@ -13,7 +13,7 @@ def get_note_cable(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_getNoteCable",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": data,
         "request_mapping_function": get_note_cable_req_mapping,
         "response_mapping_function": get_note_cable_res_mapping,
@@ -46,7 +46,7 @@ def get_cable(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_getcable",
-        "package_name": "PKG_WEBAPI_WRAP_SPRINT100",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": data,
         "request_mapping_function": get_cable_req_mapping,
         "response_mapping_function": get_cable_res_mapping,
@@ -84,7 +84,7 @@ def get_note_cable_ref(data, jwt_token):
     '''
     args = {
         "proc_name": 'qry_modNoteCable',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": get_note_cable_ref_req_mapping,
         "response_mapping_function": get_note_cable_ref_res_mapping,
         "jwt_token": jwt_token,
@@ -123,7 +123,7 @@ def edit_note_cable(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modNoteMemoAll',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": edit_note_cable_req_mapping,
         "response_mapping_function": edit_note_cable_res_mapping,
         "jwt_token": jwt_token,
@@ -146,8 +146,8 @@ def edit_note_cable_req_mapping(request):
         "I_HDR_NME_CLEAR_IND": request.get('I_HDR_NME_CLEAR_IND'),
         "I_ASG_NME_SEQ_NUM": request.get('I_ASG_NME_SEQ_NUM'),
         "I_ASG_NMAS_SEQ_NUM": request.get('I_ASG_NMAS_SEQ_NUM'),
-        "I_ASG_NMAS_UPDATE_ID": request.get('I_ASG_NMAS_UPDATE_ID'),
-        "I_ASG_NMAS_UPDATE_DT": request.get('I_ASG_NMAS_UPDATE_DT'),
+        # "I_ASG_NMAS_UPDATE_ID": request.get('I_ASG_NMAS_UPDATE_ID'),
+        # "I_ASG_NMAS_UPDATE_DT": request.get('I_ASG_NMAS_UPDATE_DT'),
         "I_PARA_NME_SEQ_NUM": request.get('I_PARA_NME_SEQ_NUM'),
         "I_PARA_NOTP_CODE": request.get('I_PARA_NOTP_CODE'),
         "I_PARA_NME_UPDATE_ID": request.get('I_PARA_NME_UPDATE_ID'),
@@ -183,7 +183,7 @@ def rebuild_note_cable(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modNoteMemoRebuild',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": rebuild_note_cable_req_mapping,
         "response_mapping_function": rebuild_note_cable_res_mapping,
         "jwt_token": jwt_token,
@@ -219,7 +219,7 @@ def store_note_cable(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_storeTMOne',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": store_note_cable_req_mapping,
         "response_mapping_function": store_note_cable_res_mapping,
         "jwt_token": jwt_token,
@@ -250,7 +250,7 @@ def send_note_cable(data, jwt_token):
     '''
     args = {
         "proc_name": 'act_modsendcable',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": send_note_cable_req_mapping,
         "response_mapping_function": send_note_cable_res_mapping,
         "jwt_token": jwt_token,
@@ -279,7 +279,7 @@ def get_ops(data, jwt_token):
     '''
     args = {
         "proc_name": 'prc_get_ops_parm_value',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": get_ops_req_mapping,
         "response_mapping_function": get_ops_res_mapping,
         "jwt_token": jwt_token,
@@ -311,7 +311,7 @@ def list_ops(data, jwt_token):
     '''
     args = {
         "proc_name": 'PRC_LIST_OPS_TM1_DATA',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": list_ops_req_mapping,
         "response_mapping_function": list_ops_res_mapping,
         "jwt_token": jwt_token,
@@ -341,7 +341,7 @@ def insert_ops(data, jwt_token):
     '''
     args = {
         "proc_name": 'PRC_INS_OPS_TM_LOG',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": insert_ops_req_mapping,
         "response_mapping_function": insert_ops_res_mapping,
         "jwt_token": jwt_token,
@@ -375,7 +375,7 @@ def update_ops(data, jwt_token):
     '''
     args = {
         "proc_name": 'PRC_UPD_OPS_TM_LOG',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT100',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_mapping_function": update_ops_req_mapping,
         "response_mapping_function": update_ops_res_mapping,
         "jwt_token": jwt_token,
@@ -407,7 +407,7 @@ def gal_lookup(data, jwt_token):
     '''
     args = {
         "proc_name": "qry_lstgal",
-        "package_name": "PKG_WRAP_DEV",
+        "package_name": "PKG_WEBAPI_WRAP",
         "request_body": data,
         "request_mapping_function": gal_lookup_req_mapping,
         "response_mapping_function": gal_lookup_res_mapping,
