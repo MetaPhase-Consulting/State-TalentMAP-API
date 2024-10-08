@@ -607,7 +607,7 @@ def get_audited_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstBidBook',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_audit_data_req_mapping,
         "response_mapping_function": get_audit_data_res_mapping,
@@ -717,7 +717,7 @@ def get_htf_data(jwt_token, pk):
     '''
     args = {
         "proc_name": 'qry_getAuditCyclePos',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": pk,
         "request_mapping_function": get_htf_req_mapping,
         "response_mapping_function": get_htf_res_mapping,
@@ -769,7 +769,7 @@ def mod_htf_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'act_modAuditCyclePos',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": mod_htf_req_mapping,
         "response_mapping_function": mod_htf_res_mapping,
@@ -802,7 +802,7 @@ def get_audited_mds_data(jwt_token, request):
     '''
     args = {
         "proc_name": 'qry_lstOrgCount',
-        "package_name": 'PKG_WEBAPI_WRAP_SPRINT101',
+        "package_name": 'PKG_WEBAPI_WRAP',
         "request_body": request,
         "request_mapping_function": get_audit_mds_data_req_mapping,
         "response_mapping_function": get_audit_mds_data_res_mapping,
