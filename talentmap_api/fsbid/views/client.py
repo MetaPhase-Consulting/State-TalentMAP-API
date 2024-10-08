@@ -104,4 +104,4 @@ class FSBidClientPanelUpdateView(BaseView):
         '''
         Updates the panel date for a client
         '''
-        return Response(services.client_panel_update(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+        return Response(services.client_panel_update(request.META['HTTP_JWT'], request.query_params))
