@@ -391,7 +391,8 @@ def el_postions_res_mapping(data):
 
     def el_pos_map(x):
         return {
-            'positionNumber': x.get('POS_SEQ_NUM'),
+            'POS_SEQ_NUM': x.get('POS_SEQ_NUM'),
+            'positionNumber': x.get('POS_NUM_TEXT'),
             'skill': x.get('POS_SKILL_CODE'),
             'positionTitle': x.get('POS_TITLE_DESC'),
             'bureau': x.get('BUREAU_SHORT_DESC'),
@@ -502,20 +503,15 @@ def edit_el_positions(data, jwt_token):
     in commons.py to make an edit POST to Web Services BackOfficeCRUD
     '''
 
-    # Web Service JSON Input for EL Position edit
+
     payload = {
-                    "PV_API_VERSION_I": "",
-                    "PV_AD_ID_I": "",
-                    "PV_ACTION_I": "",
-                    "PTYP_CUST_TD_POS_TAB_I": {"Data": data}
-                }
-    # convert payload to json string
-    json_input = json.dumps(payload)
+        'PTYP_CUST_TD_POS_TAB_I': f"{{'Data': {data}}}"
+    }
 
     args = {
         "proc_name": "prc_iud_tracking_details_pos",
         "package_name": "PKG_WEBAPI_WRAP",
-        "request_body": json_input,
+        "request_body": payload,
         "request_mapping_function": None,
         "response_mapping_function": None,
         "jwt_token": jwt_token,
