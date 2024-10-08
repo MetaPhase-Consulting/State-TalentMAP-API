@@ -84,7 +84,7 @@ class FSBidEntryLevelPositionsActionView(BaseView):
     '''
     Edit and save an EL Position
     '''
-    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'))
+    permission_classes = (IsAuthenticatedOrReadOnly, isDjangoGroupMember('superuser'), isDjangoGroupMember('el_cdo'))
 
     def post(self, request):
         
