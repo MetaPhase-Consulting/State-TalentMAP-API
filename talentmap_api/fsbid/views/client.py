@@ -42,7 +42,6 @@ class FSBidClientUpdateListView(BaseView):
         openapi.Parameter("ordering", openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Which field to use when ordering the results.'),
         openapi.Parameter("page", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='A page number within the paginated result set.'),
         openapi.Parameter("limit", openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Number of results to return per page.'),
-
     ])
 
     def post(self, request):
@@ -92,3 +91,17 @@ class FSBidClientCSVView(BaseView):
         Exports all clients to CSV
         '''
         return services.get_client_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+
+class FSBidClientPanelView(BaseView):
+    def get(self, request):
+        '''
+        Gets the panel dates for a client
+        '''
+        return Response(services.client_panel(request.META['HTTP_JWT'], request.query_params))
+    
+class FSBidClientPanelUpdateView(BaseView):
+    def post(self, request):
+        '''
+        Updates the panel date for a client
+        '''
+        return Response(services.client_panel_update(request.META['HTTP_JWT'], request.query_params))

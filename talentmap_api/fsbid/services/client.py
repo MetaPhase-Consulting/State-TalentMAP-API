@@ -96,6 +96,36 @@ def get_client_perdets_res_mapping(data):
         return None
     return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 
+def client_panel_update(jwt_token, query, host=None):
+    '''
+    Get Panel Client by date
+    '''
+    args = {
+        "proc_name": 'prc_lst_wl_clients_pnl',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99_PJD',
+        "request_mapping_function": client_panel_update_req_mapping,
+        "response_mapping_function": client_panel_update_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def client_panel_update_req_mapping(request):
+    return {
+      'PV_API_VERSION_I': '',
+      'PV_AD_ID_I': '',
+      'PV_CDO_WL_CODE_I': 'PC',
+      'PV_CDO_HRU_ID_I': request.get('hru_id__in'),
+      'PV_CDO_PM_SEQ_NUM_I': request.get('cdo_pm_seq_num')
+    }
+
+def client_panel_update_res_mapping(data):
+    if data is None and data['PV_RETURN_CODE_O'] is not 0:
+        logger.error('FSBid call for client perdets failed.')
+        return None
+    return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 
 def convert_bidder_type_query(type):
     type_mapping = {
@@ -107,7 +137,7 @@ def convert_bidder_type_query(type):
         'languages': 'LA',
         'separations': 'SB',
         'classification': 'BC',
-        'panel_clients': 'PC',
+        'panel_clients': 'PC'
     }
     
     for key, code in type_mapping.items():
@@ -354,6 +384,32 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
 
     return response
 
+def client_panel(jwt_token, query, host=None):
+    '''
+    Get Clients by CDO
+    '''
+    args = {
+        "proc_name": 'prc_cdo_grid_select_lst',
+        "package_name": 'PKG_WEBAPI_WRAP_SPRINT99_PJD',
+        "request_mapping_function": client_panel_req_mapping,
+        "response_mapping_function": client_panel_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+def client_panel_req_mapping(request):
+    return {
+        'PV_API_VERSION_I': '',
+        'PV_AD_ID_I': '',
+    }
+def client_panel_res_mapping(data):
+    if data is None or (data['PV_RETURN_CODE_O'] and data['PV_RETURN_CODE_O'] is not 0):
+        logger.error('FSBid call for Panel Client failed.')
+        return None
+        
+    return data['PV_PM_LST_O']
 
 def fsbid_clients_to_talentmap_clients(data):
     employee = data.get('employee', None)
