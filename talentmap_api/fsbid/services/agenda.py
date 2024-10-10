@@ -475,6 +475,16 @@ def convert_agenda_item_query(query):
             {'col': 'aiperdetseqnum', 'val': query.get("perdet", None)},
             {'col': 'aiseqnum', 'val': query.get("aiseqnum", None)},
             {'col': 'pmipmseqnum', 'val': query.get("pmipmseqnum", None), 'com': 'IN' },
+            {'col': 'aiscode', 'val': query.get("actions", None), 'com': 'IN' },
+            {'col': 'aisdesctext', 'val': query.get("statuses", None)},
+            # {'col': '??', 'val': query.get("bureaus", None), 'com': 'IN' },
+            {'col': 'posorgcode', 'val': query.get("orgs", None), 'com': 'IN' },
+            {'col': 'posgradecode', 'val': query.get("grades", None), 'com': 'IN' },
+            {'col': 'miccode', 'val': query.get("categories", None), 'com': 'IN' },
+            {'col': 'ailanguages', 'val': query.get("languages", None), 'com': 'IN' },
+            # {'col': '??', 'val': query.get("skills", None), 'com': 'IN' },
+            {'col': 'rmrkseqnum', 'val': query.get("remarks", None), 'com': 'IN' },
+            {'col': 'aifreetext', 'val': query.get("freetext", None), 'com': 'IN' },
         ]),
     }
 
@@ -484,6 +494,7 @@ def convert_agenda_item_query(query):
         values["rp.columns"] = "ROWCOUNT"
 
     valuesToReturn = pydash.omit_by(values, lambda o: o is None or o == [])
+    logger.info(f"Converted agenda item query: {valuesToReturn}")
     return urlencode(valuesToReturn, doseq=True, quote_via=quote)
 
 
