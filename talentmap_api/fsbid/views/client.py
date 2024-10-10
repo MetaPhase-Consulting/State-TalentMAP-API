@@ -94,8 +94,8 @@ class FSBidClientCSVView(BaseView):
         return services.get_client_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
 
 class FSBidExtraClientDataView(BaseView):
-    def get(self, request):
+    def post(self, request):
         '''
         Gets extra client data
         '''
-        return Response(services.get_extra_client_data(request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+        return Response(services.get_client_perdets(request.META['HTTP_JWT'], request.query_params))
