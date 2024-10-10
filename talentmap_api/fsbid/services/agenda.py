@@ -78,7 +78,7 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         "jwt_token": jwt_token,
         "mapping_function": fsbid_single_agenda_item_to_talentmap_single_agenda_item,
         "count_function": get_agenda_items_count,
-        "base_url": "/api/v1/agendas/",
+        "base_url": "/api/v2/agendas/",
         "host": host,
         "use_post": False,
         "api_root": AGENDA_API_ROOT,
