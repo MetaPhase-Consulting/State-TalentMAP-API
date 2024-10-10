@@ -96,6 +96,35 @@ def get_client_perdets_res_mapping(data):
         return None
     return [item['PER_SEQ_NUM1'] for item in data['PV_DETAIL_O']]
 
+def get_extra_client_data(jwt_token, query, host=None):
+    '''
+    Get Extra Client Data
+    '''
+    args = {
+        "proc_name": "prc_lst_all_clients",
+        "package_name": "pkg_webapi_wrap",
+        "request_mapping_function": get_extra_client_data_req_mapping,
+        "response_mapping_function": get_extra_client_data_res_mapping,
+        "jwt_token": jwt_token,
+        "request_body": query,
+    }
+    return services.send_post_back_office(
+        **args
+    )
+
+def get_extra_client_data_req_mapping(request):
+    return {
+        'pv_api_version_i':'',
+        'pv_cdo_hru_i': request.get("hru_id__in"),
+    }
+
+def get_extra_client_data_res_mapping(data):
+    if data is None and data['PV_RETURN_CODE_O'] is not 0:
+        logger.error('FSBid call for extra client data failed.')
+        return None
+    return data['PV_DETAIL_O']
+
+
 
 def convert_bidder_type_query(type):
     type_mapping = {

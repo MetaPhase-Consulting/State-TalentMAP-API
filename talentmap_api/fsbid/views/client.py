@@ -92,3 +92,10 @@ class FSBidClientCSVView(BaseView):
         Exports all clients to CSV
         '''
         return services.get_client_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
+
+class FSBidExtraClientDataView(BaseView):
+    def get(self, request):
+        '''
+        Gets extra client data
+        '''
+        return Response(services.get_extra_client_data(request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
