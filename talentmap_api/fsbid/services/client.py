@@ -122,7 +122,7 @@ def get_extra_client_data_res_mapping(data):
     if data is None and data['PV_RETURN_CODE_O'] is not 0:
         logger.error('FSBid call for extra client data failed.')
         return None
-    return data
+    return data['PV_DETAIL_O']
 
 
 
