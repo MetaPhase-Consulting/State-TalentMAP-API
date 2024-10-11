@@ -98,4 +98,4 @@ class FSBidExtraClientDataView(BaseView):
         '''
         Gets extra client data
         '''
-        return Response(services.get_client_perdets(request.data, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}"))
+        return Response(services.get_client_perdets(request.META['HTTP_JWT'], request.query_params))
