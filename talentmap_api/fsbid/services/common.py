@@ -256,6 +256,12 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{uri}' failed.")
         return None
+    
+    if api_root == settings.AGENDA_API_URL:
+        logger.info(f"FSBid call to '{uri}' succeeded.")
+        data = response.get("Data", {})
+        logger.info(f"Length of data returned: {len(data)}")
+
     if mapping_function:
         return list(map(mapping_function, response.get("Data", {})))
     else:
