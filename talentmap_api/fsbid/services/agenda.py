@@ -458,6 +458,7 @@ def get_agenda_items_count(query, jwt_token, host=None, use_post=False):
         "is_template": True,
         "api_root": AGENDA_API_ROOT,
     }
+    logger.info(f"Count: {services.send_count_request(**args)['count']}")
     return services.send_count_request(**args)
 
 
