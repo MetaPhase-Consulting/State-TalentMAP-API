@@ -751,6 +751,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "revision_num": data.get("asgdrevisionnum"),
         "pos_title": pydash.get(data, "position[0].postitledesc", None),
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
+        "bureau": pydash.get(data, "position[0].posbureaucode", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
         "ted": not_applicable if tod_long_desc == 'INDEFINITE' else pydash.get(data, "asgdetdteddate", None),
