@@ -258,7 +258,7 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
         return None
     
     if api_root == settings.AGENDA_API_URL:
-        logger.info(f"FSBid call to '{uri}' succeeded.")
+        logger.info(f"FSBid call to '{url}' succeeded.")
         data = response.get("Data", {})
         logger.info(f"Length of data returned: {len(data)}")
 
