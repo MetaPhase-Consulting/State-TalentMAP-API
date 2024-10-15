@@ -476,7 +476,7 @@ def convert_agenda_item_query(query):
             {'col': 'aiseqnum', 'val': query.get("aiseqnum", None)},
             {'col': 'pmipmseqnum', 'val': query.get("pmipmseqnum", None), 'com': 'IN' },
             {'col': 'aiscode', 'val': query.get("statuses", None), 'com': 'IN' },
-            {'col': 'latcode', 'val': query.get("actions", None)},
+            {'col': 'latcode', 'val': query.get("actions", None), 'com': 'IN'},
             {'col': 'posbureaucode', 'val': query.get("bureaus", None), 'com': 'IN' },
             {'col': 'posorgcode', 'val': query.get("orgs", None), 'com': 'IN' },
             {'col': 'posgradecode', 'val': query.get("grades", None), 'com': 'IN' },
