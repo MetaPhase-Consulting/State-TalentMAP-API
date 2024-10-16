@@ -256,11 +256,6 @@ def get_results(uri, query, query_mapping_function, jwt_token, mapping_function,
     if response.get("Data") is None or ((response.get('return_code') and response.get('return_code', -1) == -1) or (response.get('ReturnCode') and response.get('ReturnCode', -1) == -1)):
         logger.error(f"Fsbid call to '{uri}' failed.")
         return None
-    
-    if api_root == settings.AGENDA_API_URL:
-        logger.info(f"FSBid call to '{url}' succeeded.")
-        data = response.get("Data", {})
-        logger.info(f"Length of data returned: {len(data)}")
 
     if mapping_function:
         return list(map(mapping_function, response.get("Data", {})))
@@ -395,15 +390,17 @@ def send_count_request(uri, query, query_mapping_function, jwt_token, host=None,
         url = f"{api_root}/{uri}?{query_mapping_function(newQuery)}"
         method = requests.get
 
-    response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args).json()
-    countObj = pydash.get(response, "Data[0]")
-    if pydash.keys(countObj):
-        count = pydash.get(countObj, pydash.keys(countObj)[0])
-        return {"count": count}
-    else:
-        logger.error(f"No count property could be found from {uri}")
-        raise KeyError('No count property could be found')
-
+    try:
+        response = method(url, headers={'JWTAuthorization': jwt_token, 'Content-Type': 'application/json'}, **args).json()
+        countObj = pydash.get(response, "Data[0]")
+        if pydash.keys(countObj):
+            count = pydash.get(countObj, pydash.keys(countObj)[0])
+            return {"count": count}
+        else:
+            logger.error(f"No count property could be found from {uri}")
+            raise KeyError('No count property could be found')
+    except:
+        logger.error(f"Fsbid call to '{url}' failed.")
 
 # pre-load since this data rarely changes
 obc_vals = list([])
