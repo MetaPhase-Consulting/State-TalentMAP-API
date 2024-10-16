@@ -1,5 +1,6 @@
 import logging
 import coreapi
+import secure_smtplib
 
 from rest_condition import Or
 from rest_framework import status
@@ -257,7 +258,7 @@ class FSBIDGalLookupView(APIView):
         return Response(result)
     
 
-class GeneralEmailFromRequest(APIView):
+class GetEmailFromRequest(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     def get(self, request):
@@ -270,13 +271,3 @@ class GeneralEmailFromRequest(APIView):
         else:
             return Response({'email': 'Not logged in'})
         
-
-class GetLoggedInEmail(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-    
-    def get(self, request):
-        jwt_token = self.request.META.get('HTTP_JWT', None)
-        logger.info("Inside GetLoggedIn view")
-        logger.info("request.META: ", request.META, "\n")
-        logger.info("jwt_token: ", jwt_token, "\n")
-        return Response({"jwt_token": jwt_token})

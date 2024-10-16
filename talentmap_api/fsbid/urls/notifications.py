@@ -18,8 +18,7 @@ urlpatterns = [
     url(r'^ops/insert/$', views.FSBidInsertOpsView.as_view(), name='FSBid-insert-ops'),
     url(r'^ops/update/$', views.FSBidUpdateOpsView.as_view(), name='FSBid-update-ops'),
     url(r'^gal/$', views.FSBIDGalLookupView.as_view(), name='FSBid-gal-lookup'),
-    url(r'^email/$', views.GeneralEmailFromRequest.as_view(), name='get-logged-in-email'),
-    url(r'^jwt_email/$', views.GetLoggedInEmail.as_view(), name='get-logged-in-email-from-jwt'),
+    url(r'^email/$', views.GetEmailFromRequest.as_view(), name='get-logged-in-email'),
 ]
 
 urlpatterns += router.urls
