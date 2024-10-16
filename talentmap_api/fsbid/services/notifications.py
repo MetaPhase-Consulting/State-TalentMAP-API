@@ -246,7 +246,7 @@ def store_note_cable_res_mapping(data):
 
 def send_note_cable(data, jwt_token):
     '''
-    Send Note Cable
+    Send Note Cable (Update Sent Date)
     '''
     args = {
         "proc_name": 'act_modsendcable',

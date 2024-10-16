@@ -132,7 +132,7 @@ class FSBidNoteCableStoreView(APIView):
 
     def post(self, request):
         '''
-        Store Note Cable
+        Store Note Cable (PDF in EOPF)
         '''
         result = services.store_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
@@ -152,7 +152,7 @@ class FSBidNoteCableSendView(APIView):
 
     def post(self, request):
         '''
-        Sends Note Cable
+        Sends Note Cable (Update Sent Date)
         '''
         result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
