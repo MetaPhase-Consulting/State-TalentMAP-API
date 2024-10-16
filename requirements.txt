@@ -84,6 +84,7 @@ rest_condition==1.0.3
 simplejson==3.13.2
 six==1.16.0
 smmap2==2.0.3
+secure-smtplib==0.1.1
 sqlparse==0.2.4
 stevedore==1.28.0
 typing==3.6.4
