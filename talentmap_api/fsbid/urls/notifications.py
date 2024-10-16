@@ -13,10 +13,10 @@ urlpatterns = [
     url(r'^rebuild/$', views.FSBidNoteCableRebuildView.as_view(), name='FSBid-rebuild'),
     url(r'^store/$', views.FSBidNoteCableStoreView.as_view(), name='FSBid-store'),
     url(r'^send/$', views.FSBidNoteCableSendView.as_view(), name='FSBid-send'),
-    url(r'^ops/get/$', views.FSBidGetOpsView.as_view(), name='FSBid-get-ops'),
-    url(r'^ops/list/$', views.FSBidListOpsView.as_view(), name='FSBid-list-ops'),
-    url(r'^ops/insert/$', views.FSBidInsertOpsView.as_view(), name='FSBid-insert-ops'),
-    url(r'^ops/update/$', views.FSBidUpdateOpsView.as_view(), name='FSBid-update-ops'),
+    url(r'^ops/wsdl/$', views.FSBidGetOpsWsdlView.as_view(), name='FSBid-get-ops-wsdl'),
+    url(r'^ops/data/$', views.FSBidGetOpsDataView.as_view(), name='FSBid-get-ops-data'),
+    url(r'^ops/create/$', views.FSBidCreateOpsLogView.as_view(), name='FSBid-create-ops-log'),
+    url(r'^ops/update/$', views.FSBidUpdateOpsLogView.as_view(), name='FSBid-update-ops-log'),
     url(r'^gal/$', views.FSBIDGalLookupView.as_view(), name='FSBid-gal-lookup'),
 ]
 
