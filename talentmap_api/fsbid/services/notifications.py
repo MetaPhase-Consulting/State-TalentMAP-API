@@ -215,7 +215,7 @@ def rebuild_note_cable_res_mapping(data):
 
 def store_note_cable(data, jwt_token):
     '''
-    Store Note Cable
+    Store Note Cable (PDF in EOPF)
     '''
     args = {
         "proc_name": 'act_storeTMOne',
@@ -271,17 +271,17 @@ def send_note_cable_req_mapping(request):
 def send_note_cable_res_mapping(data):
     return service_response(data, 'Send Note Cable')
 
-# ======================== prc_get_ops_parm_value ========================
+# ======================== Get OPS WSDL ========================
 
-def get_ops(data, jwt_token):
+def get_ops_wsdl(data, jwt_token):
     '''
-    Get OPS
+    Get OPS WSDL
     '''
     args = {
         "proc_name": 'prc_get_ops_parm_value',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": get_ops_req_mapping,
-        "response_mapping_function": get_ops_res_mapping,
+        "request_mapping_function": get_ops_wsdl_req_mapping,
+        "response_mapping_function": get_ops_wsdl_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -289,7 +289,7 @@ def get_ops(data, jwt_token):
         **args
     )
 
-def get_ops_req_mapping(request):
+def get_ops_wsdl_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -300,20 +300,20 @@ def get_ops_req_mapping(request):
         "PCUR_MESSAGE_O": ""
     }
 
-def get_ops_res_mapping(data):
-    return service_response(data, 'Get OPS')
+def get_ops_wsdl_res_mapping(data):
+    return service_response(data, 'Get OPS WSDL')
 
-# ======================== PRC_LIST_OPS_TM1_DATA ========================
+# ======================== Get OPS Data ========================
 
-def list_ops(data, jwt_token):
+def get_ops_data(data, jwt_token):
     '''
-    List OPS
+    Get OPS Data
     '''
     args = {
         "proc_name": 'PRC_LIST_OPS_TM1_DATA',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": list_ops_req_mapping,
-        "response_mapping_function": list_ops_res_mapping,
+        "request_mapping_function": get_ops_data_req_mapping,
+        "response_mapping_function": get_ops_data_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -321,7 +321,7 @@ def list_ops(data, jwt_token):
         **args
     )
 
-def list_ops_req_mapping(request):
+def get_ops_data_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
@@ -330,20 +330,20 @@ def list_ops_req_mapping(request):
         "PQRY_OTL_LOG_TM1_O": ""
     }
 
-def list_ops_res_mapping(data):
-    return service_response(data, 'List OPS')
+def get_ops_data_res_mapping(data):
+    return service_response(data, 'Get OPS Data')
 
-# ======================== PRC_INS_OPS_TM_LOG ========================
+# ======================== Create OPS Log ========================
 
-def insert_ops(data, jwt_token):
+def create_ops_log(data, jwt_token):
     '''
-    Insert OPS
+    Create OPS Log
     '''
     args = {
         "proc_name": 'PRC_INS_OPS_TM_LOG',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": insert_ops_req_mapping,
-        "response_mapping_function": insert_ops_res_mapping,
+        "request_mapping_function": create_ops_log_req_mapping,
+        "response_mapping_function": create_ops_log_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -351,33 +351,33 @@ def insert_ops(data, jwt_token):
         **args
     )
 
-def insert_ops_req_mapping(request):
+def create_ops_log_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "PV_OTL_TM_TYPE_CODE_I": "",
-        "PV_OTL_TM_DATA_I": "",
+        "PV_OTL_TM_TYPE_CODE_I": "1",
+        "PV_OTL_TM_DATA_I": request.get('PV_OTL_TM_DATA_I'),
         "PV_OTL_SUBMIT_MESSAGE_I": "",
-        "PV_ETL_SEQ_NBR_I": "",
+        "PV_ETL_SEQ_NBR_I": request.get('PV_ETL_SEQ_NBR_I'),
         "PV_OTL_ID_O": "",
         "PV_RETURN_O": "",
         "PCUR_MESSAGE_O": ""
     }
 
-def insert_ops_res_mapping(data):
-    return service_response(data, 'Insert OPS')
+def create_ops_log_res_mapping(data):
+    return service_response(data, 'Create OPS Log')
 
-# ======================== PRC_UPD_OPS_TM_LOG ========================
+# ======================== Update OPS Log ========================
 
-def update_ops(data, jwt_token):
+def update_ops_log(data, jwt_token):
     '''
-    Update OPS
+    Update OPS Log
     '''
     args = {
         "proc_name": 'PRC_UPD_OPS_TM_LOG',
         "package_name": 'PKG_WEBAPI_WRAP',
-        "request_mapping_function": update_ops_req_mapping,
-        "response_mapping_function": update_ops_res_mapping,
+        "request_mapping_function": update_ops_log_req_mapping,
+        "response_mapping_function": update_ops_log_res_mapping,
         "jwt_token": jwt_token,
         "request_body": data,
     }
@@ -385,19 +385,19 @@ def update_ops(data, jwt_token):
         **args
     )
 
-def update_ops_req_mapping(request):
+def update_ops_log_req_mapping(request):
     return {
         "PV_API_VERSION_I": "",
         "PV_AD_ID_I": "",
-        "PV_OTL_ID_I": "",
-        "PV_OTL_SUBMIT_RETURN_CODE_I": "",
-        "PV_OTL_SUBMIT_MESSAGE_I": "",
+        "PV_OTL_ID_I": request.get('PV_OTL_ID_I'),
+        "PV_OTL_SUBMIT_RETURN_CODE_I": request.get('PV_OTL_SUBMIT_RETURN_CODE_I'),
+        "PV_OTL_SUBMIT_MESSAGE_I": request.get('PV_OTL_SUBMIT_MESSAGE_I'),
         "PV_RETURN_O": "",
         "PCUR_MESSAGE_O": ""
     }
 
-def update_ops_res_mapping(data):
-    return service_response(data, 'Update OPS')
+def update_ops_log_res_mapping(data):
+    return service_response(data, 'Update OPS Log')
 
 # ======================== GAL Lookup ========================
 
