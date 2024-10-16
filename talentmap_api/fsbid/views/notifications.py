@@ -255,3 +255,28 @@ class FSBIDGalLookupView(APIView):
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
+    
+
+class GeneralEmailFromRequest(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    def get(self, request):
+        logger.info("Inside GetLoggedInEmail view")
+        logger.info("request.META: ", request.META, "\n")
+        if request.user.is_authenticated:
+            email = request.user.email
+            print("email: ", email, "\n")
+            return Response({'email': request.user.email})
+        else:
+            return Response({'email': 'Not logged in'})
+        
+
+class GetLoggedInEmail(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+    
+    def get(self, request):
+        jwt_token = self.request.META.get('HTTP_JWT', None)
+        logger.info("Inside GetLoggedIn view")
+        logger.info("request.META: ", request.META, "\n")
+        logger.info("jwt_token: ", jwt_token, "\n")
+        return Response({"jwt_token": jwt_token})
