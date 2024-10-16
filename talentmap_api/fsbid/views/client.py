@@ -92,14 +92,12 @@ class FSBidClientCSVView(BaseView):
         '''
         return services.get_client_csv(request.query_params, request.META['HTTP_JWT'], f"{request.scheme}://{request.get_host()}")
 
-<<<<<<< HEAD
 class FSBidExtraClientDataView(BaseView):
     def post(self, request):
         '''
         Gets extra client data
         '''
         return Response(services.get_extra_client_data(request.META['HTTP_JWT'], request.query_params))
-=======
 class FSBidClientPanelView(BaseView):
     def get(self, request):
         '''
@@ -113,4 +111,3 @@ class FSBidClientPanelUpdateView(BaseView):
         Updates the panel date for a client
         '''
         return Response(services.client_panel_update(request.META['HTTP_JWT'], request.query_params))
->>>>>>> dev
