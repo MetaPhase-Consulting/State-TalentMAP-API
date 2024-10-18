@@ -273,7 +273,7 @@ class GetEmailFromRequest(APIView):
             print("email: ", email, "\n")
             if email.endswith("@dosdev.us"):
                 email = email.replace("@dosdev.us", "@state.gov")
-            return Response({'email': request.user.email})
+            return Response({'email': email})
         else:
             return Response({'email': 'Not logged in'})
         
