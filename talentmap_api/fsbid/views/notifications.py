@@ -1,6 +1,6 @@
 import logging
 import coreapi
-import secure_smtplib
+# import secure_smtplib
 import os
 
 from rest_condition import Or
@@ -333,4 +333,4 @@ class SendSMTPEmailViewTwo(APIView):
         footer = os.getenv('SMTP_EMAIL_FOOTER')
 
         # sending the email with smtp:
-        secure_smtplib.send_email(host, port, from_email, to, subject, body, footer)
+        # secure_smtplib.send_email(host, port, from_email, to, subject, body, footer)
