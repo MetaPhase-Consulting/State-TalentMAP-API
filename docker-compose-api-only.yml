@@ -56,10 +56,10 @@ services:
       - EMAIL_USE_TLS=false
       - EMAIL_IS_DEV=false
       - EMAIL_DEV_TO=${EMAIL_DEV_TO}
-      - SMTP_HOST=smtprelay1.dosdev.local
-      - SMTP_PORT=25
-      - SMTP_DEV1_FROM=talentmap@elguaria.net
-      - SMTP_EMAIL_FOOTER="SBU - PRIVACY OR PI"
+      # - SMTP_HOST=smtprelay1.dosdev.local
+      # - SMTP_PORT=25
+      # - SMTP_DEV1_FROM=talentmap@elguaria.net
+      # - SMTP_EMAIL_FOOTER="SBU - PRIVACY OR PI"
   haproxy:
     image: eeacms/haproxy
     depends_on:
