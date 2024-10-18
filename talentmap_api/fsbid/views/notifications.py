@@ -1,6 +1,7 @@
 import logging
 import coreapi
 import secure_smtplib
+import os
 
 from rest_condition import Or
 from rest_framework import status
@@ -266,8 +267,56 @@ class GetEmailFromRequest(APIView):
         logger.info("request.META: ", request.META, "\n")
         if request.user.is_authenticated:
             email = request.user.email
+            # this is for Dev1 testing, all logged in user have a @dosdev.us email,
+            # this needs to be changed to @state.gov - all usernames are the same for 
+            # dosdev and state.gov
             print("email: ", email, "\n")
+            if email.endswith("@dosdev.us"):
+                email = email.replace("@dosdev.us", "@state.gov")
             return Response({'email': request.user.email})
         else:
             return Response({'email': 'Not logged in'})
         
+        
+class SendSMTPEmailViewOne(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'to': openapi.Schema(type=openapi.TYPE_STRING, description='To email'),
+            'subject': openapi.Schema(type=openapi.TYPE_STRING, description='Subject'),
+            'body': openapi.Schema(type=openapi.TYPE_STRING, description='Body'),
+        }
+    ))
+
+    def post(self, request):
+        # SMTP Server configuration:
+        host = os.getenv('SMTP_HOST')
+        port = os.getenv('SMTP_PORT')
+        from_email = os.getenv('SMTP_DEV1_EMAIL')
+        to = "shahm1@state.gov"
+        subject = "Test Email V1"
+        body = "This is a test email V1"
+        footer = os.getenv('SMTP_EMAIL_FOOTER')
+
+        print("request.user.email: ", request.user.email, "\n")
+        print("host: ", host, "\n")
+        print("port: ", port, "\n")
+        print("from_email: ", from_email, "\n")
+        print("to: ", to, "\n")
+        print("subject: ", subject, "\n")
+        print("body: ", body, "\n")
+        print("footer: ", footer, "\n")
+
+
+        return Response({
+            'host': host,
+            'port': port,
+            'from_email': from_email,
+            'to': to,
+            'subject': subject,
+            'body': body,
+            'footer': footer
+        })
+    
