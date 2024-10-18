@@ -363,15 +363,14 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         )
         if data is None:
             logger.error("No data returned from send_get_csv_request")
-            return None
-        try:
-            dataList = list(data)
-            logger.info(f"Got {len(dataList)} records for CSV\n")
-        except Exception as e:
-            logger.error(f"Error getting data len: {e}\n")
-            return None
+        else:
+            try:
+                dataList = list(data)
+                logger.info(f"Got {len(dataList)} records for CSV\n")
+            except Exception as e:
+                logger.error(f"Error getting data len: {e}\n")
     except Exception as e:
-        logger.error(f"Error getting client CSV: {e}\n")
+        logger.error(f"Error getting client CSV data: {e}\n")
         return None
 
     response = HttpResponse(content_type='text/csv')
