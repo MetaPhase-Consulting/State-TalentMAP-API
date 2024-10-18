@@ -357,7 +357,7 @@ def create_ops_log_req_mapping(request):
         "PV_AD_ID_I": "",
         "PV_OTL_TM_TYPE_CODE_I": "1",
         "PV_OTL_TM_DATA_I": request.get('PV_OTL_TM_DATA_I'),
-        "PV_OTL_SUBMIT_MESSAGE_I": "",
+        "PV_OTL_SUBMIT_MESSAGE_I": "ABOUT TO CALL OPS Web Service",
         "PV_ETL_SEQ_NBR_I": request.get('PV_ETL_SEQ_NBR_I'),
         "PV_OTL_ID_O": "",
         "PV_RETURN_O": "",
