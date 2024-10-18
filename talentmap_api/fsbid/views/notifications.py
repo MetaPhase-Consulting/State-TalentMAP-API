@@ -320,3 +320,17 @@ class SendSMTPEmailViewOne(APIView):
             'footer': footer
         })
     
+    
+class SendSMTPEmailViewTwo(APIView):
+    def post(self, request):
+        # SMTP Server configuration:
+        host = os.getenv('SMTP_HOST')
+        port = os.getenv('SMTP_PORT')
+        from_email = os.getenv('SMTP_DEV1_EMAIL')
+        to = ["imbrianofa@state.gov", "ShahM1@state.gov"]
+        subject = "Test Email V2"
+        body = "This is a test email V2"
+        footer = os.getenv('SMTP_EMAIL_FOOTER')
+
+        # sending the email with smtp:
+        secure_smtplib.send_email(host, port, from_email, to, subject, body, footer)
