@@ -268,7 +268,7 @@ class GetEmailFromRequest(APIView):
 
     def get(self, request):
         logger.info("Inside GetLoggedInEmail view")
-        logger.info("request.META: ", request.META, "\n")
+        logger.info("reuest: ", request, "\n")
         if request.user.is_authenticated:
             email = request.user.email
             # this is for Dev1 testing, all logged in user have a @dosdev.us email,
