@@ -279,6 +279,13 @@ class GetEmailFromRequest(APIView):
         
         
 class SendSMTPEmailViewOne(APIView):
+    """
+    This endpoint is meant to test getting the envrironment variables 
+    that are required to test sending an email using the SMTP server.
+
+    For testing in Dev1, the from email will be talentmap@elguaria.net,
+    otherwise it will be the email of the logged in user.
+    """
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -292,15 +299,15 @@ class SendSMTPEmailViewOne(APIView):
 
     def post(self, request):
         # SMTP Server configuration:
-        host = os.getenv('SMTP_HOST')
-        port = os.getenv('SMTP_PORT')
-        from_email = os.getenv('SMTP_DEV1_EMAIL')
+        host = os.getenv('EMAIL_HOST')
+        port = os.getenv('EMAIL_PORT')
+        from_email = os.getenv('EMAIL_FROM_ADDRESS')
         to = "shahm1@state.gov"
         subject = "Test Email V1"
         body = "This is a test email V1"
-        footer = os.getenv('SMTP_EMAIL_FOOTER')
+        footer = 'SBU - PRIVACY OR PII'
 
-        print("request.user.email: ", request.user.email, "\n")
+        print("request.user.email: ", GetEmailFromRequest(), "\n")
         print("host: ", host, "\n")
         print("port: ", port, "\n")
         print("from_email: ", from_email, "\n")
