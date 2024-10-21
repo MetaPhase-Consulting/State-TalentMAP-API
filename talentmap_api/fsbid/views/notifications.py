@@ -312,7 +312,7 @@ class SendSMTPEmailViewOne(APIView):
         # footer = 'SBU - PRIVACY OR PII'
         footer = "Test Footer"
 
-        print("\n", "request.user.email: ", GetEmailFromRequest(), "\n")
+        print("\n", "request.user.email: ", GetEmailFromRequest().get('email'), "\n")
         print("host: ", host, "\n")
         print("port: ", port, "\n")
         print("from_email: ", from_email, "\n")
