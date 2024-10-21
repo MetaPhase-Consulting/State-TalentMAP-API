@@ -268,8 +268,7 @@ class GetEmailFromRequest(APIView):
 
     def get(self, request):
         logger.info("Inside GetLoggedInEmail view")
-        logger.info("reuest: ", request, "\n")
-        logger.info("request.META: ", request.META, "\n")
+        logger.info(f"reuest: {request}\n")
         if request.user.is_authenticated:
             email = request.user.email
             # this is for Dev1 testing, all logged in user have a @dosdev.us email,
@@ -313,7 +312,7 @@ class SendSMTPEmailViewOne(APIView):
         # footer = 'SBU - PRIVACY OR PII'
         footer = "Test Footer"
 
-        print("\n", "request.user.email: ", GetEmailFromRequest().get('email'), "\n")
+        print("\n", "request.user.email: ", GetEmailFromRequest().get(request=request).data.get('email'), "\n")
         print("host: ", host, "\n")
         print("port: ", port, "\n")
         print("from_email: ", from_email, "\n")
