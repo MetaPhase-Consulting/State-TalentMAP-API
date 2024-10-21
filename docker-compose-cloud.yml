@@ -43,18 +43,14 @@ services:
       - PUBLISHABLE_POSITIONS_API_URL=http://host.docker.internal:3333/v1/publishablePositions
       - PUBLISHABLE_POSITIONS_API_V2_URL=http://host.docker.internal:3333/v2/publishablepositions
       - EMAIL_ENABLED=true
-      - EMAIL_HOST=host.docker.internal
-      - EMAIL_PORT=1025
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST=smtprelay1.dosdev.local
+      - EMAIL_PORT=25
+      - EMAIL_HOST_USER=talentmap@elguaria.net
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-      - EMAIL_FROM_ADDRESS=talentmap-alert@local.dev
-      - EMAIL_USE_TLS=false
-      - EMAIL_IS_DEV=false
+      - EMAIL_FROM_ADDRESS=talentmap@elguaria.net
+      - EMAIL_USE_TLS=true
+      - EMAIL_IS_DEV=true
       - EMAIL_DEV_TO=${EMAIL_DEV_TO}
-      - SMTP_HOST=smtprelay1.dosdev.local
-      - SMTP_PORT=25
-      - SMTP_DEV1_FROM=talentmap@elguaria.net
-      - SMTP_EMAIL_FOOTER="SBU - PRIVACY OR PI"
   haproxy:
     image: eeacms/haproxy
     depends_on:
