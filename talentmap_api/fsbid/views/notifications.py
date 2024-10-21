@@ -303,8 +303,8 @@ class SendSMTPEmailViewOne(APIView):
 
     def post(self, request):
         # SMTP Server configuration:
-        host = os.getenv('EMAIL_HOST')
-        port = os.getenv('EMAIL_PORT')
+        host = os.environ.get('EMAIL_HOST')
+        port = os.environ.get('EMAIL_PORT')
         from_email = os.getenv('EMAIL_FROM_ADDRESS')
         to = "shahm1@state.gov"
         subject = "Test Email V1"
