@@ -3,6 +3,10 @@ import coreapi
 # import secure_smtplib
 import os
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 from rest_condition import Or
 from rest_framework import status
 from rest_framework.response import Response
@@ -305,9 +309,10 @@ class SendSMTPEmailViewOne(APIView):
         to = "shahm1@state.gov"
         subject = "Test Email V1"
         body = "This is a test email V1"
-        footer = 'SBU - PRIVACY OR PII'
+        # footer = 'SBU - PRIVACY OR PII'
+        footer = "Test Footer"
 
-        print("request.user.email: ", GetEmailFromRequest(), "\n")
+        print("\n", "request.user.email: ", GetEmailFromRequest()['email'], "\n")
         print("host: ", host, "\n")
         print("port: ", port, "\n")
         print("from_email: ", from_email, "\n")
@@ -329,15 +334,35 @@ class SendSMTPEmailViewOne(APIView):
     
     
 class SendSMTPEmailViewTwo(APIView):
+    """
+    Sends a test email using the SMTP server.
+
+    NOTE: This endpoint can only be tested in Dev1
+    """
+
     def post(self, request):
         # SMTP Server configuration:
-        host = os.getenv('SMTP_HOST')
-        port = os.getenv('SMTP_PORT')
-        from_email = os.getenv('SMTP_DEV1_EMAIL')
+        host = os.getenv('EMAIL_HOST')
+        port = os.getenv('EMAIL_PORT')
+        from_email = os.getenv('EMAIL_FROM_ADDRESS')
         to = ["imbrianofa@state.gov", "ShahM1@state.gov"]
-        subject = "Test Email V2"
-        body = "This is a test email V2"
-        footer = os.getenv('SMTP_EMAIL_FOOTER')
+        subject = "Test Email V1"
+        body = "This is a test email V1"
+        footer = 'SBU - PRIVACY OR PII'
 
-        # sending the email with smtp:
-        # secure_smtplib.send_email(host, port, from_email, to, subject, body, footer)
+        # creating the email
+
+        email = MIMEMultipart()
+        email['From'] = from_email
+        email['To'] = ", ".join(to)
+        email['Subject'] = subject
+        email.attach(MIMEText(f"{body} \n\n {footer}", 'plain'))
+
+        # sending the email
+        try:
+            with smtplib.SMTP(host, port) as server:
+                server.sendmail(from_email, to, email.as_string())
+                print("Email sent successfully")
+        except Exception as e:
+            print("Error sending email: ", {e})
+            return Response(status=status.HTTP_404_NOT_FOUND)
