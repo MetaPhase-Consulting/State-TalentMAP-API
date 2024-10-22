@@ -334,12 +334,13 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
         )
         if data is None:
             logger.error("No data returned from send_get_csv_request")
-        else:
-            try:
-                dataList = list(data)
-                logger.info(f"Got {len(dataList)} records for CSV\n")
-            except Exception as e:
-                logger.error(f"Error getting data len: {e}\n")
+        logger.info(f"Data: {data}\n")
+        # else:
+        #     try:
+        #         dataList = list(data)
+        #         logger.info(f"Got {len(dataList)} records for CSV\n")
+        #     except Exception as e:
+        #         logger.error(f"Error getting data len: {e}\n")
     except Exception as e:
         logger.error(f"Error getting client CSV data: {e}\n")
         return None
@@ -366,7 +367,7 @@ def get_client_csv(query, jwt_token, rl_cd, host=None):
     ])
 
     try:
-        logger.info(f"Writing {len(data)} records to CSV\n\n")
+        # logger.info(f"Writing {len(data)} records to CSV\n\n")
         for record in data:
             email_response = get_user_information(jwt_token, record['id'])
             email = pydash.get(email_response, 'email') or 'None listed'
