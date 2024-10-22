@@ -419,7 +419,11 @@ def client_panel_res_mapping(data):
     return data['PV_PM_LST_O']
 
 def fsbid_clients_to_talentmap_clients(data):
-    employee = data.get('employee', None)
+    try:
+        employee = data.get('employee', None)
+    except Exception as e:
+        logger.error(f"Error mapping clients: {e}\n")
+        employee = None
     current_assignment = None
     assignments = None
     position = None
@@ -478,8 +482,8 @@ def fsbid_clients_to_talentmap_clients(data):
     middle_name = get_middle_name(employee)
     suffix_name = f" {employee['per_suffix_name']}" if pydash.get(employee, 'per_suffix_name') else ''
 
-    pp = employee.get("per_pay_plan_code")
-    grade = employee.get("per_grade_code")
+    pp = employee.get("per_pay_plan_code", None)
+    grade = employee.get("per_grade_code", None)
     combined_pp_grade = combine_pp_grade(pp, grade)
     altEmail = data.get("alternateEmails", None)
     comment = data.get("bidSeasonComments", None)
@@ -492,33 +496,38 @@ def fsbid_clients_to_talentmap_clients(data):
     if comment is not None:
         comments = comment.get('bscccommenttext', None)
 
-    return {
-        "id": str(employee.get("pert_external_id", None)),
-        "hru_id": data.get("hru_id", None),
-        "per_seq_num": employee.get("per_seq_num", None),
-        "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
-        "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
-        "initials": initials,
-        "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
-        "pay_plan": pp,
-        "alt_email": alternative_email,
-        "comments": comments,
-        "grade": grade,
-        "combined_pp_grade": combined_pp_grade,
-        "skills": map_skill_codes(employee),
-        "employee_id": str(employee.get("pert_external_id", None)),
-        "role_code": data.get("rl_cd", None),
-        "pos_location": map_location(location),
-        # not exposed in FSBid yet
-        # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
-        # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
-        # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
-        "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
-        "languages": fsbid_languages_to_tmap(data.get("languages", []) or []),
-        "cdos": data.get("cdos") or [],
-        "current_assignment": current_assignment,
-        "assignments": fsbid_assignments_to_tmap(assignments),
-    }
+    try:
+        dataObj = {
+            "id": str(employee.get("pert_external_id", None)),
+            "hru_id": data.get("hru_id", None),
+            "per_seq_num": employee.get("per_seq_num", None),
+            "name": f"{employee.get('per_first_name', None)} {middle_name['full']}{employee.get('per_last_name', None)}{suffix_name}",
+            "shortened_name": f"{employee.get('per_last_name', None)}{suffix_name}, {employee.get('per_first_name', None)} {middle_name['initial']}",
+            "initials": initials,
+            "perdet_seq_number": str(int(employee.get("perdet_seq_num", None))),
+            "pay_plan": pp,
+            "alt_email": alternative_email,
+            "comments": comments,
+            "grade": grade,
+            "combined_pp_grade": combined_pp_grade,
+            "skills": map_skill_codes(employee),
+            "employee_id": str(employee.get("pert_external_id", None)),
+            "role_code": data.get("rl_cd", None),
+            "pos_location": map_location(location),
+            # not exposed in FSBid yet
+            # "hasHandshake": fsbid_handshake_to_tmap(data.get("hs_cd")),
+            # "noPanel": fsbid_no_successful_panel_to_tmap(data.get("no_successful_panel")),
+            # "noBids": fsbid_no_bids_to_tmap(data.get("no_bids")),
+            "classifications": fsbid_classifications_to_tmap(employee.get("classifications") or []),
+            "languages": fsbid_languages_to_tmap(data.get("languages", []) or []),
+            "cdos": data.get("cdos") or [],
+            "current_assignment": current_assignment,
+            "assignments": fsbid_assignments_to_tmap(assignments),
+        }
+    except Exception as e:
+        logger.error(f"Error mapping dataObj: {e}\n")
+        return None
+    return dataObj
 
 
 def parse_date_string(date_string):
