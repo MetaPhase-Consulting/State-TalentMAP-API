@@ -557,7 +557,7 @@ def fsbid_clients_to_talentmap_clients(data):
         }
     except Exception as e:
         logger.error(f"Error mapping client: {e}\n")
-        return HttpResponse(content="dig into the data_obj", status=500)
+        return HttpResponse(content="dig into the data_obj", status=501)
 
     return data_obj
 

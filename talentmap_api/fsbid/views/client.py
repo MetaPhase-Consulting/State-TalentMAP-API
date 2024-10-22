@@ -98,6 +98,7 @@ class FSBidExtraClientDataView(BaseView):
         Gets extra client data
         '''
         return Response(services.get_extra_client_data(request.META['HTTP_JWT'], request.query_params))
+    
 class FSBidClientPanelView(BaseView):
     def get(self, request):
         '''
