@@ -219,7 +219,7 @@ def get_clients_count(query, jwt_token, host=None):
         return send_count_request("", query, convert_client_count_query, jwt_token, host, CLIENTS_ROOT_V2)
     except Exception as e:
         logger.error(f"Error getting clients count: {e}\n")
-        return None
+        return HttpResponse(content="error getting clients count", status=502)
 
 
 def client_suggestions(jwt_token, perdet_seq_num):
