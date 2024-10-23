@@ -366,6 +366,7 @@ class SendSMTPEmailViewTwo(APIView):
             with smtplib.SMTP(host, port) as server:
                 server.sendmail(from_email, to, email.as_string())
                 print("Email sent successfully")
+                return Response(status=status.HTTP_200_OK)
         except Exception as e:
             print("Error sending email: ", {e})
             return Response(status=status.HTTP_404_NOT_FOUND)
