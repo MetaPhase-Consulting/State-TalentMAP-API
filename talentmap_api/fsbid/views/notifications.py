@@ -390,7 +390,9 @@ class SendSMTPEmailViewThree(APIView):
                     'to': ["imbrianofa@state.gov", "ShahM1@state.gov"],
                     'subject': "Test Email V1",
                     'body': "This is a test email V1",
-                    'footer': 'SBU - PRIVACY OR PII'
+                    'footer': 'SBU - PRIVACY OR PII',
+                    'html': '<html><body><h1>This is an HTML attachment</h1></body></html>',
+                    'xml': '<note><body>This is an XML attachment</body></note>'
                 }
         footer = 'SBU - PRIVACY OR PII'
 
@@ -413,10 +415,20 @@ class SendSMTPEmailViewThree(APIView):
         email['Subject'] = subject
         email.attach(MIMEText(data, 'html'))
 
+        # creating html attachment
+        html_attachment = MIMEText(data['html'], 'html')
+        html_attachment.add_header('Content-Disposition', 'attachment', filename='test.html')
+        email.attach(html_attachment)
+
+        # creating xml attachment
+        xml_attachment = MIMEText(data['xml'], 'xml')
+        xml_attachment.add_header('Content-Disposition', 'attachment', filename='test.xml')
+        email.attach(xml_attachment)
+
         # sending the email
         try:
             with smtplib.SMTP(host, port) as server:
-                server.sendmail(from_email, to, email.as_string())
+                server.sendmail(from_email, data['to'], email.as_string())
                 return Response(status=status.HTTP_200_OK)
         except Exception as e:
             print("Error sending email: ", {e})
