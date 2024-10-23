@@ -31,6 +31,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    url(r'^api/v1/development/', include('talentmap_api.development.urls')),
     # Administration related resources
     url(r'^api/v1/homepage/', include('talentmap_api.administration.urls.homepage')),
     url(r'^api/v1/aboutpage/', include('talentmap_api.administration.urls.aboutpage')),

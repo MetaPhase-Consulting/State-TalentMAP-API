@@ -738,3 +738,57 @@ def format_dates(input_date):
     date_object = dt.strptime(input_date, "%Y-%m-%dT%H:%M:%S")
     formatted_date = date_object.strftime("%m/%d/%Y")
     return formatted_date
+
+def copyFile(targetFilePath, destinationPath, key):
+    if key != 'mpc':
+        logger.error(f'Invalid key: {key}')
+        return
+    """
+    Copies the content of a file from targetFilePath to destinationPath.
+    
+    Args:
+        targetFilePath (str): The path of the file to be copied.
+        destinationPath (str): The path where the file should be copied to.
+    """
+    # Print a message indicating the source and destination of the file
+    print(f'Writing [{targetFilePath}] to [{destinationPath}]', targetFilePath, destinationPath)
+    
+    # Open the source file in binary read mode ('rb')
+    with open(targetFilePath, 'rb') as source:
+        # Open the destination file in binary write mode ('wb')
+        with open(destinationPath, 'wb') as destination:
+            # Read and write the file in chunks of 4096 bytes
+            # This is efficient for handling large files
+            for chunk in iter(lambda: source.read(4096), b''):
+                destination.write(chunk)
+
+def writeFile(filePath, content, key):
+    if key != 'mpc':
+        logger.error(f'Invalid key: {key}')
+        return
+    """
+    Writes the given content to a file.
+    
+    Args:
+        filePath (str): The path of the file where content will be written.
+        content (str): The text content to write to the file.
+    """
+    # Open the file in write mode ('w') to overwrite existing content
+    with open(filePath, 'w') as file:
+        # Write the provided content to the file
+        file.write(content)
+
+def readFile(filePath):
+    """
+    Opens and reads the content of a file.
+    
+    Args:
+        filePath (str): The path of the file to read.
+        
+    Returns:
+        str: The content of the file as a string.
+    """
+    # Open the file in read mode ('r')
+    with open(filePath, 'r') as file:
+        # Read and return the entire content of the file
+        return file.read()
