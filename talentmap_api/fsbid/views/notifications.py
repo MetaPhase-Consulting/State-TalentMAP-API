@@ -206,8 +206,6 @@ class FSBidCreateOpsLogView(APIView):
         Create OPS Log
         '''
         result = services.create_ops_log(request.data, request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(result)
 
 class FSBidUpdateOpsLogView(APIView):
