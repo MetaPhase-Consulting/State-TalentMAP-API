@@ -276,13 +276,15 @@ class GetEmailFromRequest(APIView):
             # dosdev and state.gov
             print("email: ", email, "\n")
             if email.endswith("@dosdev.us"):
-                email = email.replace("@dosdev.us", "@state.gov")
+                # means we are in dev1 and the from email needs to be talentmap@elguaria.net
+                email = "talentmap@elguaria.net"
+                print("we are testing in dev1 so the email is: ", email, " state version: ", email.replace("@dosdev.us", "@state.gov"), "\n")
             return Response({'email': email})
         else:
             return Response({'email': 'Not logged in'})
         
         
-class SendSMTPEmailViewOne(APIView):
+class SendSMTPEmailView(APIView):
     """
     This endpoint is meant to test getting the envrironment variables 
     that are required to test sending an email using the SMTP server.
@@ -309,8 +311,7 @@ class SendSMTPEmailViewOne(APIView):
         to = "shahm1@state.gov"
         subject = "Test Email V1"
         body = "This is a test email V1"
-        # footer = 'SBU - PRIVACY OR PII'
-        footer = "Test Footer"
+        footer = 'SBU - PRIVACY OR PII'
 
         print("\n", "request.user.email: ", GetEmailFromRequest().get(request=request).data.get('email'), "\n")
         print("host: ", host, "\n")
@@ -371,3 +372,52 @@ class SendSMTPEmailViewTwo(APIView):
             print("Error sending email: ", {e})
             return Response(status=status.HTTP_404_NOT_FOUND)
         
+
+class SendSMTPEmailViewThree(APIView):
+    """
+    Sends a test email using the SMTP server. This is specifically with all the 
+    SMTP server configurations hardcoded in the view.
+
+    NOTE: This endpoint can only be tested in Dev1
+    """
+
+    def post(self, request):
+        host = "smtprelay1.dosdev.local"
+        port = 25
+        from_email = "talentmap@elguaria.net"
+        subject = "Test Email V1"
+        data = {
+                    'to': ["imbrianofa@state.gov", "ShahM1@state.gov"],
+                    'subject': "Test Email V1",
+                    'body': "This is a test email V1",
+                    'footer': 'SBU - PRIVACY OR PII'
+                }
+        footer = 'SBU - PRIVACY OR PII'
+
+        # creating the email content
+        email_body = f'''
+            <html>
+            <head></head>
+            <body>
+                <p>{data['body']}</p>
+                <div style="position: fixed; bottom: 0; width: 100%; text-align: center; font-weight: bold;">
+                    {data['footer']}
+                </div>
+            </body>
+            </html>
+        '''
+
+        email = MIMEMultipart()
+        email['From'] = from_email
+        email['To'] = ", ".join(to)
+        email['Subject'] = subject
+        email.attach(MIMEText(f"{body} \n\n {footer}", 'plain'))
+
+        # sending the email
+        try:
+            with smtplib.SMTP(host, port) as server:
+                server.sendmail(from_email, to, email.as_string())
+                return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            print("Error sending email: ", {e})
+            return Response(status=status.HTTP_404_NOT_FOUND)

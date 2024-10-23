@@ -19,8 +19,9 @@ urlpatterns = [
     url(r'^ops/update/$', views.FSBidUpdateOpsView.as_view(), name='FSBid-update-ops'),
     url(r'^gal/$', views.FSBIDGalLookupView.as_view(), name='FSBid-gal-lookup'),
     url(r'^email/$', views.GetEmailFromRequest.as_view(), name='get-logged-in-email'),
-    url(r'^email_get_vars/$', views.SendSMTPEmailViewOne.as_view(), name='test-env-vars'),
+    url(r'^email_get_vars/$', views.SendSMTPEmailView.as_view(), name='test-env-vars'),
     url(r'^email_send_test/$', views.SendSMTPEmailViewTwo.as_view(), name='send-test-email'),
+    url(r'^email_send_test2/$', views.SendSMTPEmailViewThree.as_view(), name='send-test-email'),
 ]
 
 urlpatterns += router.urls
