@@ -43,11 +43,11 @@ services:
       - PUBLISHABLE_POSITIONS_API_URL=http://host.docker.internal:3333/v1/publishablePositions
       - PUBLISHABLE_POSITIONS_API_V2_URL=http://host.docker.internal:3333/v2/publishablepositions
       - EMAIL_ENABLED=true
-      - EMAIL_HOST=smtprelay1.dosdev.local
+      - EMAIL_HOST="smtprelay1.dosdev.local"
       - EMAIL_PORT=25
-      - EMAIL_HOST_USER=talentmap@elguaria.net
+      - EMAIL_HOST_USER="talentmap@elguaria.net"
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-      - EMAIL_FROM_ADDRESS=talentmap@elguaria.net
+      - EMAIL_FROM_ADDRESS="talentmap@elguaria.net"
       - EMAIL_USE_TLS=true
       - EMAIL_IS_DEV=true
       - EMAIL_DEV_TO=${EMAIL_DEV_TO}

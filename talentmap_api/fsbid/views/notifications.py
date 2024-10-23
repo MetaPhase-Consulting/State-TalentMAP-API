@@ -342,9 +342,12 @@ class SendSMTPEmailViewTwo(APIView):
 
     def post(self, request):
         # SMTP Server configuration:
-        host = os.getenv('EMAIL_HOST')
-        port = os.getenv('EMAIL_PORT')
-        from_email = os.getenv('EMAIL_FROM_ADDRESS')
+        # host = os.getenv('EMAIL_HOST')
+        # port = os.getenv('EMAIL_PORT')
+        # from_email = os.getenv('EMAIL_FROM_ADDRESS')
+        host = "smtprelay1.dosdev.local"
+        port = 25
+        from_email = "talentmap@elguaria.net"
         to = ["imbrianofa@state.gov", "ShahM1@state.gov"]
         subject = "Test Email V1"
         body = "This is a test email V1"
@@ -366,3 +369,4 @@ class SendSMTPEmailViewTwo(APIView):
         except Exception as e:
             print("Error sending email: ", {e})
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
