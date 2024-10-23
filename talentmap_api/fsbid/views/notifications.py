@@ -411,7 +411,8 @@ class SendSMTPEmailViewThree(APIView):
 
         email = MIMEMultipart()
         email['From'] = from_email
-        email['To'] = ", ".join(data['to'])
+        to = ", ".join(data['to'])
+        email['To'] = ", ".join(to)
         email['Subject'] = subject
         email.attach(MIMEText(data, 'html'))
 
