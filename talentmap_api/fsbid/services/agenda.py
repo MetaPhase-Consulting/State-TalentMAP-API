@@ -72,7 +72,7 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
     '''
     from talentmap_api.fsbid.services.agenda_employees import get_agenda_employees
     args = {
-        "uri": "",
+        "uri": "v2/agendas/",
         "query": query,
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
@@ -81,7 +81,6 @@ def get_agenda_items(jwt_token=None, query={}, host=None):
         "base_url": "/api/v1/agendas/",
         "host": host,
         "use_post": False,
-        "api_root": AGENDA_API_ROOT,
     }
 
     agenda_items = services.send_get_request(
@@ -443,20 +442,17 @@ def get_agenda_item_history_csv(query, jwt_token, host, limit=None):
     return response
 
 
-# Placeholder. Isn't used and doesn't work.
-def get_agenda_items_count(query, jwt_token, host=None, use_post=False):
+def get_agenda_items_count(query, jwt_token, use_post=False):
     '''
-    Gets the total number of agenda items for a filterset
+    Gets the total number of agenda items
     '''
     args = {
-        "uri": "",
+        "uri": "v2/agendas/",
         "query": query,
         "query_mapping_function": convert_agenda_item_query,
         "jwt_token": jwt_token,
-        "host": host,
         "use_post": use_post,
         "is_template": True,
-        "api_root": AGENDA_API_ROOT,
     }
     return services.send_count_request(**args)
 
@@ -475,6 +471,15 @@ def convert_agenda_item_query(query):
             {'col': 'aiperdetseqnum', 'val': query.get("perdet", None)},
             {'col': 'aiseqnum', 'val': query.get("aiseqnum", None)},
             {'col': 'pmipmseqnum', 'val': query.get("pmipmseqnum", None), 'com': 'IN' },
+            {'col': 'aiscode', 'val': query.get("statuses", None), 'com': 'IN' },
+            {'col': 'latcode', 'val': query.get("actions", None), 'com': 'IN'},
+            {'col': 'posorgcode', 'val': query.get("orgs", None), 'com': 'IN' },
+            {'col': 'posgradecode', 'val': query.get("grades", None), 'com': 'IN' },
+            {'col': 'miccode', 'val': query.get("categories", None), 'com': 'IN' },
+            {'col': 'ailanguages', 'val': query.get("languages", None), 'com': 'IN' },
+            {'col': 'perdetskills', 'val': query.get("skills", None), 'com': 'IN' },
+            {'col': 'rmrkseqnum', 'val': query.get("remarks", None), 'com': 'IN' },
+            {'col': 'aifreetext', 'val': query.get("freetext", None), 'com': 'IN' },
         ]),
     }
 
@@ -740,6 +745,7 @@ def fsbid_aia_to_talentmap_aia(data):
         "revision_num": data.get("asgdrevisionnum"),
         "pos_title": pydash.get(data, "position[0].postitledesc", None),
         "pos_num": pydash.get(data, "position[0].posnumtext", None),
+        "bureau": pydash.get(data, "position[0].posbureaucode", None),
         "org": pydash.get(data, "position[0].posorgshortdesc", None),
         "eta": pydash.get(data, "asgdetadate", None),
         "ted": not_applicable if tod_long_desc == 'INDEFINITE' else pydash.get(data, "asgdetdteddate", None),
