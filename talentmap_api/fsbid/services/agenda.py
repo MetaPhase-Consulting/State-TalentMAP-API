@@ -477,7 +477,7 @@ def convert_agenda_item_query(query):
             {'col': 'posgradecode', 'val': query.get("grades", None), 'com': 'IN' },
             {'col': 'miccode', 'val': query.get("categories", None), 'com': 'IN' },
             {'col': 'ailanguages', 'val': query.get("languages", None), 'com': 'IN' },
-            {'col': 'perdetskills', 'val': query.get("skills", None), 'com': 'IN' },
+            {'col': 'posskills', 'val': query.get("skills", None), 'com': 'IN' },
             {'col': 'rmrkseqnum', 'val': query.get("remarks", None), 'com': 'IN' },
             {'col': 'aifreetext', 'val': query.get("freetext", None), 'com': 'IN' },
         ]),
