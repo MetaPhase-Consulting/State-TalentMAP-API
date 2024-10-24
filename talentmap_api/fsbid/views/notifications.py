@@ -138,7 +138,7 @@ class FSBidNoteCableStoreView(APIView):
 
     def post(self, request):
         '''
-        Store Note Cable
+        Store Note Cable (PDF in EOPF)
         '''
         result = services.store_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
@@ -158,89 +158,80 @@ class FSBidNoteCableSendView(APIView):
 
     def post(self, request):
         '''
-        Sends Note Cable
+        Sends Note Cable (Update Sent Date)
         '''
         result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class FSBidGetOpsView(APIView):
+class FSBidGetOpsWsdlView(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
-        }
-    ))
-
-    def post(self, request):
+    def get(self, request):
         '''
-        Sends Note Cable
+        Get OPS WSDL
         '''
-        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        result = services.get_ops_wsdl(request.query_params, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(result)
 
-class FSBidListOpsView(APIView):
+class FSBidGetOpsDataView(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
-        }
-    ))
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('PV_NM_SEQ_NUM_I', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Note ID'),
+    ])
 
-    def post(self, request):
+    def get(self, request):
         '''
-        Sends Note Cable
+        Get OPS Data
         '''
-        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        result = services.get_ops_data(request.query_params, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(result)
 
-class FSBidInsertOpsView(APIView):
-
-    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
-        }
-    ))
-
-    def post(self, request):
-        '''
-        Sends Note Cable
-        '''
-        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
-        if result is None or 'return_code' in result and result['return_code'] != 0:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class FSBidUpdateOpsView(APIView):
+class FSBidCreateOpsLogView(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'PV_NM_SEQ_NUM_I': openapi.Schema(type=openapi.TYPE_STRING, description='Note ID'),
+            'PV_OTL_TM_DATA_I': openapi.Schema(type=openapi.TYPE_STRING, description='SOAP Message (XML)'),
+            'PV_ETL_SEQ_NBR_I': openapi.Schema(type=openapi.TYPE_STRING, description='ETL ID'),
+        }
+    ))
+
+    def put(self, request):
+        '''
+        Create OPS Log
+        '''
+        result = services.create_ops_log(request.data, request.META['HTTP_JWT'])
+        return Response(result)
+
+class FSBidUpdateOpsLogView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly, Or(isDjangoGroupMember('superuser'), isDjangoGroupMember('cdo'), isDjangoGroupMember('ao_user'),)]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'PV_OTL_ID_I': openapi.Schema(type=openapi.TYPE_STRING, description='Log ID'),
+            'PV_OTL_SUBMIT_RETURN_CODE_I': openapi.Schema(type=openapi.TYPE_STRING, description='Return Code'),
+            'PV_OTL_SUBMIT_MESSAGE_I': openapi.Schema(type=openapi.TYPE_STRING, description='Return Message'),
         }
     ))
 
     def post(self, request):
         '''
-        Sends Note Cable
+        Update OPS Log
         '''
-        result = services.send_note_cable(request.data, request.META['HTTP_JWT'])
+        result = services.update_ops_log(request.data, request.META['HTTP_JWT'])
         if result is None or 'return_code' in result and result['return_code'] != 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)
