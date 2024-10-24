@@ -388,7 +388,7 @@ class SendSMTPEmailViewThree(APIView):
         footer = 'SBU - PRIVACY OR PII'
 
         # creating the email content
-        data = f'''
+        email_html = f'''
             <html>
             <head></head>
             <body>
@@ -405,7 +405,7 @@ class SendSMTPEmailViewThree(APIView):
         to = ", ".join(data['to'])
         email['To'] = ", ".join(to)
         email['Subject'] = subject
-        email.attach(MIMEText(data, 'html'))
+        email.attach(MIMEText(email_html, 'html'))
 
         # creating html attachment
         html_attachment = MIMEText(data['html'], 'html')
